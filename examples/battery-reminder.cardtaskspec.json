@@ -1,0 +1,164 @@
+{
+  "schema": "cardtaskspec/v1",
+  "userQuery": "做一个电量提醒卡片，显示电量以及小字提醒，支持切换省电模式",
+  "task": "根据本协议生成两个代码块：genui（A2UI JSONL，每行一个 JSON object，共 3 行）和 cardspec（CardSpec JSON object）。直接输出两个代码块，不要解释、标题或总结。",
+
+  "card": {
+    "scenario": "device",
+    "size": "2x2",
+    "sizeReason": "一个主指标（电量百分比）+ 小字提醒 + 一个动作按钮，≤3 区域，2x2 (160×160vp) 即可无滚动容纳。",
+    "semanticRoles": [
+      {
+        "role": "identity",
+        "label": "电量",
+        "desc": "卡片主题标识"
+      },
+      {
+        "role": "primaryAnswer",
+        "label": "电量百分比",
+        "dataPath": "/battery/percentText",
+        "protected": true,
+        "layoutHint": "视觉主导，大字号，可搭配电池图标或 Progress 环"
+      },
+      {
+        "role": "context",
+        "label": "小字提醒",
+        "dataPath": "/battery/reminder",
+        "layoutHint": "1 行短文本，字号明显小于主值"
+      },
+      {
+        "role": "action",
+        "label": "切换省电模式",
+        "eventRef": "togglePowerSaving",
+        "layoutHint": "底部全宽 pill 按钮，CTA 文本受保护不可截断"
+      }
+    ],
+    "layout": {
+      "rootShell": "Column",
+      "root": {
+        "width": 160,
+        "height": 160,
+        "borderRadius": 22,
+        "clip": true,
+        "padding": 12
+      },
+      "regions": [
+        {
+          "role": "identity+primaryAnswer",
+          "hint": "电量标识 + 大号百分比。可用 Row 组合电池图标与数值，或用 Progress 环包裹百分比。主值必须视觉占主导。"
+        },
+        {
+          "role": "context",
+          "hint": "小字提醒，1 行短文本，字号小于主值，可用半透明背景块包裹。"
+        },
+        {
+          "role": "action",
+          "hint": "省电模式按钮，全宽 pill（圆角=高度/2），label 为'开启省电模式'。"
+        }
+      ],
+      "crowdedRows": [
+        {
+          "row": "电量主值区",
+          "protectedItems": ["电量百分比"],
+          "availableWidth": 136,
+          "note": "主值独占视觉焦点，padding 后内容宽约 136vp，无多受保护值共行，无挤压风险。"
+        }
+      ]
+    }
+  },
+
+  "dataModel": {
+    "value": {
+      "battery": {
+        "percent": 85,
+        "percentText": "85%",
+        "reminder": "电量充足，开启省电可延长续航"
+      },
+      "asset": {
+        "batteryIcon": "resource/battery_widget/icon_electricity.png"
+      }
+    }
+  },
+
+  "cardSpec": {
+    "suggestSize": "2x2"
+  },
+
+  "dataCapabilities": [],
+  "capabilityGap": "当前无电池电量数据能力，使用静态占位值（85%）；端侧如需实时电量需补充 battery capability manifest。",
+
+  "eventBindings": [
+    {
+      "eventRef": "togglePowerSaving",
+      "on": "切换省电模式按钮",
+      "onClick": [
+        {
+          "call": "clickToIntent",
+          "args": {
+            "intentName": "SetSettingSwitch",
+            "params": {
+              "appBundleName": "com.huawei.hmos.settings",
+              "itemName": "battery_saving_mode",
+              "switchFlag": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+
+  "assets": [
+    {
+      "assetRef": "batteryIcon",
+      "src": "resource/battery_widget/icon_electricity.png",
+      "use": "电池图标，搭配电量百分比",
+      "bindTo": "/asset/batteryIcon",
+      "static": false
+    },
+    {
+      "src": "resource/phone_status_widget/icon_charge.png",
+      "use": "充电/闪电图标（可选辅助）",
+      "static": true
+    }
+  ],
+
+  "rules": {
+    "dsl": [
+      "01 输出 JSONL，每行一个完整 JSON object，恰好 3 行，顺序：createSurface → updateComponents → updateDataModel。",
+      "02 version 恒为 \"v0.9\"；createSurface.catalogId 恒为 \"ohos.a2ui.extended.catalog\"。",
+      "03 createSurface 不含 theme；所有消息使用同一个 surfaceId。",
+      "04 updateComponents 紧跟 createSurface，同一 surface 只发一次完整组件树，不增量追加。",
+      "05 updateDataModel.path 用 \"/\"；value 直接用本协议 dataModel.value。",
+      "06 组件用扁平邻接表：每个组件 { id, component, ... }，children 是 id 字符串数组；不在 children 内联组件对象。",
+      "07 必须有 root 组件；所有 children 引用可解析；id 不重复。",
+      "08 只允许 10 个组件：Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。不用 TextInput/Toggle/Radio/Select/Tabs/Web/Grid/If 等。",
+      "09 属性名用 extended 写法：Text.content（非 text）、Image.src（非 url）、Button.label（非 child）；不用 Button.action。",
+      "10 布局对齐放 styles 内：Row/Column 的 justifyContent、alignItems；Stack 的 alignContent；List 的 listDirection、scrollBar。",
+      "11 只支持 onClick 事件；不用 onAppear/onChange/onSelect/onReachStart/onReachEnd。",
+      "12 onClick 是 EventHandler 数组，每项必须有 call；直接使用 eventBindings 中预填的 onClick 对象，不改 call 名和参数结构。",
+      "13 禁用表达式：不写 {{...}}、$__dataModel、$context、size()、$__widthBreakpoint、$__colorMode。",
+      "14 动态绑定：单值用 {\"path\":\"/绝对路径\"}；字符串拼接用 {\"call\":\"formatString\",\"args\":{\"value\":\"...${/path}...\"}}；复杂值用 dataModel 中预计算展示字段。",
+      "15 模板循环仅用于 Row/Column/List 的 children：{\"componentId\":\"模板id\",\"path\":\"/数组路径\"}；模板组件内相对路径不以/开头解析到当前项。",
+      "16 Image.src 只用 assets 中声明的本地路径；不用网络 URL、SVG、base64 SVG、占位图域名。",
+      "17 静态素材可直接写 Image.src；DataModel 管理时绑定 /asset/... 并确保 dataModel.value 中该字段已初始化为声明的 src。",
+      "18 样式键用 camelCase（如 backgroundColor 非 background-color；borderRadius 非 border-radius）。",
+      "19 Root 尺寸：2x2 为 width:160 height:160；2x4 为 width:320 height:160；borderRadius 用 20-24；clip:true。",
+      "20 2x2 主区域≤3，2x4 主区域≤4；横向 Row 直接子节点≤3。",
+      "21 关键信息（日期/星期/时间/CTA/状态/百分比/价格/主指标值/主标题/用户要求字段）必须完整显示，不用 ellipsis/clip/marquee。",
+      "22 textOverflow:\"ellipsis\" 只能用于可压缩次要文本（可选地点、副标题、建议文案）。",
+      "23 拥挤 Row 写前参考 crowdedRows 宽度预算；受保护值放不下时先减 padding/itemMargin/分隔线/字号，再拆行或选 2x4。",
+      "24 DataModel 键按语义分组（如 battery/earphone/weather/action/asset），不用 topText1 这类视觉位置命名。",
+      "25 颜色用 #RRGGBB 或 #AARRGGBB（半透明用 8 位 alpha 前缀）；渐变用 styles.linearGradient，colors 是 [[\"#RRGGBB\",stop],...]。"
+    ],
+    "cardSpec": [
+      "01 cardspec 是一个 JSON object，suggestSize 与 card.size 完全一致，只能是 \"2x2\" 或 \"2x4\"。",
+      "02 静态卡片：只含 suggestSize，不虚构 dataBindings。",
+      "03 动态卡片：必须含 dataBindings[]，每项 { capabilityId, arguments, writeResultTo }。",
+      "04 capabilityId 和 arguments 来自 dataCapabilities 声明；writeResultTo 在 /data 下。",
+      "05 事件能力（onClick/clickTo*/functionCall）不进 CardSpec，只进 DSL 的 onClick。",
+      "06 DSL 中 UI 绑定路径必须能从 dataCapabilities.usedOutputPaths 或 dataModel.value 推导。",
+      "07 默认用简洁形态：capabilityId、arguments、writeResultTo；不加 bindingId 或 capabilityVersion 除非端侧需要。",
+      "08 不编造未声明的 capabilityId、参数、权限或端侧函数。"
+    ]
+  }
+}
