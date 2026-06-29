@@ -14,7 +14,7 @@ CartTaskSpec 是一个面向 HarmonyOS A2UI Form 服务卡片的「大模型 + �
 - 大模型读用户的一句请求和只读的 `harmony-card-generation` skill，产出 TaskSpec。
 - TaskSpec 只携带「要显示什么、要调用什么、必须遵守什么」，不携带具体布局树、区域划分、宽度预算或组件嵌套。布局和视觉实现交回给小模型。
 - 小模型收到 chat-completions 请求体（含 system prompt + TaskSpec），只输出一个 `genui` 代码块（3 行 JSONL）。
-- 最终卡片结果 = 小模型的 `genui` DSL + TaskSpec 里大模型已写好的 `cardSpec`。
+- 最终输出只有小模型生成的 `genui` DSL；`cardSpec` 是 TaskSpec 中的端侧契约，不由小模型生成，也不作为小模型最终输出的一部分。
 
 小模型不再生成 `cardspec`，大模型也不再越界把整棵组件树写进 TaskSpec。
 
@@ -76,52 +76,20 @@ CartTaskSpec/
 
 ## 作业流
 
-完整链路从用户一句话到最终卡片结果，分四个阶段。
+完整链路由三个中间模块串起来，重点看每一层的输入和输出。
 
-```mermaid
-flowchart TD
-    Q["用户 Query"] --> L["大模型<br/>+ 只读 skill / 参考文档"]
-    L --> T["TaskSpec JSON<br/>目标 + 内容项 + 数据 + 事件 + 约束 + cardSpec"]
-    T --> V1["validate_taskspec.py<br/>结构 + 引用一致性校验"]
-    V1 --> VC["validate_project_constraints.py<br/>.agents/skills 只读检查"]
-    VC --> R["taskspec_to_chat_completions.py<br/>生成 system + user 请求体"]
-    R --> S["小模型 API"]
-    S --> G["genui DSL JSONL<br/>只输出一个代码块"]
-    T --> CS["TaskSpec.cardSpec<br/>大模型已确定，直接交付端侧"]
-    G --> V2["validate_generated_card.py<br/>校验 genui 3 行 / DataModel / root 尺寸"]
-    V2 --> O["最终卡片结果<br/>genui DSL + cardSpec"]
-    CS --> O
-```
+1. **大模型 Agent：用户 Query -> TaskSpec**
+   输入是用户自然语言需求，以及 Form 协议 / 只读 skill 参考规则；输出是 TaskSpec JSON。TaskSpec 需要包含 `card.requirements`、`dataModel`、`dataCapabilities`、`eventBindings`、`rules.dsl` 和 `cardSpec`，但不写具体布局树。结构以 [`taskspec.schema.json`](taskspec.schema.json) 为准，生成后使用 `validate_taskspec.py` 做 schema 与协议一致性校验。
 
-1. **生成 TaskSpec**：大模型依据 `TaskSpec.md` 和 `taskspec.schema.json` 产出 TaskSpec；内容项放 `card.requirements`，数据能力放 `dataCapabilities` + `cardSpec.dataBindings`，事件放 `eventBindings`，DSL 硬约束放 `rules.dsl`。
-2. **校验 TaskSpec**：先 `validate_taskspec.py`，再 `validate_project_constraints.py`，确认 skill 未被改动。
-3. **转换请求体并请求模型**：`taskspec_to_chat_completions.py` 生成带 `system` prompt 的请求体；`--invoke` 可直接调用本地接口。
-4. **校验模型输出**：`validate_generated_card.py` 检查只输出 `genui`、恰好 3 行 JSONL、`updateDataModel.value` 与 TaskSpec 一致、root 尺寸与 `card.size` 一致。
-5. **组装最终结果**：把小模型的 `genui` DSL 与 TaskSpec 里的 `cardSpec` 合并交付。
+2. **转换脚本：TaskSpec -> API request body**
+   `taskspec_to_chat_completions.py` 读取 TaskSpec，把协议关键信息写入 `system` prompt，并把完整 TaskSpec 放入 `user` 消息，生成 OpenAI 兼容的 chat-completions 请求体。
+
+3. **小模型 API：API request body -> DSL**
+   小模型只负责根据 request body 生成一个 `genui` 代码块，内容恰好 3 行 JSONL。最终输出只有 DSL，不包含 CardSpec，不输出 `cardspec` 代码块，也不生成 DSL + CardSpec 的组合产物。请求模型后可用 `validate_generated_card.py` 校验 DSL 的行数、DataModel、root 尺寸和事件绑定一致性。
 
 ---
 
-## 常用命令
-
-初始化或更新只读 skill（只读引用，不在本项目内修改）：
-
-```bash
-bash update_skill.sh
-```
-
-交付前运行项目约束检查：
-
-```powershell
-python validate_project_constraints.py
-```
-
-校验全部样例：
-
-```powershell
-python validate_taskspec.py examples
-```
-
-### TaskSpec 转 Chat Completions 请求体
+## TaskSpec 转 Chat Completions 请求体
 
 `taskspec_to_chat_completions.py` 用于把 `*.taskspec.json` 文件转换成 OpenAI 兼容的 chat-completions 请求体。
 
@@ -168,7 +136,7 @@ python taskspec_to_chat_completions.py examples\parent-care.taskspec.json -o req
 - `--invoke`：使用 `curl` 把生成的请求体发送到 `--endpoint`。
 - `--response-output`：把模型响应写入指定文件。
 
-### 校验并提取模型生成的 DSL
+## 校验并提取模型生成的 DSL
 
 请求模型后，可以校验并提取模型生成的 DSL：
 
@@ -181,7 +149,7 @@ python validate_generated_card.py --response response.json --spec examples\paren
 - 拒绝包含 `cardspec` 代码块的输出。
 - 提取唯一的 `genui` 代码块。
 - 校验 JSONL 恰好 3 行、version、catalogId、surfaceId、组件扁平结构、root 尺寸、`updateDataModel.value` 与 TaskSpec 一致。
-- 把 TaskSpec 的 `cardSpec` 另存为 `*.taskspec-cardSpec.json`，方便与 DSL 一起交付。
+- 校验通过后保存提取出的 DSL；`cardSpec` 保持为 TaskSpec 内的端侧契约，不作为小模型输出。
 
 ---
 
