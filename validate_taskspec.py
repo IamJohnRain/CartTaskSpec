@@ -84,6 +84,10 @@ def validate_on_click(name: str, candidate_id: str, handlers: Any) -> list[str]:
     return errors
 
 
+def has_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
 def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
     errors: list[str] = []
 
@@ -114,6 +118,8 @@ def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
             errors.append(f"{name}: every displayCandidates item must be an object")
             continue
         candidate_id = candidate.get("id", "<unknown>")
+        if not has_text(candidate.get("description")):
+            errors.append(f"{name}: displayCandidate '{candidate_id}' must contain non-empty description")
 
         if candidate.get("assetRef") and candidate["assetRef"] not in asset_refs:
             errors.append(
@@ -136,6 +142,8 @@ def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
                 errors.append(f"{name}: every eventCandidates item must be an object")
                 continue
             candidate_id = candidate.get("id", "<unknown>")
+            if not has_text(candidate.get("description")):
+                errors.append(f"{name}: eventCandidate '{candidate_id}' must contain non-empty description")
             errors.extend(validate_on_click(name, candidate_id, candidate.get("onClick")))
             if "eventRef" in candidate:
                 errors.append(f"{name}: eventCandidate '{candidate_id}' uses removed eventRef; inline onClick instead")
@@ -144,6 +152,9 @@ def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
         if not isinstance(asset, dict):
             errors.append(f"{name}: every assetCandidates item must be an object")
             continue
+        asset_id = asset.get("assetRef", asset.get("src", "<unknown>"))
+        if not has_text(asset.get("description")):
+            errors.append(f"{name}: assetCandidate '{asset_id}' must contain non-empty description")
         if asset.get("bindTo"):
             bound_value = resolve_pointer(data_model_value, asset["bindTo"])
             if bound_value != asset.get("src"):
