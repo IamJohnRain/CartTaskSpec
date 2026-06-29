@@ -315,7 +315,7 @@
           <tbody>
             <tr><td>userQuery</td><td><span class="badge required">必须</span></td><td>原始用户需求，保留语义来源。</td><td><code>"显示深圳温度并给我爸打电话"</code></td></tr>
             <tr><td>task</td><td><span class="badge required">必须</span></td><td>给 A2UI 模型的任务说明，必须约束只输出 genui。</td><td><code>"直接输出 genui..."</code></td></tr>
-            <tr><td>target</td><td><span class="badge required">必须</span></td><td>目标尺寸、场景弱提示、风格提示和约束。</td><td><code>{"size":"2x4","styleHints":[...]}</code></td></tr>
+            <tr><td>target</td><td><span class="badge required">必须</span></td><td>目标尺寸，只保留 size。</td><td><code>{"size":"2x4"}</code></td></tr>
             <tr><td>displayCandidates</td><td><span class="badge required">必须</span></td><td>可显示的信息候选；label 是短文案，description 说明语义和展示重点。</td><td><code>[{"role":"metric"}]</code></td></tr>
             <tr><td>eventCandidates</td><td><span class="badge required">必须</span></td><td>可点击事件候选；description 说明动作意图和触发结果。</td><td><code>[{"label":"每日30首"}]</code></td></tr>
             <tr><td>dataModel</td><td><span class="badge required">必须</span></td><td>A2UI 模型第 3 行 updateDataModel.value 必须原样使用的数据。</td><td><code>{"value":{"device":{...}}}</code></td></tr>
@@ -333,13 +333,11 @@
         </div>
         <div class="module-list">
           <article class="module">
-            <div class="module-side"><small>MODULE 01</small><h3>target</h3><p>目标弱约束</p></div>
+            <div class="module-side"><small>MODULE 01</small><h3>target</h3><p>目标尺寸</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> 描述目标尺寸、场景提示、风格提示和业务约束。</p>
+              <p><span class="badge required">必须</span> 只描述目标尺寸。场景、风格和约束从 userQuery 与候选项 description 中理解。</p>
               <details class="example" open><summary>示例</summary><pre>{
-  "size": "2x4",
-  "sceneHints": ["device", "music"],
-  "styleHints": ["简洁高级", "磨砂玻璃质感"]
+  "size": "2x4"
 }</pre></details>
             </div>
           </article>
@@ -424,7 +422,7 @@
           </div>
         </div>
 <details class="example" open style="margin-top:14px"><summary>system prompt 摘要</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
-你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。
+你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。
 候选项 description 只用于理解语义和使用重点，不要当成必须展示的长文案。
 输出一个 ```genui``` 代码块，内容为 3 行 JSONL。
 genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
@@ -486,15 +484,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
       "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
       "task": "生成一个 genui DSL 代码块，内容为 3 行 A2UI JSONL。",
       "target": {
-            "size": "2x2",
-            "sceneHints": [
-                  "status"
-            ],
-            "constraints": [
-                  "父母关怀场景，信息要清晰、温暖、易读。",
-                  "温度、感冒指数和拨号入口必须完整显示。",
-                  "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
-            ]
+            "size": "2x2"
       },
       "displayCandidates": [
             {

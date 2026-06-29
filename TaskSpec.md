@@ -12,7 +12,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 - `displayCandidates`、`eventCandidates`、`assetCandidates` 是语义候选，不是 DSL 组件候选。
 - `label` 是可显示短文案，`description` 是给 A2UI 模型理解候选项语义、用途和使用重点的说明。
 - 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
-- `target` 记录目标尺寸、场景提示、风格提示和业务约束。
+- `target` 只记录目标尺寸。
 - DSL 硬规则统一写入转换脚本的 system prompt。
 - 交付物是 `genui` DSL。
 
@@ -23,9 +23,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
   "userQuery": "...",
   "task": "生成一个 genui DSL。",
   "target": {
-    "size": "2x4",
-    "sceneHints": ["device", "music"],
-    "styleHints": ["简洁高级", "磨砂玻璃质感"]
+    "size": "2x4"
   },
   "displayCandidates": [],
   "eventCandidates": [],
@@ -42,21 +40,15 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 ### `target`
 
-`target` 描述生成目标。
+`target` 描述目标卡片尺寸。
 
 ```json
 {
-  "size": "2x4",
-  "sceneHints": ["device", "music"],
-  "styleHints": ["简洁高级", "磨砂玻璃质感"],
-  "constraints": ["关键内容必须完整显示。"]
+  "size": "2x4"
 }
 ```
 
 - `size`: 必须，`2x2` 或 `2x4`。
-- `sceneHints`: 可选弱提示，例如 `device`、`music`、`weather`、`care`。
-- `styleHints`: 可选风格提示，例如 `简洁高级`、`磨砂玻璃质感`。
-- `constraints`: 可选补充约束，只写用户明确要求或业务硬约束。
 
 ### `displayCandidates`
 

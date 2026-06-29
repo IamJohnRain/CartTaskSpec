@@ -10,7 +10,7 @@ from pathlib import Path
 DEFAULT_MODEL = "glm-5.2"
 DEFAULT_ENDPOINT = "http://127.0.0.1:4000/v1/chat/completions"
 SYSTEM_PROMPT = """你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
-你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。具体布局、组件层级、视觉设计和绑定写法由你完成。
+你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。具体布局、组件层级、视觉设计和绑定写法由你完成。
 displayCandidates / eventCandidates / assetCandidates 是用户 query 中抽取出的候选约束，不是 DSL 组件候选。不要把它们理解成 Text、Button、Row 等最终组件树。
 candidate.label 是可显示的短文案或入口名称；candidate.description 是给你理解语义、用途、展示重点和素材内容的说明。不要把 description 当成必须完整显示的 UI 文案，也不要从 description 推导布局位置、字号或组件类型。
 

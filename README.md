@@ -11,7 +11,7 @@ CartTaskSpec 是一个面向 HarmonyOS A2UI Form 服务卡片的「大模型 Age
 
 TaskSpec 是给 A2UI 模型的候选约束输入，只携带生成 DSL 必要的信息：
 
-- `target`：目标尺寸、场景提示、风格提示和业务约束。
+- `target`：目标尺寸，只保留 `size`。
 - `displayCandidates`：可显示的信息候选，包含 `label` 和给 A2UI 模型理解语义的 `description`。
 - `eventCandidates`：可触发的事件候选，包含入口文案、动作说明和可直接使用的 `onClick`。
 - A2UI 模型必须原样写入 `updateDataModel.value` 的 `dataModel.value`。
