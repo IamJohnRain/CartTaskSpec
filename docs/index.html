@@ -501,7 +501,7 @@
             <div class="mini-panel">
               <div class="label">Final Output</div>
               <h3>只交付 genui DSL</h3>
-              <p>TaskSpec 不再携带 CardSpec，A2UI 模型最终输出只有 DSL，不生成 cardspec。</p>
+              <p>A2UI 模型最终交付 genui DSL。</p>
             </div>
           </div>
         </div>
@@ -562,7 +562,7 @@
         <div class="section-head">
           <div class="section-kicker">Workflow</div>
           <h2>三个中间模块：从用户 Query 到 DSL</h2>
-          <p class="section-desc">流程只突出三个真正处理信息的模块：大模型 Agent、转换脚本、A2UI 模型 API。用户 Query、TaskSpec、API request body 和 DSL 都是这些模块之间流动的输入输出；最终输出只有 A2UI 模型生成的 DSL。</p>
+          <p class="section-desc">流程只突出三个处理模块：大模型 Agent、转换脚本、A2UI 模型 API。用户 Query、TaskSpec、API request body 和 DSL 是模块之间流动的输入输出。</p>
         </div>
 
         <div class="pipeline">
@@ -628,7 +628,7 @@
               <h3>A2UI 模型 API</h3>
               <div class="io-grid">
                 <div class="io-box"><b>输入</b><p>API request body。`system` 说明 DSL 规则，`user` 提供完整 TaskSpec。</p></div>
-                <div class="io-box"><b>输出</b><p>DSL：一个 `genui` 代码块，恰好 3 行 JSONL。最终输出只有 DSL，不包含 CardSpec，也不做 DSL + CardSpec 组合产物。</p></div>
+                <div class="io-box"><b>输出</b><p>DSL：一个 `genui` 代码块，恰好 3 行 JSONL。</p></div>
               </div>
               <details class="example">
                 <summary>展开输入样例：请求模型</summary>
@@ -704,7 +704,7 @@
     const samples = {
       "parent": {
             "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
-            "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
+            "task": "生成一个 genui DSL 代码块，内容为 3 行 A2UI JSONL。",
             "target": {
                   "size": "2x2",
                   "sceneHints": [
@@ -789,7 +789,7 @@
       },
       "earbuds": {
             "userQuery": "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。",
-            "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
+            "task": "生成一个 genui DSL 代码块，内容为 3 行 A2UI JSONL。",
             "target": {
                   "size": "2x4",
                   "sceneHints": [
@@ -802,7 +802,7 @@
                   "constraints": [
                         "Free Clip 2、左耳 47%、右耳 95%、每日30首、心动歌单必须完整显示。",
                         "整体简洁高级，有磨砂玻璃质感。",
-                        "静态设备卡片，不需要 CardSpec 或 data capability。"
+                        "保持信息简洁清晰。"
                   ]
             },
             "displayCandidates": [
@@ -896,7 +896,7 @@
             "messages": [
                   {
                         "role": "system",
-                        "content": "你是 A2UI 模型，只输出 genui，不输出 cardspec。"
+                        "content": "你是 A2UI 模型，生成 genui DSL。"
                   },
                   {
                         "role": "user",

@@ -8,12 +8,12 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 ## 1. 设计原则
 
-- TaskSpec 只描述候选约束，不描述布局方案。
+- TaskSpec 只描述候选约束。
 - `displayCandidates`、`eventCandidates`、`assetCandidates` 是语义候选，不是 DSL 组件候选。
 - 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
-- `target` 只保留尺寸、场景弱提示、风格提示和必要约束。
+- `target` 记录目标尺寸、场景提示、风格提示和业务约束。
 - DSL 硬规则统一写入转换脚本的 system prompt。
-- A2UI 模型只输出 `genui` DSL，不输出 `cardspec`。
+- 交付物是 `genui` DSL。
 
 ## 2. 顶层结构
 
@@ -35,13 +35,13 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 }
 ```
 
-顶层只允许以上字段。旧字段 `schema`、`rulesVersion`、`intent`、`assets`、`card`、`rules`、`cardSpec`、`dataCapabilities`、`eventBindings`、`validation`、`capabilityGap` 都已移除。
+顶层只允许以上字段。
 
 ## 3. 字段说明
 
 ### `target`
 
-`target` 描述生成目标的弱约束，不给布局方案。
+`target` 描述生成目标。
 
 ```json
 {
@@ -146,7 +146,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 - **角色定义**：A2UI 模型，负责生成 HarmonyOS A2UI Form 卡片 DSL。
 - **输入边界**：TaskSpec 是候选约束契约，不是布局蓝图；candidate 不是 DSL 组件候选。
-- **输出契约**：只输出一个 `genui` 代码块；恰好 3 行 JSONL；禁止输出解释和 `cardspec`。
+- **输出契约**：输出一个 `genui` 代码块，恰好 3 行 JSONL。
 - **尺寸规则**：`target.size=2x2` 对应 140x140，`2x4` 对应 300x140。
 - **组件范围**：只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
 - **DataModel-first 绑定**：展示值优先使用完整表达式读取 DataModel。
@@ -157,7 +157,6 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 发送给 A2UI 模型前：
 
-- 不得包含已移除字段：`schema`、`rulesVersion`、`intent`、`assets`、`card`、`rules`、`cardSpec`、`dataCapabilities`、`eventBindings`、`validation`、`capabilityGap`。
 - `displayCandidates` 必须非空。
 - `displayCandidates[].id` 与 `eventCandidates[].id` 必须全局唯一。
 - `displayCandidates[].dataPath` 必须能从 `dataModel.value` 解析。
@@ -168,8 +167,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 A2UI 模型输出后：
 
-- 只包含一个 `genui` 代码块。
-- 不包含 `cardspec` 代码块。
+- 包含一个 `genui` 代码块。
 - `genui` 恰好 3 行 JSONL。
 - 第 1 行包含 `createSurface`，第 2 行包含 `updateComponents`，第 3 行包含 `updateDataModel`。
 - `updateDataModel.value` 必须等于 `TaskSpec.dataModel.value`。
