@@ -12,6 +12,7 @@ DEFAULT_ENDPOINT = "http://127.0.0.1:4000/v1/chat/completions"
 SYSTEM_PROMPT = """你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
 你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。具体布局、组件层级、视觉设计和绑定写法由你完成。
 displayCandidates / eventCandidates / assetCandidates 是用户 query 中抽取出的候选约束，不是 DSL 组件候选。不要把它们理解成 Text、Button、Row 等最终组件树。
+candidate.label 是可显示的短文案或入口名称；candidate.description 是给你理解语义、用途、展示重点和素材内容的说明。不要把 description 当成必须完整显示的 UI 文案，也不要从 description 推导布局位置、字号或组件类型。
 
 输出契约：
 - 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
@@ -41,8 +42,9 @@ DataModel 与绑定：
 - 表达式必须是完整字符串；一个字符串中只能有一对 {{ ... }}；不要在 id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 或整个 styles 对象上使用表达式。
 
 动作与素材：
-- eventCandidates 的 onClick 可原样挂到合适的 Button 或可点击容器上。
+- eventCandidates 的 description 用于理解动作意图和触发结果；onClick 可原样挂到合适的 Button 或可点击容器上。
 - 点击只写 DSL onClick，且 call 只能来自 TaskSpec.eventCandidates 的 onClick；不要发明新事件能力。
+- assetCandidates 的 description 用于理解素材内容和适用场景；只有素材语义匹配时才使用。
 - Image.src 和 backgroundImage 只使用 TaskSpec.assetCandidates 声明或用户明确提供的本地/资源路径。
 
 布局质量：
@@ -61,11 +63,11 @@ def read_task_spec(path: Path) -> str:
     text = path.read_text(encoding="utf-8")
     spec = json.loads(text)
     if "schema" in spec or "rulesVersion" in spec:
-        raise ValueError("TaskSpec no longer contains top-level 'schema' or 'rulesVersion'")
+        raise ValueError("TaskSpec must not contain top-level 'schema' or 'rulesVersion'")
     if "card" in spec:
-        raise ValueError("TaskSpec top-level 'card' has been renamed to 'intent'")
+        raise ValueError("TaskSpec must use top-level 'target', not 'card'")
     if "intent" in spec or "assets" in spec:
-        raise ValueError("TaskSpec now uses target/displayCandidates/eventCandidates/assetCandidates")
+        raise ValueError("TaskSpec must use target/displayCandidates/eventCandidates/assetCandidates")
     for key in ["target", "displayCandidates", "eventCandidates", "assetCandidates"]:
         if key not in spec:
             raise ValueError(f"TaskSpec must contain top-level '{key}'")
@@ -79,6 +81,7 @@ def build_content(task_spec_json: str, raw_content: bool) -> str:
     return (
         "根据下面的 TaskSpec JSON 生成响应。严格遵循 task 字段和 system prompt 中的 DSL 规则。\n"
         "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。\n"
+        "候选项的 description 只用于理解语义和使用重点，不要当成必须展示的长文案。\n"
         "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n"
         "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：\n"
         "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按target.size选择\",\"height\":140}}\n"

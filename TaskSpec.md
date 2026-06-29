@@ -10,6 +10,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 - TaskSpec 只描述候选约束。
 - `displayCandidates`、`eventCandidates`、`assetCandidates` 是语义候选，不是 DSL 组件候选。
+- `label` 是可显示短文案，`description` 是给 A2UI 模型理解候选项语义、用途和使用重点的说明。
 - 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
 - `target` 记录目标尺寸、场景提示、风格提示和业务约束。
 - DSL 硬规则统一写入转换脚本的 system prompt。
@@ -67,6 +68,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
     "id": "device_name",
     "role": "identity",
     "label": "Free Clip 2",
+    "description": "耳机设备名称，用于明确这张桌面卡片服务的对象。",
     "dataPath": "/device/name",
     "required": true
   },
@@ -74,11 +76,23 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
     "id": "left_battery",
     "role": "metric",
     "label": "左耳电量",
+    "description": "左耳机当前电量文本，用户要求必须显示并保持可读。",
     "dataPath": "/device/leftBatteryText",
     "required": true
   }
 ]
 ```
+
+字段说明：
+
+- `id`: 必须，候选项唯一标识。
+- `role`: 必须，信息角色，帮助 A2UI 模型判断信息优先级。
+- `label`: 必须，可显示短文案或字段名称。
+- `description`: 必须，说明该内容的语义、用途、展示重点；不要写位置、字号、组件类型。
+- `dataPath`: 可选，指向 `dataModel.value` 的 JSON Pointer。
+- `assetRef`: 可选，引用 `assetCandidates[].assetRef`。
+- `required`: 可选，是否必须体现在最终 DSL 中。
+- `note`: 可选，补充约束；只写必要提醒。
 
 `role` 可选值：
 
@@ -98,6 +112,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
   {
     "id": "daily_30",
     "label": "每日30首",
+    "description": "打开每日30首音乐歌单的快捷入口，是用户要求保留的入口之一。",
     "required": true,
     "onClick": [
       {
@@ -113,6 +128,15 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 ]
 ```
 
+字段说明：
+
+- `id`: 必须，候选项唯一标识。
+- `label`: 必须，入口短文案。
+- `description`: 必须，说明动作意图、触发结果和展示优先级；不要写按钮样式或位置。
+- `required`: 可选，是否必须体现在最终 DSL 中。
+- `onClick`: 必须，A2UI DSL 可使用的点击事件链。
+- `note`: 可选，补充约束。
+
 ### `dataModel`
 
 `dataModel.value` 是 A2UI 模型生成第 3 行 `updateDataModel.value` 时必须原样使用的初始数据，也是表达式和绑定路径的验证来源。
@@ -127,16 +151,27 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
     "assetRef": "earbuds_icon",
     "src": "assets/freeclip2-earbuds.png",
     "use": "device illustration",
+    "description": "Free Clip 2 耳机图形素材，适合用于设备识别或轻量装饰。",
     "static": true
   },
   {
     "assetRef": "cover",
     "src": "/music/cover.png",
     "use": "album cover",
+    "description": "音乐封面图，可用于表达当前播放内容。",
     "bindTo": "/music/cover"
   }
 ]
 ```
+
+字段说明：
+
+- `assetRef`: 可选，素材引用名，供 `displayCandidates[].assetRef` 使用。
+- `src`: 必须，素材路径。
+- `use`: 必须，素材用途短标签。
+- `description`: 必须，说明素材内容、视觉语义和适用场景；A2UI 模型依据该字段判断是否使用素材。
+- `bindTo`: 可选，素材路径绑定到 `dataModel.value` 的 JSON Pointer。
+- `static`: 可选，是否为静态素材。
 
 ## 4. System Prompt
 
@@ -158,6 +193,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 发送给 A2UI 模型前：
 
 - `displayCandidates` 必须非空。
+- `displayCandidates[].description`、`eventCandidates[].description`、`assetCandidates[].description` 必须非空。
 - `displayCandidates[].id` 与 `eventCandidates[].id` 必须全局唯一。
 - `displayCandidates[].dataPath` 必须能从 `dataModel.value` 解析。
 - `displayCandidates[].assetRef` 必须能在 `assetCandidates[].assetRef` 中找到。

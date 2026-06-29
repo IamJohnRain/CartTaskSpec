@@ -316,10 +316,10 @@
             <tr><td>userQuery</td><td><span class="badge required">必须</span></td><td>原始用户需求，保留语义来源。</td><td><code>"显示深圳温度并给我爸打电话"</code></td></tr>
             <tr><td>task</td><td><span class="badge required">必须</span></td><td>给 A2UI 模型的任务说明，必须约束只输出 genui。</td><td><code>"直接输出 genui..."</code></td></tr>
             <tr><td>target</td><td><span class="badge required">必须</span></td><td>目标尺寸、场景弱提示、风格提示和约束。</td><td><code>{"size":"2x4","styleHints":[...]}</code></td></tr>
-            <tr><td>displayCandidates</td><td><span class="badge required">必须</span></td><td>可显示的信息候选，不是组件候选。</td><td><code>[{"role":"metric"}]</code></td></tr>
-            <tr><td>eventCandidates</td><td><span class="badge required">必须</span></td><td>可点击事件候选，不规定按钮形态。</td><td><code>[{"label":"每日30首"}]</code></td></tr>
+            <tr><td>displayCandidates</td><td><span class="badge required">必须</span></td><td>可显示的信息候选；label 是短文案，description 说明语义和展示重点。</td><td><code>[{"role":"metric"}]</code></td></tr>
+            <tr><td>eventCandidates</td><td><span class="badge required">必须</span></td><td>可点击事件候选；description 说明动作意图和触发结果。</td><td><code>[{"label":"每日30首"}]</code></td></tr>
             <tr><td>dataModel</td><td><span class="badge required">必须</span></td><td>A2UI 模型第 3 行 updateDataModel.value 必须原样使用的数据。</td><td><code>{"value":{"device":{...}}}</code></td></tr>
-            <tr><td>assetCandidates</td><td><span class="badge required">必须</span></td><td>素材候选白名单；没有素材时为空数组。</td><td><code>[]</code></td></tr>
+            <tr><td>assetCandidates</td><td><span class="badge required">必须</span></td><td>素材候选白名单；description 说明素材内容和适用场景。</td><td><code>[]</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -346,21 +346,22 @@
           <article class="module">
             <div class="module-side"><small>MODULE 02</small><h3>displayCandidates</h3><p>内容候选</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> 表达可显示的信息候选，由 A2UI 模型决定最终组件形态。</p>
+              <p><span class="badge required">必须</span> 表达可显示的信息候选，由 A2UI 模型决定最终组件形态。每项必须包含 description，用于说明语义、用途和展示重点。</p>
               <details class="example" open><summary>示例</summary><pre>[
-  { "id": "device_name", "role": "identity", "label": "Free Clip 2", "dataPath": "/device/name", "required": true },
-  { "id": "left_battery", "role": "metric", "label": "左耳电量", "dataPath": "/device/leftBatteryText", "required": true }
+  { "id": "device_name", "role": "identity", "label": "Free Clip 2", "description": "耳机设备名称，用于明确这张桌面卡片服务的对象。", "dataPath": "/device/name", "required": true },
+  { "id": "left_battery", "role": "metric", "label": "左耳电量", "description": "左耳机当前电量文本，用户要求必须显示并保持可读。", "dataPath": "/device/leftBatteryText", "required": true }
 ]</pre></details>
             </div>
           </article>
           <article class="module">
             <div class="module-side"><small>MODULE 03</small><h3>eventCandidates</h3><p>事件候选，不规定按钮形态</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> 表达可点击事件能力。A2UI 模型决定最终是 Button 还是可点击容器。</p>
+              <p><span class="badge required">必须</span> 表达可点击事件能力。description 说明动作意图和触发结果，A2UI 模型决定最终是 Button 还是可点击容器。</p>
               <details class="example" open><summary>示例</summary><pre>[
   {
     "id": "daily_30",
     "label": "每日30首",
+    "description": "打开每日30首音乐歌单的快捷入口。",
     "required": true,
     "onClick": [{ "call": "clickToDeeplink", "args": { "bundleName": "", "abilityName": "", "uri": "..." } }]
   }
@@ -385,9 +386,9 @@
           <article class="module">
             <div class="module-side"><small>MODULE 05</small><h3>assetCandidates</h3><p>素材候选白名单</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> 没有素材时写 `[]`。它不规定素材最终做背景、图标还是插图。</p>
+              <p><span class="badge required">必须</span> 没有素材时写 `[]`。素材项必须包含 description，说明素材内容、视觉语义和适用场景。</p>
               <details class="example" open><summary>示例</summary><pre>[
-  { "assetRef": "earbuds_icon", "src": "assets/freeclip2-earbuds.png", "use": "device illustration", "static": true }
+  { "assetRef": "earbuds_icon", "src": "assets/freeclip2-earbuds.png", "use": "device illustration", "description": "Free Clip 2 耳机图形素材，适合用于设备识别或轻量装饰。", "static": true }
 ]</pre></details>
             </div>
           </article>
@@ -408,6 +409,7 @@
             <ul>
               <li>角色是 A2UI 模型，负责生成 HarmonyOS A2UI Form DSL。</li>
               <li>TaskSpec 是候选约束契约，不是布局蓝图。</li>
+              <li>candidate.description 用于理解语义和使用重点，不是必须展示的长文案。</li>
               <li>输出一个 `genui` 代码块，恰好 3 行 JSONL。</li>
             </ul>
           </div>
@@ -421,8 +423,9 @@
             </ul>
           </div>
         </div>
-        <details class="example" open style="margin-top:14px"><summary>system prompt 摘要</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
+<details class="example" open style="margin-top:14px"><summary>system prompt 摘要</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
 你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。
+候选项 description 只用于理解语义和使用重点，不要当成必须展示的长文案。
 输出一个 ```genui``` 代码块，内容为 3 行 JSONL。
 genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
 展示值优先使用完整表达式读取 DataModel；点击和素材只能来自 TaskSpec 声明。</pre></details>
@@ -441,6 +444,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
             <ul>
               <li>JSON 结构符合 `taskspec.schema.json`。</li>
               <li>`displayCandidates[].id` 与 `eventCandidates[].id` 全局唯一。</li>
+              <li>候选项的 `description` 必须非空。</li>
               <li>`displayCandidates[].dataPath` 能从 `dataModel.value` 解析。</li>
               <li>`eventCandidates[].onClick` 必须合法。</li>
             </ul>
@@ -497,6 +501,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
                   "id": "city",
                   "role": "identity",
                   "label": "深圳",
+                  "description": "天气服务所在城市，用于让用户确认当前关怀信息对应深圳。",
                   "dataPath": "/data/weather/items/cityInfo/prefectureName",
                   "required": true
             },
@@ -504,6 +509,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
                   "id": "temperature",
                   "role": "primary",
                   "label": "当前温度",
+                  "description": "父母最需要快速看到的当前温度文本，应作为主要天气信息清晰展示。",
                   "dataPath": "/data/weather/items/weatherData/temperatureText",
                   "required": true
             },
@@ -511,6 +517,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
                   "id": "cold_index",
                   "role": "status",
                   "label": "感冒指数",
+                  "description": "健康关怀状态，提示父母外出或添衣时的感冒风险。",
                   "dataPath": "/data/weather/items/weatherData/coldLevel",
                   "required": true
             },
@@ -518,6 +525,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
                   "id": "condition",
                   "role": "context",
                   "label": "天气状况",
+                  "description": "辅助天气上下文，可帮助理解温度和感冒指数的环境状态。",
                   "dataPath": "/data/weather/items/weatherData/weather_icon"
             }
       ],
@@ -525,6 +533,7 @@ genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、up
             {
                   "id": "call_dad",
                   "label": "给爸打电话",
+                  "description": "一键拨打父亲手机号 15012345678 的关怀动作入口，必须容易识别和触发。",
                   "required": true,
                   "onClick": [
                         {
