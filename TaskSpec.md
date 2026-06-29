@@ -4,15 +4,15 @@
 > DSL 规则来源：`taskspec_to_chat_completions.py` 的 system prompt  
 > skill 依据：`.agents/skills/harmony-card-generation-datamodel-first`
 
-TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模型 Agent 不替 A2UI 模型设计卡片，只从用户 query 中抽取内容、事件、素材和目标约束；A2UI 模型根据这些候选约束完成视觉组织、组件选择和最终 `genui` DSL。
+TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模型 Agent 不替 A2UI 模型设计卡片，也不预先整理显示内容清单；它只保留用户原始需求、目标尺寸、DataModel、动作候选和素材候选。A2UI 模型根据 system prompt 中的 skill 摘要规则自行完成信息取舍、组件组织、视觉表达和最终 `genui` DSL。
 
 ## 1. 设计原则
 
-- TaskSpec 只描述候选约束。
-- `displayCandidates`、`eventCandidates`、`assetCandidates` 是语义候选，不是 DSL 组件候选。
-- `label` 是可显示短文案，`description` 是给 A2UI 模型理解候选项语义、用途和使用重点的说明。
+- TaskSpec 只提供 DSL 生成所需输入。
 - 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
+- 不提供 `displayCandidates` 或 `role`；展示内容由 A2UI 模型从 `userQuery` 和 `dataModel.value` 中判断。
 - `target` 只记录目标尺寸。
+- `eventCandidates` 和 `assetCandidates` 是动作与素材约束，不是 DSL 组件候选。
 - DSL 硬规则统一写入转换脚本的 system prompt。
 - 交付物是 `genui` DSL。
 
@@ -25,7 +25,6 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
   "target": {
     "size": "2x4"
   },
-  "displayCandidates": [],
   "eventCandidates": [],
   "dataModel": {
     "value": {}
@@ -50,51 +49,6 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 - `size`: 必须，`2x2` 或 `2x4`。
 
-### `displayCandidates`
-
-可显示的信息候选。它不规定最终使用 Text、Progress、Image 还是组合组件。
-
-```json
-[
-  {
-    "id": "device_name",
-    "role": "identity",
-    "label": "Free Clip 2",
-    "description": "耳机设备名称，用于明确这张桌面卡片服务的对象。",
-    "dataPath": "/device/name",
-    "required": true
-  },
-  {
-    "id": "left_battery",
-    "role": "metric",
-    "label": "左耳电量",
-    "description": "左耳机当前电量文本，用户要求必须显示并保持可读。",
-    "dataPath": "/device/leftBatteryText",
-    "required": true
-  }
-]
-```
-
-字段说明：
-
-- `id`: 必须，候选项唯一标识。
-- `role`: 必须，信息角色，帮助 A2UI 模型判断信息优先级。
-- `label`: 必须，可显示短文案或字段名称。
-- `description`: 必须，说明该内容的语义、用途、展示重点；不要写位置、字号、组件类型。
-- `dataPath`: 可选，指向 `dataModel.value` 的 JSON Pointer。
-- `assetRef`: 可选，引用 `assetCandidates[].assetRef`。
-- `required`: 可选，是否必须体现在最终 DSL 中。
-- `note`: 可选，补充约束；只写必要提醒。
-
-`role` 可选值：
-
-- `identity`: 身份/对象名，例如城市、联系人、设备名。
-- `primary`: 主信息或主答案，例如当前温度、余额、最重要状态。
-- `metric`: 数值指标，例如电量、步数、百分比。
-- `status`: 状态文本，例如感冒指数、在线/离线、风险等级。
-- `context`: 辅助上下文，例如天气状况、更新时间、副标题。
-- `media`: 图片或图标类内容，通常配合 `assetRef`。
-
 ### `eventCandidates`
 
 可点击事件候选。它不规定最终是 Button、可点击容器还是图文入口。
@@ -104,7 +58,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
   {
     "id": "daily_30",
     "label": "每日30首",
-    "description": "打开每日30首音乐歌单的快捷入口，是用户要求保留的入口之一。",
+    "description": "打开每日30首音乐歌单的快捷入口。",
     "required": true,
     "onClick": [
       {
@@ -131,7 +85,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 ### `dataModel`
 
-`dataModel.value` 是 A2UI 模型生成第 3 行 `updateDataModel.value` 时必须原样使用的初始数据，也是表达式和绑定路径的验证来源。
+`dataModel.value` 是 A2UI 模型生成第 3 行 `updateDataModel.value` 时必须原样使用的初始数据，也是表达式和绑定路径的验证来源。A2UI 模型从 `userQuery` 和 `dataModel.value` 中自行判断需要展示的信息。
 
 ### `assetCandidates`
 
@@ -158,7 +112,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 字段说明：
 
-- `assetRef`: 可选，素材引用名，供 `displayCandidates[].assetRef` 使用。
+- `assetRef`: 可选，素材引用名。
 - `src`: 必须，素材路径。
 - `use`: 必须，素材用途短标签。
 - `description`: 必须，说明素材内容、视觉语义和适用场景；A2UI 模型依据该字段判断是否使用素材。
@@ -167,28 +121,26 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 ## 4. System Prompt
 
-转换脚本生成 chat-completions request body 时，会把完整 DSL 规则放入 `system` 消息。TaskSpec 不重复携带这些规则。
+转换脚本生成 chat-completions request body 时，会把 DSL 规则和 skill 摘要放入 `system` 消息。TaskSpec 不重复携带这些规则。
 
 当前 system prompt 主要包含：
 
 - **角色定义**：A2UI 模型，负责生成 HarmonyOS A2UI Form 卡片 DSL。
-- **输入边界**：TaskSpec 是候选约束契约，不是布局蓝图；candidate 不是 DSL 组件候选。
+- **输入边界**：TaskSpec 不是布局蓝图，也不提供展示内容清单。
 - **输出契约**：输出一个 `genui` 代码块，恰好 3 行 JSONL。
 - **尺寸规则**：`target.size=2x2` 对应 140x140，`2x4` 对应 300x140。
 - **组件范围**：只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
 - **DataModel-first 绑定**：展示值优先使用完整表达式读取 DataModel。
 - **动作与素材**：onClick 只能来自 `eventCandidates`；图片和背景只能来自 `assetCandidates` 或用户明确提供的本地/资源路径。
-- **布局质量**：控制主答案、支撑事实和动作区数量；关键文本必须完整显示。
+- **取舍规则**：先从 `userQuery` 和 `dataModel.value` 确定主答案，控制支撑事实和动作区数量，避免信息重复。
 
 ## 5. 校验规则
 
 发送给 A2UI 模型前：
 
-- `displayCandidates` 必须非空。
-- `displayCandidates[].description`、`eventCandidates[].description`、`assetCandidates[].description` 必须非空。
-- `displayCandidates[].id` 与 `eventCandidates[].id` 必须全局唯一。
-- `displayCandidates[].dataPath` 必须能从 `dataModel.value` 解析。
-- `displayCandidates[].assetRef` 必须能在 `assetCandidates[].assetRef` 中找到。
+- JSON 结构必须符合 `taskspec.schema.json`。
+- 不允许出现 `displayCandidates`、`role`、`cardSpec`、`rules` 等非当前协议字段。
+- `eventCandidates[].description`、`assetCandidates[].description` 必须非空。
 - `eventCandidates[].onClick` 必须存在，且 `call/args` 符合已支持事件能力。
 - `assetCandidates[].bindTo` 必须能从 `dataModel.value` 解析，且值等于 `assetCandidates[].src`。
 - `.agents/skills/` 必须无改动。

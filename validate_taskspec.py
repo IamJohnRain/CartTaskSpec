@@ -15,6 +15,7 @@ REMOVED_TOP_LEVEL = {
     "intent",
     "validation",
     "capabilityGap",
+    "displayCandidates",
     "rules",
     "rulesVersion",
     "schema",
@@ -95,44 +96,16 @@ def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
         errors.append(f"{name}: top-level '{key}' has been removed from TaskSpec")
 
     data_model_value = spec.get("dataModel", {}).get("value", {})
-    display_candidates = spec.get("displayCandidates", [])
     event_candidates = spec.get("eventCandidates", [])
     asset_candidates = spec.get("assetCandidates", [])
 
-    if not isinstance(display_candidates, list) or not display_candidates:
-        errors.append(f"{name}: displayCandidates must be a non-empty array")
-        return errors
-
     candidate_ids = [
         item.get("id")
-        for item in [*display_candidates, *event_candidates]
+        for item in event_candidates
         if isinstance(item, dict)
     ]
     if len(set(candidate_ids)) != len(candidate_ids):
         errors.append(f"{name}: duplicate candidate id")
-
-    asset_refs = {item.get("assetRef") for item in asset_candidates if isinstance(item, dict) and item.get("assetRef")}
-
-    for candidate in display_candidates:
-        if not isinstance(candidate, dict):
-            errors.append(f"{name}: every displayCandidates item must be an object")
-            continue
-        candidate_id = candidate.get("id", "<unknown>")
-        if not has_text(candidate.get("description")):
-            errors.append(f"{name}: displayCandidate '{candidate_id}' must contain non-empty description")
-
-        if candidate.get("assetRef") and candidate["assetRef"] not in asset_refs:
-            errors.append(
-                f"{name}: displayCandidate '{candidate_id}' references missing assetRef '{candidate['assetRef']}'"
-            )
-
-        if candidate.get("dataPath"):
-            local_value = resolve_pointer(data_model_value, candidate["dataPath"])
-            if local_value is None:
-                errors.append(
-                    f"{name}: displayCandidate '{candidate_id}' dataPath '{candidate['dataPath']}' "
-                    "is not present in dataModel.value"
-                )
 
     if not isinstance(event_candidates, list):
         errors.append(f"{name}: eventCandidates must be an array")

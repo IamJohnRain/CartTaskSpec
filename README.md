@@ -12,12 +12,12 @@ CartTaskSpec 是一个面向 HarmonyOS A2UI Form 服务卡片的「大模型 Age
 TaskSpec 是给 A2UI 模型的候选约束输入，只携带生成 DSL 必要的信息：
 
 - `target`：目标尺寸，只保留 `size`。
-- `displayCandidates`：可显示的信息候选，包含 `label` 和给 A2UI 模型理解语义的 `description`。
 - `eventCandidates`：可触发的事件候选，包含入口文案、动作说明和可直接使用的 `onClick`。
 - A2UI 模型必须原样写入 `updateDataModel.value` 的 `dataModel.value`。
 - `assetCandidates`：允许使用的素材候选白名单，必须描述素材内容和适用场景，便于 A2UI 模型判断是否使用。
 
 DSL 硬规则集中放在 `taskspec_to_chat_completions.py` 生成的 system prompt 中。TaskSpec 本身不描述组件树、布局区域、字号、颜色或组件类型。
+A2UI 模型根据 `userQuery`、`dataModel.value` 和 system prompt 中的 skill 摘要规则自行决定展示内容、组件组织和视觉表达。
 
 ---
 
@@ -60,7 +60,7 @@ CartTaskSpec/
 ## 作业流
 
 1. **大模型 Agent：用户 Query -> TaskSpec**  
-   输出轻量 TaskSpec。TaskSpec 包含 `target`、`displayCandidates`、`eventCandidates`、`dataModel` 和 `assetCandidates`；动作直接内联在 event candidate 的 `onClick` 中。
+   输出轻量 TaskSpec。TaskSpec 包含 `target`、`eventCandidates`、`dataModel` 和 `assetCandidates`；动作直接内联在 event candidate 的 `onClick` 中。
 
 2. **转换脚本：TaskSpec -> API request body**  
    `taskspec_to_chat_completions.py` 读取 TaskSpec，把 DataModel-first DSL 规则写入 `system` prompt，并把完整 TaskSpec 放入 `user` 消息。
