@@ -576,58 +576,25 @@
       <div class="wrap">
         <div class="section-head">
           <div class="section-kicker">Workflow</div>
-          <h2>从用户 Query 到 DSL 的完整流程</h2>
-          <p class="section-desc">流程按输入、处理、输出逐层展开。每一层都有明确产物，并且可以展开查看样例。TaskSpec 中已经包含 CardSpec；小模型 API 的输出只负责 DSL。</p>
+          <h2>三个中间模块：从用户 Query 到 DSL</h2>
+          <p class="section-desc">流程只突出三个真正处理信息的模块：大模型 Agent、转换脚本、小模型 API。用户 Query、TaskSpec（含 CardSpec）、API request body 和 DSL 都是这些模块之间流动的输入输出。</p>
         </div>
 
         <div class="pipeline">
           <article class="pipe-card">
-            <div class="pipe-index"><span>INPUT</span><span>01</span></div>
+            <div class="pipe-index"><span>MODULE</span><span>01</span></div>
             <div class="pipe-main">
-              <h3>用户 Query</h3>
+              <h3>大模型 Agent</h3>
               <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>用户用自然语言描述想要的服务卡片。</p></div>
-                <div class="io-box"><b>输出</b><p>一段原始需求文本，进入大模型 Agent。</p></div>
+                <div class="io-box"><b>输入</b><p>用户 Query，以及 Form 协议 / skill 参考规则。</p></div>
+                <div class="io-box"><b>输出</b><p>TaskSpec JSON，内含 `card.requirements`、`dataModel`、`eventBindings`、`rules.dsl` 和最终 `cardSpec`。</p></div>
               </div>
               <details class="example">
-                <summary>展开样例</summary>
+                <summary>展开输入样例：用户 Query</summary>
                 <pre>给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。</pre>
               </details>
-            </div>
-          </article>
-
-          <article class="pipe-card">
-            <div class="pipe-index"><span>AGENT</span><span>02</span></div>
-            <div class="pipe-main">
-              <h3>大模型 Agent 抽取 Form 约束</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>用户 Query + 只读 skill / 参考规则。</p></div>
-                <div class="io-box"><b>输出</b><p>场景、尺寸、内容项、DataModel、事件能力、CardSpec、DSL 硬规则。</p></div>
-              </div>
               <details class="example">
-                <summary>展开抽取结果示例</summary>
-                <pre>{
-  "scenario": "device",
-  "size": "2x4",
-  "requirements": ["Free Clip 2", "左耳 47%", "右耳 95%", "每日30首", "心动歌单"],
-  "style": "简洁高级，磨砂玻璃质感",
-  "events": ["open_daily_30", "open_favorite_playlist"],
-  "cardSpec": { "suggestSize": "2x4" }
-}</pre>
-              </details>
-            </div>
-          </article>
-
-          <article class="pipe-card">
-            <div class="pipe-index"><span>SPEC</span><span>03</span></div>
-            <div class="pipe-main">
-              <h3>得到 TaskSpec（含 CardSpec）</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>大模型 Agent 抽取出的协议约束和端侧契约。</p></div>
-                <div class="io-box"><b>输出</b><p>`taskspec/v1` JSON。它是小模型生成 DSL 的唯一结构化输入，同时内含最终 `cardSpec`。</p></div>
-              </div>
-              <details class="example">
-                <summary>展开 TaskSpec 片段</summary>
+                <summary>展开输出样例：TaskSpec（含 CardSpec）</summary>
                 <pre>{
   "schema": "taskspec/v1",
   "card": {
@@ -645,15 +612,19 @@
           </article>
 
           <article class="pipe-card">
-            <div class="pipe-index"><span>SCRIPT</span><span>04</span></div>
+            <div class="pipe-index"><span>MODULE</span><span>02</span></div>
             <div class="pipe-main">
-              <h3>转换脚本生成 API Request Body</h3>
+              <h3>转换脚本</h3>
               <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>`*.taskspec.json` 文件。</p></div>
-                <div class="io-box"><b>输出</b><p>OpenAI 兼容 chat-completions 请求体，包含 `system` 和 `user` 两条消息。</p></div>
+                <div class="io-box"><b>输入</b><p>TaskSpec JSON 文件，即上一步大模型 Agent 的输出。</p></div>
+                <div class="io-box"><b>输出</b><p>OpenAI 兼容 API request body，包含 `system` prompt 和 `user` TaskSpec。</p></div>
               </div>
               <details class="example">
-                <summary>展开命令与输出结构</summary>
+                <summary>展开输入样例：TaskSpec 文件</summary>
+                <pre>examples\freeclip2-earbuds.taskspec.json</pre>
+              </details>
+              <details class="example">
+                <summary>展开输出样例：API request body</summary>
                 <pre>python taskspec_to_chat_completions.py examples\freeclip2-earbuds.taskspec.json -o request.json
 
 {
@@ -668,52 +639,30 @@
           </article>
 
           <article class="pipe-card">
-            <div class="pipe-index"><span>API</span><span>05</span></div>
+            <div class="pipe-index"><span>MODULE</span><span>03</span></div>
             <div class="pipe-main">
-              <h3>Request Body 输入小模型 API</h3>
+              <h3>小模型 API</h3>
               <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>`request.json`，其中 system prompt 提醒小模型只输出 genui。</p></div>
-                <div class="io-box"><b>输出</b><p>小模型生成的 chat-completions response。</p></div>
+                <div class="io-box"><b>输入</b><p>API request body。`system` 说明 DSL 规则，`user` 提供完整 TaskSpec。</p></div>
+                <div class="io-box"><b>输出</b><p>DSL：一个 `genui` 代码块，恰好 3 行 JSONL。最终交付时与 TaskSpec.cardSpec 组合。</p></div>
               </div>
               <details class="example">
-                <summary>展开调用示例</summary>
+                <summary>展开输入样例：请求模型</summary>
                 <pre>python taskspec_to_chat_completions.py examples\freeclip2-earbuds.taskspec.json \
   -o request.json \
   --invoke \
   --response-output response.json</pre>
               </details>
-            </div>
-          </article>
-
-          <article class="pipe-card">
-            <div class="pipe-index"><span>DSL</span><span>06</span></div>
-            <div class="pipe-main">
-              <h3>小模型输出 DSL</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>TaskSpec 中的 requirements、dataModel、eventBindings、rules.dsl。</p></div>
-                <div class="io-box"><b>输出</b><p>一个 `genui` 代码块，恰好 3 行 JSONL。</p></div>
-              </div>
               <details class="example">
-                <summary>展开 DSL 形态</summary>
+                <summary>展开输出样例：DSL</summary>
                 <pre>```genui
 {"version":"v0.9","createSurface":{"surfaceId":"card","catalogId":"ohos.a2ui.extended.catalog"}}
 {"version":"v0.9","updateComponents":{"surfaceId":"card","components":[...]}}
 {"version":"v0.9","updateDataModel":{"surfaceId":"card","path":"/","value":{...}}}
 ```</pre>
               </details>
-            </div>
-          </article>
-
-          <article class="pipe-card">
-            <div class="pipe-index"><span>FINAL</span><span>07</span></div>
-            <div class="pipe-main">
-              <h3>最终交付：DSL + CardSpec</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>小模型生成的 `genui` DSL + TaskSpec 中已包含的 `cardSpec`。</p></div>
-                <div class="io-box"><b>输出</b><p>端侧可消费的完整卡片结果。</p></div>
-              </div>
               <details class="example">
-                <summary>展开最终交付结构</summary>
+                <summary>展开最终组合：DSL + CardSpec</summary>
                 <pre>{
   "genui": "card.genui.jsonl",
   "cardSpec": "TaskSpec.cardSpec"
