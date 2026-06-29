@@ -1,413 +1,670 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CartTaskSpec · 大模型 + 小模型 协作生成协议</title>
-<style>
-  :root{
-    --bg:#0b0f14; --bg-2:#0f1620; --panel:#121b27; --panel-2:#16202e;
-    --line:#1f2c3d; --text:#e6edf5; --muted:#8da3bd; --faint:#6b7f99;
-    --accent:#2dd4bf; --accent-2:#22a99a;
-    --amber:#f5b342; --violet:#a78bfa; --blue:#60a5fa;
-    --radius:16px;
-    --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono','Cascadia Code',Menlo,Consolas,monospace;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0;background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(45,212,191,.10), transparent 60%),
-      radial-gradient(900px 500px at -10% 10%, rgba(96,165,250,.08), transparent 55%),
-      var(--bg);
-    color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Roboto,Helvetica,Arial,sans-serif;
-    line-height:1.65;-webkit-font-smoothing:antialiased;
-  }
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  code,pre{font-family:var(--mono)}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CartTaskSpec - 轻量 TaskSpec 协议</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #65738a;
+      --line: #dfe6ef;
+      --soft: #eef4f8;
+      --teal: #0f9f8f;
+      --teal-dark: #08796e;
+      --blue: #3268d9;
+      --violet: #7657d6;
+      --amber: #c98218;
+      --green-soft: #e8f7f4;
+      --blue-soft: #edf4ff;
+      --violet-soft: #f2efff;
+      --amber-soft: #fff6e8;
+      --shadow: 0 18px 50px rgba(35, 48, 72, .10);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
 
-  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(11,15,20,.72);border-bottom:1px solid var(--line)}
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px}
-  .brand .dot{width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--blue));box-shadow:0 0 16px rgba(45,212,191,.6)}
-  .brand small{color:var(--muted);font-weight:500}
-  .nav-links{display:flex;gap:22px}
-  .nav-links a{color:var(--muted);font-size:14px;font-weight:500}
-  .nav-links a:hover{color:var(--text);text-decoration:none}
-  @media(max-width:680px){.nav-links{display:none}}
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(15,159,143,.12), transparent 28rem),
+        radial-gradient(circle at 88% 4%, rgba(50,104,217,.10), transparent 30rem),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+    }
 
-  .hero{padding:96px 0 64px}
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:13px;margin-bottom:24px}
-  .eyebrow b{color:var(--accent)}
-  h1{font-size:clamp(34px,5.4vw,58px);line-height:1.08;margin:0 0 20px;letter-spacing:-.5px;font-weight:800}
-  h1 .grad{background:linear-gradient(120deg,var(--accent),var(--blue) 60%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p.lead{font-size:clamp(16px,2vw,20px);color:var(--muted);max-width:720px;margin:0 0 32px}
-  .badges{display:flex;flex-wrap:wrap;gap:10px}
-  .badge{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-size:13px}
-  .badge b{color:var(--accent);font-family:var(--mono)}
+    a { color: var(--teal-dark); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: var(--mono); }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
 
-  section{padding:64px 0;border-top:1px solid rgba(255,255,255,.04)}
-  .sec-head{margin-bottom:40px}
-  .sec-tag{color:var(--accent);font-family:var(--mono);font-size:13px;letter-spacing:1px;text-transform:uppercase}
-  h2{font-size:clamp(26px,3.4vw,38px);margin:8px 0 14px;letter-spacing:-.3px}
-  .sec-sub{color:var(--muted);max-width:760px;font-size:16px;margin:0}
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(247,249,252,.86);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(223,230,239,.8);
+    }
+    .nav-inner {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 900;
+      box-shadow: 0 10px 24px rgba(15,159,143,.28);
+    }
+    .nav-links { display: flex; gap: 22px; font-size: 14px; }
+    .nav-links a { color: var(--muted); font-weight: 600; }
+    .nav-links a:hover { color: var(--ink); text-decoration: none; }
+    @media (max-width: 760px) { .nav-links { display: none; } }
 
-  .grid{display:grid;gap:18px}
-  .g-3{grid-template-columns:repeat(3,1fr)}
-  .g-2{grid-template-columns:repeat(2,1fr)}
-  @media(max-width:880px){.g-3{grid-template-columns:1fr}.g-2{grid-template-columns:1fr}}
-  .card{background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--line);border-radius:var(--radius);padding:26px}
-  .card .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:20px;margin-bottom:16px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3)}
-  .card.amber .ic{background:rgba(245,179,66,.12);border-color:rgba(245,179,66,.3)}
-  .card.violet .ic{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3)}
-  .card h3{margin:0 0 8px;font-size:18px}
-  .card p{margin:0;color:var(--muted);font-size:14.5px}
+    .hero { padding: 92px 0 72px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 40px;
+      align-items: center;
+    }
+    @media (max-width: 920px) { .hero-grid { grid-template-columns: 1fr; } }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.74);
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    h1 {
+      font-size: clamp(38px, 5vw, 66px);
+      line-height: 1.06;
+      margin: 20px 0 20px;
+      letter-spacing: -.055em;
+    }
+    .lead {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 21px);
+      margin: 0 0 28px;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-weight: 750;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 8px 20px rgba(35,48,72,.06);
+    }
+    .button.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+    }
+    .button:hover { text-decoration: none; transform: translateY(-1px); }
 
-  .resp{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  @media(max-width:760px){.resp{grid-template-columns:1fr}}
-  .role-box{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}
-  .role-box .hd{padding:14px 20px;font-weight:700;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
-  .role-box.big .hd{background:linear-gradient(90deg,rgba(45,212,191,.16),transparent)}
-  .role-box.small .hd{background:linear-gradient(90deg,rgba(167,139,250,.16),transparent)}
-  .role-box ul{margin:0;padding:14px 20px 22px;list-style:none}
-  .role-box li{position:relative;padding:6px 0 6px 22px;color:var(--muted);font-size:14.5px;border-top:1px solid rgba(255,255,255,.03)}
-  .role-box li:first-child{border-top:0}
-  .role-box li::before{content:'';position:absolute;left:0;top:14px;width:7px;height:7px;border-radius:50%}
-  .role-box.big li::before{background:var(--accent)}
-  .role-box.small li::before{background:var(--violet)}
+    .hero-card {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(223,230,239,.86);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .split-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .mini-panel {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+    .mini-panel .label {
+      font: 700 12px/1 var(--mono);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .mini-panel h3 {
+      margin: 8px 0 6px;
+      font-size: 18px;
+      letter-spacing: -.02em;
+    }
+    .mini-panel p { margin: 0; color: var(--muted); font-size: 14px; }
 
-  .flow-stage{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px}
-  .stage-chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:13px;color:var(--muted);cursor:pointer;transition:.2s;user-select:none}
-  .stage-chip:hover{border-color:var(--accent);color:var(--text)}
-  .stage-chip.active{background:rgba(45,212,191,.14);border-color:var(--accent);color:var(--text)}
-  .flow-frame{position:relative;border:1px solid var(--line);border-radius:20px;background:radial-gradient(700px 300px at 50% -20%, rgba(45,212,191,.06), transparent 60%),var(--bg-2);padding:24px;overflow:hidden}
-  .flow-canvas{position:relative;width:100%;height:610px}
-  @media(max-width:760px){.flow-canvas{height:880px}}
-  .flow-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-  .node{position:absolute;width:172px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--bg-2));padding:14px;transition:.25s;z-index:2}
-  .node .nt{font-size:12px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px}
-  .node .nb{font-size:14px;font-weight:600;margin-top:6px}
-  .node .nd{font-size:12px;color:var(--faint);margin-top:4px}
-  .node.query{border-color:rgba(255,255,255,.22)}
-  .node.big{border-color:rgba(45,212,191,.45)}
-  .node.spec{border-color:rgba(45,212,191,.55)}
-  .node.validate{border-color:rgba(96,165,250,.4)}
-  .node.convert{border-color:rgba(96,165,250,.4)}
-  .node.small{border-color:rgba(167,139,250,.5)}
-  .node.dsl{border-color:rgba(167,139,250,.5)}
-  .node.cardspec{border-color:rgba(245,179,66,.5)}
-  .node.final{border-color:rgba(255,255,255,.35);background:linear-gradient(180deg,#1a2533,#101820)}
-  .node .pip{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%}
-  .node.big .pip{background:var(--accent);box-shadow:0 0 10px var(--accent)}
-  .node.small .pip{background:var(--violet);box-shadow:0 0 10px var(--violet)}
-  .node.cardspec .pip{background:var(--amber);box-shadow:0 0 10px var(--amber)}
-  .node.dim{opacity:.35;transform:scale(.97)}
-  .flow-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;font-size:13px;color:var(--muted)}
-  .flow-legend span{display:inline-flex;align-items:center;gap:7px}
-  .flow-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+    section { padding: 72px 0; }
+    .section-head { margin-bottom: 32px; }
+    .section-kicker {
+      color: var(--teal-dark);
+      font: 800 13px/1 var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 10px 0 12px;
+      font-size: clamp(28px, 3.6vw, 44px);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+    }
+    .section-desc {
+      margin: 0;
+      max-width: 800px;
+      color: var(--muted);
+      font-size: 17px;
+    }
 
-  .codebar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-  .tab{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-size:13px;color:var(--muted);cursor:pointer;transition:.2s}
-  .tab:hover{color:var(--text)}
-  .tab.active{background:rgba(45,212,191,.12);border-color:var(--accent);color:var(--text)}
-  .codeblock{display:none}
-  .codeblock.show{display:block}
-  pre{margin:0;background:#0a1119;border:1px solid var(--line);border-radius:14px;padding:20px;overflow:auto;font-size:13px;line-height:1.7;max-height:480px}
-  pre .k{color:#7dd3fc} pre .s{color:#86efac} pre .n{color:#fcd34d} pre .c{color:#6b7f99}
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 900px) { .principles { grid-template-columns: 1fr; } }
+    .principle {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+    }
+    .principle .num {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--green-soft);
+      color: var(--teal-dark);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+    .principle:nth-child(2) .num { background: var(--blue-soft); color: var(--blue); }
+    .principle:nth-child(3) .num { background: var(--violet-soft); color: var(--violet); }
+    .principle h3 { margin: 0 0 8px; font-size: 20px; letter-spacing: -.02em; }
+    .principle p { margin: 0; color: var(--muted); font-size: 15px; }
 
-  .tree{font-family:var(--mono);font-size:13.5px;line-height:1.95;background:#0a1119;border:1px solid var(--line);border-radius:14px;padding:22px;overflow:auto;color:#bcd}
-  .tree .dir{color:var(--accent)}
-  .tree .file{color:#cfe0f0}
-  .tree .cmt{color:#6b7f99}
+    .value-layout {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 22px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .value-layout { grid-template-columns: 1fr; } }
+    .model-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+    }
+    .model-box h3 { margin: 0 0 10px; font-size: 20px; }
+    .model-box p { margin: 0 0 16px; color: var(--muted); }
+    .role-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .role-list li {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--soft);
+      color: #334155;
+      font-size: 14px;
+      border: 1px solid rgba(223,230,239,.75);
+    }
+    .role-list b { color: var(--ink); }
 
-  .cta{margin:24px 0 80px;text-align:center}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:12px;font-weight:600;transition:.2s}
-  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04140f}
-  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(45,212,191,.3);text-decoration:none}
-  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-</style>
+    .layer-stack {
+      display: grid;
+      gap: 16px;
+    }
+    .layer {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 16px;
+      align-items: stretch;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(35,48,72,.06);
+    }
+    @media (max-width: 760px) { .layer { grid-template-columns: 1fr; } }
+    .layer-title {
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 112px;
+      color: #073b35;
+      background: var(--green-soft);
+    }
+    .layer:nth-child(2) .layer-title { background: var(--blue-soft); color: #123c80; }
+    .layer:nth-child(3) .layer-title { background: var(--violet-soft); color: #3b287d; }
+    .layer:nth-child(4) .layer-title { background: var(--amber-soft); color: #74470a; }
+    .layer-title small { font: 800 12px/1 var(--mono); opacity: .8; text-transform: uppercase; }
+    .layer-title strong { margin-top: 8px; font-size: 20px; line-height: 1.2; }
+    .layer-body {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 760px) { .layer-body { grid-template-columns: 1fr; } }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fbfdff;
+    }
+    .step h4 { margin: 0 0 6px; font-size: 15px; }
+    .step p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .code-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 999px;
+      padding: 9px 14px;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab.active {
+      color: #fff;
+      background: var(--teal-dark);
+      border-color: var(--teal-dark);
+    }
+    .code-panel { display: none; }
+    .code-panel.active { display: block; }
+    pre {
+      margin: 0;
+      padding: 22px;
+      background: #101826;
+      color: #dbe8f7;
+      border-radius: 22px;
+      border: 1px solid #223044;
+      overflow: auto;
+      max-height: 560px;
+      font-size: 13px;
+      line-height: 1.72;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .k { color: #93c5fd; }
+    .s { color: #86efac; }
+    .n { color: #fbbf24; }
+
+    .tree {
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.95;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      overflow: auto;
+      color: #334155;
+      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+    }
+    .tree .dir { color: var(--teal-dark); font-weight: 800; }
+    .tree .file { color: var(--ink); font-weight: 650; }
+    .tree .cmt { color: var(--muted); }
+
+    .commands {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 860px) { .commands { grid-template-columns: 1fr; } }
+    .cmd {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+    }
+    .cmd h3 { margin: 0 0 10px; font-size: 17px; }
+    .cmd pre { max-height: none; border-radius: 16px; font-size: 12.5px; }
+
+    footer {
+      padding: 36px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+  </style>
 </head>
 <body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand"><span class="brand-mark">T</span> CartTaskSpec</div>
+      <nav class="nav-links">
+        <a href="#idea">设计思想</a>
+        <a href="#workflow">作业流</a>
+        <a href="#sample">协议样例</a>
+        <a href="#structure">项目结构</a>
+        <a href="#commands">命令</a>
+      </nav>
+    </div>
+  </header>
 
-<header class="nav">
-  <div class="wrap nav-inner">
-    <div class="brand"><span class="dot"></span> CartTaskSpec <small>taskspec/v1</small></div>
-    <nav class="nav-links">
-      <a href="#philosophy">设计思想</a>
-      <a href="#workflow">作业流</a>
-      <a href="#example">协议样例</a>
-      <a href="#structure">项目结构</a>
-      <a href="#commands">常用命令</a>
-    </nav>
-  </div>
-</header>
-
-<div class="hero">
-  <div class="wrap">
-    <span class="eyebrow">⚡ <b>大模型 + 小模型</b> 协作生成协议</span>
-    <h1>把卡片生成拆成两层：<br><span class="grad">理解力交给大模型，结构化输出交给小模型</span></h1>
-    <p class="lead">大模型产出一个轻量的 <b style="color:var(--text)">TaskSpec</b>，只携带卡片目标、数据/事件能力与 DSL 硬约束；小模型只依据它把卡片「画」出来。布局不再写死在协议里，CardSpec 由大模型直接交付端侧。</p>
-    <div class="badges">
-      <div class="badge">协议 <b>taskspec/v1</b></div>
-      <div class="badge">规则集 <b>harmony-form-rules/v1</b></div>
-      <div class="badge">输出 <b>genui JSONL × 3 行</b></div>
-      <div class="badge">CardSpec <b>大模型前置确定</b></div>
-    </div>
-  </div>
-</div>
-
-<section id="philosophy">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-tag">设计思想</div>
-      <h2>轻量契约，而不是半成品 DSL</h2>
-      <p class="sec-sub">TaskSpec 描述「要显示什么、要调用什么、必须遵守什么」，不描述「怎么排」。布局、组件嵌套、视觉表达都交回小模型实现。</p>
-    </div>
-    <div class="grid g-3">
-      <div class="card"><div class="ic">🎯</div><h3>目标驱动</h3><p>TaskSpec 只声明卡片场景、尺寸、内容项与约束。小模型拿到的是「需求」，不是「施工图」，留出真正的设计空间。</p></div>
-      <div class="card amber"><div class="ic">🧩</div><h3>职责收窄</h3><p>大模型做理解和取舍（场景、能力、CardSpec），小模型做落地（组件树、样式、视觉）。两层单向收窄，边界清晰。</p></div>
-      <div class="card violet"><div class="ic">📐</div><h3>可校验</h3><p>结构形状用 JSON Schema，引用一致性、项目约束、模型输出各有独立校验脚本，任何一环出错都能拦截。</p></div>
-    </div>
-    <h3 style="margin:48px 0 18px;font-size:20px">职责边界</h3>
-    <div class="resp">
-      <div class="role-box big"><div class="hd">🟢 大模型 — 理解与决策</div><ul>
-        <li>场景识别、尺寸选择、能力边界判断</li><li>语义内容项 card.requirements</li>
-        <li>DataModel 形状与初始值</li><li>CardSpec（静态/动态 dataBindings）</li>
-        <li>事件能力 eventBindings 预填 onClick</li><li>DSL 硬约束 rules.dsl</li>
-      </ul></div>
-      <div class="role-box small"><div class="hd">🟣 小模型 — 布局与实现</div><ul>
-        <li>组件嵌套结构、id 命名</li><li>样式、颜色、字号、间距</li>
-        <li>视觉层次与拥挤行宽度预算</li><li>落成合法 DSL JSONL（恰好 3 行）</li>
-        <li>把 eventBindings 的 onClick 挂到组件</li><li>不得生成或改写 cardSpec</li>
-      </ul></div>
-    </div>
-  </div>
-</section>
-
-<section id="workflow">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-tag">整体作业流</div>
-      <h2>从一句话到最终卡片</h2>
-      <p class="sec-sub">点击下方阶段，高亮流程图中的对应节点。整个链路分两条轨道：genui 轨（teal→blue→violet）由小模型产出 DSL，cardSpec 轨（amber）由大模型前置确定，最后在「最终卡片结果」汇聚。</p>
-    </div>
-    <div class="flow-stage" id="stageCtrl">
-      <div class="stage-chip active" data-stage="all">全部</div>
-      <div class="stage-chip" data-stage="s1">① 生成 TaskSpec</div>
-      <div class="stage-chip" data-stage="s2">② 校验</div>
-      <div class="stage-chip" data-stage="s3">③ 转换请求体</div>
-      <div class="stage-chip" data-stage="s4">④ 小模型生成 DSL</div>
-      <div class="stage-chip" data-stage="s5">⑤ 校验输出</div>
-      <div class="stage-chip" data-stage="s6">⑥ 汇聚交付</div>
-    </div>
-    <div class="flow-frame">
-      <div class="flow-canvas" id="flowCanvas">
-        <svg class="flow-svg" id="flowSvg" preserveAspectRatio="none"></svg>
-        <div class="node query"    data-stages="s1"      style="left:8px;top:24px"><div class="pip" style="background:#fff"></div><div class="nt">INPUT</div><div class="nb">用户 Query</div><div class="nd">一句话需求</div></div>
-        <div class="node big"      data-stages="s1"      style="right:8px;top:24px"><div class="pip"></div><div class="nt">LARGE MODEL</div><div class="nb">大模型 + 只读 skill</div><div class="nd">场景 / 能力 / cardSpec</div></div>
-        <div class="node spec"     data-stages="s1 s2"   style="left:50%;margin-left:-110px;top:128px;width:220px"><div class="pip"></div><div class="nt">taskspec/v1</div><div class="nb">TaskSpec JSON</div><div class="nd">目标 + 内容项 + 约束 + cardSpec</div></div>
-        <div class="node validate" data-stages="s2"      style="left:8px;top:240px"><div class="pip" style="background:var(--blue);box-shadow:0 0 10px var(--blue)"></div><div class="nt">VALIDATE</div><div class="nb">结构 + 引用校验</div><div class="nd">validate_taskspec.py</div></div>
-        <div class="node cardspec" data-stages="s2 s6"   style="right:8px;top:240px"><div class="pip"></div><div class="nt">PASSTHROUGH</div><div class="nb">TaskSpec.cardSpec</div><div class="nd">直接交付端侧</div></div>
-        <div class="node convert"  data-stages="s3"      style="left:8px;top:352px"><div class="pip" style="background:var(--blue);box-shadow:0 0 10px var(--blue)"></div><div class="nt">CONVERT</div><div class="nb">生成请求体</div><div class="nd">system + user 两条消息</div></div>
-        <div class="node small"    data-stages="s3 s4"   style="left:50%;margin-left:-100px;top:352px;width:200px"><div class="pip"></div><div class="nt">SMALL MODEL</div><div class="nb">小模型 API</div><div class="nd">只输出 genui</div></div>
-        <div class="node dsl"      data-stages="s4 s5"   style="left:50%;margin-left:-100px;top:464px;width:200px"><div class="pip"></div><div class="nt">OUTPUT</div><div class="nb">genui DSL</div><div class="nd">3 行 JSONL</div></div>
-        <div class="node final"    data-stages="s5 s6"   style="left:50%;margin-left:-115px;top:566px;width:230px"><div class="pip" style="background:#fff;box-shadow:0 0 12px #fff"></div><div class="nt">RESULT</div><div class="nb">最终卡片结果</div><div class="nd">genui DSL + cardSpec</div></div>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">taskspec/v1 · harmony-form-rules/v1</div>
+          <h1>把 Form 协议约束抽取出来，让小模型更会画卡片</h1>
+          <p class="lead">CartTaskSpec 不是把理解力简单交给大模型，而是让大模型从用户 query 中抽取与 Form 协议相关的约束、能力和交付契约；小模型在清晰边界内完成真正有价值的 DSL 设计与生成。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#workflow">查看作业流</a>
+            <a class="button" href="https://github.com/IamJohnRain/CartTaskSpec" target="_blank">GitHub 仓库</a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="split-card">
+            <div class="mini-panel">
+              <div class="label">Large Model</div>
+              <h3>抽取约束，而不是写死布局</h3>
+              <p>识别场景、尺寸、数据能力、事件能力、CardSpec 和 DSL 硬规则。</p>
+            </div>
+            <div class="mini-panel">
+              <div class="label">Small Model</div>
+              <h3>在约束内完成高质量实现</h3>
+              <p>完成组件组织、视觉层次、排版、绑定和最终 3 行 genui JSONL。</p>
+            </div>
+            <div class="mini-panel">
+              <div class="label">Final Artifact</div>
+              <h3>genui DSL + TaskSpec.cardSpec</h3>
+              <p>CardSpec 前置确定，小模型不再生成 cardspec。</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="flow-legend">
-        <span><i style="background:var(--accent)"></i> 大模型轨</span>
-        <span><i style="background:var(--blue)"></i> 校验/转换</span>
-        <span><i style="background:var(--violet)"></i> 小模型轨</span>
-        <span><i style="background:var(--amber)"></i> cardSpec 轨</span>
+    </section>
+
+    <section id="idea">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Design Philosophy</div>
+          <h2>协议设计思想</h2>
+          <p class="section-desc">TaskSpec 的核心不是替小模型完成布局，而是把 Form 卡片生成中必须遵守的协议规则、数据契约和事件边界整理成一个短小、可校验的输入。</p>
+        </div>
+        <div class="principles">
+          <div class="principle">
+            <div class="num">1</div>
+            <h3>从 query 抽取 Form 约束</h3>
+            <p>大模型的价值在于把自然语言需求变成结构化约束：显示字段、动态能力、点击能力、CardSpec、禁止项和输出格式。</p>
+          </div>
+          <div class="principle">
+            <div class="num">2</div>
+            <h3>保留小模型的设计空间</h3>
+            <p>TaskSpec 不携带布局树、区域预算或组件嵌套。小模型负责把需求转成可渲染、可读、可交互的 DSL。</p>
+          </div>
+          <div class="principle">
+            <div class="num">3</div>
+            <h3>用校验兜住边界</h3>
+            <p>小模型可以发挥布局和视觉能力，但必须通过 JSONL、组件、绑定、事件、DataModel 和尺寸校验。</p>
+          </div>
+        </div>
+
+        <div class="value-layout" style="margin-top:28px">
+          <div class="model-box">
+            <h3>大模型负责抽取什么？</h3>
+            <p>不是产出完整卡片，而是把与协议有关的决策抽出来。</p>
+            <ul class="role-list">
+              <li><b>内容约束</b>：哪些信息必须出现、哪些字段要完整显示。</li>
+              <li><b>能力约束</b>：data capability、event capability、参数和写入路径。</li>
+              <li><b>交付约束</b>：cardSpec、rules.dsl、输出禁止项。</li>
+            </ul>
+          </div>
+          <div class="model-box">
+            <h3>小模型的核心价值是什么？</h3>
+            <p>小模型不是剩下组装，而是在明确约束内完成卡片设计落地。</p>
+            <ul class="role-list">
+              <li><b>布局判断</b>：根据 2x2/2x4 空间组织信息层级。</li>
+              <li><b>组件实现</b>：选择 Row/Column/Stack/Text/Button 等并生成扁平组件数组。</li>
+              <li><b>视觉表达</b>：处理留白、字号、颜色、层次、点击区域和拥挤文本。</li>
+              <li><b>协议落地</b>：输出严格 3 行 JSONL，并保持 DataModel 和事件绑定一致。</li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="grid g-2" style="margin-top:28px">
-      <div class="card"><div class="ic">▶</div><h3>正向 genui 轨</h3><p>Query → 大模型 → TaskSpec → 校验 → 转换请求体 → 小模型 → genui DSL → 输出校验 → 汇聚。</p></div>
-      <div class="card amber"><div class="ic">◆</div><h3>并行 cardSpec 轨</h3><p>大模型在 TaskSpec 中直接写入 cardSpec，全程透传，无需小模型再生成或补全，最终与 DSL 合并交付。</p></div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section id="example">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-tag">协议样例</div>
-      <h2>TaskSpec 长什么样</h2>
-      <p class="sec-sub">两个真实样例：父母关怀卡片（动态天气 + 拨号）与耳机桌面卡片（静态设备 + 音乐入口）。切换标签查看请求体结构。</p>
-    </div>
-    <div class="codebar" id="codeTabs">
-      <div class="tab active" data-target="ex-task">parent-care.taskspec.json</div>
-      <div class="tab" data-target="ex-req">chat-completions 请求体</div>
-      <div class="tab" data-target="ex-freeclip">freeclip2-earbuds.taskspec.json</div>
-    </div>
-    <div class="codeblock show" id="ex-task"><pre id="pre-task"></pre></div>
-    <div class="codeblock" id="ex-req"><pre id="pre-req"></pre></div>
-    <div class="codeblock" id="ex-freeclip"><pre id="pre-freeclip"></pre></div>
-  </div>
-</section>
+    <section id="workflow">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Workflow</div>
+          <h2>分层作业流</h2>
+          <p class="section-desc">不用复杂连线。整个流程按职责分成四层：约束抽取层、协议校验层、DSL 生成层、交付校验层。每层输入输出清楚，互不越界。</p>
+        </div>
 
-<section id="structure">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-tag">项目结构</div>
-      <h2>每个文件各司其职</h2>
-      <p class="sec-sub">协议权威在 TaskSpec.md 与 taskspec.schema.json；skill 目录只读，禁止修改。</p>
-    </div>
-    <div class="tree"><span class="cmt"># CartTaskSpec/</span>
-├── <span class="file">README.md</span>                      <span class="cmt">项目说明</span>
-├── <span class="file">TaskSpec.md</span>                    <span class="cmt">TaskSpec 协议规范（项目权威）</span>
-├── <span class="file">taskspec.schema.json</span>           <span class="cmt">JSON Schema (Draft 2020-12)</span>
-├── <span class="file">taskspec_to_chat_completions.py</span> <span class="cmt">TaskSpec → 请求体</span>
-├── <span class="file">validate_taskspec.py</span>           <span class="cmt">结构 + 引用一致性校验</span>
-├── <span class="file">validate_generated_card.py</span>     <span class="cmt">小模型 genui 输出校验</span>
-├── <span class="file">validate_project_constraints.py</span><span class="cmt">.agents/skills 只读检查</span>
+        <div class="layer-stack">
+          <div class="layer">
+            <div class="layer-title"><small>Layer 01</small><strong>约束抽取层</strong></div>
+            <div class="layer-body">
+              <div class="step"><h4>输入用户 query</h4><p>一句话需求，可能包含场景、数据、动作、风格。</p></div>
+              <div class="step"><h4>抽取 Form 约束</h4><p>识别尺寸、必显字段、能力、事件和禁止项。</p></div>
+              <div class="step"><h4>产出 TaskSpec</h4><p>轻量 JSON：requirements、dataModel、cardSpec、rules.dsl。</p></div>
+            </div>
+          </div>
+          <div class="layer">
+            <div class="layer-title"><small>Layer 02</small><strong>协议校验层</strong></div>
+            <div class="layer-body">
+              <div class="step"><h4>Schema 校验</h4><p>确保 TaskSpec 字段形状符合 taskspec.schema.json。</p></div>
+              <div class="step"><h4>引用一致性</h4><p>检查 dataPath、eventRef、assetRef、dataBindings 对齐。</p></div>
+              <div class="step"><h4>项目约束</h4><p>确认 .agents/skills 只读，没有被修改。</p></div>
+            </div>
+          </div>
+          <div class="layer">
+            <div class="layer-title"><small>Layer 03</small><strong>DSL 生成层</strong></div>
+            <div class="layer-body">
+              <div class="step"><h4>生成请求体</h4><p>转换成 chat-completions：system prompt + user TaskSpec。</p></div>
+              <div class="step"><h4>小模型设计布局</h4><p>小模型根据约束完成组件层级、视觉和交互实现。</p></div>
+              <div class="step"><h4>输出 genui</h4><p>只输出一个 genui 代码块，恰好 3 行 JSONL。</p></div>
+            </div>
+          </div>
+          <div class="layer">
+            <div class="layer-title"><small>Layer 04</small><strong>交付校验层</strong></div>
+            <div class="layer-body">
+              <div class="step"><h4>校验模型输出</h4><p>检查 JSONL、组件、root 尺寸、DataModel 一致性。</p></div>
+              <div class="step"><h4>透传 cardSpec</h4><p>TaskSpec.cardSpec 直接作为端侧能力契约。</p></div>
+              <div class="step"><h4>组合交付</h4><p>最终结果为 genui DSL + TaskSpec.cardSpec。</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sample">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Protocol Sample</div>
+          <h2>协议样例</h2>
+          <p class="section-desc">TaskSpec 只描述内容项和约束，不写具体布局。切换查看父母关怀卡、耳机桌面卡和 chat-completions 请求体。</p>
+        </div>
+        <div class="code-tabs">
+          <button class="tab active" data-target="sample-parent">父母关怀 TaskSpec</button>
+          <button class="tab" data-target="sample-earbuds">耳机卡片 TaskSpec</button>
+          <button class="tab" data-target="sample-request">请求体结构</button>
+        </div>
+        <div class="code-panel active" id="sample-parent"><pre id="code-parent"></pre></div>
+        <div class="code-panel" id="sample-earbuds"><pre id="code-earbuds"></pre></div>
+        <div class="code-panel" id="sample-request"><pre id="code-request"></pre></div>
+      </div>
+    </section>
+
+    <section id="structure">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Structure</div>
+          <h2>项目结构</h2>
+        </div>
+        <div class="tree"><span class="cmt">CartTaskSpec/</span>
+├── <span class="file">README.md</span>                       <span class="cmt">项目说明</span>
+├── <span class="file">TaskSpec.md</span>                     <span class="cmt">TaskSpec 协议规范</span>
+├── <span class="file">taskspec.schema.json</span>            <span class="cmt">JSON Schema</span>
+├── <span class="file">taskspec_to_chat_completions.py</span>  <span class="cmt">TaskSpec 转请求体</span>
+├── <span class="file">validate_taskspec.py</span>            <span class="cmt">TaskSpec 校验</span>
+├── <span class="file">validate_generated_card.py</span>      <span class="cmt">genui 输出校验</span>
+├── <span class="file">validate_project_constraints.py</span> <span class="cmt">skill 只读检查</span>
 ├── <span class="dir">examples/</span>
-│   ├── <span class="file">parent-care.taskspec.json</span>      <span class="cmt">动态天气 + 拨号</span>
-│   └── <span class="file">freeclip2-earbuds.taskspec.json</span><span class="cmt">静态设备 + 音乐入口</span>
+│   ├── <span class="file">parent-care.taskspec.json</span>
+│   └── <span class="file">freeclip2-earbuds.taskspec.json</span>
 ├── <span class="dir">references/</span>
-│   ├── <span class="file">chat-completions-api.md</span>
-│   └── <span class="file">test_api.sh</span>
-└── <span class="dir">.agents/skills/harmony-card-generation/</span>  <span class="cmt">外部只读 skill（禁止修改）</span></div>
-  </div>
-</section>
+└── <span class="dir">.agents/skills/harmony-card-generation/</span>  <span class="cmt">外部只读依赖，禁止修改</span></div>
+      </div>
+    </section>
 
-<section id="commands">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-tag">常用命令</div>
-      <h2>一条龙跑通</h2>
-    </div>
-    <div class="codeblock show"><pre><span class="c"># 1. 校验 TaskSpec 结构与引用一致性</span>
-python validate_taskspec.py examples
-
-<span class="c"># 2. 确认 skill 只读约束未被破坏</span>
-python validate_project_constraints.py
-
-<span class="c"># 3. 生成请求体并调用本地小模型接口</span>
-python taskspec_to_chat_completions.py examples\parent-care.taskspec.json `
-  -o request.json --invoke --response-output response.json
-
-<span class="c"># 4. 校验模型生成的 genui 并提取 DSL</span>
-python validate_generated_card.py `
+    <section id="commands">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Commands</div>
+          <h2>常用命令</h2>
+        </div>
+        <div class="commands">
+          <div class="cmd">
+            <h3>校验 TaskSpec 与项目约束</h3>
+            <pre>python validate_taskspec.py examples
+python validate_project_constraints.py</pre>
+          </div>
+          <div class="cmd">
+            <h3>生成请求体并请求模型</h3>
+            <pre>python taskspec_to_chat_completions.py examples\parent-care.taskspec.json `
+  -o request.json --invoke --response-output response.json</pre>
+          </div>
+          <div class="cmd">
+            <h3>校验并提取 genui</h3>
+            <pre>python validate_generated_card.py `
   --response response.json `
   --spec examples\parent-care.taskspec.json `
-  --out-dir generated --name parent-care</pre></div>
-    <div class="cta"><a class="btn btn-primary" href="https://github.com/IamJohnRain/CartTaskSpec" target="_blank" style="text-decoration:none">⭐ 查看 GitHub 仓库</a></div>
-  </div>
-</section>
+  --out-dir generated --name parent-care</pre>
+          </div>
+          <div class="cmd">
+            <h3>查看 GitHub 仓库</h3>
+            <pre>https://github.com/IamJohnRain/CartTaskSpec</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<footer>
-  <div class="wrap">
-    <div>CartTaskSpec · taskspec/v1 · harmony-form-rules/v1</div>
-    <div>大模型产 TaskSpec，小模型产 genui，cardSpec 前置交付。</div>
-  </div>
-</footer>
+  <footer>
+    <div class="wrap">
+      <span>CartTaskSpec · taskspec/v1</span>
+      <span>约束抽取给大模型，设计落地给小模型。</span>
+    </div>
+  </footer>
 
-<script>
-function hl(json){
-  return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/("(\\.|[^"\\])*")(\s*:)?/g,function(m,str,colon){
-      return colon ? '<span class="k">'+str+'</span>'+colon : '<span class="s">'+str+'</span>';
-    })
-    .replace(/\b(true|false|null)\b/g,'<span class="n">$1</span>')
-    .replace(/(:\s*)(-?\d+\.?\d*)/g,'$1<span class="n">$2</span>');
-}
-const TASK={
-  "schema":"taskspec/v1","rulesVersion":"harmony-form-rules/v1",
-  "userQuery":"创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话",
-  "task":"根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，共 3 行）。只输出 genui，不要 cardspec。cardSpec 已由 TaskSpec 提供。",
-  "card":{"scenario":"status","size":"2x2",
-    "requirements":[
-      {"id":"city","type":"identity","label":"深圳","dataPath":"/data/weather/location/prefectureName","required":true},
-      {"id":"temperature","type":"primary","label":"当前温度","dataPath":"/data/weather/current/temperatureText","required":true},
-      {"id":"cold_index","type":"status","label":"感冒指数","dataPath":"/data/weather/current/coldLevel","required":true},
-      {"id":"call_dad","type":"action","label":"给爸打电话","eventRef":"call_dad","required":true}],
-    "constraints":["父母关怀场景，信息要清晰、温暖、易读。","温度、感冒指数和拨号入口必须完整显示。"]},
-  "dataModel":{"value":{"data":{"weather":{"current":{"temperatureText":"--°","coldLevel":"加载中"}}},"state":{"loading":true}}},
-  "cardSpec":{"suggestSize":"2x2","dataBindings":[
-    {"capabilityId":"ViewWeather","arguments":{"districtName":"深圳","forecastDays":1},"writeResultTo":"/data/weather"}]},
-  "eventBindings":[{"eventRef":"call_dad","on":"给爸打电话入口","onClick":[{"call":"clickToCallPhone","args":{"phoneNumber":"15012345678"}}]}],
-  "assets":[],
-  "rules":{"dsl":["只输出一个 genui 代码块，不输出 cardspec 或解释文字。","genui 恰好 3 行 JSONL：createSurface、updateComponents、updateDataModel。","version 固定 v0.9，catalogId 固定 ohos.a2ui.extended.catalog。","updateDataModel.path 必须是 /，value 必须等于 TaskSpec.dataModel.value。","root 尺寸按 card.size：2x2=160x160，2x4=320x160。"]}
-};
-const REQ={"model":"glm-5.2","messages":[
-  {"role":"system","content":"你是 HarmonyOS A2UI Form DSL 生成器。只输出一个 genui 代码块……（含协议关键信息、输出格式、禁止项）。"},
-  {"role":"user","content":"根据下面的 TaskSpec JSON 生成响应……\n{...完整 TaskSpec JSON...}"}]};
-const FREECLIP={
-  "schema":"taskspec/v1","rulesVersion":"harmony-form-rules/v1",
-  "userQuery":"给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单，有磨砂玻璃质感。",
-  "card":{"scenario":"device","size":"2x4","requirements":[
-    {"id":"device_name","type":"identity","label":"Free Clip 2","dataPath":"/device/name","required":true},
-    {"id":"left_battery","type":"metric","label":"左耳电量","dataPath":"/device/leftBatteryText","required":true},
-    {"id":"right_battery","type":"metric","label":"右耳电量","dataPath":"/device/rightBatteryText","required":true},
-    {"id":"daily_30","type":"action","label":"每日30首","eventRef":"open_daily_30","required":true},
-    {"id":"frosted_style","type":"style","label":"磨砂玻璃质感","note":"半透明层次、柔和边框、克制色彩。"}]},
-  "cardSpec":{"suggestSize":"2x4"},
-  "eventBindings":[{"eventRef":"open_daily_30","on":"每日30首快捷入口","onClick":[{"call":"clickToDeeplink","args":{"uri":"hwmusic://...code=a001&type=4"}}]}]
-};
-document.getElementById('pre-task').innerHTML=hl(JSON.stringify(TASK,null,2));
-document.getElementById('pre-req').innerHTML=hl(JSON.stringify(REQ,null,2));
-document.getElementById('pre-freeclip').innerHTML=hl(JSON.stringify(FREECLIP,null,2));
+  <script>
+    const samples = {
+      parent: {
+        schema: "taskspec/v1",
+        rulesVersion: "harmony-form-rules/v1",
+        userQuery: "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸打电话",
+        card: {
+          scenario: "status",
+          size: "2x2",
+          requirements: [
+            { id: "city", type: "identity", label: "深圳", dataPath: "/data/weather/location/prefectureName", required: true },
+            { id: "temperature", type: "primary", label: "当前温度", dataPath: "/data/weather/current/temperatureText", required: true },
+            { id: "cold_index", type: "status", label: "感冒指数", dataPath: "/data/weather/current/coldLevel", required: true },
+            { id: "call_dad", type: "action", label: "给爸打电话", eventRef: "call_dad", required: true }
+          ],
+          constraints: ["父母关怀场景，信息要清晰、温暖、易读。"]
+        },
+        dataModel: { value: { data: { weather: { current: { temperatureText: "--°", coldLevel: "加载中" } } } } },
+        cardSpec: { suggestSize: "2x2", dataBindings: [{ capabilityId: "ViewWeather", arguments: { districtName: "深圳", forecastDays: 1 }, writeResultTo: "/data/weather" }] },
+        eventBindings: [{ eventRef: "call_dad", on: "给爸打电话入口", onClick: [{ call: "clickToCallPhone", args: { phoneNumber: "15012345678" } }] }]
+      },
+      earbuds: {
+        schema: "taskspec/v1",
+        rulesVersion: "harmony-form-rules/v1",
+        userQuery: "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量，下面放两个快捷入口。",
+        card: {
+          scenario: "device",
+          size: "2x4",
+          requirements: [
+            { id: "device_name", type: "identity", label: "Free Clip 2", dataPath: "/device/name", required: true },
+            { id: "left_battery", type: "metric", label: "左耳电量", dataPath: "/device/leftBatteryText", required: true },
+            { id: "right_battery", type: "metric", label: "右耳电量", dataPath: "/device/rightBatteryText", required: true },
+            { id: "daily_30", type: "action", label: "每日30首", eventRef: "open_daily_30", required: true },
+            { id: "frosted_style", type: "style", label: "磨砂玻璃质感", note: "半透明层次、柔和边框、克制色彩。" }
+          ]
+        },
+        dataModel: { value: { device: { name: "Free Clip 2", leftBatteryText: "左耳 47%", rightBatteryText: "右耳 95%" } } },
+        cardSpec: { suggestSize: "2x4" }
+      },
+      request: {
+        model: "glm-5.2",
+        messages: [
+          { role: "system", content: "你是 HarmonyOS A2UI Form DSL 生成器。只输出一个 genui 代码块，不输出 cardspec。" },
+          { role: "user", content: "根据下面的 TaskSpec JSON 生成响应：\\n{...TaskSpec JSON...}" }
+        ]
+      }
+    };
 
-document.querySelectorAll('#codeTabs .tab').forEach(function(t){
-  t.onclick=function(){
-    document.querySelectorAll('#codeTabs .tab').forEach(function(x){x.classList.remove('active');});
-    document.querySelectorAll('#example .codeblock').forEach(function(b){b.classList.remove('show');});
-    document.getElementById(t.dataset.target).classList.add('show');
-    t.classList.add('active');
-  };
-});
+    function highlight(json) {
+      return JSON.stringify(json, null, 2)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/("(\\.|[^"\\])*")(\s*:)?/g, function(_, str, colon) {
+          return colon ? '<span class="k">' + str + '</span>' + colon : '<span class="s">' + str + '</span>';
+        })
+        .replace(/\b(true|false|null)\b/g, '<span class="n">$1</span>')
+        .replace(/(:\s*)(-?\d+\.?\d*)/g, '$1<span class="n">$2</span>');
+    }
 
-var canvas=document.getElementById('flowCanvas'), svg=document.getElementById('flowSvg');
-function rc(el){var a=el.getBoundingClientRect(),c=canvas.getBoundingClientRect();
-  return {x:a.left-c.left+a.width/2,y:a.top-c.top+a.height/2,
-          top:a.top-c.top,right:a.left-c.left+a.width,bottom:a.top-c.top+a.height,left:a.left-c.left};}
-var NS='http://www.w3.org/2000/svg';
-function edge(fromEl,toEl,cls,opts){opts=opts||{};
-  var f=rc(fromEl),t=rc(toEl);
-  var x1=opts.fromX!==undefined?opts.fromX:f.right, y1=opts.fromY!==undefined?opts.fromY:f.bottom;
-  var x2=opts.toX!==undefined?opts.toX:t.left, y2=opts.toY!==undefined?opts.toY:t.top;
-  var p=document.createElementNS(NS,'path');
-  var my=(y1+y2)/2;
-  p.setAttribute('d','M'+x1+','+y1+' C'+x1+','+my+' '+x2+','+my+' '+x2+','+y2);
-  p.setAttribute('fill','none');p.setAttribute('stroke',cls);p.setAttribute('stroke-width','2');p.setAttribute('opacity','.5');
-  p.classList.add('edge');svg.appendChild(p);
-}
-function nodeBy(key){var el;canvas.querySelectorAll('.node').forEach(function(n){if(n.classList.contains(key))el=n;});return el;}
-function drawEdges(){
-  svg.innerHTML='';
-  svg.setAttribute('viewBox','0 0 '+canvas.offsetWidth+' '+canvas.offsetHeight);
-  var q=nodeBy('query'),b=nodeBy('big'),sp=nodeBy('spec'),va=nodeBy('validate'),cs=nodeBy('cardspec'),
-      cv=nodeBy('convert'),sm=nodeBy('small'),ds=nodeBy('dsl'),fi=nodeBy('final');
-  edge(q,b,'#8da3bd',{fromY:rc(q).y,toY:rc(b).y});
-  edge(q,sp,'#2dd4bf',{fromX:rc(sp).left,fromY:rc(q).bottom,toX:rc(sp).left,toY:rc(sp).top});
-  edge(b,sp,'#2dd4bf',{fromX:rc(sp).right,fromY:rc(b).bottom,toX:rc(sp).right,toY:rc(sp).top});
-  edge(sp,va,'#60a5fa',{fromX:rc(sp).left,fromY:rc(sp).bottom,toX:rc(va).right,toY:rc(va).top});
-  edge(sp,cs,'#f5b342',{fromX:rc(sp).right,fromY:rc(sp).bottom,toX:rc(cs).left,toY:rc(cs).top});
-  edge(va,cv,'#60a5fa',{fromX:rc(va).left+14,fromY:rc(va).bottom,toX:rc(cv).left+14,toY:rc(cv).top});
-  edge(cv,sm,'#60a5fa',{fromX:rc(sm).left,fromY:rc(cv).bottom,toX:rc(sm).left,toY:rc(sm).top});
-  edge(sm,ds,'#a78bfa',{fromY:rc(sm).bottom,toY:rc(ds).top});
-  edge(ds,fi,'#a78bfa',{fromY:rc(ds).bottom,toY:rc(fi).top});
-  edge(cs,fi,'#f5b342',{fromX:rc(cs).left,fromY:rc(cs).bottom,toX:rc(fi).right,toY:rc(fi).top});
-}
-requestAnimationFrame(drawEdges);
-var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(drawEdges,80);});
+    document.getElementById("code-parent").innerHTML = highlight(samples.parent);
+    document.getElementById("code-earbuds").innerHTML = highlight(samples.earbuds);
+    document.getElementById("code-request").innerHTML = highlight(samples.request);
 
-document.querySelectorAll('#stageCtrl .stage-chip').forEach(function(c){
-  c.onclick=function(){
-    document.querySelectorAll('#stageCtrl .stage-chip').forEach(function(x){x.classList.remove('active');});
-    c.classList.add('active');
-    var s=c.dataset.stage;
-    canvas.querySelectorAll('.node').forEach(function(el){
-      if(s==='all'){el.classList.remove('dim');return;}
-      el.classList.toggle('dim',!el.dataset.stages.split(' ').includes(s));
+    document.querySelectorAll(".tab").forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        document.querySelectorAll(".tab").forEach(function(item) { item.classList.remove("active"); });
+        document.querySelectorAll(".code-panel").forEach(function(panel) { panel.classList.remove("active"); });
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.target).classList.add("active");
+      });
     });
-    svg.querySelectorAll('.edge').forEach(function(e){e.style.opacity = s==='all'?'':'0.12';});
-  };
-});
-</script>
+  </script>
 </body>
 </html>
