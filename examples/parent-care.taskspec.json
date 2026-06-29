@@ -1,53 +1,10 @@
 {
-  "schema": "taskspec/v1",
-  "rulesVersion": "harmony-form-datamodel-first-rules/v1",
   "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
   "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
-  "card": {
-    "scenario": "status",
+  "target": {
     "size": "2x2",
-    "requirements": [
-      {
-        "id": "city",
-        "type": "identity",
-        "label": "深圳",
-        "dataPath": "/data/weather/items/cityInfo/prefectureName",
-        "required": true
-      },
-      {
-        "id": "temperature",
-        "type": "primary",
-        "label": "当前温度",
-        "dataPath": "/data/weather/items/weatherData/temperatureText",
-        "required": true
-      },
-      {
-        "id": "cold_index",
-        "type": "status",
-        "label": "感冒指数",
-        "dataPath": "/data/weather/items/weatherData/coldLevel",
-        "required": true
-      },
-      {
-        "id": "condition",
-        "type": "context",
-        "label": "天气状况",
-        "dataPath": "/data/weather/items/weatherData/weather_icon"
-      },
-      {
-        "id": "call_dad",
-        "type": "action",
-        "label": "给爸打电话",
-        "required": true,
-        "onClick": [
-          {
-            "call": "clickToCallPhone",
-            "args": {
-              "phonenumber": "15012345678"
-            }
-          }
-        ]
-      }
+    "sceneHints": [
+      "status"
     ],
     "constraints": [
       "父母关怀场景，信息要清晰、温暖、易读。",
@@ -55,6 +12,50 @@
       "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
     ]
   },
+  "displayCandidates": [
+    {
+      "id": "city",
+      "role": "identity",
+      "label": "深圳",
+      "dataPath": "/data/weather/items/cityInfo/prefectureName",
+      "required": true
+    },
+    {
+      "id": "temperature",
+      "role": "primary",
+      "label": "当前温度",
+      "dataPath": "/data/weather/items/weatherData/temperatureText",
+      "required": true
+    },
+    {
+      "id": "cold_index",
+      "role": "status",
+      "label": "感冒指数",
+      "dataPath": "/data/weather/items/weatherData/coldLevel",
+      "required": true
+    },
+    {
+      "id": "condition",
+      "role": "context",
+      "label": "天气状况",
+      "dataPath": "/data/weather/items/weatherData/weather_icon"
+    }
+  ],
+  "eventCandidates": [
+    {
+      "id": "call_dad",
+      "label": "给爸打电话",
+      "required": true,
+      "onClick": [
+        {
+          "call": "clickToCallPhone",
+          "args": {
+            "phonenumber": "15012345678"
+          }
+        }
+      ]
+    }
+  ],
   "dataModel": {
     "value": {
       "data": {
@@ -80,5 +81,5 @@
       }
     }
   },
-  "assets": []
+  "assetCandidates": []
 }

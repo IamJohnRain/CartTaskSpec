@@ -6,14 +6,18 @@ from pathlib import Path
 from typing import Any
 
 
-RULES_VERSION = "harmony-form-datamodel-first-rules/v1"
 REMOVED_TOP_LEVEL = {
+    "assets",
+    "card",
     "cardSpec",
     "dataCapabilities",
     "eventBindings",
+    "intent",
     "validation",
     "capabilityGap",
     "rules",
+    "rulesVersion",
+    "schema",
 }
 EVENT_ARGS = {
     "clickToCallPhone": {"phonenumber"},
@@ -52,92 +56,98 @@ def resolve_pointer(root: Any, pointer: str) -> Any:
     return current
 
 
-def validate_on_click(name: str, requirement_id: str, handlers: Any) -> list[str]:
+def validate_on_click(name: str, candidate_id: str, handlers: Any) -> list[str]:
     errors: list[str] = []
     if not isinstance(handlers, list) or not handlers:
-        return [f"{name}: action requirement '{requirement_id}' must contain non-empty onClick array"]
+        return [f"{name}: eventCandidate '{candidate_id}' must contain non-empty onClick array"]
 
     for index, handler in enumerate(handlers, start=1):
         if not isinstance(handler, dict):
-            errors.append(f"{name}: requirement '{requirement_id}' onClick[{index}] must be an object")
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] must be an object")
             continue
         call = handler.get("call")
         if call not in EVENT_ARGS:
-            errors.append(f"{name}: requirement '{requirement_id}' uses unsupported onClick.call '{call}'")
+            errors.append(f"{name}: eventCandidate '{candidate_id}' uses unsupported onClick.call '{call}'")
             continue
         args = handler.get("args", {})
         if not isinstance(args, dict):
-            errors.append(f"{name}: requirement '{requirement_id}' onClick[{index}].args must be an object")
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}].args must be an object")
             continue
         expected = EVENT_ARGS[call]
         actual = set(args)
         missing = expected - actual
         extra = actual - expected
         if missing:
-            errors.append(f"{name}: requirement '{requirement_id}' onClick[{index}] missing args {sorted(missing)}")
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] missing args {sorted(missing)}")
         if extra:
-            errors.append(f"{name}: requirement '{requirement_id}' onClick[{index}] has unsupported args {sorted(extra)}")
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] has unsupported args {sorted(extra)}")
     return errors
 
 
 def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
     errors: list[str] = []
 
-    if spec.get("schema") != "taskspec/v1":
-        errors.append(f"{name}: schema must be taskspec/v1")
-    if spec.get("rulesVersion") != RULES_VERSION:
-        errors.append(f"{name}: rulesVersion must be {RULES_VERSION}")
-
     for key in sorted(REMOVED_TOP_LEVEL & set(spec)):
         errors.append(f"{name}: top-level '{key}' has been removed from TaskSpec")
 
-    card = spec.get("card", {})
     data_model_value = spec.get("dataModel", {}).get("value", {})
+    display_candidates = spec.get("displayCandidates", [])
+    event_candidates = spec.get("eventCandidates", [])
+    asset_candidates = spec.get("assetCandidates", [])
 
-    requirements = card.get("requirements", [])
-    if not isinstance(requirements, list) or not requirements:
-        errors.append(f"{name}: card.requirements must be a non-empty array")
+    if not isinstance(display_candidates, list) or not display_candidates:
+        errors.append(f"{name}: displayCandidates must be a non-empty array")
         return errors
 
-    requirement_ids = [item.get("id") for item in requirements if isinstance(item, dict)]
-    if len(set(requirement_ids)) != len(requirement_ids):
-        errors.append(f"{name}: duplicate card.requirements.id")
+    candidate_ids = [
+        item.get("id")
+        for item in [*display_candidates, *event_candidates]
+        if isinstance(item, dict)
+    ]
+    if len(set(candidate_ids)) != len(candidate_ids):
+        errors.append(f"{name}: duplicate candidate id")
 
-    asset_refs = {item.get("assetRef") for item in spec.get("assets", []) if item.get("assetRef")}
+    asset_refs = {item.get("assetRef") for item in asset_candidates if isinstance(item, dict) and item.get("assetRef")}
 
-    for requirement in requirements:
-        if not isinstance(requirement, dict):
-            errors.append(f"{name}: every card.requirements item must be an object")
+    for candidate in display_candidates:
+        if not isinstance(candidate, dict):
+            errors.append(f"{name}: every displayCandidates item must be an object")
             continue
-        requirement_id = requirement.get("id", "<unknown>")
-        requirement_type = requirement.get("type")
+        candidate_id = candidate.get("id", "<unknown>")
 
-        if requirement.get("assetRef") and requirement["assetRef"] not in asset_refs:
+        if candidate.get("assetRef") and candidate["assetRef"] not in asset_refs:
             errors.append(
-                f"{name}: requirement '{requirement_id}' references missing assetRef '{requirement['assetRef']}'"
+                f"{name}: displayCandidate '{candidate_id}' references missing assetRef '{candidate['assetRef']}'"
             )
 
-        if requirement.get("dataPath"):
-            local_value = resolve_pointer(data_model_value, requirement["dataPath"])
+        if candidate.get("dataPath"):
+            local_value = resolve_pointer(data_model_value, candidate["dataPath"])
             if local_value is None:
                 errors.append(
-                    f"{name}: requirement '{requirement_id}' dataPath '{requirement['dataPath']}' "
+                    f"{name}: displayCandidate '{candidate_id}' dataPath '{candidate['dataPath']}' "
                     "is not present in dataModel.value"
                 )
 
-        if requirement_type == "action":
-            errors.extend(validate_on_click(name, requirement_id, requirement.get("onClick")))
-        elif "onClick" in requirement:
-            errors.append(f"{name}: requirement '{requirement_id}' can only contain onClick when type is action")
+    if not isinstance(event_candidates, list):
+        errors.append(f"{name}: eventCandidates must be an array")
+    else:
+        for candidate in event_candidates:
+            if not isinstance(candidate, dict):
+                errors.append(f"{name}: every eventCandidates item must be an object")
+                continue
+            candidate_id = candidate.get("id", "<unknown>")
+            errors.extend(validate_on_click(name, candidate_id, candidate.get("onClick")))
+            if "eventRef" in candidate:
+                errors.append(f"{name}: eventCandidate '{candidate_id}' uses removed eventRef; inline onClick instead")
 
-        if "eventRef" in requirement:
-            errors.append(f"{name}: requirement '{requirement_id}' uses removed eventRef; inline onClick instead")
-
-    for asset in spec.get("assets", []):
+    for asset in asset_candidates:
+        if not isinstance(asset, dict):
+            errors.append(f"{name}: every assetCandidates item must be an object")
+            continue
         if asset.get("bindTo"):
             bound_value = resolve_pointer(data_model_value, asset["bindTo"])
             if bound_value != asset.get("src"):
-                errors.append(f"{name}: asset bindTo '{asset['bindTo']}' does not resolve to src")
+                errors.append(f"{name}: assetCandidate bindTo '{asset['bindTo']}' does not resolve to src")
 
     return errors
 

@@ -290,6 +290,7 @@
         <a href="./">首页</a>
         <a href="#top-fields">顶层字段</a>
         <a href="#modules">模块说明</a>
+        <a href="#system-prompt">System Prompt</a>
         <a href="#removed">移除模块</a>
         <a href="#validation">校验</a>
       </nav>
@@ -301,12 +302,12 @@
       <div class="wrap">
         <div class="eyebrow">TaskSpec Protocol · DataModel-first</div>
         <h1>TaskSpec 只描述 DSL 生成任务，不再承载 CardSpec</h1>
-        <p class="lead">当前协议以 `harmony-card-generation-datamodel-first` 为依据。TaskSpec 保留用户需求中小模型生成 DSL 真正需要的内容项、DataModel、动作和素材；所有 DSL 硬规则统一放入 system prompt。</p>
+        <p class="lead">当前协议以 `harmony-card-generation-datamodel-first` 为依据。TaskSpec 保留用户需求中 A2UI 模型生成 DSL 真正需要的内容项、DataModel、动作和素材；所有 DSL 硬规则统一放入 system prompt。</p>
         <div class="cards">
           <div class="card"><b>DSL-only</b><span>最终只输出 genui，不输出 cardspec。</span></div>
           <div class="card"><b>DataModel-first</b><span>展示值优先使用完整表达式读取 DataModel。</span></div>
           <div class="card"><b>规则进 prompt</b><span>TaskSpec 删除 rules.dsl，系统提示承载 DSL 硬规则。</span></div>
-          <div class="card"><b>动作内联</b><span>action requirement 直接携带 onClick。</span></div>
+          <div class="card"><b>动作内联</b><span>event candidate 直接携带 onClick。</span></div>
         </div>
       </div>
     </section>
@@ -316,18 +317,18 @@
         <div class="section-head">
           <div class="section-kicker">Top Level</div>
           <h2>顶层字段与是否必填</h2>
-          <p class="section-desc">当前 schema 顶层只允许 7 个字段，全部必填。旧的 CardSpec、data capability、eventBindings 和 rules 模块已经移除。</p>
+          <p class="section-desc">当前 schema 顶层只允许 7 个业务字段，全部必填。旧的 schema、rulesVersion、intent、assets、card、CardSpec、data capability、eventBindings 和 rules 模块已经移除。</p>
         </div>
         <table class="field-table">
           <thead><tr><th>字段</th><th>是否必须</th><th>说明</th><th>示例</th></tr></thead>
           <tbody>
-            <tr><td>schema</td><td><span class="badge required">必须</span></td><td>协议版本，固定为 `taskspec/v1`。</td><td><code>"taskspec/v1"</code></td></tr>
-            <tr><td>rulesVersion</td><td><span class="badge required">必须</span></td><td>规则集版本，固定为 `harmony-form-datamodel-first-rules/v1`。</td><td><code>"harmony-form-datamodel-first-rules/v1"</code></td></tr>
             <tr><td>userQuery</td><td><span class="badge required">必须</span></td><td>原始用户需求，保留语义来源。</td><td><code>"显示深圳温度并给我爸打电话"</code></td></tr>
-            <tr><td>task</td><td><span class="badge required">必须</span></td><td>给小模型的任务说明，必须约束只输出 genui。</td><td><code>"直接输出 genui..."</code></td></tr>
-            <tr><td>card</td><td><span class="badge required">必须</span></td><td>卡片场景、尺寸、内容需求和约束。</td><td><code>{"scenario":"device","size":"2x4"}</code></td></tr>
-            <tr><td>dataModel</td><td><span class="badge required">必须</span></td><td>小模型第 3 行 updateDataModel.value 必须原样使用的数据。</td><td><code>{"value":{"device":{...}}}</code></td></tr>
-            <tr><td>assets</td><td><span class="badge required">必须</span></td><td>素材白名单；没有素材时为空数组。</td><td><code>[]</code></td></tr>
+            <tr><td>task</td><td><span class="badge required">必须</span></td><td>给 A2UI 模型的任务说明，必须约束只输出 genui。</td><td><code>"直接输出 genui..."</code></td></tr>
+            <tr><td>target</td><td><span class="badge required">必须</span></td><td>目标尺寸、场景弱提示、风格提示和约束。</td><td><code>{"size":"2x4","styleHints":[...]}</code></td></tr>
+            <tr><td>displayCandidates</td><td><span class="badge required">必须</span></td><td>可显示的信息候选，不是组件候选。</td><td><code>[{"role":"metric"}]</code></td></tr>
+            <tr><td>eventCandidates</td><td><span class="badge required">必须</span></td><td>可点击事件候选，不规定按钮形态。</td><td><code>[{"label":"每日30首"}]</code></td></tr>
+            <tr><td>dataModel</td><td><span class="badge required">必须</span></td><td>A2UI 模型第 3 行 updateDataModel.value 必须原样使用的数据。</td><td><code>{"value":{"device":{...}}}</code></td></tr>
+            <tr><td>assetCandidates</td><td><span class="badge required">必须</span></td><td>素材候选白名单；没有素材时为空数组。</td><td><code>[]</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -341,50 +342,44 @@
         </div>
         <div class="module-list">
           <article class="module">
-            <div class="module-side"><small>MODULE 01</small><h3>版本与任务</h3><p>schema / rulesVersion / userQuery / task</p></div>
+            <div class="module-side"><small>MODULE 01</small><h3>target</h3><p>目标弱约束</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> `rulesVersion` 选择 DataModel-first 规则。`task` 只表达生成目标，不携带 DSL 规则细节。</p>
+              <p><span class="badge required">必须</span> 只保留尺寸、场景弱提示、风格提示和必要约束，不写布局方案。</p>
               <details class="example" open><summary>示例</summary><pre>{
-  "schema": "taskspec/v1",
-  "rulesVersion": "harmony-form-datamodel-first-rules/v1",
-  "userQuery": "给我做个好看的耳机桌面卡片...",
-  "task": "根据本 TaskSpec 生成一个 genui 代码块。直接输出 genui，不输出解释或 cardspec。"
-}</pre></details>
-            </div>
-          </article>
-
-          <article class="module">
-            <div class="module-side"><small>MODULE 02</small><h3>card</h3><p>卡片意图，不是布局方案</p></div>
-            <div class="module-body">
-              <p><span class="badge required">必须</span> `scenario` 表达卡片主要意图，`size` 只表达 2x2/2x4 目标，`requirements` 表达必须显示或可点击的内容项。</p>
-              <div class="note-grid">
-                <div class="note"><b>size</b>新 skill 的 DSL 尺寸为 `2x2 = 140x140`、`2x4 = 300x140`。</div>
-                <div class="note"><b>action</b>点击动作直接写在 requirement 的 `onClick` 中，不再使用 eventRef。</div>
-              </div>
-              <details class="example" open><summary>示例</summary><pre>{
-  "scenario": "device",
   "size": "2x4",
-  "requirements": [
-    { "id": "device_name", "type": "identity", "label": "Free Clip 2", "dataPath": "/device/name", "required": true },
-    { "id": "left_battery", "type": "metric", "label": "左耳电量", "dataPath": "/device/leftBatteryText", "required": true },
-    {
-      "id": "daily_30",
-      "type": "action",
-      "label": "每日30首",
-      "onClick": [
-        { "call": "clickToDeeplink", "args": { "bundleName": "", "abilityName": "", "uri": "..." } }
-      ]
-    }
-  ],
-  "constraints": ["整体简洁高级，有磨砂玻璃质感。"]
+  "sceneHints": ["device", "music"],
+  "styleHints": ["简洁高级", "磨砂玻璃质感"]
 }</pre></details>
             </div>
           </article>
-
           <article class="module">
-            <div class="module-side"><small>MODULE 03</small><h3>dataModel</h3><p>表达式和绑定的唯一数据源</p></div>
+            <div class="module-side"><small>MODULE 02</small><h3>displayCandidates</h3><p>内容候选，不是组件候选</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> `dataModel.value` 必须被小模型原样写入 `updateDataModel.value`。所有 `dataPath`、表达式和原生绑定路径都应能从这里解析。</p>
+              <p><span class="badge required">必须</span> 表达用户希望显示的信息。不要写 Text、Progress、位置、字号或区域。</p>
+              <details class="example" open><summary>示例</summary><pre>[
+  { "id": "device_name", "role": "identity", "label": "Free Clip 2", "dataPath": "/device/name", "required": true },
+  { "id": "left_battery", "role": "metric", "label": "左耳电量", "dataPath": "/device/leftBatteryText", "required": true }
+]</pre></details>
+            </div>
+          </article>
+          <article class="module">
+            <div class="module-side"><small>MODULE 03</small><h3>eventCandidates</h3><p>事件候选，不规定按钮形态</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> 表达可点击事件能力。A2UI 模型决定最终是 Button 还是可点击容器。</p>
+              <details class="example" open><summary>示例</summary><pre>[
+  {
+    "id": "daily_30",
+    "label": "每日30首",
+    "required": true,
+    "onClick": [{ "call": "clickToDeeplink", "args": { "bundleName": "", "abilityName": "", "uri": "..." } }]
+  }
+]</pre></details>
+            </div>
+          </article>
+          <article class="module">
+            <div class="module-side"><small>MODULE 04</small><h3>dataModel</h3><p>表达式和绑定的唯一数据源</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> `dataModel.value` 必须被 A2UI 模型原样写入 `updateDataModel.value`。</p>
               <details class="example" open><summary>示例</summary><pre>{
   "value": {
     "device": {
@@ -396,15 +391,51 @@
 }</pre></details>
             </div>
           </article>
-
           <article class="module">
-            <div class="module-side"><small>MODULE 04</small><h3>assets</h3><p>素材白名单</p></div>
+            <div class="module-side"><small>MODULE 05</small><h3>assetCandidates</h3><p>素材候选白名单</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> 没有素材时写 `[]`。小模型只能使用这里声明的本地/资源路径，不得使用网络图、SVG 或未声明资源。</p>
-              <details class="example" open><summary>示例</summary><pre>[]</pre></details>
+              <p><span class="badge required">必须</span> 没有素材时写 `[]`。它不规定素材最终做背景、图标还是插图。</p>
+              <details class="example" open><summary>示例</summary><pre>[
+  { "assetRef": "earbuds_icon", "src": "assets/freeclip2-earbuds.png", "use": "device illustration", "static": true }
+]</pre></details>
             </div>
           </article>
         </div>
+      </div>
+    </section>
+
+    <section id="system-prompt">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">System Prompt</div>
+          <h2>当前 system prompt 说明</h2>
+          <p class="section-desc">TaskSpec 不携带 DSL 硬规则。转换脚本把这些规则集中写入 chat-completions 的 system 消息，让 A2UI 模型在稳定边界内完成设计与 DSL 生成。</p>
+        </div>
+        <div class="checklist">
+          <div class="check">
+            <h3>输入与输出边界</h3>
+            <ul>
+              <li>角色是 A2UI 模型，负责生成 HarmonyOS A2UI Form DSL。</li>
+              <li>TaskSpec 是候选约束契约，不是布局蓝图。</li>
+              <li>只输出一个 `genui` 代码块，恰好 3 行 JSONL。</li>
+              <li>禁止输出解释、路径、总结或 `cardspec`。</li>
+            </ul>
+          </div>
+          <div class="check">
+            <h3>DSL 硬规则</h3>
+            <ul>
+              <li>`target.size=2x2` 对应 140x140，`2x4` 对应 300x140。</li>
+              <li>只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。</li>
+              <li>展示值优先使用完整表达式读取 DataModel。</li>
+              <li>onClick 只能来自 eventCandidates，图片只能来自 assetCandidates 或明确本地资源。</li>
+            </ul>
+          </div>
+        </div>
+        <details class="example" open style="margin-top:14px"><summary>system prompt 摘要</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
+你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。
+只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
+genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
+展示值优先使用完整表达式读取 DataModel；点击和素材只能来自 TaskSpec 声明。</pre></details>
       </div>
     </section>
 
@@ -413,17 +444,22 @@
         <div class="section-head">
           <div class="section-kicker">Removed</div>
           <h2>已移除模块</h2>
-          <p class="section-desc">这些模块不再进入 TaskSpec。它们要么属于 system prompt，要么属于端侧 CardSpec 生成链路，要么已被内联到 requirements。</p>
+          <p class="section-desc">这些模块不再进入 TaskSpec。它们要么属于 system prompt，要么属于端侧 CardSpec 生成链路，要么已经拆分为候选集合。</p>
         </div>
         <table class="field-table">
           <thead><tr><th>模块</th><th>状态</th><th>原因</th><th>替代方式</th></tr></thead>
           <tbody>
             <tr><td>rules.dsl</td><td><span class="badge removed">移除</span></td><td>DSL 硬规则是通用生成规则，不应每个 TaskSpec 重复。</td><td>写入 system prompt。</td></tr>
-            <tr><td>cardSpec</td><td><span class="badge removed">移除</span></td><td>当前任务只让小模型生成 DSL，不生成 CardSpec。</td><td>如端侧需要，另走 CardSpec 生成链路。</td></tr>
-            <tr><td>dataCapabilities</td><td><span class="badge removed">移除</span></td><td>小模型不负责选择端侧 data capability 或生成 dataBindings。</td><td>用 dataModel 结构和 dataPath 表达 DSL 可绑定数据。</td></tr>
-            <tr><td>eventBindings</td><td><span class="badge removed">移除</span></td><td>顶层 eventRef 跳转增加冗余。</td><td>action requirement 直接内联 onClick。</td></tr>
+            <tr><td>schema</td><td><span class="badge removed">移除</span></td><td>协议结构由仓库 schema 管理，不作为业务字段重复下发。</td><td>使用 taskspec.schema.json 校验。</td></tr>
+            <tr><td>rulesVersion</td><td><span class="badge removed">移除</span></td><td>DSL 规则由转换脚本 system prompt 管理。</td><td>在 system prompt 中维护。</td></tr>
+            <tr><td>intent</td><td><span class="badge removed">移除</span></td><td>显示内容、事件和风格混在一个数组中，职责不清。</td><td>拆分为 target、displayCandidates、eventCandidates、assetCandidates。</td></tr>
+            <tr><td>assets</td><td><span class="badge removed">移除</span></td><td>旧名称只像素材清单，不强调候选约束。</td><td>改为 assetCandidates。</td></tr>
+            <tr><td>card</td><td><span class="badge removed">移除</span></td><td>旧字段名容易误解为卡片布局方案。</td><td>已废弃。</td></tr>
+            <tr><td>cardSpec</td><td><span class="badge removed">移除</span></td><td>当前任务只让 A2UI 模型生成 DSL，不生成 CardSpec。</td><td>如端侧需要，另走 CardSpec 生成链路。</td></tr>
+            <tr><td>dataCapabilities</td><td><span class="badge removed">移除</span></td><td>A2UI 模型不负责选择端侧 data capability 或生成 dataBindings。</td><td>用 dataModel 结构和 dataPath 表达 DSL 可绑定数据。</td></tr>
+            <tr><td>eventBindings</td><td><span class="badge removed">移除</span></td><td>顶层 eventRef 跳转增加冗余。</td><td>event candidate 直接内联 onClick。</td></tr>
             <tr><td>validation</td><td><span class="badge removed">移除</span></td><td>校验记录不是生成 DSL 的输入。</td><td>由校验脚本输出报告。</td></tr>
-            <tr><td>capabilityGap</td><td><span class="badge removed">移除</span></td><td>能力缺口说明属于 Agent 决策过程，不进入小模型 DSL 输入。</td><td>由上游流程处理。</td></tr>
+            <tr><td>capabilityGap</td><td><span class="badge removed">移除</span></td><td>能力缺口说明属于 Agent 决策过程，不进入 A2UI 模型 DSL 输入。</td><td>由上游流程处理。</td></tr>
           </tbody>
         </table>
       </div>
@@ -437,13 +473,13 @@
         </div>
         <div class="checklist">
           <div class="check">
-            <h3>发送给小模型前</h3>
+            <h3>发送给 A2UI 模型前</h3>
             <ul>
               <li>JSON 结构符合 `taskspec.schema.json`。</li>
               <li>不得包含已移除模块。</li>
-              <li>`requirements[].id` 唯一。</li>
-              <li>`dataPath` 能从 `dataModel.value` 解析。</li>
-              <li>action requirement 必须包含合法 `onClick`。</li>
+              <li>`displayCandidates[].id` 与 `eventCandidates[].id` 全局唯一。</li>
+              <li>`displayCandidates[].dataPath` 能从 `dataModel.value` 解析。</li>
+              <li>`eventCandidates[].onClick` 必须合法。</li>
             </ul>
           </div>
           <div class="check">
@@ -481,38 +517,90 @@
 
   <script>
     const sample = {
-      schema: "taskspec/v1",
-      rulesVersion: "harmony-form-datamodel-first-rules/v1",
-      userQuery: "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话",
-      task: "根据本 TaskSpec 生成一个 genui 代码块。直接输出 genui，不输出解释或 cardspec。",
-      card: {
-        scenario: "status",
-        size: "2x2",
-        requirements: [
-          { id: "city", type: "identity", label: "深圳", dataPath: "/data/weather/items/cityInfo/prefectureName", required: true },
-          { id: "temperature", type: "primary", label: "当前温度", dataPath: "/data/weather/items/weatherData/temperatureText", required: true },
-          { id: "cold_index", type: "status", label: "感冒指数", dataPath: "/data/weather/items/weatherData/coldLevel", required: true },
-          { id: "call_dad", type: "action", label: "给爸打电话", required: true, onClick: [{ call: "clickToCallPhone", args: { phonenumber: "15012345678" } }] }
-        ],
-        constraints: ["父母关怀场景，信息要清晰、温暖、易读。"]
+      "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
+      "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
+      "target": {
+            "size": "2x2",
+            "sceneHints": [
+                  "status"
+            ],
+            "constraints": [
+                  "父母关怀场景，信息要清晰、温暖、易读。",
+                  "温度、感冒指数和拨号入口必须完整显示。",
+                  "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
+            ]
       },
-      dataModel: {
-        value: {
-          data: {
-            weather: {
-              items: {
-                cityInfo: { districtName: "深圳", prefectureName: "深圳" },
-                weatherData: { temperatureText: "--°", weather_icon: "加载中", coldLevel: "加载中" },
-                weatherDailyData: [],
-                weatherHoursData: []
-              }
+      "displayCandidates": [
+            {
+                  "id": "city",
+                  "role": "identity",
+                  "label": "深圳",
+                  "dataPath": "/data/weather/items/cityInfo/prefectureName",
+                  "required": true
+            },
+            {
+                  "id": "temperature",
+                  "role": "primary",
+                  "label": "当前温度",
+                  "dataPath": "/data/weather/items/weatherData/temperatureText",
+                  "required": true
+            },
+            {
+                  "id": "cold_index",
+                  "role": "status",
+                  "label": "感冒指数",
+                  "dataPath": "/data/weather/items/weatherData/coldLevel",
+                  "required": true
+            },
+            {
+                  "id": "condition",
+                  "role": "context",
+                  "label": "天气状况",
+                  "dataPath": "/data/weather/items/weatherData/weather_icon"
             }
-          },
-          state: { loading: true }
-        }
+      ],
+      "eventCandidates": [
+            {
+                  "id": "call_dad",
+                  "label": "给爸打电话",
+                  "required": true,
+                  "onClick": [
+                        {
+                              "call": "clickToCallPhone",
+                              "args": {
+                                    "phonenumber": "15012345678"
+                              }
+                        }
+                  ]
+            }
+      ],
+      "dataModel": {
+            "value": {
+                  "data": {
+                        "weather": {
+                              "items": {
+                                    "cityInfo": {
+                                          "districtName": "深圳",
+                                          "prefectureName": "深圳"
+                                    },
+                                    "weatherData": {
+                                          "temperatureText": "--°",
+                                          "temperature": 0,
+                                          "weather_icon": "加载中",
+                                          "coldLevel": "加载中"
+                                    },
+                                    "weatherDailyData": [],
+                                    "weatherHoursData": []
+                              }
+                        }
+                  },
+                  "state": {
+                        "loading": true
+                  }
+            }
       },
-      assets: []
-    };
+      "assetCandidates": []
+};
 
     function highlight(json) {
       return JSON.stringify(json, null, 2)

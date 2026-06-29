@@ -4,21 +4,15 @@
   "title": "TaskSpec",
   "type": "object",
   "required": [
-    "schema",
-    "rulesVersion",
     "userQuery",
     "task",
-    "card",
+    "target",
+    "displayCandidates",
+    "eventCandidates",
     "dataModel",
-    "assets"
+    "assetCandidates"
   ],
   "properties": {
-    "schema": {
-      "const": "taskspec/v1"
-    },
-    "rulesVersion": {
-      "const": "harmony-form-datamodel-first-rules/v1"
-    },
     "userQuery": {
       "type": "string",
       "minLength": 1
@@ -27,66 +21,49 @@
       "type": "string",
       "minLength": 1
     },
-    "card": {
+    "target": {
       "type": "object",
-      "required": ["scenario", "size", "requirements"],
+      "required": ["size"],
       "properties": {
-        "scenario": {
-          "enum": ["status", "reminder", "action", "device", "summary"]
-        },
         "size": {
           "enum": ["2x2", "2x4"]
         },
-        "requirements": {
+        "sceneHints": {
           "type": "array",
-          "minItems": 1,
           "items": {
-            "type": "object",
-            "required": ["id", "type", "label"],
-            "properties": {
-              "id": {
-                "type": "string",
-                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
-              },
-              "type": {
-                "enum": ["identity", "primary", "metric", "status", "context", "media", "action", "style"]
-              },
-              "label": {
-                "type": "string",
-                "minLength": 1
-              },
-              "dataPath": {
-                "$ref": "#/$defs/jsonPointer"
-              },
-              "assetRef": {
-                "type": "string",
-                "minLength": 1
-              },
-              "onClick": {
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                  "$ref": "#/$defs/eventHandler"
-                }
-              },
-              "required": {
-                "type": "boolean"
-              },
-              "note": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": false
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "styleHints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
           }
         },
         "constraints": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         }
       },
       "additionalProperties": false
+    },
+    "displayCandidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/displayCandidate"
+      }
+    },
+    "eventCandidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/eventCandidate"
+      }
     },
     "dataModel": {
       "type": "object",
@@ -98,32 +75,10 @@
       },
       "additionalProperties": false
     },
-    "assets": {
+    "assetCandidates": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": ["src", "use"],
-        "properties": {
-          "assetRef": {
-            "type": "string",
-            "minLength": 1
-          },
-          "src": {
-            "type": "string",
-            "minLength": 1
-          },
-          "use": {
-            "type": "string",
-            "minLength": 1
-          },
-          "bindTo": {
-            "$ref": "#/$defs/jsonPointer"
-          },
-          "static": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
+        "$ref": "#/$defs/assetCandidate"
       }
     }
   },
@@ -132,6 +87,90 @@
     "jsonPointer": {
       "type": "string",
       "pattern": "^(/([^/~]|~0|~1)*)*$"
+    },
+    "displayCandidate": {
+      "type": "object",
+      "required": ["id", "role", "label"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "role": {
+          "enum": ["identity", "primary", "metric", "status", "context", "media"]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dataPath": {
+          "$ref": "#/$defs/jsonPointer"
+        },
+        "assetRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventCandidate": {
+      "type": "object",
+      "required": ["id", "label", "onClick"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "onClick": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/eventHandler"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "assetCandidate": {
+      "type": "object",
+      "required": ["src", "use"],
+      "properties": {
+        "assetRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "src": {
+          "type": "string",
+          "minLength": 1
+        },
+        "use": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bindTo": {
+          "$ref": "#/$defs/jsonPointer"
+        },
+        "static": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     },
     "eventHandler": {
       "type": "object",

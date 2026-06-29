@@ -477,9 +477,9 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <div class="eyebrow">taskspec/v1 · harmony-form-datamodel-first-rules/v1</div>
-          <h1>把 Form 协议约束抽取出来，让小模型更会画卡片</h1>
-          <p class="lead">CartTaskSpec 不是把理解力简单交给大模型，而是让大模型从用户 query 中抽取与 Form 协议相关的约束、能力和交付契约；小模型在清晰边界内完成真正有价值的 DSL 设计与生成。</p>
+          <div class="eyebrow">TaskSpec · DataModel-first · DSL-only</div>
+          <h1>把 Form 协议约束抽取出来，让 A2UI 模型更会生成 DSL</h1>
+          <p class="lead">CartTaskSpec 不是把理解力简单交给大模型，而是让大模型从用户 query 中抽取与 Form 协议相关的约束、能力和交付契约；A2UI 模型在清晰边界内完成真正有价值的 DSL 设计与生成。</p>
           <div class="hero-actions">
             <a class="button primary" href="#workflow">查看作业流</a>
             <a class="button" href="taskspec.html">TaskSpec 协议详解</a>
@@ -494,14 +494,14 @@
               <p>识别场景、尺寸、内容项、DataModel、动作和素材白名单。</p>
             </div>
             <div class="mini-panel">
-              <div class="label">Small Model</div>
+              <div class="label">A2UI Model</div>
               <h3>在约束内完成高质量实现</h3>
               <p>完成组件组织、视觉层次、排版、绑定和最终 3 行 genui JSONL。</p>
             </div>
             <div class="mini-panel">
               <div class="label">Final Output</div>
               <h3>只交付 genui DSL</h3>
-              <p>TaskSpec 不再携带 CardSpec，小模型最终输出只有 DSL，不生成 cardspec。</p>
+              <p>TaskSpec 不再携带 CardSpec，A2UI 模型最终输出只有 DSL，不生成 cardspec。</p>
             </div>
           </div>
         </div>
@@ -513,7 +513,7 @@
         <div class="section-head">
           <div class="section-kicker">Design Philosophy</div>
           <h2>协议设计思想</h2>
-          <p class="section-desc">TaskSpec 的核心不是替小模型完成布局，而是把用户需求中的内容项、DataModel、动作和素材整理成一个短小、可校验的输入。</p>
+          <p class="section-desc">TaskSpec 的核心不是替 A2UI 模型完成布局，而是把用户需求中的内容项、DataModel、动作和素材整理成一个短小、可校验的输入。</p>
         </div>
         <div class="principles">
           <div class="principle">
@@ -523,13 +523,13 @@
           </div>
           <div class="principle">
             <div class="num">2</div>
-            <h3>保留小模型的设计空间</h3>
-            <p>TaskSpec 不携带布局树、区域预算或组件嵌套。小模型负责把需求转成可渲染、可读、可交互的 DSL。</p>
+            <h3>保留 A2UI 模型的设计空间</h3>
+            <p>TaskSpec 不携带布局树、区域预算或组件嵌套。A2UI 模型负责把需求转成可渲染、可读、可交互的 DSL。</p>
           </div>
           <div class="principle">
             <div class="num">3</div>
             <h3>用校验兜住边界</h3>
-            <p>小模型可以发挥布局和视觉能力，但必须通过 JSONL、组件、绑定、事件、DataModel 和尺寸校验。</p>
+            <p>A2UI 模型可以发挥布局和视觉能力，但必须通过 JSONL、组件、绑定、事件、DataModel 和尺寸校验。</p>
           </div>
         </div>
 
@@ -544,8 +544,8 @@
             </ul>
           </div>
           <div class="model-box">
-            <h3>小模型的核心价值是什么？</h3>
-            <p>小模型不是剩下组装，而是在明确约束内完成卡片设计落地。</p>
+            <h3>A2UI 模型的核心价值是什么？</h3>
+            <p>A2UI 模型不是剩下组装，而是在明确约束内完成卡片设计落地。</p>
             <ul class="role-list">
               <li><b>布局判断</b>：根据 2x2/2x4 空间组织信息层级。</li>
               <li><b>组件实现</b>：选择 Row/Column/Stack/Text/Button 等并生成扁平组件数组。</li>
@@ -562,7 +562,7 @@
         <div class="section-head">
           <div class="section-kicker">Workflow</div>
           <h2>三个中间模块：从用户 Query 到 DSL</h2>
-          <p class="section-desc">流程只突出三个真正处理信息的模块：大模型 Agent、转换脚本、小模型 API。用户 Query、TaskSpec、API request body 和 DSL 都是这些模块之间流动的输入输出；最终输出只有小模型生成的 DSL。</p>
+          <p class="section-desc">流程只突出三个真正处理信息的模块：大模型 Agent、转换脚本、A2UI 模型 API。用户 Query、TaskSpec、API request body 和 DSL 都是这些模块之间流动的输入输出；最终输出只有 A2UI 模型生成的 DSL。</p>
         </div>
 
         <div class="pipeline">
@@ -572,7 +572,7 @@
               <h3>大模型 Agent</h3>
               <div class="io-grid">
                 <div class="io-box"><b>输入</b><p>用户 Query，以及 Form 协议 / skill 参考规则。协议结构以 <a href="https://github.com/IamJohnRain/CartTaskSpec/blob/master/taskspec.schema.json" target="_blank">taskspec.schema.json</a> 为准。</p></div>
-                <div class="io-box"><b>输出 + 校验</b><p>TaskSpec JSON，内含 `card.requirements`、`dataModel` 和 `assets`；动作内联在 action requirement 的 `onClick` 中，随后执行 schema 与协议一致性校验。</p></div>
+                <div class="io-box"><b>输出 + 校验</b><p>TaskSpec JSON，内含 `target`、`displayCandidates`、`eventCandidates`、`dataModel` 和 `assetCandidates`；动作内联在 event candidate 的 `onClick` 中，随后执行 schema 与协议一致性校验。</p></div>
               </div>
               <details class="example">
                 <summary>展开输入样例：用户 Query</summary>
@@ -589,8 +589,8 @@
 校验重点：
 - JSON 结构符合 taskspec.schema.json
 - dataPath 必须能从 dataModel.value 解析
-- action requirement 必须内联合规 onClick
-- 小模型任务被约束为只输出 genui DSL</pre>
+- event candidate 必须内联合规 onClick
+- A2UI 模型任务被约束为只输出 genui DSL</pre>
               </details>
             </div>
           </article>
@@ -625,7 +625,7 @@
           <article class="pipe-card">
             <div class="pipe-index"><span>MODULE</span><span>03</span></div>
             <div class="pipe-main">
-              <h3>小模型 API</h3>
+              <h3>A2UI 模型 API</h3>
               <div class="io-grid">
                 <div class="io-box"><b>输入</b><p>API request body。`system` 说明 DSL 规则，`user` 提供完整 TaskSpec。</p></div>
                 <div class="io-box"><b>输出</b><p>DSL：一个 `genui` 代码块，恰好 3 行 JSONL。最终输出只有 DSL，不包含 CardSpec，也不做 DSL + CardSpec 组合产物。</p></div>
@@ -695,63 +695,20 @@
 
   <footer>
     <div class="wrap">
-      <span>CartTaskSpec · taskspec/v1</span>
-      <span>约束抽取给大模型，设计落地给小模型。</span>
+      <span>CartTaskSpec · TaskSpec</span>
+      <span>约束抽取给大模型，设计落地给 A2UI 模型。</span>
     </div>
   </footer>
 
   <script>
     const samples = {
       "parent": {
-            "schema": "taskspec/v1",
-            "rulesVersion": "harmony-form-datamodel-first-rules/v1",
             "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
             "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
-            "card": {
-                  "scenario": "status",
+            "target": {
                   "size": "2x2",
-                  "requirements": [
-                        {
-                              "id": "city",
-                              "type": "identity",
-                              "label": "深圳",
-                              "dataPath": "/data/weather/items/cityInfo/prefectureName",
-                              "required": true
-                        },
-                        {
-                              "id": "temperature",
-                              "type": "primary",
-                              "label": "当前温度",
-                              "dataPath": "/data/weather/items/weatherData/temperatureText",
-                              "required": true
-                        },
-                        {
-                              "id": "cold_index",
-                              "type": "status",
-                              "label": "感冒指数",
-                              "dataPath": "/data/weather/items/weatherData/coldLevel",
-                              "required": true
-                        },
-                        {
-                              "id": "condition",
-                              "type": "context",
-                              "label": "天气状况",
-                              "dataPath": "/data/weather/items/weatherData/weather_icon"
-                        },
-                        {
-                              "id": "call_dad",
-                              "type": "action",
-                              "label": "给爸打电话",
-                              "required": true,
-                              "onClick": [
-                                    {
-                                          "call": "clickToCallPhone",
-                                          "args": {
-                                                "phonenumber": "15012345678"
-                                          }
-                                    }
-                              ]
-                        }
+                  "sceneHints": [
+                        "status"
                   ],
                   "constraints": [
                         "父母关怀场景，信息要清晰、温暖、易读。",
@@ -759,6 +716,50 @@
                         "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
                   ]
             },
+            "displayCandidates": [
+                  {
+                        "id": "city",
+                        "role": "identity",
+                        "label": "深圳",
+                        "dataPath": "/data/weather/items/cityInfo/prefectureName",
+                        "required": true
+                  },
+                  {
+                        "id": "temperature",
+                        "role": "primary",
+                        "label": "当前温度",
+                        "dataPath": "/data/weather/items/weatherData/temperatureText",
+                        "required": true
+                  },
+                  {
+                        "id": "cold_index",
+                        "role": "status",
+                        "label": "感冒指数",
+                        "dataPath": "/data/weather/items/weatherData/coldLevel",
+                        "required": true
+                  },
+                  {
+                        "id": "condition",
+                        "role": "context",
+                        "label": "天气状况",
+                        "dataPath": "/data/weather/items/weatherData/weather_icon"
+                  }
+            ],
+            "eventCandidates": [
+                  {
+                        "id": "call_dad",
+                        "label": "给爸打电话",
+                        "required": true,
+                        "onClick": [
+                              {
+                                    "call": "clickToCallPhone",
+                                    "args": {
+                                          "phonenumber": "15012345678"
+                                    }
+                              }
+                        ]
+                  }
+            ],
             "dataModel": {
                   "value": {
                         "data": {
@@ -784,76 +785,19 @@
                         }
                   }
             },
-            "assets": []
+            "assetCandidates": []
       },
       "earbuds": {
-            "schema": "taskspec/v1",
-            "rulesVersion": "harmony-form-datamodel-first-rules/v1",
             "userQuery": "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。",
             "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
-            "card": {
-                  "scenario": "device",
+            "target": {
                   "size": "2x4",
-                  "requirements": [
-                        {
-                              "id": "device_name",
-                              "type": "identity",
-                              "label": "Free Clip 2",
-                              "dataPath": "/device/name",
-                              "required": true
-                        },
-                        {
-                              "id": "left_battery",
-                              "type": "metric",
-                              "label": "左耳电量",
-                              "dataPath": "/device/leftBatteryText",
-                              "required": true
-                        },
-                        {
-                              "id": "right_battery",
-                              "type": "metric",
-                              "label": "右耳电量",
-                              "dataPath": "/device/rightBatteryText",
-                              "required": true
-                        },
-                        {
-                              "id": "daily_30",
-                              "type": "action",
-                              "label": "每日30首",
-                              "required": true,
-                              "onClick": [
-                                    {
-                                          "call": "clickToDeeplink",
-                                          "args": {
-                                                "bundleName": "",
-                                                "abilityName": "",
-                                                "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
-                                          }
-                                    }
-                              ]
-                        },
-                        {
-                              "id": "favorite_playlist",
-                              "type": "action",
-                              "label": "心动歌单",
-                              "required": true,
-                              "onClick": [
-                                    {
-                                          "call": "clickToDeeplink",
-                                          "args": {
-                                                "bundleName": "",
-                                                "abilityName": "",
-                                                "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
-                                          }
-                                    }
-                              ]
-                        },
-                        {
-                              "id": "frosted_style",
-                              "type": "style",
-                              "label": "磨砂玻璃质感",
-                              "note": "简洁高级，使用半透明层次、柔和边框和克制色彩表达。"
-                        }
+                  "sceneHints": [
+                        "device"
+                  ],
+                  "styleHints": [
+                        "磨砂玻璃质感",
+                        "简洁高级，使用半透明层次、柔和边框和克制色彩表达。"
                   ],
                   "constraints": [
                         "Free Clip 2、左耳 47%、右耳 95%、每日30首、心动歌单必须完整显示。",
@@ -861,6 +805,69 @@
                         "静态设备卡片，不需要 CardSpec 或 data capability。"
                   ]
             },
+            "displayCandidates": [
+                  {
+                        "id": "device_name",
+                        "role": "identity",
+                        "label": "Free Clip 2",
+                        "dataPath": "/device/name",
+                        "required": true
+                  },
+                  {
+                        "id": "earbuds_icon",
+                        "role": "media",
+                        "label": "耳机图标",
+                        "assetRef": "earbuds_icon",
+                        "required": false,
+                        "note": "可作为弱装饰，不得挤占电量和快捷入口空间。"
+                  },
+                  {
+                        "id": "left_battery",
+                        "role": "metric",
+                        "label": "左耳电量",
+                        "dataPath": "/device/leftBatteryText",
+                        "required": true
+                  },
+                  {
+                        "id": "right_battery",
+                        "role": "metric",
+                        "label": "右耳电量",
+                        "dataPath": "/device/rightBatteryText",
+                        "required": true
+                  }
+            ],
+            "eventCandidates": [
+                  {
+                        "id": "daily_30",
+                        "label": "每日30首",
+                        "required": true,
+                        "onClick": [
+                              {
+                                    "call": "clickToDeeplink",
+                                    "args": {
+                                          "bundleName": "",
+                                          "abilityName": "",
+                                          "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+                                    }
+                              }
+                        ]
+                  },
+                  {
+                        "id": "favorite_playlist",
+                        "label": "心动歌单",
+                        "required": true,
+                        "onClick": [
+                              {
+                                    "call": "clickToDeeplink",
+                                    "args": {
+                                          "bundleName": "",
+                                          "abilityName": "",
+                                          "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
+                                    }
+                              }
+                        ]
+                  }
+            ],
             "dataModel": {
                   "value": {
                         "device": {
@@ -875,18 +882,25 @@
                         }
                   }
             },
-            "assets": []
+            "assetCandidates": [
+                  {
+                        "assetRef": "earbuds_icon",
+                        "src": "assets/freeclip2-earbuds.png",
+                        "use": "device illustration",
+                        "static": true
+                  }
+            ]
       },
       "request": {
             "model": "glm-5.2",
             "messages": [
                   {
                         "role": "system",
-                        "content": "?? HarmonyOS A2UI Form DSL ????????? genui ??????? cardspec?"
+                        "content": "你是 A2UI 模型，只输出 genui，不输出 cardspec。"
                   },
                   {
                         "role": "user",
-                        "content": "????? TaskSpec JSON ?????\\n{...TaskSpec JSON...}"
+                        "content": "根据下面的 TaskSpec JSON 生成响应。\n{...TaskSpec JSON...}"
                   }
             ]
       }

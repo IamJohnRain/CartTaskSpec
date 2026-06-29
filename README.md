@@ -1,9 +1,9 @@
 # CartTaskSpec
 
-CartTaskSpec 是一个面向 HarmonyOS A2UI Form 服务卡片的「大模型 + 小模型」协作生成协议。当前版本以 `.agents/skills/harmony-card-generation-datamodel-first` 为只读依据：大模型负责把用户 query 抽取成轻量 TaskSpec，小模型只负责根据 TaskSpec 和 system prompt 生成 `genui` DSL。
+CartTaskSpec 是一个面向 HarmonyOS A2UI Form 服务卡片的「大模型 Agent + A2UI 模型」协作生成协议。当前版本以 `.agents/skills/harmony-card-generation-datamodel-first` 为只读依据：大模型 Agent 负责把用户 query 抽取成轻量 TaskSpec，A2UI 模型负责根据 TaskSpec 和 system prompt 生成 `genui` DSL。
 
-> 协议版本：`taskspec/v1`  
-> 规则集：`harmony-form-datamodel-first-rules/v1`
+> 协议结构：`taskspec.schema.json`  
+> DSL 规则：`taskspec_to_chat_completions.py` 的 system prompt
 
 ---
 
@@ -11,12 +11,15 @@ CartTaskSpec 是一个面向 HarmonyOS A2UI Form 服务卡片的「大模型 + �
 
 本项目不把完整卡片设计交给大模型写死，也不让 TaskSpec 变成半成品 DSL。TaskSpec 只携带：
 
-- 卡片场景、尺寸和必须表达的内容项。
-- 小模型必须原样写入 `updateDataModel.value` 的 `dataModel.value`。
-- 可点击动作，直接内联在 `card.requirements[type=action].onClick` 中。
-- 允许使用的素材白名单。
+- `target`：目标尺寸、场景弱提示、风格提示和必要约束。
+- `displayCandidates`：用户希望表达的内容候选。
+- `eventCandidates`：用户希望支持的事件候选。
+- A2UI 模型必须原样写入 `updateDataModel.value` 的 `dataModel.value`。
+- `assetCandidates`：允许使用的素材候选白名单，例如本地图片、资源图标或绑定到 DataModel 的素材路径。
 
-DSL 硬规则不再写进 TaskSpec 的 `rules.dsl`，而是集中放在 `taskspec_to_chat_completions.py` 生成的 system prompt 中。最终输出只有小模型生成的 `genui` DSL，不输出 `cardspec`。
+旧版顶层 `intent` 已拆分为候选集合。原因是显示内容、事件和素材的职责不同，混在一个数组里容易让协议滑向半成品 DSL。
+
+DSL 硬规则不再写进 TaskSpec 的 `rules.dsl`，而是集中放在 `taskspec_to_chat_completions.py` 生成的 system prompt 中。最终输出只有 A2UI 模型生成的 `genui` DSL，不输出 `cardspec`。
 
 ---
 
@@ -29,10 +32,10 @@ DSL 硬规则不再写进 TaskSpec 的 `rules.dsl`，而是集中放在 `taskspe
    新 skill 优先使用完整表达式 `{{ ... }}` 读取 DataModel，`{"path":"/..."}` / `formatString` 只作为模板相对路径、双向绑定或端侧对象绑定的兜底。
 
 3. **DSL-only**  
-   新 skill 原文仍支持 `genui + cardspec` 两个代码块，但本项目通过 system prompt 做适配：小模型只生成 `genui`，不得输出 `cardspec`。
+   新 skill 原文仍支持 `genui + cardspec` 两个代码块，但本项目通过 system prompt 做适配：A2UI 模型只生成 `genui`，不得输出 `cardspec`。
 
 4. **移除冗余模块**  
-   TaskSpec 不再包含 `cardSpec`、`dataCapabilities`、顶层 `eventBindings`、`rules`、`validation` 或 `capabilityGap`。
+   TaskSpec 不再包含旧顶层 `schema`、`rulesVersion`、`intent`、`assets`、`card`、`cardSpec`、`dataCapabilities`、顶层 `eventBindings`、`rules`、`validation` 或 `capabilityGap`。
 
 5. **skill 只读**  
    `.agents/skills/` 是外部只读依赖。协议、schema、样例、转换脚本和校验脚本可以演进，但不得修改 skill 内容。
@@ -62,13 +65,13 @@ CartTaskSpec/
 ## 作业流
 
 1. **大模型 Agent：用户 Query -> TaskSpec**  
-   输出轻量 TaskSpec。TaskSpec 包含 `card.requirements`、`dataModel` 和 `assets`；动作直接内联在 action requirement 的 `onClick` 中。
+   输出轻量 TaskSpec。TaskSpec 包含 `target`、`displayCandidates`、`eventCandidates`、`dataModel` 和 `assetCandidates`；动作直接内联在 event candidate 的 `onClick` 中。
 
 2. **转换脚本：TaskSpec -> API request body**  
    `taskspec_to_chat_completions.py` 读取 TaskSpec，把 DataModel-first DSL 规则写入 `system` prompt，并把完整 TaskSpec 放入 `user` 消息。
 
-3. **小模型 API：API request body -> DSL**  
-   小模型只输出一个 `genui` 代码块，内容恰好 3 行 JSONL。输出不包含 CardSpec，不生成 DSL + CardSpec 的组合产物。
+3. **A2UI 模型 API：API request body -> DSL**  
+   A2UI 模型只输出一个 `genui` 代码块，内容恰好 3 行 JSONL。输出不包含 CardSpec，不生成 DSL + CardSpec 的组合产物。
 
 ---
 

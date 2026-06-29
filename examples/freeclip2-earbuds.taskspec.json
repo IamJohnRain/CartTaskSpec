@@ -1,71 +1,14 @@
 {
-  "schema": "taskspec/v1",
-  "rulesVersion": "harmony-form-datamodel-first-rules/v1",
   "userQuery": "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。",
   "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
-  "card": {
-    "scenario": "device",
+  "target": {
     "size": "2x4",
-    "requirements": [
-      {
-        "id": "device_name",
-        "type": "identity",
-        "label": "Free Clip 2",
-        "dataPath": "/device/name",
-        "required": true
-      },
-      {
-        "id": "left_battery",
-        "type": "metric",
-        "label": "左耳电量",
-        "dataPath": "/device/leftBatteryText",
-        "required": true
-      },
-      {
-        "id": "right_battery",
-        "type": "metric",
-        "label": "右耳电量",
-        "dataPath": "/device/rightBatteryText",
-        "required": true
-      },
-      {
-        "id": "daily_30",
-        "type": "action",
-        "label": "每日30首",
-        "required": true,
-        "onClick": [
-          {
-            "call": "clickToDeeplink",
-            "args": {
-              "bundleName": "",
-              "abilityName": "",
-              "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
-            }
-          }
-        ]
-      },
-      {
-        "id": "favorite_playlist",
-        "type": "action",
-        "label": "心动歌单",
-        "required": true,
-        "onClick": [
-          {
-            "call": "clickToDeeplink",
-            "args": {
-              "bundleName": "",
-              "abilityName": "",
-              "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
-            }
-          }
-        ]
-      },
-      {
-        "id": "frosted_style",
-        "type": "style",
-        "label": "磨砂玻璃质感",
-        "note": "简洁高级，使用半透明层次、柔和边框和克制色彩表达。"
-      }
+    "sceneHints": [
+      "device"
+    ],
+    "styleHints": [
+      "磨砂玻璃质感",
+      "简洁高级，使用半透明层次、柔和边框和克制色彩表达。"
     ],
     "constraints": [
       "Free Clip 2、左耳 47%、右耳 95%、每日30首、心动歌单必须完整显示。",
@@ -73,6 +16,69 @@
       "静态设备卡片，不需要 CardSpec 或 data capability。"
     ]
   },
+  "displayCandidates": [
+    {
+      "id": "device_name",
+      "role": "identity",
+      "label": "Free Clip 2",
+      "dataPath": "/device/name",
+      "required": true
+    },
+    {
+      "id": "earbuds_icon",
+      "role": "media",
+      "label": "耳机图标",
+      "assetRef": "earbuds_icon",
+      "required": false,
+      "note": "可作为弱装饰，不得挤占电量和快捷入口空间。"
+    },
+    {
+      "id": "left_battery",
+      "role": "metric",
+      "label": "左耳电量",
+      "dataPath": "/device/leftBatteryText",
+      "required": true
+    },
+    {
+      "id": "right_battery",
+      "role": "metric",
+      "label": "右耳电量",
+      "dataPath": "/device/rightBatteryText",
+      "required": true
+    }
+  ],
+  "eventCandidates": [
+    {
+      "id": "daily_30",
+      "label": "每日30首",
+      "required": true,
+      "onClick": [
+        {
+          "call": "clickToDeeplink",
+          "args": {
+            "bundleName": "",
+            "abilityName": "",
+            "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+          }
+        }
+      ]
+    },
+    {
+      "id": "favorite_playlist",
+      "label": "心动歌单",
+      "required": true,
+      "onClick": [
+        {
+          "call": "clickToDeeplink",
+          "args": {
+            "bundleName": "",
+            "abilityName": "",
+            "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
+          }
+        }
+      ]
+    }
+  ],
   "dataModel": {
     "value": {
       "device": {
@@ -87,5 +93,12 @@
       }
     }
   },
-  "assets": []
+  "assetCandidates": [
+    {
+      "assetRef": "earbuds_icon",
+      "src": "assets/freeclip2-earbuds.png",
+      "use": "device illustration",
+      "static": true
+    }
+  ]
 }

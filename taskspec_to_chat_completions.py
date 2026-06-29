@@ -9,19 +9,20 @@ from pathlib import Path
 
 DEFAULT_MODEL = "glm-5.2"
 DEFAULT_ENDPOINT = "http://127.0.0.1:4000/v1/chat/completions"
-SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form DSL 生成器，依据 harmony-card-generation-datamodel-first 的协议生成 Form 卡片 DSL。
-你会收到一个 TaskSpec JSON。TaskSpec 只描述卡片目标、内容项、DataModel、动作和素材；具体布局、组件层级、视觉设计和绑定写法由你完成。
+SYSTEM_PROMPT = """你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
+你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。具体布局、组件层级、视觉设计和绑定写法由你完成。
+displayCandidates / eventCandidates / assetCandidates 是用户 query 中抽取出的候选约束，不是 DSL 组件候选。不要把它们理解成 Text、Button、Row 等最终组件树。
 
 输出契约：
 - 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
-- 虽然原始 skill 支持 genui + cardspec 两个代码块，但本项目只让小模型生成 DSL；不要生成、补全、推断或输出 CardSpec。
+- 虽然原始 skill 支持 genui + cardspec 两个代码块，但本项目只让 A2UI 模型生成 DSL；不要生成、补全、推断或输出 CardSpec。
 - genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
 - 每行必须包含 version:"v0.9"；createSurface.catalogId 必须是 "ohos.a2ui.extended.catalog"。
 - updateDataModel.path 必须是 "/"，value 必须原样等于 TaskSpec.dataModel.value。
 - updateComponents.root 必须引用 components 中已存在的 root 组件；components 必须是扁平组件数组，每个组件有 id 和 component。
 
 尺寸与 root shell：
-- card.size 只能是 2x2 或 2x4。
+- target.size 只能是 2x2 或 2x4。
 - 2x2 使用 createSurface/root width:140、height:140，root borderRadius:18，clip:true。
 - 2x4 使用 createSurface/root width:300、height:140，root borderRadius:22，clip:true。
 - root 是唯一卡片 shell，必须承载 width、height、padding、borderRadius、clip 和至少一种表面样式。
@@ -40,9 +41,9 @@ DataModel 与绑定：
 - 表达式必须是完整字符串；一个字符串中只能有一对 {{ ... }}；不要在 id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 或整个 styles 对象上使用表达式。
 
 动作与素材：
-- action requirement 的 onClick 可原样挂到合适的 Button 或可点击容器上。
-- 点击只写 DSL onClick，且 call 只能来自 TaskSpec 中 action requirement 的 onClick；不要发明新事件能力。
-- Image.src 和 backgroundImage 只使用 TaskSpec.assets 声明或用户明确提供的本地/资源路径。
+- eventCandidates 的 onClick 可原样挂到合适的 Button 或可点击容器上。
+- 点击只写 DSL onClick，且 call 只能来自 TaskSpec.eventCandidates 的 onClick；不要发明新事件能力。
+- Image.src 和 backgroundImage 只使用 TaskSpec.assetCandidates 声明或用户明确提供的本地/资源路径。
 
 布局质量：
 - 先确定一个主答案；最多 2 条支撑事实、最多 1 个主动作。用户明确要求多个入口时，在 2x4 内可最多 2 个动作区。
@@ -59,8 +60,15 @@ def read_task_spec(path: Path) -> str:
 
     text = path.read_text(encoding="utf-8")
     spec = json.loads(text)
-    if spec.get("schema") != "taskspec/v1":
-        raise ValueError("TaskSpec schema must be taskspec/v1")
+    if "schema" in spec or "rulesVersion" in spec:
+        raise ValueError("TaskSpec no longer contains top-level 'schema' or 'rulesVersion'")
+    if "card" in spec:
+        raise ValueError("TaskSpec top-level 'card' has been renamed to 'intent'")
+    if "intent" in spec or "assets" in spec:
+        raise ValueError("TaskSpec now uses target/displayCandidates/eventCandidates/assetCandidates")
+    for key in ["target", "displayCandidates", "eventCandidates", "assetCandidates"]:
+        if key not in spec:
+            raise ValueError(f"TaskSpec must contain top-level '{key}'")
     return text.strip()
 
 
@@ -70,10 +78,10 @@ def build_content(task_spec_json: str, raw_content: bool) -> str:
 
     return (
         "根据下面的 TaskSpec JSON 生成响应。严格遵循 task 字段和 system prompt 中的 DSL 规则。\n"
-        "TaskSpec 是轻量需求契约，不是布局蓝图；请自行完成具体布局和组件层级。\n"
+        "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。\n"
         "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n"
         "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：\n"
-        "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按card.size选择\",\"height\":140}}\n"
+        "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按target.size选择\",\"height\":140}}\n"
         "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card\",\"root\":\"root\",\"components\":[...]}}\n"
         "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card\",\"path\":\"/\",\"value\":{...}}}\n"
         "不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。\n\n"

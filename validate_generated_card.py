@@ -179,7 +179,7 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
             if template_id not in component_id_set:
                 errors.append(f"component '{component_id}' references missing template '{template_id}'")
 
-    expected_size = expected_spec["card"]["size"]
+    expected_size = expected_spec["target"]["size"]
     root = next((component for component in components if component.get("id") == "root"), {})
     styles = root.get("styles", {})
     expected_width = 140 if expected_size == "2x2" else 300
@@ -209,7 +209,7 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Validate model-generated genui output.")
+    parser = argparse.ArgumentParser(description="Validate A2UI-model-generated genui output.")
     parser.add_argument("--response", required=True, type=Path, help="Chat-completions response JSON.")
     parser.add_argument("--spec", required=True, type=Path, help="Original TaskSpec JSON.")
     parser.add_argument("--out-dir", required=True, type=Path, help="Directory for extracted model output.")
