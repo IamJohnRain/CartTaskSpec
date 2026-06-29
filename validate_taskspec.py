@@ -6,6 +6,26 @@ from pathlib import Path
 from typing import Any
 
 
+REMOVED_TOP_LEVEL = {
+    "assets",
+    "card",
+    "cardSpec",
+    "dataCapabilities",
+    "eventBindings",
+    "intent",
+    "validation",
+    "capabilityGap",
+    "rules",
+    "rulesVersion",
+    "schema",
+}
+EVENT_ARGS = {
+    "clickToCallPhone": {"phonenumber"},
+    "clickToDeeplink": {"bundleName", "abilityName", "uri"},
+    "clickToIntent": {"intentName", "params"},
+}
+
+
 def load_json(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
@@ -36,93 +56,98 @@ def resolve_pointer(root: Any, pointer: str) -> Any:
     return current
 
 
+def validate_on_click(name: str, candidate_id: str, handlers: Any) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(handlers, list) or not handlers:
+        return [f"{name}: eventCandidate '{candidate_id}' must contain non-empty onClick array"]
+
+    for index, handler in enumerate(handlers, start=1):
+        if not isinstance(handler, dict):
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] must be an object")
+            continue
+        call = handler.get("call")
+        if call not in EVENT_ARGS:
+            errors.append(f"{name}: eventCandidate '{candidate_id}' uses unsupported onClick.call '{call}'")
+            continue
+        args = handler.get("args", {})
+        if not isinstance(args, dict):
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}].args must be an object")
+            continue
+        expected = EVENT_ARGS[call]
+        actual = set(args)
+        missing = expected - actual
+        extra = actual - expected
+        if missing:
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] missing args {sorted(missing)}")
+        if extra:
+            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] has unsupported args {sorted(extra)}")
+    return errors
+
+
 def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
     errors: list[str] = []
 
-    if spec.get("schema") != "taskspec/v1":
-        errors.append(f"{name}: schema must be taskspec/v1")
-    if spec.get("rulesVersion") != "harmony-form-rules/v1":
-        errors.append(f"{name}: rulesVersion must be harmony-form-rules/v1")
+    for key in sorted(REMOVED_TOP_LEVEL & set(spec)):
+        errors.append(f"{name}: top-level '{key}' has been removed from TaskSpec")
 
-    card = spec.get("card", {})
-    card_spec = spec.get("cardSpec", {})
     data_model_value = spec.get("dataModel", {}).get("value", {})
-    data_capabilities = spec.get("dataCapabilities", [])
+    display_candidates = spec.get("displayCandidates", [])
+    event_candidates = spec.get("eventCandidates", [])
+    asset_candidates = spec.get("assetCandidates", [])
 
-    if card.get("size") != card_spec.get("suggestSize"):
-        errors.append(f"{name}: card.size and cardSpec.suggestSize differ")
+    if not isinstance(display_candidates, list) or not display_candidates:
+        errors.append(f"{name}: displayCandidates must be a non-empty array")
+        return errors
 
-    requirements = card.get("requirements", [])
-    requirement_ids = [item.get("id") for item in requirements]
-    if len(set(requirement_ids)) != len(requirement_ids):
-        errors.append(f"{name}: duplicate card.requirements.id")
+    candidate_ids = [
+        item.get("id")
+        for item in [*display_candidates, *event_candidates]
+        if isinstance(item, dict)
+    ]
+    if len(set(candidate_ids)) != len(candidate_ids):
+        errors.append(f"{name}: duplicate candidate id")
 
-    event_refs = {item.get("eventRef") for item in spec.get("eventBindings", [])}
-    asset_refs = {item.get("assetRef") for item in spec.get("assets", []) if item.get("assetRef")}
-    capability_paths = {
-        path.get("path")
-        for capability in data_capabilities
-        for path in capability.get("usedOutputPaths", [])
-    }
+    asset_refs = {item.get("assetRef") for item in asset_candidates if isinstance(item, dict) and item.get("assetRef")}
 
-    for requirement in requirements:
-        if requirement.get("eventRef") and requirement["eventRef"] not in event_refs:
+    for candidate in display_candidates:
+        if not isinstance(candidate, dict):
+            errors.append(f"{name}: every displayCandidates item must be an object")
+            continue
+        candidate_id = candidate.get("id", "<unknown>")
+
+        if candidate.get("assetRef") and candidate["assetRef"] not in asset_refs:
             errors.append(
-                f"{name}: requirement '{requirement.get('id')}' references missing eventRef '{requirement['eventRef']}'"
+                f"{name}: displayCandidate '{candidate_id}' references missing assetRef '{candidate['assetRef']}'"
             )
-        if requirement.get("assetRef") and requirement["assetRef"] not in asset_refs:
-            errors.append(
-                f"{name}: requirement '{requirement.get('id')}' references missing assetRef '{requirement['assetRef']}'"
-            )
-        if requirement.get("dataPath"):
-            local_value = resolve_pointer(data_model_value, requirement["dataPath"])
-            if local_value is None and requirement["dataPath"] not in capability_paths:
+
+        if candidate.get("dataPath"):
+            local_value = resolve_pointer(data_model_value, candidate["dataPath"])
+            if local_value is None:
                 errors.append(
-                    f"{name}: requirement '{requirement.get('id')}' dataPath '{requirement['dataPath']}' "
-                    "is not in dataModel.value or dataCapabilities.usedOutputPaths"
+                    f"{name}: displayCandidate '{candidate_id}' dataPath '{candidate['dataPath']}' "
+                    "is not present in dataModel.value"
                 )
 
-    for asset in spec.get("assets", []):
+    if not isinstance(event_candidates, list):
+        errors.append(f"{name}: eventCandidates must be an array")
+    else:
+        for candidate in event_candidates:
+            if not isinstance(candidate, dict):
+                errors.append(f"{name}: every eventCandidates item must be an object")
+                continue
+            candidate_id = candidate.get("id", "<unknown>")
+            errors.extend(validate_on_click(name, candidate_id, candidate.get("onClick")))
+            if "eventRef" in candidate:
+                errors.append(f"{name}: eventCandidate '{candidate_id}' uses removed eventRef; inline onClick instead")
+
+    for asset in asset_candidates:
+        if not isinstance(asset, dict):
+            errors.append(f"{name}: every assetCandidates item must be an object")
+            continue
         if asset.get("bindTo"):
             bound_value = resolve_pointer(data_model_value, asset["bindTo"])
             if bound_value != asset.get("src"):
-                errors.append(f"{name}: asset bindTo '{asset['bindTo']}' does not resolve to src")
-
-    data_bindings = card_spec.get("dataBindings")
-    if data_capabilities:
-        if not isinstance(data_bindings, list) or not data_bindings:
-            errors.append(f"{name}: dynamic TaskSpec must contain cardSpec.dataBindings")
-        else:
-            declared = {
-                (
-                    capability.get("capabilityId"),
-                    json.dumps(capability.get("arguments", {}), ensure_ascii=False, sort_keys=True),
-                    capability.get("writeResultTo"),
-                )
-                for capability in data_capabilities
-            }
-            write_targets = [binding.get("writeResultTo") for binding in data_bindings]
-            if len(set(write_targets)) != len(write_targets):
-                errors.append(f"{name}: duplicate cardSpec.dataBindings.writeResultTo")
-            for binding in data_bindings:
-                key = (
-                    binding.get("capabilityId"),
-                    json.dumps(binding.get("arguments", {}), ensure_ascii=False, sort_keys=True),
-                    binding.get("writeResultTo"),
-                )
-                if key not in declared:
-                    errors.append(f"{name}: cardSpec dataBinding is not declared in dataCapabilities: {binding}")
-    elif data_bindings is not None:
-        errors.append(f"{name}: static TaskSpec must not contain cardSpec.dataBindings")
-
-    rules = spec.get("rules", {})
-    dsl_rules = rules.get("dsl", [])
-    if not dsl_rules:
-        errors.append(f"{name}: rules.dsl is required")
-    if "cardSpec" in rules:
-        errors.append(f"{name}: rules.cardSpec is not allowed; small model does not generate CardSpec")
-    if not any("genui" in rule and "cardspec" in rule.lower() for rule in dsl_rules):
-        errors.append(f"{name}: rules.dsl must state that the model outputs genui and not cardspec")
+                errors.append(f"{name}: assetCandidate bindTo '{asset['bindTo']}' does not resolve to src")
 
     return errors
 

@@ -18,6 +18,8 @@ ALLOWED_COMPONENTS = {
     "List",
     "Stack",
 }
+EXPR_POINTER_RE = re.compile(r"\$\{([^}]+)\}")
+DATA_MODEL_RE = re.compile(r"\$__dataModel((?:\.[A-Za-z_][A-Za-z0-9_]*)*)")
 
 
 def load_json(path: Path):
@@ -37,6 +39,44 @@ def extract_fence(content: str, language: str) -> str:
     if not match:
         raise ValueError(f"missing ```{language}``` code block")
     return match.group(1).strip()
+
+
+def resolve_pointer(root, pointer: str):
+    if pointer == "":
+        return root
+    if not isinstance(pointer, str) or not pointer.startswith("/"):
+        return None
+    current = root
+    for raw_part in pointer[1:].split("/"):
+        part = raw_part.replace("~1", "/").replace("~0", "~")
+        if isinstance(current, dict):
+            if part not in current:
+                return None
+            current = current[part]
+        elif isinstance(current, list):
+            try:
+                current = current[int(part)]
+            except (ValueError, IndexError):
+                return None
+        else:
+            return None
+    return current
+
+
+def data_model_suffix_to_pointer(suffix: str) -> str:
+    if not suffix:
+        return "/"
+    return "/" + "/".join(part for part in suffix.split(".") if part)
+
+
+def walk(value):
+    yield value
+    if isinstance(value, dict):
+        for child in value.values():
+            yield from walk(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from walk(child)
 
 
 def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
@@ -88,6 +128,7 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
 
     if update_data_model.get("value") != expected_spec.get("dataModel", {}).get("value"):
         errors.append("updateDataModel.value must exactly equal TaskSpec dataModel.value")
+    data_model_value = update_data_model.get("value", {})
 
     components = update_components.get("components")
     if not isinstance(components, list) or not components:
@@ -138,18 +179,37 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
             if template_id not in component_id_set:
                 errors.append(f"component '{component_id}' references missing template '{template_id}'")
 
-    expected_size = expected_spec["card"]["size"]
+    expected_size = expected_spec["target"]["size"]
     root = next((component for component in components if component.get("id") == "root"), {})
     styles = root.get("styles", {})
-    expected_width = 160 if expected_size == "2x2" else 320
-    if styles.get("width") != expected_width or styles.get("height") != 160:
-        errors.append(f"root styles width/height must be {expected_width}x160")
+    expected_width = 140 if expected_size == "2x2" else 300
+    if styles.get("width") != expected_width or styles.get("height") != 140:
+        errors.append(f"root styles width/height must be {expected_width}x140")
+    expected_radius = 18 if expected_size == "2x2" else 22
+    if styles.get("borderRadius") != expected_radius or styles.get("clip") is not True:
+        errors.append(f"root must use borderRadius {expected_radius} and clip true")
+
+    for component in components:
+        component_id = component.get("id", "<unknown>")
+        for value in walk(component):
+            if isinstance(value, dict) and set(value.keys()) == {"path"}:
+                pointer = value.get("path")
+                if isinstance(pointer, str) and pointer.startswith("/") and resolve_pointer(data_model_value, pointer) is None:
+                    errors.append(f"component '{component_id}' binding path '{pointer}' is missing in DataModel")
+            if isinstance(value, str) and "{{" in value:
+                for pointer in EXPR_POINTER_RE.findall(value):
+                    if pointer.startswith("/") and resolve_pointer(data_model_value, pointer) is None:
+                        errors.append(f"component '{component_id}' expression path '{pointer}' is missing in DataModel")
+                for suffix in DATA_MODEL_RE.findall(value):
+                    pointer = data_model_suffix_to_pointer(suffix)
+                    if resolve_pointer(data_model_value, pointer) is None:
+                        errors.append(f"component '{component_id}' expression path '{pointer}' is missing in DataModel")
 
     return errors
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Validate model-generated genui output.")
+    parser = argparse.ArgumentParser(description="Validate A2UI-model-generated genui output.")
     parser.add_argument("--response", required=True, type=Path, help="Chat-completions response JSON.")
     parser.add_argument("--spec", required=True, type=Path, help="Original TaskSpec JSON.")
     parser.add_argument("--out-dir", required=True, type=Path, help="Directory for extracted model output.")
@@ -167,14 +227,9 @@ def main() -> int:
 
     content_path = args.out_dir / f"{args.name}.model-output.md"
     genui_path = args.out_dir / f"{args.name}.genui.jsonl"
-    taskspec_cardspec_path = args.out_dir / f"{args.name}.taskspec-cardSpec.json"
     report_path = args.out_dir / f"{args.name}.validation.json"
 
     content_path.write_text(content, encoding="utf-8")
-    taskspec_cardspec_path.write_text(
-        json.dumps(expected_spec["cardSpec"], ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
 
     report = {
         "name": args.name,
@@ -182,7 +237,6 @@ def main() -> int:
         "artifacts": {
             "modelOutput": str(content_path),
             "genui": str(genui_path),
-            "cardSpec": str(taskspec_cardspec_path),
         },
         "errors": [],
     }
