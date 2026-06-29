@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CartTaskSpec - 轻量 TaskSpec 协议</title>
+  <title>TaskSpec 协议详解 - CartTaskSpec</title>
   <style>
     :root {
       --bg: #f7f9fc;
@@ -24,30 +24,27 @@
       --shadow: 0 18px 50px rgba(35, 48, 72, .10);
       --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     }
-
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
       color: var(--ink);
       background:
-        radial-gradient(circle at 12% 0%, rgba(15,159,143,.12), transparent 28rem),
-        radial-gradient(circle at 88% 4%, rgba(50,104,217,.10), transparent 30rem),
+        radial-gradient(circle at 8% 0%, rgba(15,159,143,.12), transparent 28rem),
+        radial-gradient(circle at 88% 2%, rgba(50,104,217,.10), transparent 30rem),
         var(--bg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       line-height: 1.65;
     }
-
     a { color: var(--teal-dark); text-decoration: none; }
     a:hover { text-decoration: underline; }
     code, pre { font-family: var(--mono); }
-    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
-
+    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
     .nav {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(247,249,252,.86);
+      background: rgba(247,249,252,.88);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(223,230,239,.8);
     }
@@ -64,7 +61,9 @@
       gap: 12px;
       font-weight: 800;
       letter-spacing: -.02em;
+      color: var(--ink);
     }
+    .brand:hover { text-decoration: none; }
     .brand-mark {
       width: 32px;
       height: 32px;
@@ -77,96 +76,35 @@
       box-shadow: 0 10px 24px rgba(15,159,143,.28);
     }
     .nav-links { display: flex; gap: 22px; font-size: 14px; }
-    .nav-links a { color: var(--muted); font-weight: 600; }
+    .nav-links a { color: var(--muted); font-weight: 650; }
     .nav-links a:hover { color: var(--ink); text-decoration: none; }
-    @media (max-width: 760px) { .nav-links { display: none; } }
-
-    .hero { padding: 92px 0 72px; }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.08fr .92fr;
-      gap: 40px;
-      align-items: center;
-    }
-    @media (max-width: 920px) { .hero-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) { .nav-links { display: none; } }
+    .hero { padding: 84px 0 52px; }
     .eyebrow {
       display: inline-flex;
-      align-items: center;
-      gap: 8px;
       padding: 7px 12px;
       border: 1px solid var(--line);
       border-radius: 999px;
       background: rgba(255,255,255,.74);
       color: var(--teal-dark);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 750;
     }
     h1 {
-      font-size: clamp(38px, 5vw, 66px);
-      line-height: 1.06;
-      margin: 20px 0 20px;
+      font-size: clamp(38px, 5vw, 64px);
+      line-height: 1.07;
+      margin: 18px 0;
       letter-spacing: -.055em;
+      max-width: 880px;
     }
     .lead {
-      max-width: 720px;
+      max-width: 860px;
       color: var(--muted);
       font-size: clamp(17px, 2vw, 21px);
-      margin: 0 0 28px;
+      margin: 0;
     }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 0 18px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      font-weight: 750;
-      background: var(--paper);
-      color: var(--ink);
-      box-shadow: 0 8px 20px rgba(35,48,72,.06);
-    }
-    .button.primary {
-      border: 0;
-      color: #fff;
-      background: linear-gradient(135deg, var(--teal), var(--blue));
-    }
-    .button:hover { text-decoration: none; transform: translateY(-1px); }
-
-    .hero-card {
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(223,230,239,.86);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      padding: 22px;
-    }
-    .split-card {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-    .mini-panel {
-      padding: 18px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: var(--paper);
-    }
-    .mini-panel .label {
-      font: 700 12px/1 var(--mono);
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-    .mini-panel h3 {
-      margin: 8px 0 6px;
-      font-size: 18px;
-      letter-spacing: -.02em;
-    }
-    .mini-panel p { margin: 0; color: var(--muted); font-size: 14px; }
-
-    section { padding: 72px 0; }
-    .section-head { margin-bottom: 32px; }
+    section { padding: 58px 0; }
+    .section-head { margin-bottom: 24px; }
     .section-kicker {
       color: var(--teal-dark);
       font: 800 13px/1 var(--mono);
@@ -174,158 +112,117 @@
       text-transform: uppercase;
     }
     h2 {
-      margin: 10px 0 12px;
-      font-size: clamp(28px, 3.6vw, 44px);
+      margin: 10px 0 10px;
+      font-size: clamp(28px, 3.6vw, 42px);
       line-height: 1.12;
       letter-spacing: -.04em;
     }
     .section-desc {
       margin: 0;
-      max-width: 800px;
+      max-width: 860px;
       color: var(--muted);
       font-size: 17px;
     }
-
-    .principles {
+    .cards {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-    @media (max-width: 900px) { .principles { grid-template-columns: 1fr; } }
-    .principle {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 12px 30px rgba(35,48,72,.06);
-    }
-    .principle .num {
-      display: inline-grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: var(--green-soft);
-      color: var(--teal-dark);
-      font-weight: 900;
-      margin-bottom: 14px;
-    }
-    .principle:nth-child(2) .num { background: var(--blue-soft); color: var(--blue); }
-    .principle:nth-child(3) .num { background: var(--violet-soft); color: var(--violet); }
-    .principle h3 { margin: 0 0 8px; font-size: 20px; letter-spacing: -.02em; }
-    .principle p { margin: 0; color: var(--muted); font-size: 15px; }
-
-    .value-layout {
-      display: grid;
-      grid-template-columns: .95fr 1.05fr;
-      gap: 22px;
-      align-items: start;
-    }
-    @media (max-width: 900px) { .value-layout { grid-template-columns: 1fr; } }
-    .model-box {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 12px 30px rgba(35,48,72,.06);
-    }
-    .model-box h3 { margin: 0 0 10px; font-size: 20px; }
-    .model-box p { margin: 0 0 16px; color: var(--muted); }
-    .role-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-    .role-list li {
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: var(--soft);
-      color: #334155;
-      font-size: 14px;
-      border: 1px solid rgba(223,230,239,.75);
-    }
-    .role-list b { color: var(--ink); }
-
-    .layer-stack {
-      display: grid;
-      gap: 16px;
-    }
-    .pipeline {
-      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 14px;
+      margin-top: 28px;
     }
-    .pipe-card {
+    @media (max-width: 960px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 620px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 10px 28px rgba(35,48,72,.06);
+    }
+    .card b { display: block; margin-bottom: 6px; }
+    .card span { color: var(--muted); font-size: 14px; }
+    .field-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+    }
+    .field-table th,
+    .field-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .field-table th { background: #f1f6fb; color: #334155; font-size: 13px; }
+    .field-table tr:last-child td { border-bottom: 0; }
+    .field-table td:first-child {
+      font-family: var(--mono);
+      color: var(--ink);
+      font-weight: 750;
+      width: 180px;
+    }
+    .badge {
+      display: inline-flex;
+      min-width: 44px;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .required { color: #08796e; background: var(--green-soft); }
+    .removed { color: #74470a; background: var(--amber-soft); }
+    .module-list { display: grid; gap: 18px; }
+    .module {
       display: grid;
-      grid-template-columns: 92px minmax(0, 1fr);
+      grid-template-columns: 220px minmax(0, 1fr);
       gap: 18px;
-      align-items: stretch;
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: 24px;
       padding: 18px;
       box-shadow: 0 12px 30px rgba(35,48,72,.06);
-      position: relative;
     }
-    .pipe-card:not(:last-child)::after {
-      content: "";
-      position: absolute;
-      left: 62px;
-      bottom: -15px;
-      width: 2px;
-      height: 15px;
-      background: var(--line);
-    }
-    @media (max-width: 760px) {
-      .pipe-card { grid-template-columns: 1fr; }
-      .pipe-card:not(:last-child)::after { left: 32px; }
-    }
-    .pipe-index {
-      display: grid;
-      place-items: center;
-      align-content: center;
-      gap: 8px;
+    @media (max-width: 860px) { .module { grid-template-columns: 1fr; } }
+    .module-side {
       border-radius: 18px;
+      padding: 18px;
       background: var(--green-soft);
-      color: var(--teal-dark);
-      min-height: 110px;
-      font-weight: 900;
+      min-height: 140px;
     }
-    .pipe-card:nth-child(2) .pipe-index,
-    .pipe-card:nth-child(5) .pipe-index { background: var(--blue-soft); color: var(--blue); }
-    .pipe-card:nth-child(3) .pipe-index,
-    .pipe-card:nth-child(7) .pipe-index { background: var(--violet-soft); color: var(--violet); }
-    .pipe-card:nth-child(4) .pipe-index,
-    .pipe-card:nth-child(6) .pipe-index { background: var(--amber-soft); color: var(--amber); }
-    .pipe-index span:first-child { font: 800 12px/1 var(--mono); letter-spacing: .08em; opacity: .78; }
-    .pipe-index span:last-child { font-size: 28px; }
-    .pipe-main {
-      min-width: 0;
-    }
-    .pipe-main h3 {
-      margin: 0 0 10px;
-      font-size: 21px;
-      letter-spacing: -.02em;
-    }
-    .io-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    @media (max-width: 760px) { .io-grid { grid-template-columns: 1fr; } }
-    .io-box {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      background: #fbfdff;
-    }
-    .io-box b {
+    .module:nth-child(2n) .module-side { background: var(--blue-soft); }
+    .module:nth-child(3n) .module-side { background: var(--violet-soft); }
+    .module:nth-child(4n) .module-side { background: var(--amber-soft); }
+    .module-side small {
       display: block;
-      margin-bottom: 4px;
-      color: var(--ink);
+      font: 800 12px/1 var(--mono);
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .module-side h3 { margin: 0 0 8px; font-size: 22px; line-height: 1.18; }
+    .module-side p,
+    .module-body p { margin: 0; color: var(--muted); }
+    .note-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 860px) { .note-grid { grid-template-columns: 1fr; } }
+    .note {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfdff;
+      color: #334155;
       font-size: 14px;
     }
-    .io-box p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13.5px;
-    }
+    .note b { display: block; color: var(--ink); margin-bottom: 3px; }
     details.example {
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -338,572 +235,333 @@
       color: var(--teal-dark);
       font-weight: 800;
       font-size: 14px;
-      user-select: none;
     }
     details.example pre {
       border: 0;
       border-top: 1px solid var(--line);
       border-radius: 0;
-      max-height: 280px;
+      max-height: 360px;
       font-size: 12.5px;
     }
-    .layer {
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 16px;
-      align-items: stretch;
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 18px;
-      box-shadow: 0 12px 32px rgba(35,48,72,.06);
-    }
-    @media (max-width: 760px) { .layer { grid-template-columns: 1fr; } }
-    .layer-title {
-      border-radius: 18px;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 112px;
-      color: #073b35;
-      background: var(--green-soft);
-    }
-    .layer:nth-child(2) .layer-title { background: var(--blue-soft); color: #123c80; }
-    .layer:nth-child(3) .layer-title { background: var(--violet-soft); color: #3b287d; }
-    .layer:nth-child(4) .layer-title { background: var(--amber-soft); color: #74470a; }
-    .layer-title small { font: 800 12px/1 var(--mono); opacity: .8; text-transform: uppercase; }
-    .layer-title strong { margin-top: 8px; font-size: 20px; line-height: 1.2; }
-    .layer-body {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    @media (max-width: 760px) { .layer-body { grid-template-columns: 1fr; } }
-    .step {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px;
-      background: #fbfdff;
-    }
-    .step h4 { margin: 0 0 6px; font-size: 15px; }
-    .step p { margin: 0; color: var(--muted); font-size: 13px; }
-
-    .code-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .tab {
-      border: 1px solid var(--line);
-      background: var(--paper);
-      border-radius: 999px;
-      padding: 9px 14px;
-      color: var(--muted);
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .tab.active {
-      color: #fff;
-      background: var(--teal-dark);
-      border-color: var(--teal-dark);
-    }
-    .code-panel { display: none; }
-    .code-panel.active { display: block; }
     pre {
       margin: 0;
-      padding: 22px;
+      padding: 20px;
       background: #101826;
       color: #dbe8f7;
-      border-radius: 22px;
+      border-radius: 18px;
       border: 1px solid #223044;
       overflow: auto;
-      max-height: 560px;
       font-size: 13px;
       line-height: 1.72;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
     }
     .k { color: #93c5fd; }
     .s { color: #86efac; }
     .n { color: #fbbf24; }
-
-    .tree {
-      font-family: var(--mono);
-      font-size: 13.5px;
-      line-height: 1.95;
-      white-space: pre;
+    .checklist {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 860px) { .checklist { grid-template-columns: 1fr; } }
+    .check {
+      padding: 18px;
       background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 24px;
-      overflow: auto;
-      color: #334155;
-      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(35,48,72,.06);
     }
-    .tree .dir { color: var(--teal-dark); font-weight: 800; }
-    .tree .file { color: var(--ink); font-weight: 650; }
-    .tree .cmt { color: var(--muted); }
-
+    .check h3 { margin: 0 0 10px; font-size: 18px; }
+    .check ul { margin: 0; padding-left: 18px; color: var(--muted); }
+    .check li { margin: 6px 0; }
     footer {
-      padding: 36px 0;
+      padding: 34px 0;
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 14px;
     }
-    footer .wrap {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
   <header class="nav">
     <div class="wrap nav-inner">
-      <div class="brand"><span class="brand-mark">T</span> CartTaskSpec</div>
+      <a class="brand" href="./"><span class="brand-mark">T</span> CartTaskSpec</a>
       <nav class="nav-links">
-        <a href="#idea">设计思想</a>
-        <a href="#workflow">作业流</a>
-        <a href="#sample">协议样例</a>
-        <a href="taskspec.html">协议详解</a>
-        <a href="#structure">项目结构</a>
+        <a href="./">首页</a>
+        <a href="#top-fields">顶层字段</a>
+        <a href="#modules">模块说明</a>
+        <a href="#system-prompt">System Prompt</a>
+        <a href="#validation">校验</a>
       </nav>
     </div>
   </header>
 
   <main>
     <section class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <div class="eyebrow">TaskSpec · DataModel-first · DSL-only</div>
-          <h1>把 Form 协议约束抽取出来，让 A2UI 模型更会生成 DSL</h1>
-          <p class="lead">CartTaskSpec 不是把理解力简单交给大模型，而是让大模型从用户 query 中抽取与 Form 协议相关的约束、能力和交付契约；A2UI 模型在清晰边界内完成真正有价值的 DSL 设计与生成。</p>
-          <div class="hero-actions">
-            <a class="button primary" href="#workflow">查看作业流</a>
-            <a class="button" href="taskspec.html">TaskSpec 协议详解</a>
-            <a class="button" href="https://github.com/IamJohnRain/CartTaskSpec" target="_blank">GitHub 仓库</a>
-          </div>
+      <div class="wrap">
+        <h1>TaskSpec 协议</h1>
+      </div>
+    </section>
+
+    <section id="top-fields">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Top Level</div>
+          <h2>顶层字段与是否必填</h2>
+          <p class="section-desc">当前 schema 顶层只允许 7 个业务字段，全部必填。</p>
         </div>
-        <div class="hero-card">
-          <div class="split-card">
-            <div class="mini-panel">
-              <div class="label">Large Model</div>
-              <h3>抽取约束，而不是写死布局</h3>
-              <p>识别场景、尺寸、内容项、DataModel、动作和素材白名单。</p>
+        <table class="field-table">
+          <thead><tr><th>字段</th><th>是否必须</th><th>说明</th><th>示例</th></tr></thead>
+          <tbody>
+            <tr><td>userQuery</td><td><span class="badge required">必须</span></td><td>原始用户需求，保留语义来源。</td><td><code>"显示深圳温度并给我爸打电话"</code></td></tr>
+            <tr><td>task</td><td><span class="badge required">必须</span></td><td>给 A2UI 模型的任务说明，必须约束只输出 genui。</td><td><code>"直接输出 genui..."</code></td></tr>
+            <tr><td>target</td><td><span class="badge required">必须</span></td><td>目标尺寸、场景弱提示、风格提示和约束。</td><td><code>{"size":"2x4","styleHints":[...]}</code></td></tr>
+            <tr><td>displayCandidates</td><td><span class="badge required">必须</span></td><td>可显示的信息候选，不是组件候选。</td><td><code>[{"role":"metric"}]</code></td></tr>
+            <tr><td>eventCandidates</td><td><span class="badge required">必须</span></td><td>可点击事件候选，不规定按钮形态。</td><td><code>[{"label":"每日30首"}]</code></td></tr>
+            <tr><td>dataModel</td><td><span class="badge required">必须</span></td><td>A2UI 模型第 3 行 updateDataModel.value 必须原样使用的数据。</td><td><code>{"value":{"device":{...}}}</code></td></tr>
+            <tr><td>assetCandidates</td><td><span class="badge required">必须</span></td><td>素材候选白名单；没有素材时为空数组。</td><td><code>[]</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="modules">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Modules</div>
+          <h2>具体模块说明</h2>
+        </div>
+        <div class="module-list">
+          <article class="module">
+            <div class="module-side"><small>MODULE 01</small><h3>target</h3><p>目标弱约束</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> 描述目标尺寸、场景提示、风格提示和业务约束。</p>
+              <details class="example" open><summary>示例</summary><pre>{
+  "size": "2x4",
+  "sceneHints": ["device", "music"],
+  "styleHints": ["简洁高级", "磨砂玻璃质感"]
+}</pre></details>
             </div>
-            <div class="mini-panel">
-              <div class="label">A2UI Model</div>
-              <h3>在约束内完成高质量实现</h3>
-              <p>完成组件组织、视觉层次、排版、绑定和最终 3 行 genui JSONL。</p>
+          </article>
+          <article class="module">
+            <div class="module-side"><small>MODULE 02</small><h3>displayCandidates</h3><p>内容候选</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> 表达可显示的信息候选，由 A2UI 模型决定最终组件形态。</p>
+              <details class="example" open><summary>示例</summary><pre>[
+  { "id": "device_name", "role": "identity", "label": "Free Clip 2", "dataPath": "/device/name", "required": true },
+  { "id": "left_battery", "role": "metric", "label": "左耳电量", "dataPath": "/device/leftBatteryText", "required": true }
+]</pre></details>
             </div>
-            <div class="mini-panel">
-              <div class="label">Final Output</div>
-              <h3>只交付 genui DSL</h3>
-              <p>A2UI 模型最终交付 genui DSL。</p>
+          </article>
+          <article class="module">
+            <div class="module-side"><small>MODULE 03</small><h3>eventCandidates</h3><p>事件候选，不规定按钮形态</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> 表达可点击事件能力。A2UI 模型决定最终是 Button 还是可点击容器。</p>
+              <details class="example" open><summary>示例</summary><pre>[
+  {
+    "id": "daily_30",
+    "label": "每日30首",
+    "required": true,
+    "onClick": [{ "call": "clickToDeeplink", "args": { "bundleName": "", "abilityName": "", "uri": "..." } }]
+  }
+]</pre></details>
             </div>
-          </div>
+          </article>
+          <article class="module">
+            <div class="module-side"><small>MODULE 04</small><h3>dataModel</h3><p>表达式和绑定的唯一数据源</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> `dataModel.value` 必须被 A2UI 模型原样写入 `updateDataModel.value`。</p>
+              <details class="example" open><summary>示例</summary><pre>{
+  "value": {
+    "device": {
+      "name": "Free Clip 2",
+      "leftBatteryText": "左耳 47%",
+      "rightBatteryText": "右耳 95%"
+    }
+  }
+}</pre></details>
+            </div>
+          </article>
+          <article class="module">
+            <div class="module-side"><small>MODULE 05</small><h3>assetCandidates</h3><p>素材候选白名单</p></div>
+            <div class="module-body">
+              <p><span class="badge required">必须</span> 没有素材时写 `[]`。它不规定素材最终做背景、图标还是插图。</p>
+              <details class="example" open><summary>示例</summary><pre>[
+  { "assetRef": "earbuds_icon", "src": "assets/freeclip2-earbuds.png", "use": "device illustration", "static": true }
+]</pre></details>
+            </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <section id="idea">
+    <section id="system-prompt">
       <div class="wrap">
         <div class="section-head">
-          <div class="section-kicker">Design Philosophy</div>
-          <h2>协议设计思想</h2>
-          <p class="section-desc">TaskSpec 的核心不是替 A2UI 模型完成布局，而是把用户需求中的内容项、DataModel、动作和素材整理成一个短小、可校验的输入。</p>
+          <div class="section-kicker">System Prompt</div>
+          <h2>当前 system prompt 说明</h2>
+          <p class="section-desc">TaskSpec 不携带 DSL 硬规则。转换脚本把这些规则集中写入 chat-completions 的 system 消息，让 A2UI 模型在稳定边界内完成设计与 DSL 生成。</p>
         </div>
-        <div class="principles">
-          <div class="principle">
-            <div class="num">1</div>
-            <h3>从 query 抽取 Form 约束</h3>
-            <p>大模型的价值在于把自然语言需求变成结构化约束：显示字段、DataModel 路径、点击动作、素材和输出边界。</p>
-          </div>
-          <div class="principle">
-            <div class="num">2</div>
-            <h3>保留 A2UI 模型的设计空间</h3>
-            <p>TaskSpec 不携带布局树、区域预算或组件嵌套。A2UI 模型负责把需求转成可渲染、可读、可交互的 DSL。</p>
-          </div>
-          <div class="principle">
-            <div class="num">3</div>
-            <h3>用校验兜住边界</h3>
-            <p>A2UI 模型可以发挥布局和视觉能力，但必须通过 JSONL、组件、绑定、事件、DataModel 和尺寸校验。</p>
-          </div>
-        </div>
-
-        <div class="value-layout" style="margin-top:28px">
-          <div class="model-box">
-            <h3>大模型负责抽取什么？</h3>
-            <p>不是产出完整卡片，而是把与协议有关的决策抽出来。</p>
-            <ul class="role-list">
-              <li><b>内容约束</b>：哪些信息必须出现、哪些字段要完整显示。</li>
-              <li><b>能力约束</b>：DataModel 结构、onClick 动作参数和素材白名单。</li>
-              <li><b>交付约束</b>：DataModel-first 规则版本和 DSL-only 输出边界。</li>
+        <div class="checklist">
+          <div class="check">
+            <h3>输入与输出边界</h3>
+            <ul>
+              <li>角色是 A2UI 模型，负责生成 HarmonyOS A2UI Form DSL。</li>
+              <li>TaskSpec 是候选约束契约，不是布局蓝图。</li>
+              <li>输出一个 `genui` 代码块，恰好 3 行 JSONL。</li>
             </ul>
           </div>
-          <div class="model-box">
-            <h3>A2UI 模型的核心价值是什么？</h3>
-            <p>A2UI 模型不是剩下组装，而是在明确约束内完成卡片设计落地。</p>
-            <ul class="role-list">
-              <li><b>布局判断</b>：根据 2x2/2x4 空间组织信息层级。</li>
-              <li><b>组件实现</b>：选择 Row/Column/Stack/Text/Button 等并生成扁平组件数组。</li>
-              <li><b>视觉表达</b>：处理留白、字号、颜色、层次、点击区域和拥挤文本。</li>
-              <li><b>协议落地</b>：输出严格 3 行 JSONL，并保持 DataModel 和事件绑定一致。</li>
+          <div class="check">
+            <h3>DSL 硬规则</h3>
+            <ul>
+              <li>`target.size=2x2` 对应 140x140，`2x4` 对应 300x140。</li>
+              <li>只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。</li>
+              <li>展示值优先使用完整表达式读取 DataModel。</li>
+              <li>onClick 只能来自 eventCandidates，图片只能来自 assetCandidates 或明确本地资源。</li>
+            </ul>
+          </div>
+        </div>
+        <details class="example" open style="margin-top:14px"><summary>system prompt 摘要</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
+你会收到一个 TaskSpec JSON。TaskSpec 只描述目标尺寸/风格、可显示内容候选、可点击事件候选、DataModel 和素材候选；它不是卡片布局方案。
+输出一个 ```genui``` 代码块，内容为 3 行 JSONL。
+genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
+展示值优先使用完整表达式读取 DataModel；点击和素材只能来自 TaskSpec 声明。</pre></details>
+      </div>
+    </section>
+
+    <section id="validation">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-kicker">Validation</div>
+          <h2>校验要点</h2>
+        </div>
+        <div class="checklist">
+          <div class="check">
+            <h3>发送给 A2UI 模型前</h3>
+            <ul>
+              <li>JSON 结构符合 `taskspec.schema.json`。</li>
+              <li>`displayCandidates[].id` 与 `eventCandidates[].id` 全局唯一。</li>
+              <li>`displayCandidates[].dataPath` 能从 `dataModel.value` 解析。</li>
+              <li>`eventCandidates[].onClick` 必须合法。</li>
+            </ul>
+          </div>
+          <div class="check">
+            <h3>模型输出后</h3>
+            <ul>
+              <li>包含一个 `genui` 代码块。</li>
+              <li>genui 恰好 3 行 JSONL。</li>
+              <li>`updateDataModel.value` 等于 `TaskSpec.dataModel.value`。</li>
+              <li>root 尺寸为 140x140 或 300x140。</li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="workflow">
+    <section>
       <div class="wrap">
         <div class="section-head">
-          <div class="section-kicker">Workflow</div>
-          <h2>三个中间模块：从用户 Query 到 DSL</h2>
-          <p class="section-desc">流程只突出三个处理模块：大模型 Agent、转换脚本、A2UI 模型 API。用户 Query、TaskSpec、API request body 和 DSL 是模块之间流动的输入输出。</p>
+          <div class="section-kicker">Complete Sample</div>
+          <h2>完整 TaskSpec 样例</h2>
+          <p class="section-desc">下面展示父母关怀卡片样例。完整文件见 `examples/parent-care.taskspec.json`。</p>
         </div>
-
-        <div class="pipeline">
-          <article class="pipe-card">
-            <div class="pipe-index"><span>MODULE</span><span>01</span></div>
-            <div class="pipe-main">
-              <h3>大模型 Agent</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>用户 Query，以及 Form 协议 / skill 参考规则。协议结构以 <a href="https://github.com/IamJohnRain/CartTaskSpec/blob/master/taskspec.schema.json" target="_blank">taskspec.schema.json</a> 为准。</p></div>
-                <div class="io-box"><b>输出 + 校验</b><p>TaskSpec JSON，内含 `target`、`displayCandidates`、`eventCandidates`、`dataModel` 和 `assetCandidates`；动作内联在 event candidate 的 `onClick` 中，随后执行 schema 与协议一致性校验。</p></div>
-              </div>
-              <details class="example">
-                <summary>展开输入样例：用户 Query</summary>
-                <pre>给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。</pre>
-              </details>
-              <details class="example">
-                <summary>展开输出样例：TaskSpec</summary>
-                <pre id="workflow-taskspec"></pre>
-              </details>
-              <details class="example">
-                <summary>展开校验环节：schema + 协议一致性</summary>
-                <pre>python validate_taskspec.py examples\freeclip2-earbuds.taskspec.json
-
-校验重点：
-- JSON 结构符合 taskspec.schema.json
-- dataPath 必须能从 dataModel.value 解析
-- event candidate 必须内联合规 onClick
-- A2UI 模型任务被约束为只输出 genui DSL</pre>
-              </details>
-            </div>
-          </article>
-
-          <article class="pipe-card">
-            <div class="pipe-index"><span>MODULE</span><span>02</span></div>
-            <div class="pipe-main">
-              <h3>转换脚本</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>TaskSpec JSON 文件，即上一步大模型 Agent 的输出。</p></div>
-                <div class="io-box"><b>输出</b><p>OpenAI 兼容 API request body，包含 `system` prompt 和 `user` TaskSpec。</p></div>
-              </div>
-              <details class="example">
-                <summary>展开输入样例：TaskSpec 文件</summary>
-                <pre>examples\freeclip2-earbuds.taskspec.json</pre>
-              </details>
-              <details class="example">
-                <summary>展开输出样例：API request body</summary>
-                <pre>python taskspec_to_chat_completions.py examples\freeclip2-earbuds.taskspec.json -o request.json
-
-{
-  "model": "glm-5.2",
-  "messages": [
-    { "role": "system", "content": "你是 HarmonyOS A2UI Form DSL 生成器..." },
-    { "role": "user", "content": "根据下面的 TaskSpec JSON 生成响应..." }
-  ]
-}</pre>
-              </details>
-            </div>
-          </article>
-
-          <article class="pipe-card">
-            <div class="pipe-index"><span>MODULE</span><span>03</span></div>
-            <div class="pipe-main">
-              <h3>A2UI 模型 API</h3>
-              <div class="io-grid">
-                <div class="io-box"><b>输入</b><p>API request body。`system` 说明 DSL 规则，`user` 提供完整 TaskSpec。</p></div>
-                <div class="io-box"><b>输出</b><p>DSL：一个 `genui` 代码块，恰好 3 行 JSONL。</p></div>
-              </div>
-              <details class="example">
-                <summary>展开输入样例：请求模型</summary>
-                <pre>python taskspec_to_chat_completions.py examples\freeclip2-earbuds.taskspec.json \
-  -o request.json \
-  --invoke \
-  --response-output response.json</pre>
-              </details>
-              <details class="example">
-                <summary>展开输出样例：DSL</summary>
-                <pre>```genui
-{"version":"v0.9","createSurface":{"surfaceId":"card","catalogId":"ohos.a2ui.extended.catalog"}}
-{"version":"v0.9","updateComponents":{"surfaceId":"card","components":[...]}}
-{"version":"v0.9","updateDataModel":{"surfaceId":"card","path":"/","value":{...}}}
-```</pre>
-              </details>
-            </div>
-          </article>
-        </div>
+        <pre id="full-sample"></pre>
       </div>
     </section>
-
-    <section id="sample">
-      <div class="wrap">
-        <div class="section-head">
-          <div class="section-kicker">Protocol Sample</div>
-          <h2>协议样例</h2>
-          <p class="section-desc">TaskSpec 只描述内容项和约束，不写具体布局。切换查看父母关怀卡、耳机桌面卡和 chat-completions 请求体。</p>
-        </div>
-        <div class="code-tabs">
-          <button class="tab active" data-target="sample-parent">父母关怀 TaskSpec</button>
-          <button class="tab" data-target="sample-earbuds">耳机卡片 TaskSpec</button>
-          <button class="tab" data-target="sample-request">请求体结构</button>
-        </div>
-        <div class="code-panel active" id="sample-parent"><pre id="code-parent"></pre></div>
-        <div class="code-panel" id="sample-earbuds"><pre id="code-earbuds"></pre></div>
-        <div class="code-panel" id="sample-request"><pre id="code-request"></pre></div>
-      </div>
-    </section>
-
-    <section id="structure">
-      <div class="wrap">
-        <div class="section-head">
-          <div class="section-kicker">Structure</div>
-          <h2>项目结构</h2>
-        </div>
-        <div class="tree"><span class="cmt">CartTaskSpec/</span>
-├── <span class="file">README.md</span>                       <span class="cmt">项目说明</span>
-├── <span class="file">TaskSpec.md</span>                     <span class="cmt">TaskSpec 协议规范</span>
-├── <span class="file">taskspec.schema.json</span>            <span class="cmt">JSON Schema</span>
-├── <span class="file">taskspec_to_chat_completions.py</span>  <span class="cmt">TaskSpec 转请求体</span>
-├── <span class="file">validate_taskspec.py</span>            <span class="cmt">TaskSpec 校验</span>
-├── <span class="file">validate_generated_card.py</span>      <span class="cmt">genui 输出校验</span>
-├── <span class="file">validate_project_constraints.py</span> <span class="cmt">skill 只读检查</span>
-├── <span class="dir">examples/</span>
-│   ├── <span class="file">parent-care.taskspec.json</span>
-│   └── <span class="file">freeclip2-earbuds.taskspec.json</span>
-├── <span class="dir">references/</span>
-└── <span class="dir">.agents/skills/harmony-card-generation-datamodel-first/</span>  <span class="cmt">外部只读依赖，禁止修改</span></div>
-      </div>
-    </section>
-
   </main>
 
   <footer>
     <div class="wrap">
-      <span>CartTaskSpec · TaskSpec</span>
-      <span>约束抽取给大模型，设计落地给 A2UI 模型。</span>
+      <span>CartTaskSpec · TaskSpec 协议详解</span>
+      <span><a href="./">返回首页</a></span>
     </div>
   </footer>
 
   <script>
-    const samples = {
-      "parent": {
-            "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
-            "task": "生成一个 genui DSL 代码块，内容为 3 行 A2UI JSONL。",
-            "target": {
-                  "size": "2x2",
-                  "sceneHints": [
-                        "status"
-                  ],
-                  "constraints": [
-                        "父母关怀场景，信息要清晰、温暖、易读。",
-                        "温度、感冒指数和拨号入口必须完整显示。",
-                        "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
-                  ]
-            },
-            "displayCandidates": [
-                  {
-                        "id": "city",
-                        "role": "identity",
-                        "label": "深圳",
-                        "dataPath": "/data/weather/items/cityInfo/prefectureName",
-                        "required": true
-                  },
-                  {
-                        "id": "temperature",
-                        "role": "primary",
-                        "label": "当前温度",
-                        "dataPath": "/data/weather/items/weatherData/temperatureText",
-                        "required": true
-                  },
-                  {
-                        "id": "cold_index",
-                        "role": "status",
-                        "label": "感冒指数",
-                        "dataPath": "/data/weather/items/weatherData/coldLevel",
-                        "required": true
-                  },
-                  {
-                        "id": "condition",
-                        "role": "context",
-                        "label": "天气状况",
-                        "dataPath": "/data/weather/items/weatherData/weather_icon"
-                  }
+    const sample = {
+      "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
+      "task": "生成一个 genui DSL 代码块，内容为 3 行 A2UI JSONL。",
+      "target": {
+            "size": "2x2",
+            "sceneHints": [
+                  "status"
             ],
-            "eventCandidates": [
-                  {
-                        "id": "call_dad",
-                        "label": "给爸打电话",
-                        "required": true,
-                        "onClick": [
-                              {
-                                    "call": "clickToCallPhone",
-                                    "args": {
-                                          "phonenumber": "15012345678"
-                                    }
-                              }
-                        ]
-                  }
-            ],
-            "dataModel": {
-                  "value": {
-                        "data": {
-                              "weather": {
-                                    "items": {
-                                          "cityInfo": {
-                                                "districtName": "深圳",
-                                                "prefectureName": "深圳"
-                                          },
-                                          "weatherData": {
-                                                "temperatureText": "--°",
-                                                "temperature": 0,
-                                                "weather_icon": "加载中",
-                                                "coldLevel": "加载中"
-                                          },
-                                          "weatherDailyData": [],
-                                          "weatherHoursData": []
-                                    }
-                              }
-                        },
-                        "state": {
-                              "loading": true
-                        }
-                  }
-            },
-            "assetCandidates": []
-      },
-      "earbuds": {
-            "userQuery": "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。",
-            "task": "生成一个 genui DSL 代码块，内容为 3 行 A2UI JSONL。",
-            "target": {
-                  "size": "2x4",
-                  "sceneHints": [
-                        "device"
-                  ],
-                  "styleHints": [
-                        "磨砂玻璃质感",
-                        "简洁高级，使用半透明层次、柔和边框和克制色彩表达。"
-                  ],
-                  "constraints": [
-                        "Free Clip 2、左耳 47%、右耳 95%、每日30首、心动歌单必须完整显示。",
-                        "整体简洁高级，有磨砂玻璃质感。",
-                        "保持信息简洁清晰。"
-                  ]
-            },
-            "displayCandidates": [
-                  {
-                        "id": "device_name",
-                        "role": "identity",
-                        "label": "Free Clip 2",
-                        "dataPath": "/device/name",
-                        "required": true
-                  },
-                  {
-                        "id": "earbuds_icon",
-                        "role": "media",
-                        "label": "耳机图标",
-                        "assetRef": "earbuds_icon",
-                        "required": false,
-                        "note": "可作为弱装饰，不得挤占电量和快捷入口空间。"
-                  },
-                  {
-                        "id": "left_battery",
-                        "role": "metric",
-                        "label": "左耳电量",
-                        "dataPath": "/device/leftBatteryText",
-                        "required": true
-                  },
-                  {
-                        "id": "right_battery",
-                        "role": "metric",
-                        "label": "右耳电量",
-                        "dataPath": "/device/rightBatteryText",
-                        "required": true
-                  }
-            ],
-            "eventCandidates": [
-                  {
-                        "id": "daily_30",
-                        "label": "每日30首",
-                        "required": true,
-                        "onClick": [
-                              {
-                                    "call": "clickToDeeplink",
-                                    "args": {
-                                          "bundleName": "",
-                                          "abilityName": "",
-                                          "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
-                                    }
-                              }
-                        ]
-                  },
-                  {
-                        "id": "favorite_playlist",
-                        "label": "心动歌单",
-                        "required": true,
-                        "onClick": [
-                              {
-                                    "call": "clickToDeeplink",
-                                    "args": {
-                                          "bundleName": "",
-                                          "abilityName": "",
-                                          "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
-                                    }
-                              }
-                        ]
-                  }
-            ],
-            "dataModel": {
-                  "value": {
-                        "device": {
-                              "name": "Free Clip 2",
-                              "leftBatteryText": "左耳 47%",
-                              "rightBatteryText": "右耳 95%",
-                              "leftBatteryPercent": 47,
-                              "rightBatteryPercent": 95
-                        },
-                        "style": {
-                              "mood": "frosted glass premium"
-                        }
-                  }
-            },
-            "assetCandidates": [
-                  {
-                        "assetRef": "earbuds_icon",
-                        "src": "assets/freeclip2-earbuds.png",
-                        "use": "device illustration",
-                        "static": true
-                  }
+            "constraints": [
+                  "父母关怀场景，信息要清晰、温暖、易读。",
+                  "温度、感冒指数和拨号入口必须完整显示。",
+                  "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
             ]
       },
-      "request": {
-            "model": "glm-5.2",
-            "messages": [
-                  {
-                        "role": "system",
-                        "content": "你是 A2UI 模型，生成 genui DSL。"
+      "displayCandidates": [
+            {
+                  "id": "city",
+                  "role": "identity",
+                  "label": "深圳",
+                  "dataPath": "/data/weather/items/cityInfo/prefectureName",
+                  "required": true
+            },
+            {
+                  "id": "temperature",
+                  "role": "primary",
+                  "label": "当前温度",
+                  "dataPath": "/data/weather/items/weatherData/temperatureText",
+                  "required": true
+            },
+            {
+                  "id": "cold_index",
+                  "role": "status",
+                  "label": "感冒指数",
+                  "dataPath": "/data/weather/items/weatherData/coldLevel",
+                  "required": true
+            },
+            {
+                  "id": "condition",
+                  "role": "context",
+                  "label": "天气状况",
+                  "dataPath": "/data/weather/items/weatherData/weather_icon"
+            }
+      ],
+      "eventCandidates": [
+            {
+                  "id": "call_dad",
+                  "label": "给爸打电话",
+                  "required": true,
+                  "onClick": [
+                        {
+                              "call": "clickToCallPhone",
+                              "args": {
+                                    "phonenumber": "15012345678"
+                              }
+                        }
+                  ]
+            }
+      ],
+      "dataModel": {
+            "value": {
+                  "data": {
+                        "weather": {
+                              "items": {
+                                    "cityInfo": {
+                                          "districtName": "深圳",
+                                          "prefectureName": "深圳"
+                                    },
+                                    "weatherData": {
+                                          "temperatureText": "--°",
+                                          "temperature": 0,
+                                          "weather_icon": "加载中",
+                                          "coldLevel": "加载中"
+                                    },
+                                    "weatherDailyData": [],
+                                    "weatherHoursData": []
+                              }
+                        }
                   },
-                  {
-                        "role": "user",
-                        "content": "根据下面的 TaskSpec JSON 生成响应。\n{...TaskSpec JSON...}"
+                  "state": {
+                        "loading": true
                   }
-            ]
-      }
+            }
+      },
+      "assetCandidates": []
 };
 
     function highlight(json) {
@@ -916,19 +574,7 @@
         .replace(/(:\s*)(-?\d+\.?\d*)/g, '$1<span class="n">$2</span>');
     }
 
-    document.getElementById("code-parent").innerHTML = highlight(samples.parent);
-    document.getElementById("code-earbuds").innerHTML = highlight(samples.earbuds);
-    document.getElementById("code-request").innerHTML = highlight(samples.request);
-    document.getElementById("workflow-taskspec").innerHTML = highlight(samples.earbuds);
-
-    document.querySelectorAll(".tab").forEach(function(tab) {
-      tab.addEventListener("click", function() {
-        document.querySelectorAll(".tab").forEach(function(item) { item.classList.remove("active"); });
-        document.querySelectorAll(".code-panel").forEach(function(panel) { panel.classList.remove("active"); });
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.target).classList.add("active");
-      });
-    });
+    document.getElementById("full-sample").innerHTML = highlight(sample);
   </script>
 </body>
 </html>
