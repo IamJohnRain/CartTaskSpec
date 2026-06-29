@@ -477,7 +477,7 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <div class="eyebrow">taskspec/v1 · harmony-form-rules/v1</div>
+          <div class="eyebrow">taskspec/v1 · harmony-form-datamodel-first-rules/v1</div>
           <h1>把 Form 协议约束抽取出来，让小模型更会画卡片</h1>
           <p class="lead">CartTaskSpec 不是把理解力简单交给大模型，而是让大模型从用户 query 中抽取与 Form 协议相关的约束、能力和交付契约；小模型在清晰边界内完成真正有价值的 DSL 设计与生成。</p>
           <div class="hero-actions">
@@ -491,7 +491,7 @@
             <div class="mini-panel">
               <div class="label">Large Model</div>
               <h3>抽取约束，而不是写死布局</h3>
-              <p>识别场景、尺寸、数据能力、事件能力、CardSpec 和 DSL 硬规则。</p>
+              <p>识别场景、尺寸、内容项、DataModel、动作和素材白名单。</p>
             </div>
             <div class="mini-panel">
               <div class="label">Small Model</div>
@@ -501,7 +501,7 @@
             <div class="mini-panel">
               <div class="label">Final Output</div>
               <h3>只交付 genui DSL</h3>
-              <p>CardSpec 已在 TaskSpec 中确定，小模型最终输出只有 DSL，不再生成或组合 cardspec。</p>
+              <p>TaskSpec 不再携带 CardSpec，小模型最终输出只有 DSL，不生成 cardspec。</p>
             </div>
           </div>
         </div>
@@ -513,13 +513,13 @@
         <div class="section-head">
           <div class="section-kicker">Design Philosophy</div>
           <h2>协议设计思想</h2>
-          <p class="section-desc">TaskSpec 的核心不是替小模型完成布局，而是把 Form 卡片生成中必须遵守的协议规则、数据契约和事件边界整理成一个短小、可校验的输入。</p>
+          <p class="section-desc">TaskSpec 的核心不是替小模型完成布局，而是把用户需求中的内容项、DataModel、动作和素材整理成一个短小、可校验的输入。</p>
         </div>
         <div class="principles">
           <div class="principle">
             <div class="num">1</div>
             <h3>从 query 抽取 Form 约束</h3>
-            <p>大模型的价值在于把自然语言需求变成结构化约束：显示字段、动态能力、点击能力、CardSpec、禁止项和输出格式。</p>
+            <p>大模型的价值在于把自然语言需求变成结构化约束：显示字段、DataModel 路径、点击动作、素材和输出边界。</p>
           </div>
           <div class="principle">
             <div class="num">2</div>
@@ -539,8 +539,8 @@
             <p>不是产出完整卡片，而是把与协议有关的决策抽出来。</p>
             <ul class="role-list">
               <li><b>内容约束</b>：哪些信息必须出现、哪些字段要完整显示。</li>
-              <li><b>能力约束</b>：data capability、event capability、参数和写入路径。</li>
-              <li><b>交付约束</b>：cardSpec、rules.dsl、输出禁止项。</li>
+              <li><b>能力约束</b>：DataModel 结构、onClick 动作参数和素材白名单。</li>
+              <li><b>交付约束</b>：DataModel-first 规则版本和 DSL-only 输出边界。</li>
             </ul>
           </div>
           <div class="model-box">
@@ -562,7 +562,7 @@
         <div class="section-head">
           <div class="section-kicker">Workflow</div>
           <h2>三个中间模块：从用户 Query 到 DSL</h2>
-          <p class="section-desc">流程只突出三个真正处理信息的模块：大模型 Agent、转换脚本、小模型 API。用户 Query、TaskSpec（含 CardSpec）、API request body 和 DSL 都是这些模块之间流动的输入输出；最终输出只有小模型生成的 DSL。</p>
+          <p class="section-desc">流程只突出三个真正处理信息的模块：大模型 Agent、转换脚本、小模型 API。用户 Query、TaskSpec、API request body 和 DSL 都是这些模块之间流动的输入输出；最终输出只有小模型生成的 DSL。</p>
         </div>
 
         <div class="pipeline">
@@ -572,14 +572,14 @@
               <h3>大模型 Agent</h3>
               <div class="io-grid">
                 <div class="io-box"><b>输入</b><p>用户 Query，以及 Form 协议 / skill 参考规则。协议结构以 <a href="https://github.com/IamJohnRain/CartTaskSpec/blob/master/taskspec.schema.json" target="_blank">taskspec.schema.json</a> 为准。</p></div>
-                <div class="io-box"><b>输出 + 校验</b><p>TaskSpec JSON，内含 `card.requirements`、`dataModel`、`eventBindings`、`rules.dsl` 和 `cardSpec`；随后执行 schema 与协议一致性校验。</p></div>
+                <div class="io-box"><b>输出 + 校验</b><p>TaskSpec JSON，内含 `card.requirements`、`dataModel` 和 `assets`；动作内联在 action requirement 的 `onClick` 中，随后执行 schema 与协议一致性校验。</p></div>
               </div>
               <details class="example">
                 <summary>展开输入样例：用户 Query</summary>
                 <pre>给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。</pre>
               </details>
               <details class="example">
-                <summary>展开输出样例：TaskSpec（含 CardSpec）</summary>
+                <summary>展开输出样例：TaskSpec</summary>
                 <pre id="workflow-taskspec"></pre>
               </details>
               <details class="example">
@@ -588,8 +588,8 @@
 
 校验重点：
 - JSON 结构符合 taskspec.schema.json
-- card.size 与 cardSpec.suggestSize 一致
-- dataPath / eventRef / dataBindings 引用可追踪
+- dataPath 必须能从 dataModel.value 解析
+- action requirement 必须内联合规 onClick
 - 小模型任务被约束为只输出 genui DSL</pre>
               </details>
             </div>
@@ -687,7 +687,7 @@
 │   ├── <span class="file">parent-care.taskspec.json</span>
 │   └── <span class="file">freeclip2-earbuds.taskspec.json</span>
 ├── <span class="dir">references/</span>
-└── <span class="dir">.agents/skills/harmony-card-generation/</span>  <span class="cmt">外部只读依赖，禁止修改</span></div>
+└── <span class="dir">.agents/skills/harmony-card-generation-datamodel-first/</span>  <span class="cmt">外部只读依赖，禁止修改</span></div>
       </div>
     </section>
 
@@ -702,51 +702,195 @@
 
   <script>
     const samples = {
-      parent: {
-        schema: "taskspec/v1",
-        rulesVersion: "harmony-form-rules/v1",
-        userQuery: "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸打电话",
-        card: {
-          scenario: "status",
-          size: "2x2",
-          requirements: [
-            { id: "city", type: "identity", label: "深圳", dataPath: "/data/weather/location/prefectureName", required: true },
-            { id: "temperature", type: "primary", label: "当前温度", dataPath: "/data/weather/current/temperatureText", required: true },
-            { id: "cold_index", type: "status", label: "感冒指数", dataPath: "/data/weather/current/coldLevel", required: true },
-            { id: "call_dad", type: "action", label: "给爸打电话", eventRef: "call_dad", required: true }
-          ],
-          constraints: ["父母关怀场景，信息要清晰、温暖、易读。"]
-        },
-        dataModel: { value: { data: { weather: { current: { temperatureText: "--°", coldLevel: "加载中" } } } } },
-        cardSpec: { suggestSize: "2x2", dataBindings: [{ capabilityId: "ViewWeather", arguments: { districtName: "深圳", forecastDays: 1 }, writeResultTo: "/data/weather" }] },
-        eventBindings: [{ eventRef: "call_dad", on: "给爸打电话入口", onClick: [{ call: "clickToCallPhone", args: { phoneNumber: "15012345678" } }] }]
+      "parent": {
+            "schema": "taskspec/v1",
+            "rulesVersion": "harmony-form-datamodel-first-rules/v1",
+            "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
+            "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
+            "card": {
+                  "scenario": "status",
+                  "size": "2x2",
+                  "requirements": [
+                        {
+                              "id": "city",
+                              "type": "identity",
+                              "label": "深圳",
+                              "dataPath": "/data/weather/items/cityInfo/prefectureName",
+                              "required": true
+                        },
+                        {
+                              "id": "temperature",
+                              "type": "primary",
+                              "label": "当前温度",
+                              "dataPath": "/data/weather/items/weatherData/temperatureText",
+                              "required": true
+                        },
+                        {
+                              "id": "cold_index",
+                              "type": "status",
+                              "label": "感冒指数",
+                              "dataPath": "/data/weather/items/weatherData/coldLevel",
+                              "required": true
+                        },
+                        {
+                              "id": "condition",
+                              "type": "context",
+                              "label": "天气状况",
+                              "dataPath": "/data/weather/items/weatherData/weather_icon"
+                        },
+                        {
+                              "id": "call_dad",
+                              "type": "action",
+                              "label": "给爸打电话",
+                              "required": true,
+                              "onClick": [
+                                    {
+                                          "call": "clickToCallPhone",
+                                          "args": {
+                                                "phonenumber": "15012345678"
+                                          }
+                                    }
+                              ]
+                        }
+                  ],
+                  "constraints": [
+                        "父母关怀场景，信息要清晰、温暖、易读。",
+                        "温度、感冒指数和拨号入口必须完整显示。",
+                        "天气动态数据由端侧写入 /data/weather；初始 DataModel 只提供可绑定的加载态结构。"
+                  ]
+            },
+            "dataModel": {
+                  "value": {
+                        "data": {
+                              "weather": {
+                                    "items": {
+                                          "cityInfo": {
+                                                "districtName": "深圳",
+                                                "prefectureName": "深圳"
+                                          },
+                                          "weatherData": {
+                                                "temperatureText": "--°",
+                                                "temperature": 0,
+                                                "weather_icon": "加载中",
+                                                "coldLevel": "加载中"
+                                          },
+                                          "weatherDailyData": [],
+                                          "weatherHoursData": []
+                                    }
+                              }
+                        },
+                        "state": {
+                              "loading": true
+                        }
+                  }
+            },
+            "assets": []
       },
-      earbuds: {
-        schema: "taskspec/v1",
-        rulesVersion: "harmony-form-rules/v1",
-        userQuery: "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量，下面放两个快捷入口。",
-        card: {
-          scenario: "device",
-          size: "2x4",
-          requirements: [
-            { id: "device_name", type: "identity", label: "Free Clip 2", dataPath: "/device/name", required: true },
-            { id: "left_battery", type: "metric", label: "左耳电量", dataPath: "/device/leftBatteryText", required: true },
-            { id: "right_battery", type: "metric", label: "右耳电量", dataPath: "/device/rightBatteryText", required: true },
-            { id: "daily_30", type: "action", label: "每日30首", eventRef: "open_daily_30", required: true },
-            { id: "frosted_style", type: "style", label: "磨砂玻璃质感", note: "半透明层次、柔和边框、克制色彩。" }
-          ]
-        },
-        dataModel: { value: { device: { name: "Free Clip 2", leftBatteryText: "左耳 47%", rightBatteryText: "右耳 95%" } } },
-        cardSpec: { suggestSize: "2x4" }
+      "earbuds": {
+            "schema": "taskspec/v1",
+            "rulesVersion": "harmony-form-datamodel-first-rules/v1",
+            "userQuery": "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。",
+            "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
+            "card": {
+                  "scenario": "device",
+                  "size": "2x4",
+                  "requirements": [
+                        {
+                              "id": "device_name",
+                              "type": "identity",
+                              "label": "Free Clip 2",
+                              "dataPath": "/device/name",
+                              "required": true
+                        },
+                        {
+                              "id": "left_battery",
+                              "type": "metric",
+                              "label": "左耳电量",
+                              "dataPath": "/device/leftBatteryText",
+                              "required": true
+                        },
+                        {
+                              "id": "right_battery",
+                              "type": "metric",
+                              "label": "右耳电量",
+                              "dataPath": "/device/rightBatteryText",
+                              "required": true
+                        },
+                        {
+                              "id": "daily_30",
+                              "type": "action",
+                              "label": "每日30首",
+                              "required": true,
+                              "onClick": [
+                                    {
+                                          "call": "clickToDeeplink",
+                                          "args": {
+                                                "bundleName": "",
+                                                "abilityName": "",
+                                                "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+                                          }
+                                    }
+                              ]
+                        },
+                        {
+                              "id": "favorite_playlist",
+                              "type": "action",
+                              "label": "心动歌单",
+                              "required": true,
+                              "onClick": [
+                                    {
+                                          "call": "clickToDeeplink",
+                                          "args": {
+                                                "bundleName": "",
+                                                "abilityName": "",
+                                                "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
+                                          }
+                                    }
+                              ]
+                        },
+                        {
+                              "id": "frosted_style",
+                              "type": "style",
+                              "label": "磨砂玻璃质感",
+                              "note": "简洁高级，使用半透明层次、柔和边框和克制色彩表达。"
+                        }
+                  ],
+                  "constraints": [
+                        "Free Clip 2、左耳 47%、右耳 95%、每日30首、心动歌单必须完整显示。",
+                        "整体简洁高级，有磨砂玻璃质感。",
+                        "静态设备卡片，不需要 CardSpec 或 data capability。"
+                  ]
+            },
+            "dataModel": {
+                  "value": {
+                        "device": {
+                              "name": "Free Clip 2",
+                              "leftBatteryText": "左耳 47%",
+                              "rightBatteryText": "右耳 95%",
+                              "leftBatteryPercent": 47,
+                              "rightBatteryPercent": 95
+                        },
+                        "style": {
+                              "mood": "frosted glass premium"
+                        }
+                  }
+            },
+            "assets": []
       },
-      request: {
-        model: "glm-5.2",
-        messages: [
-          { role: "system", content: "你是 HarmonyOS A2UI Form DSL 生成器。只输出一个 genui 代码块，不输出 cardspec。" },
-          { role: "user", content: "根据下面的 TaskSpec JSON 生成响应：\\n{...TaskSpec JSON...}" }
-        ]
+      "request": {
+            "model": "glm-5.2",
+            "messages": [
+                  {
+                        "role": "system",
+                        "content": "?? HarmonyOS A2UI Form DSL ????????? genui ??????? cardspec?"
+                  },
+                  {
+                        "role": "user",
+                        "content": "????? TaskSpec JSON ?????\\n{...TaskSpec JSON...}"
+                  }
+            ]
       }
-    };
+};
 
     function highlight(json) {
       return JSON.stringify(json, null, 2)

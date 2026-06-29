@@ -1,8 +1,8 @@
 {
   "schema": "taskspec/v1",
-  "rulesVersion": "harmony-form-rules/v1",
+  "rulesVersion": "harmony-form-datamodel-first-rules/v1",
   "userQuery": "给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。",
-  "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui 代码块，不要输出解释、标题、路径、总结或 cardspec 代码块。cardSpec 已由 TaskSpec 提供，小模型不得生成或修改 cardSpec。",
+  "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui，不输出解释、标题、路径、总结或 cardspec。",
   "card": {
     "scenario": "device",
     "size": "2x4",
@@ -32,15 +32,33 @@
         "id": "daily_30",
         "type": "action",
         "label": "每日30首",
-        "eventRef": "open_daily_30",
-        "required": true
+        "required": true,
+        "onClick": [
+          {
+            "call": "clickToDeeplink",
+            "args": {
+              "bundleName": "",
+              "abilityName": "",
+              "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+            }
+          }
+        ]
       },
       {
         "id": "favorite_playlist",
         "type": "action",
         "label": "心动歌单",
-        "eventRef": "open_favorite_playlist",
-        "required": true
+        "required": true,
+        "onClick": [
+          {
+            "call": "clickToDeeplink",
+            "args": {
+              "bundleName": "",
+              "abilityName": "",
+              "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
+            }
+          }
+        ]
       },
       {
         "id": "frosted_style",
@@ -51,7 +69,8 @@
     ],
     "constraints": [
       "Free Clip 2、左耳 47%、右耳 95%、每日30首、心动歌单必须完整显示。",
-      "整体简洁高级，有磨砂玻璃质感。"
+      "整体简洁高级，有磨砂玻璃质感。",
+      "静态设备卡片，不需要 CardSpec 或 data capability。"
     ]
   },
   "dataModel": {
@@ -68,61 +87,5 @@
       }
     }
   },
-  "cardSpec": {
-    "suggestSize": "2x4"
-  },
-  "dataCapabilities": [],
-  "eventBindings": [
-    {
-      "eventRef": "open_daily_30",
-      "on": "每日30首快捷入口",
-      "onClick": [
-        {
-          "call": "clickToDeeplink",
-          "args": {
-            "bundleName": "",
-            "abilityName": "",
-            "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
-          }
-        }
-      ]
-    },
-    {
-      "eventRef": "open_favorite_playlist",
-      "on": "心动歌单快捷入口",
-      "onClick": [
-        {
-          "call": "clickToDeeplink",
-          "args": {
-            "bundleName": "",
-            "abilityName": "",
-            "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
-          }
-        }
-      ]
-    }
-  ],
-  "assets": [],
-  "validation": {
-    "level": "strict",
-    "checked": [
-      "card.size equals cardSpec.suggestSize",
-      "static TaskSpec has no cardSpec.dataBindings",
-      "music shortcuts use supported clickToDeeplink targets",
-      "small model only outputs genui"
-    ]
-  },
-  "rules": {
-    "dsl": [
-      "只输出一个 genui 代码块，不输出 cardspec 或解释文字。",
-      "genui 恰好 3 行 JSONL，顺序为 createSurface、updateComponents、updateDataModel。",
-      "version 固定为 v0.9，catalogId 固定为 ohos.a2ui.extended.catalog。",
-      "updateDataModel.path 必须是 /，value 必须等于 TaskSpec.dataModel.value。",
-      "root 尺寸按 card.size：2x2=160x160，2x4=320x160。",
-      "只能使用 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。",
-      "使用 Text.content、Image.src、Button.label，不使用 Text.text/Image.url/Button.action。",
-      "onClick 只使用 TaskSpec.eventBindings 中声明的事件。",
-      "绑定使用 {\"path\":\"/...\"} 或 formatString，不使用表达式。"
-    ]
-  }
+  "assets": []
 }
