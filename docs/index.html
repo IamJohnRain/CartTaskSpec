@@ -246,6 +246,107 @@
       display: grid;
       gap: 16px;
     }
+    .pipeline {
+      display: grid;
+      gap: 14px;
+    }
+    .pipe-card {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(35,48,72,.06);
+      position: relative;
+    }
+    .pipe-card:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 62px;
+      bottom: -15px;
+      width: 2px;
+      height: 15px;
+      background: var(--line);
+    }
+    @media (max-width: 760px) {
+      .pipe-card { grid-template-columns: 1fr; }
+      .pipe-card:not(:last-child)::after { left: 32px; }
+    }
+    .pipe-index {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      border-radius: 18px;
+      background: var(--green-soft);
+      color: var(--teal-dark);
+      min-height: 110px;
+      font-weight: 900;
+    }
+    .pipe-card:nth-child(2) .pipe-index,
+    .pipe-card:nth-child(5) .pipe-index { background: var(--blue-soft); color: var(--blue); }
+    .pipe-card:nth-child(3) .pipe-index,
+    .pipe-card:nth-child(7) .pipe-index { background: var(--violet-soft); color: var(--violet); }
+    .pipe-card:nth-child(4) .pipe-index,
+    .pipe-card:nth-child(6) .pipe-index { background: var(--amber-soft); color: var(--amber); }
+    .pipe-index span:first-child { font: 800 12px/1 var(--mono); letter-spacing: .08em; opacity: .78; }
+    .pipe-index span:last-child { font-size: 28px; }
+    .pipe-main {
+      min-width: 0;
+    }
+    .pipe-main h3 {
+      margin: 0 0 10px;
+      font-size: 21px;
+      letter-spacing: -.02em;
+    }
+    .io-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 760px) { .io-grid { grid-template-columns: 1fr; } }
+    .io-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+    .io-box b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    .io-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+    details.example {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f8fbff;
+      overflow: hidden;
+    }
+    details.example summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      color: var(--teal-dark);
+      font-weight: 800;
+      font-size: 14px;
+      user-select: none;
+    }
+    details.example pre {
+      border: 0;
+      border-top: 1px solid var(--line);
+      border-radius: 0;
+      max-height: 280px;
+      font-size: 12.5px;
+    }
     .layer {
       display: grid;
       grid-template-columns: 170px 1fr;
@@ -331,6 +432,7 @@
       font-family: var(--mono);
       font-size: 13.5px;
       line-height: 1.95;
+      white-space: pre;
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: 22px;
@@ -474,43 +576,151 @@
       <div class="wrap">
         <div class="section-head">
           <div class="section-kicker">Workflow</div>
-          <h2>分层作业流</h2>
-          <p class="section-desc">不用复杂连线。整个流程按职责分成四层：约束抽取层、协议校验层、DSL 生成层、交付校验层。每层输入输出清楚，互不越界。</p>
+          <h2>从用户 Query 到 DSL 的完整流程</h2>
+          <p class="section-desc">流程按输入、处理、输出逐层展开。每一层都有明确产物，并且可以展开查看样例。TaskSpec 中已经包含 CardSpec；小模型 API 的输出只负责 DSL。</p>
         </div>
 
-        <div class="layer-stack">
-          <div class="layer">
-            <div class="layer-title"><small>Layer 01</small><strong>约束抽取层</strong></div>
-            <div class="layer-body">
-              <div class="step"><h4>输入用户 query</h4><p>一句话需求，可能包含场景、数据、动作、风格。</p></div>
-              <div class="step"><h4>抽取 Form 约束</h4><p>识别尺寸、必显字段、能力、事件和禁止项。</p></div>
-              <div class="step"><h4>产出 TaskSpec</h4><p>轻量 JSON：requirements、dataModel、cardSpec、rules.dsl。</p></div>
+        <div class="pipeline">
+          <article class="pipe-card">
+            <div class="pipe-index"><span>INPUT</span><span>01</span></div>
+            <div class="pipe-main">
+              <h3>用户 Query</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>用户用自然语言描述想要的服务卡片。</p></div>
+                <div class="io-box"><b>输出</b><p>一段原始需求文本，进入大模型 Agent。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开样例</summary>
+                <pre>给我做个好看的耳机桌面卡片，显示 Free Clip 2 和左右耳机电量（47%、95%），下面放每日30首和心动歌单两个快捷入口，简洁高级一点，有磨砂玻璃那种感觉。</pre>
+              </details>
             </div>
-          </div>
-          <div class="layer">
-            <div class="layer-title"><small>Layer 02</small><strong>协议校验层</strong></div>
-            <div class="layer-body">
-              <div class="step"><h4>Schema 校验</h4><p>确保 TaskSpec 字段形状符合 taskspec.schema.json。</p></div>
-              <div class="step"><h4>引用一致性</h4><p>检查 dataPath、eventRef、assetRef、dataBindings 对齐。</p></div>
-              <div class="step"><h4>项目约束</h4><p>确认 .agents/skills 只读，没有被修改。</p></div>
+          </article>
+
+          <article class="pipe-card">
+            <div class="pipe-index"><span>AGENT</span><span>02</span></div>
+            <div class="pipe-main">
+              <h3>大模型 Agent 抽取 Form 约束</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>用户 Query + 只读 skill / 参考规则。</p></div>
+                <div class="io-box"><b>输出</b><p>场景、尺寸、内容项、DataModel、事件能力、CardSpec、DSL 硬规则。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开抽取结果示例</summary>
+                <pre>{
+  "scenario": "device",
+  "size": "2x4",
+  "requirements": ["Free Clip 2", "左耳 47%", "右耳 95%", "每日30首", "心动歌单"],
+  "style": "简洁高级，磨砂玻璃质感",
+  "events": ["open_daily_30", "open_favorite_playlist"],
+  "cardSpec": { "suggestSize": "2x4" }
+}</pre>
+              </details>
             </div>
-          </div>
-          <div class="layer">
-            <div class="layer-title"><small>Layer 03</small><strong>DSL 生成层</strong></div>
-            <div class="layer-body">
-              <div class="step"><h4>生成请求体</h4><p>转换成 chat-completions：system prompt + user TaskSpec。</p></div>
-              <div class="step"><h4>小模型设计布局</h4><p>小模型根据约束完成组件层级、视觉和交互实现。</p></div>
-              <div class="step"><h4>输出 genui</h4><p>只输出一个 genui 代码块，恰好 3 行 JSONL。</p></div>
+          </article>
+
+          <article class="pipe-card">
+            <div class="pipe-index"><span>SPEC</span><span>03</span></div>
+            <div class="pipe-main">
+              <h3>得到 TaskSpec（含 CardSpec）</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>大模型 Agent 抽取出的协议约束和端侧契约。</p></div>
+                <div class="io-box"><b>输出</b><p>`taskspec/v1` JSON。它是小模型生成 DSL 的唯一结构化输入，同时内含最终 `cardSpec`。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开 TaskSpec 片段</summary>
+                <pre>{
+  "schema": "taskspec/v1",
+  "card": {
+    "scenario": "device",
+    "size": "2x4",
+    "requirements": [
+      { "id": "device_name", "type": "identity", "label": "Free Clip 2", "dataPath": "/device/name" },
+      { "id": "daily_30", "type": "action", "label": "每日30首", "eventRef": "open_daily_30" }
+    ]
+  },
+  "cardSpec": { "suggestSize": "2x4" }
+}</pre>
+              </details>
             </div>
-          </div>
-          <div class="layer">
-            <div class="layer-title"><small>Layer 04</small><strong>交付校验层</strong></div>
-            <div class="layer-body">
-              <div class="step"><h4>校验模型输出</h4><p>检查 JSONL、组件、root 尺寸、DataModel 一致性。</p></div>
-              <div class="step"><h4>透传 cardSpec</h4><p>TaskSpec.cardSpec 直接作为端侧能力契约。</p></div>
-              <div class="step"><h4>组合交付</h4><p>最终结果为 genui DSL + TaskSpec.cardSpec。</p></div>
+          </article>
+
+          <article class="pipe-card">
+            <div class="pipe-index"><span>SCRIPT</span><span>04</span></div>
+            <div class="pipe-main">
+              <h3>转换脚本生成 API Request Body</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>`*.taskspec.json` 文件。</p></div>
+                <div class="io-box"><b>输出</b><p>OpenAI 兼容 chat-completions 请求体，包含 `system` 和 `user` 两条消息。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开命令与输出结构</summary>
+                <pre>python taskspec_to_chat_completions.py examples\freeclip2-earbuds.taskspec.json -o request.json
+
+{
+  "model": "glm-5.2",
+  "messages": [
+    { "role": "system", "content": "你是 HarmonyOS A2UI Form DSL 生成器..." },
+    { "role": "user", "content": "根据下面的 TaskSpec JSON 生成响应..." }
+  ]
+}</pre>
+              </details>
             </div>
-          </div>
+          </article>
+
+          <article class="pipe-card">
+            <div class="pipe-index"><span>API</span><span>05</span></div>
+            <div class="pipe-main">
+              <h3>Request Body 输入小模型 API</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>`request.json`，其中 system prompt 提醒小模型只输出 genui。</p></div>
+                <div class="io-box"><b>输出</b><p>小模型生成的 chat-completions response。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开调用示例</summary>
+                <pre>python taskspec_to_chat_completions.py examples\freeclip2-earbuds.taskspec.json \
+  -o request.json \
+  --invoke \
+  --response-output response.json</pre>
+              </details>
+            </div>
+          </article>
+
+          <article class="pipe-card">
+            <div class="pipe-index"><span>DSL</span><span>06</span></div>
+            <div class="pipe-main">
+              <h3>小模型输出 DSL</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>TaskSpec 中的 requirements、dataModel、eventBindings、rules.dsl。</p></div>
+                <div class="io-box"><b>输出</b><p>一个 `genui` 代码块，恰好 3 行 JSONL。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开 DSL 形态</summary>
+                <pre>```genui
+{"version":"v0.9","createSurface":{"surfaceId":"card","catalogId":"ohos.a2ui.extended.catalog"}}
+{"version":"v0.9","updateComponents":{"surfaceId":"card","components":[...]}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"card","path":"/","value":{...}}}
+```</pre>
+              </details>
+            </div>
+          </article>
+
+          <article class="pipe-card">
+            <div class="pipe-index"><span>FINAL</span><span>07</span></div>
+            <div class="pipe-main">
+              <h3>最终交付：DSL + CardSpec</h3>
+              <div class="io-grid">
+                <div class="io-box"><b>输入</b><p>小模型生成的 `genui` DSL + TaskSpec 中已包含的 `cardSpec`。</p></div>
+                <div class="io-box"><b>输出</b><p>端侧可消费的完整卡片结果。</p></div>
+              </div>
+              <details class="example">
+                <summary>展开最终交付结构</summary>
+                <pre>{
+  "genui": "card.genui.jsonl",
+  "cardSpec": "TaskSpec.cardSpec"
+}</pre>
+              </details>
+            </div>
+          </article>
         </div>
       </div>
     </section>
