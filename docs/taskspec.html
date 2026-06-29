@@ -279,6 +279,53 @@
     }
     .note b { display: block; color: var(--ink); margin-bottom: 3px; }
 
+    .enum-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 860px) { .enum-grid { grid-template-columns: 1fr; } }
+    .enum-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfdff;
+      overflow: hidden;
+    }
+    .enum-box h4 {
+      margin: 0;
+      padding: 12px 14px;
+      background: #f1f6fb;
+      border-bottom: 1px solid var(--line);
+      font-size: 15px;
+    }
+    .enum-box dl {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 0;
+      margin: 0;
+      font-size: 13.5px;
+    }
+    .enum-box dt,
+    .enum-box dd {
+      margin: 0;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .enum-box dt {
+      font-family: var(--mono);
+      font-weight: 800;
+      color: var(--ink);
+      background: #ffffff;
+    }
+    .enum-box dd { color: var(--muted); }
+    .enum-box dt:last-of-type,
+    .enum-box dd:last-of-type { border-bottom: 0; }
+    @media (max-width: 560px) {
+      .enum-box dl { grid-template-columns: 1fr; }
+      .enum-box dt { border-bottom: 0; padding-bottom: 2px; }
+      .enum-box dd { padding-top: 2px; }
+    }
+
     details.example {
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -469,9 +516,34 @@
             <div class="module-body">
               <p><span class="badge required">必须</span> `card.scenario` 表达场景，`card.size` 只决定 root 目标尺寸，`card.requirements` 是必须被表达的内容项。`constraints` 可选，用于补充风格、完整显示、优先级等自然语言约束。</p>
               <div class="note-grid">
-                <div class="note"><b>scenario</b>可选 `status`、`reminder`、`action`、`device`、`summary`。</div>
+                <div class="note"><b>scenario</b>用于告诉小模型这张卡的主要意图，影响信息优先级、视觉语气和交互密度。</div>
                 <div class="note"><b>size</b>可选 `2x2` 或 `2x4`，分别对应 160x160 与 320x160。</div>
-                <div class="note"><b>requirements.type</b>可选 identity、primary、metric、status、context、media、action、style。</div>
+                <div class="note"><b>requirements.type</b>用于告诉小模型每个内容项在卡片里的语义角色，影响字号、位置、组件和点击处理。</div>
+              </div>
+              <div class="enum-grid">
+                <div class="enum-box">
+                  <h4>scenario 选项说明</h4>
+                  <dl>
+                    <dt>status</dt><dd>状态展示卡，突出当前状态或实时结果，例如天气、健康、设备在线状态。</dd>
+                    <dt>reminder</dt><dd>提醒/待办卡，突出时间、截止点、下一步动作，例如日程、服药、缴费提醒。</dd>
+                    <dt>action</dt><dd>快捷操作卡，核心价值是点击入口，例如拨号、打开应用、执行一个服务动作。</dd>
+                    <dt>device</dt><dd>设备信息卡，突出设备名称、指标、连接状态和快捷入口，例如耳机电量、家电状态。</dd>
+                    <dt>summary</dt><dd>摘要概览卡，展示多项信息的汇总，例如今日概览、消费摘要、运动摘要。</dd>
+                  </dl>
+                </div>
+                <div class="enum-box">
+                  <h4>requirements.type 选项说明</h4>
+                  <dl>
+                    <dt>identity</dt><dd>身份/对象名，例如城市、联系人、设备名，通常作为标题或识别信息。</dd>
+                    <dt>primary</dt><dd>主信息或主答案，例如当前温度、余额、最重要的状态，通常最醒目。</dd>
+                    <dt>metric</dt><dd>数值指标，例如电量、步数、百分比，可用于文本或进度表达。</dd>
+                    <dt>status</dt><dd>状态文本，例如感冒指数、在线/离线、风险等级。</dd>
+                    <dt>context</dt><dd>辅助上下文，例如天气状况、更新时间、副标题，不应抢主信息层级。</dd>
+                    <dt>media</dt><dd>图片或图标类内容，通常需要配合 `assetRef` 或静态素材。</dd>
+                    <dt>action</dt><dd>可点击动作入口，必须通过 `eventRef` 关联 `eventBindings`。</dd>
+                    <dt>style</dt><dd>视觉风格要求，例如磨砂玻璃、高级、温暖，用于约束视觉表达，不对应数据绑定。</dd>
+                  </dl>
+                </div>
               </div>
               <details class="example" open>
                 <summary>示例</summary>
