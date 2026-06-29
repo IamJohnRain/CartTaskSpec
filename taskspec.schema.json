@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/taskspec.schema.json",
+  "title": "TaskSpec",
+  "type": "object",
+  "required": [
+    "schema",
+    "rulesVersion",
+    "userQuery",
+    "task",
+    "card",
+    "dataModel",
+    "cardSpec",
+    "dataCapabilities",
+    "eventBindings",
+    "assets",
+    "rules"
+  ],
+  "properties": {
+    "schema": {
+      "const": "taskspec/v1"
+    },
+    "rulesVersion": {
+      "const": "harmony-form-rules/v1"
+    },
+    "userQuery": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "card": {
+      "type": "object",
+      "required": ["scenario", "size", "requirements"],
+      "properties": {
+        "scenario": {
+          "enum": ["status", "reminder", "action", "device", "summary"]
+        },
+        "size": {
+          "enum": ["2x2", "2x4"]
+        },
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "label"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+              },
+              "type": {
+                "enum": ["identity", "primary", "metric", "status", "context", "media", "action", "style"]
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "dataPath": {
+                "$ref": "#/$defs/jsonPointer"
+              },
+              "eventRef": {
+                "type": "string",
+                "minLength": 1
+              },
+              "assetRef": {
+                "type": "string",
+                "minLength": 1
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "dataModel": {
+      "type": "object",
+      "required": ["value"],
+      "properties": {
+        "value": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cardSpec": {
+      "type": "object",
+      "required": ["suggestSize"],
+      "properties": {
+        "suggestSize": {
+          "enum": ["2x2", "2x4"]
+        },
+        "dataBindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["capabilityId", "arguments", "writeResultTo"],
+            "properties": {
+              "capabilityId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "arguments": {
+                "type": "object"
+              },
+              "writeResultTo": {
+                "type": "string",
+                "pattern": "^/data(/.*)?$"
+              },
+              "bindingId": {
+                "type": "string"
+              },
+              "capabilityVersion": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "dataCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["capabilityId", "arguments", "writeResultTo", "usedOutputPaths"],
+        "properties": {
+          "capabilityId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "arguments": {
+            "type": "object"
+          },
+          "writeResultTo": {
+            "type": "string",
+            "pattern": "^/data(/.*)?$"
+          },
+          "usedOutputPaths": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field", "path", "desc"],
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "path": {
+                  "$ref": "#/$defs/jsonPointer"
+                },
+                "desc": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "capabilityGap": {
+      "type": "string"
+    },
+    "eventBindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["eventRef", "on", "onClick"],
+        "properties": {
+          "eventRef": {
+            "type": "string",
+            "minLength": 1
+          },
+          "on": {
+            "type": "string",
+            "minLength": 1
+          },
+          "onClick": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["call"],
+              "properties": {
+                "call": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "args": {
+                  "type": "object"
+                },
+                "as": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["src", "use"],
+        "properties": {
+          "assetRef": {
+            "type": "string",
+            "minLength": 1
+          },
+          "src": {
+            "type": "string",
+            "minLength": 1
+          },
+          "use": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bindTo": {
+            "$ref": "#/$defs/jsonPointer"
+          },
+          "static": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "enum": ["strict", "basic"]
+        },
+        "checked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "rules": {
+      "type": "object",
+      "required": ["dsl"],
+      "properties": {
+        "dsl": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "jsonPointer": {
+      "type": "string",
+      "pattern": "^(/([^/~]|~0|~1)*)*$"
+    }
+  }
+}

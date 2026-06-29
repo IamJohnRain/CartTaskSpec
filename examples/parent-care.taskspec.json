@@ -1,0 +1,156 @@
+{
+  "schema": "taskspec/v1",
+  "rulesVersion": "harmony-form-rules/v1",
+  "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
+  "task": "根据本 TaskSpec 生成一个 genui 代码块（A2UI JSONL，每行一个 JSON object，共 3 行）。直接输出 genui 代码块，不要输出解释、标题、路径、总结或 cardspec 代码块。cardSpec 已由 TaskSpec 提供，小模型不得生成或修改 cardSpec。",
+  "card": {
+    "scenario": "status",
+    "size": "2x2",
+    "requirements": [
+      {
+        "id": "city",
+        "type": "identity",
+        "label": "深圳",
+        "dataPath": "/data/weather/location/prefectureName",
+        "required": true
+      },
+      {
+        "id": "temperature",
+        "type": "primary",
+        "label": "当前温度",
+        "dataPath": "/data/weather/current/temperatureText",
+        "required": true
+      },
+      {
+        "id": "cold_index",
+        "type": "status",
+        "label": "感冒指数",
+        "dataPath": "/data/weather/current/coldLevel",
+        "required": true
+      },
+      {
+        "id": "condition",
+        "type": "context",
+        "label": "天气状况",
+        "dataPath": "/data/weather/current/condition"
+      },
+      {
+        "id": "call_dad",
+        "type": "action",
+        "label": "给爸打电话",
+        "eventRef": "call_dad",
+        "required": true
+      }
+    ],
+    "constraints": [
+      "父母关怀场景，信息要清晰、温暖、易读。",
+      "温度、感冒指数和拨号入口必须完整显示。"
+    ]
+  },
+  "dataModel": {
+    "value": {
+      "data": {
+        "weather": {
+          "location": {
+            "districtName": "深圳",
+            "prefectureName": "深圳"
+          },
+          "current": {
+            "temperatureText": "--°",
+            "condition": "加载中",
+            "coldLevel": "加载中"
+          },
+          "daily": [],
+          "updatedAt": ""
+        }
+      },
+      "state": {
+        "loading": true
+      }
+    }
+  },
+  "cardSpec": {
+    "suggestSize": "2x2",
+    "dataBindings": [
+      {
+        "capabilityId": "ViewWeather",
+        "arguments": {
+          "districtName": "深圳",
+          "prefectureName": "深圳",
+          "forecastDays": 1
+        },
+        "writeResultTo": "/data/weather"
+      }
+    ]
+  },
+  "dataCapabilities": [
+    {
+      "capabilityId": "ViewWeather",
+      "arguments": {
+        "districtName": "深圳",
+        "prefectureName": "深圳",
+        "forecastDays": 1
+      },
+      "writeResultTo": "/data/weather",
+      "usedOutputPaths": [
+        {
+          "field": "prefectureName",
+          "path": "/data/weather/location/prefectureName",
+          "desc": "城市名。"
+        },
+        {
+          "field": "temperatureText",
+          "path": "/data/weather/current/temperatureText",
+          "desc": "当前温度文本。"
+        },
+        {
+          "field": "condition",
+          "path": "/data/weather/current/condition",
+          "desc": "当前天气状况。"
+        },
+        {
+          "field": "coldLevel",
+          "path": "/data/weather/current/coldLevel",
+          "desc": "感冒指数。"
+        }
+      ]
+    }
+  ],
+  "eventBindings": [
+    {
+      "eventRef": "call_dad",
+      "on": "给爸打电话入口",
+      "onClick": [
+        {
+          "call": "clickToCallPhone",
+          "args": {
+            "phoneNumber": "15012345678"
+          }
+        }
+      ]
+    }
+  ],
+  "assets": [],
+  "validation": {
+    "level": "strict",
+    "checked": [
+      "card.size equals cardSpec.suggestSize",
+      "weather capability uses ViewWeather manifest fields",
+      "phone event uses clickToCallPhone phoneNumber",
+      "small model only outputs genui"
+    ]
+  },
+  "rules": {
+    "dsl": [
+      "只输出一个 genui 代码块，不输出 cardspec 或解释文字。",
+      "genui 恰好 3 行 JSONL，顺序为 createSurface、updateComponents、updateDataModel。",
+      "version 固定为 v0.9，catalogId 固定为 ohos.a2ui.extended.catalog。",
+      "updateDataModel.path 必须是 /，value 必须等于 TaskSpec.dataModel.value。",
+      "root 尺寸按 card.size：2x2=160x160，2x4=320x160。",
+      "只能使用 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。",
+      "使用 Text.content、Image.src、Button.label，不使用 Text.text/Image.url/Button.action。",
+      "onClick 只使用 TaskSpec.eventBindings 中声明的事件。",
+      "绑定使用 {\"path\":\"/...\"} 或 formatString，不使用表达式。"
+    ]
+  }
+}
