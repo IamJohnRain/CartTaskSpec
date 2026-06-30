@@ -21,7 +21,6 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 ```json
 {
   "userQuery": "...",
-  "task": "生成一个 genui DSL。",
   "target": {
     "size": "2x4"
   },

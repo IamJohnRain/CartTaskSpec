@@ -64,6 +64,8 @@ def read_task_spec(path: Path) -> str:
     spec = json.loads(text)
     if "schema" in spec or "rulesVersion" in spec:
         raise ValueError("TaskSpec must not contain top-level 'schema' or 'rulesVersion'")
+    if "task" in spec:
+        raise ValueError("TaskSpec must not contain top-level 'task'")
     if "card" in spec:
         raise ValueError("TaskSpec must use top-level 'target', not 'card'")
     if "intent" in spec or "assets" in spec or "displayCandidates" in spec:
@@ -79,7 +81,7 @@ def build_content(task_spec_json: str, raw_content: bool) -> str:
         return task_spec_json
 
     return (
-        "根据下面的 TaskSpec JSON 生成响应。严格遵循 task 字段和 system prompt 中的 DSL 规则。\n"
+        "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。\n"
         "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。\n"
         "请从 userQuery 和 dataModel.value 中自行判断需要展示的信息；候选项 description 只用于理解动作或素材语义，不要当成必须展示的长文案。\n"
         "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n"
