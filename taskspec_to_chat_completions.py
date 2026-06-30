@@ -26,7 +26,7 @@ assetCandidates 是用户 query 中抽取出的素材约束，不是 DSL 组件�
 - updateComponents.root 必须引用 components 中已存在的 root 组件；components 必须是扁平组件数组，每个组件有 id 和 component。
 
 尺寸与 root shell：
-- target.size 只能是 2x2 或 2x4。
+- size 只能是 2x2 或 2x4。
 - 2x2 使用 createSurface/root width:140、height:140，root borderRadius:18，clip:true。
 - 2x4 使用 createSurface/root width:300、height:140，root borderRadius:22，clip:true。
 - root 是唯一卡片 shell，必须承载 width、height、padding、borderRadius、clip 和至少一种表面样式。
@@ -70,10 +70,12 @@ def read_task_spec(path: Path) -> str:
     if "task" in spec:
         raise ValueError("TaskSpec must not contain top-level 'task'")
     if "card" in spec:
-        raise ValueError("TaskSpec must use top-level 'target', not 'card'")
+        raise ValueError("TaskSpec must use top-level 'size', not 'card'")
     if "intent" in spec or "assets" in spec or "displayCandidates" in spec:
-        raise ValueError("TaskSpec must use target/eventCandidates/dataModel/assetCandidates")
-    for key in ["target", "eventCandidates", "dataModel", "assetCandidates"]:
+        raise ValueError("TaskSpec must use size/eventCandidates/dataModel/assetCandidates")
+    if "target" in spec:
+        raise ValueError("TaskSpec must use top-level 'size', not 'target'")
+    for key in ["size", "eventCandidates", "dataModel", "assetCandidates"]:
         if key not in spec:
             raise ValueError(f"TaskSpec must contain top-level '{key}'")
     return text.strip()
@@ -89,7 +91,7 @@ def build_content(task_spec_json: str, raw_content: bool) -> str:
         "请从 userQuery 和 dataModel.value 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。\n"
         "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n"
         "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：\n"
-        "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按target.size选择\",\"height\":140}}\n"
+        "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按size选择\",\"height\":140}}\n"
         "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card\",\"root\":\"root\",\"components\":[...]}}\n"
         "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card\",\"path\":\"/\",\"value\":{...}}}\n"
         "不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。\n\n"

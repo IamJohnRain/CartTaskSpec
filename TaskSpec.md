@@ -11,7 +11,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 - TaskSpec 只提供 DSL 生成所需输入。
 - 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
 - 不提供 `displayCandidates` 或 `role`；展示内容由 A2UI 模型从 `userQuery` 和 `dataModel.value` 中判断。
-- `target` 只记录目标尺寸。
+- `size` 记录目标尺寸。
 - `eventCandidates` 是候选事件能力，不是 DSL `onClick`，也不是按钮或入口描述。
 - `assetCandidates` 是素材约束，不是 DSL 组件候选。
 - DSL 硬规则统一写入转换脚本的 system prompt。
@@ -22,9 +22,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 ```json
 {
   "userQuery": "...",
-  "target": {
-    "size": "2x4"
-  },
+  "size": "2x4",
   "eventCandidates": [],
   "dataModel": {
     "value": {}
@@ -37,17 +35,15 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 ## 3. 字段说明
 
-### `target`
+### `size`
 
-`target` 描述目标卡片尺寸。
+`size` 描述目标卡片尺寸。
 
 ```json
-{
-  "size": "2x4"
-}
+"2x4"
 ```
 
-- `size`: 必须，`2x2` 或 `2x4`。
+必须，取值为 `2x2` 或 `2x4`。
 
 ### `eventCandidates`
 
@@ -118,7 +114,7 @@ A2UI 模型应从 `userQuery` 判断哪些事件需要变成可点击入口。�
 - **角色定义**：A2UI 模型，负责生成 HarmonyOS A2UI Form 卡片 DSL。
 - **输入边界**：TaskSpec 不是布局蓝图，也不提供展示内容清单。
 - **输出契约**：输出一个 `genui` 代码块，恰好 3 行 JSONL。
-- **尺寸规则**：`target.size=2x2` 对应 140x140，`2x4` 对应 300x140。
+- **尺寸规则**：`size=2x2` 对应 140x140，`2x4` 对应 300x140。
 - **组件范围**：只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
 - **DataModel-first 绑定**：展示值优先使用完整表达式读取 DataModel。
 - **动作与素材**：最终 DSL 的 onClick 只能由 `eventCandidates` 转换而来；图片和背景只能来自 `assetCandidates` 或用户明确提供的本地/资源路径。

@@ -201,7 +201,7 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
             if template_id not in component_id_set:
                 errors.append(f"component '{component_id}' references missing template '{template_id}'")
 
-    expected_size = expected_spec["target"]["size"]
+    expected_size = expected_spec["size"]
     root = next((component for component in components if component.get("id") == "root"), {})
     styles = root.get("styles", {})
     expected_width = 140 if expected_size == "2x2" else 300

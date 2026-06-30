@@ -20,6 +20,7 @@ REMOVED_TOP_LEVEL = {
     "rulesVersion",
     "schema",
     "task",
+    "target",
 }
 EVENT_ARGS = {
     "clickToCallPhone": {"phonenumber"},
