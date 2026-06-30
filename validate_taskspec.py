@@ -58,31 +58,32 @@ def resolve_pointer(root: Any, pointer: str) -> Any:
     return current
 
 
-def validate_on_click(name: str, candidate_id: str, handlers: Any) -> list[str]:
-    errors: list[str] = []
-    if not isinstance(handlers, list) or not handlers:
-        return [f"{name}: eventCandidate '{candidate_id}' must contain non-empty onClick array"]
+REMOVED_EVENT_FIELDS = {"description", "eventRef", "id", "label", "note", "onClick", "required"}
 
-    for index, handler in enumerate(handlers, start=1):
-        if not isinstance(handler, dict):
-            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] must be an object")
-            continue
-        call = handler.get("call")
-        if call not in EVENT_ARGS:
-            errors.append(f"{name}: eventCandidate '{candidate_id}' uses unsupported onClick.call '{call}'")
-            continue
-        args = handler.get("args", {})
-        if not isinstance(args, dict):
-            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}].args must be an object")
-            continue
-        expected = EVENT_ARGS[call]
-        actual = set(args)
-        missing = expected - actual
-        extra = actual - expected
-        if missing:
-            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] missing args {sorted(missing)}")
-        if extra:
-            errors.append(f"{name}: eventCandidate '{candidate_id}' onClick[{index}] has unsupported args {sorted(extra)}")
+
+def validate_event_candidate(name: str, index: int, candidate: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    for key in sorted(REMOVED_EVENT_FIELDS & set(candidate)):
+        errors.append(f"{name}: eventCandidate[{index}] field '{key}' has been removed")
+
+    call = candidate.get("call")
+    if call not in EVENT_ARGS:
+        errors.append(f"{name}: eventCandidate[{index}] uses unsupported call '{call}'")
+        return errors
+
+    args = candidate.get("args", {})
+    if not isinstance(args, dict):
+        errors.append(f"{name}: eventCandidate[{index}].args must be an object")
+        return errors
+
+    expected = EVENT_ARGS[call]
+    actual = set(args)
+    missing = expected - actual
+    extra = actual - expected
+    if missing:
+        errors.append(f"{name}: eventCandidate[{index}] missing args {sorted(missing)}")
+    if extra:
+        errors.append(f"{name}: eventCandidate[{index}] has unsupported args {sorted(extra)}")
     return errors
 
 
@@ -100,27 +101,14 @@ def validate_task_spec(spec: dict[str, Any], name: str) -> list[str]:
     event_candidates = spec.get("eventCandidates", [])
     asset_candidates = spec.get("assetCandidates", [])
 
-    candidate_ids = [
-        item.get("id")
-        for item in event_candidates
-        if isinstance(item, dict)
-    ]
-    if len(set(candidate_ids)) != len(candidate_ids):
-        errors.append(f"{name}: duplicate candidate id")
-
     if not isinstance(event_candidates, list):
         errors.append(f"{name}: eventCandidates must be an array")
     else:
-        for candidate in event_candidates:
+        for index, candidate in enumerate(event_candidates, start=1):
             if not isinstance(candidate, dict):
                 errors.append(f"{name}: every eventCandidates item must be an object")
                 continue
-            candidate_id = candidate.get("id", "<unknown>")
-            if not has_text(candidate.get("description")):
-                errors.append(f"{name}: eventCandidate '{candidate_id}' must contain non-empty description")
-            errors.extend(validate_on_click(name, candidate_id, candidate.get("onClick")))
-            if "eventRef" in candidate:
-                errors.append(f"{name}: eventCandidate '{candidate_id}' uses removed eventRef; inline onClick instead")
+            errors.extend(validate_event_candidate(name, index, candidate))
 
     for asset in asset_candidates:
         if not isinstance(asset, dict):

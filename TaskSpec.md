@@ -12,7 +12,8 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 - 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
 - 不提供 `displayCandidates` 或 `role`；展示内容由 A2UI 模型从 `userQuery` 和 `dataModel.value` 中判断。
 - `target` 只记录目标尺寸。
-- `eventCandidates` 和 `assetCandidates` 是动作与素材约束，不是 DSL 组件候选。
+- `eventCandidates` 是候选事件能力，不是 DSL `onClick`，也不是按钮或入口描述。
+- `assetCandidates` 是素材约束，不是 DSL 组件候选。
 - DSL 硬规则统一写入转换脚本的 system prompt。
 - 交付物是 `genui` DSL。
 
@@ -50,37 +51,27 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 ### `eventCandidates`
 
-可点击事件候选。它不规定最终是 Button、可点击容器还是图文入口。
+候选事件能力。它不规定最终是 Button、可点击容器还是图文入口，也不直接表达 DSL `onClick`。
 
 ```json
 [
   {
-    "id": "daily_30",
-    "label": "每日30首",
-    "description": "打开每日30首音乐歌单的快捷入口。",
-    "required": true,
-    "onClick": [
-      {
-        "call": "clickToDeeplink",
-        "args": {
-          "bundleName": "",
-          "abilityName": "",
-          "uri": "..."
-        }
-      }
-    ]
+    "call": "clickToDeeplink",
+    "args": {
+      "bundleName": "",
+      "abilityName": "",
+      "uri": "..."
+    }
   }
 ]
 ```
 
 字段说明：
 
-- `id`: 必须，候选项唯一标识。
-- `label`: 必须，入口短文案。
-- `description`: 必须，说明动作意图、触发结果和展示优先级；不要写按钮样式或位置。
-- `required`: 可选，是否必须体现在最终 DSL 中。
-- `onClick`: 必须，A2UI DSL 可使用的点击事件链。
-- `note`: 可选，补充约束。
+- `call`: 必须，事件能力名，例如 `clickToCallPhone`、`clickToDeeplink`。
+- `args`: 可选，事件参数对象。参数必须符合对应事件能力。
+
+A2UI 模型应从 `userQuery` 判断哪些事件需要变成可点击入口。最终 DSL 中如果使用事件，才把候选事件转换为组件的 `onClick` 数组项。
 
 ### `dataModel`
 
@@ -130,7 +121,7 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 - **尺寸规则**：`target.size=2x2` 对应 140x140，`2x4` 对应 300x140。
 - **组件范围**：只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
 - **DataModel-first 绑定**：展示值优先使用完整表达式读取 DataModel。
-- **动作与素材**：onClick 只能来自 `eventCandidates`；图片和背景只能来自 `assetCandidates` 或用户明确提供的本地/资源路径。
+- **动作与素材**：最终 DSL 的 onClick 只能由 `eventCandidates` 转换而来；图片和背景只能来自 `assetCandidates` 或用户明确提供的本地/资源路径。
 - **取舍规则**：先从 `userQuery` 和 `dataModel.value` 确定主答案，控制支撑事实和动作区数量，避免信息重复。
 
 ## 5. 校验规则
@@ -139,8 +130,9 @@ TaskSpec 是大模型 Agent 与 A2UI 模型之间的轻量桥接契约。大模�
 
 - JSON 结构必须符合 `taskspec.schema.json`。
 - 不允许出现 `displayCandidates`、`role`、`cardSpec`、`rules` 等非当前协议字段。
-- `eventCandidates[].description`、`assetCandidates[].description` 必须非空。
-- `eventCandidates[].onClick` 必须存在，且 `call/args` 符合已支持事件能力。
+- `eventCandidates[].call/args` 必须符合已支持事件能力。
+- `eventCandidates[]` 不允许出现 `id`、`label`、`description`、`required` 或 `onClick`。
+- `assetCandidates[].description` 必须非空。
 - `assetCandidates[].bindTo` 必须能从 `dataModel.value` 解析，且值等于 `assetCandidates[].src`。
 - `.agents/skills/` 必须无改动。
 

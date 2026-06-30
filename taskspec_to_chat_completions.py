@@ -11,8 +11,11 @@ DEFAULT_MODEL = "glm-5.2"
 DEFAULT_ENDPOINT = "http://127.0.0.1:4000/v1/chat/completions"
 SYSTEM_PROMPT = """你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
 你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、DataModel、可点击事件候选和素材候选；它不是卡片布局方案，也不预先列出展示内容清单。具体信息取舍、组件组织、视觉设计和绑定写法由你完成。
-请从 userQuery 和 dataModel.value 中判断用户真正要求展示的字段；从 eventCandidates 中选择可触发动作；从 assetCandidates 中选择语义匹配的素材。
-eventCandidates / assetCandidates 是用户 query 中抽取出的动作和素材约束，不是 DSL 组件候选。candidate.label 是入口或素材短名称；candidate.description 用于理解语义、用途和适用场景，不是必须完整显示的 UI 文案，也不是布局、字号或组件类型指令。
+请从 userQuery 和 dataModel.value 中判断用户真正要求展示的字段；从 eventCandidates 中选择可触发事件；从 assetCandidates 中选择语义匹配的素材。
+eventCandidates 只是候选事件能力列表，每一项只包含 call 和 args；它不是 DSL onClick，也不是按钮、入口、文案、位置或样式说明。
+如果使用某个事件候选，必须在最终 DSL 中把它转换为组件 onClick 数组项，且 onClick[].call 和 onClick[].args 必须原样来自 eventCandidates。
+多个事件候选时，根据 userQuery 的自然语言意图、顺序和事件参数进行匹配；用户明确要求的动作应尽量体现，无法确定合适入口的事件可以不使用。
+assetCandidates 是用户 query 中抽取出的素材约束，不是 DSL 组件候选；asset.description 用于理解素材内容和适用场景，不是必须完整显示的 UI 文案，也不是布局、字号或组件类型指令。
 
 输出契约：
 - 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
@@ -42,8 +45,8 @@ DataModel 与绑定：
 - 表达式必须是完整字符串；一个字符串中只能有一对 {{ ... }}；不要在 id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 或整个 styles 对象上使用表达式。
 
 动作与素材：
-- eventCandidates 的 description 用于理解动作意图和触发结果；onClick 可原样挂到合适的 Button 或可点击容器上。
-- 点击只写 DSL onClick，且 call 只能来自 TaskSpec.eventCandidates 的 onClick；不要发明新事件能力。
+- eventCandidates 不是 onClick；只有最终 DSL 组件上才生成 onClick。
+- 点击只写 DSL onClick，且 onClick[].call/onClick[].args 只能来自 TaskSpec.eventCandidates；不要发明新事件能力或参数。
 - assetCandidates 的 description 用于理解素材内容和适用场景；只有素材语义匹配时才使用。
 - Image.src 和 backgroundImage 只使用 TaskSpec.assetCandidates 声明或用户明确提供的本地/资源路径。
 
@@ -83,7 +86,7 @@ def build_content(task_spec_json: str, raw_content: bool) -> str:
     return (
         "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。\n"
         "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。\n"
-        "请从 userQuery 和 dataModel.value 中自行判断需要展示的信息；候选项 description 只用于理解动作或素材语义，不要当成必须展示的长文案。\n"
+        "请从 userQuery 和 dataModel.value 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。\n"
         "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n"
         "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：\n"
         "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按target.size选择\",\"height\":140}}\n"

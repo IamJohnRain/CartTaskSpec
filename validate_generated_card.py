@@ -79,6 +79,23 @@ def walk(value):
             yield from walk(child)
 
 
+def event_key(event):
+    if not isinstance(event, dict):
+        return None
+    args = event.get("args", {})
+    if not isinstance(args, dict):
+        return None
+    return json.dumps(
+        {
+            "call": event.get("call"),
+            "args": args,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+
+
 def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
     errors: list[str] = []
     lines = [line.strip() for line in genui_text.splitlines() if line.strip()]
@@ -129,6 +146,11 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
     if update_data_model.get("value") != expected_spec.get("dataModel", {}).get("value"):
         errors.append("updateDataModel.value must exactly equal TaskSpec dataModel.value")
     data_model_value = update_data_model.get("value", {})
+    allowed_events = {
+        event_key(candidate)
+        for candidate in expected_spec.get("eventCandidates", [])
+        if event_key(candidate) is not None
+    }
 
     components = update_components.get("components")
     if not isinstance(components, list) or not components:
@@ -191,6 +213,17 @@ def validate_genui(genui_text: str, expected_spec: dict) -> list[str]:
 
     for component in components:
         component_id = component.get("id", "<unknown>")
+        on_click = component.get("onClick")
+        if on_click is not None:
+            if not isinstance(on_click, list):
+                errors.append(f"component '{component_id}' onClick must be an array")
+            else:
+                for index, handler in enumerate(on_click, start=1):
+                    key = event_key(handler)
+                    if key is None:
+                        errors.append(f"component '{component_id}' onClick[{index}] must contain call and object args")
+                    elif key not in allowed_events:
+                        errors.append(f"component '{component_id}' onClick[{index}] is not declared in TaskSpec eventCandidates")
         for value in walk(component):
             if isinstance(value, dict) and set(value.keys()) == {"path"}:
                 pointer = value.get("path")
