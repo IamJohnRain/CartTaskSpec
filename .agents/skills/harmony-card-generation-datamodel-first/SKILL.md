@@ -35,7 +35,7 @@ description: "生成、修复、评审或解释 HarmonyOS A2UI Form 服务卡片
 }
 ```
 
-静态卡片也输出 `cardspec`，但不要虚构 `dataBindings` / `refreshPlan`。
+静态卡片也输出 `cardspec`，但不要虚构 `dataBindings`。
 
 ## 专项参考
 
@@ -44,7 +44,7 @@ description: "生成、修复、评审或解释 HarmonyOS A2UI Form 服务卡片
 - 组件/样式枚举：`reference/protocol/component-catalog.md`；协议冲突兜底：`reference/protocol/protocol.md`。
 - DataModel、路径、模板、事件参数：`reference/protocol/data-binding.md`；`formatString`：`reference/protocol/function.md`。
 - 点击、拨号、跳转、动作区：`reference/capability/event-capability/click-event.md`。
-- CardSpec、动态数据、刷新计划：`reference/capability/cardspec.md`；涉及数据能力时，按场景逐个读取对应 data-capability 文件。
+- CardSpec、动态数据能力：`reference/capability/cardspec.md`；涉及数据能力时，按场景逐个读取对应 data-capability 文件。
 - 布局承载、按钮对齐、底部贴底、重叠、留白：`reference/design/layout-system.md`。
 - 颜色、深浅色、渐变 stop、token 来源：`reference/design/color-token-system.md`。
 - 图片、图标、背景图、素材路径：`reference/design/asset-library.md`。

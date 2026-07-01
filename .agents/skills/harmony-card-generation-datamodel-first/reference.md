@@ -12,7 +12,7 @@
 
 - 组件是否可用、属性或样式枚举：[`reference/protocol/component-catalog.md`](reference/protocol/component-catalog.md)；协议冲突兜底：[`reference/protocol/protocol.md`](reference/protocol/protocol.md)。
 - DataModel、`path`、表达式、模板、事件参数：[`reference/protocol/data-binding.md`](reference/protocol/data-binding.md)；字符串拼接：[`reference/protocol/function.md`](reference/protocol/function.md)。
-- CardSpec、动态数据、刷新计划：[`reference/capability/cardspec.md`](reference/capability/cardspec.md)，再按场景逐个选择必要的 [`reference/capability/data-capability/`](reference/capability/data-capability/) 文件。
+- CardSpec、动态数据能力：[`reference/capability/cardspec.md`](reference/capability/cardspec.md)，再按场景逐个选择必要的 [`reference/capability/data-capability/`](reference/capability/data-capability/) 文件。
 - 点击、拨号、跳转和动作参数：[`reference/capability/event-capability/click-event.md`](reference/capability/event-capability/click-event.md)。
 - 布局预算、按钮对齐、底部贴底、重叠、留白：[`reference/design/layout-system.md`](reference/design/layout-system.md)。
 - 颜色、深浅色、渐变 stop、token 来源：[`reference/design/color-token-system.md`](reference/design/color-token-system.md)。
