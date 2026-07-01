@@ -148,6 +148,20 @@ def main() -> int:
                 fh.write("\n")
         print(f"wrote {len(paths)} samples -> {out_file}", file=sys.stderr)
 
+    validate_path = output_dir / "validate.json"
+    validate_entries = []
+    for p in test_paths:
+        with p.open("r", encoding="utf-8") as src:
+            data = json.load(src)
+        keep = [m for m in data["messages"] if m["role"] in ("system", "user")]
+        user_msgs = [m for m in keep if m["role"] == "user"]
+        if not user_msgs:
+            raise ValueError(f"no user message in {p}")
+        validate_entries.append({"name": user_msgs[0]["content"], "message": keep})
+    with validate_path.open("w", encoding="utf-8") as fh:
+        json.dump(validate_entries, fh, ensure_ascii=False, indent=2)
+    print(f"wrote {len(validate_entries)} samples -> {validate_path}", file=sys.stderr)
+
     return 0
 
 
