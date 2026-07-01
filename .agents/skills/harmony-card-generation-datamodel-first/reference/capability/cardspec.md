@@ -5,12 +5,21 @@
 CardSpec 是卡片结果的一部分，与 DSL 一起描述同一张卡片。最终响应只有一个组合结果：`genui` 代码块中的 DSL JSONL + `cardspec` 代码块中的 JSON 对象。DSL 负责可渲染 Form 组件，CardSpec 负责推荐尺寸、端侧数据能力和持久化契约。DSL 按本 skill 的 Form 规则生成：
 
 - `catalogId` 使用 `ohos.a2ui.extended.catalog`。
-- 组件、样式、事件和 DataModel 绑定遵循 `reference/protocol.md`、`reference/component-catalog.md` 和 `reference/data-binding.md`；生成结果禁用表达式。
+- 组件、样式、事件、DataModel 表达式遵循 [`../protocol/protocol.md`](../protocol/protocol.md)、[`../protocol/component-catalog.md`](../protocol/component-catalog.md) 和 [`../protocol/data-binding.md`](../protocol/data-binding.md)。
 - 不要从示例产物复制组件结构或 catalog。
 
 Agent 负责选择已声明能力、生成参数、设计 DataModel 初始结构、生成 DSL 和 CardSpec。端侧负责执行能力、处理权限、归一化结果、持久化配置，并在运行时发送 `updateDataModel`。
 
-事件能力不属于 CardSpec。点击、拨号、打开应用或详情页只写入 DSL `onClick`，并按 `reference/event-capability/` 中的 manifest 校验。
+事件能力不属于 CardSpec。点击、拨号、打开应用或详情页只写入 DSL `onClick`，并按 [`event-capability/`](event-capability/) 中的 manifest 校验。
+
+## 先决策
+
+- 每张卡最终都输出 `genui` 和 `cardspec` 两个代码块；CardSpec 不替代 DSL。
+- 静态卡片只写 `suggestSize`，不要虚构 `dataBindings`。
+- 动态卡片先选择已声明 data capability，再按它的 `inputSchema` 填 `arguments`。
+- `writeResultTo` 使用 `/data/...` JSON Pointer；UI 路径由 `writeResultTo + outputSchema` 推导。
+- `updateDataModel.value` 初始化 UI 会访问的根结构和加载态，不写死用户真实隐私数据。
+- 点击、拨号、跳转只写 DSL `onClick`，不写进 CardSpec。
 
 ## 输出形态
 
@@ -52,7 +61,7 @@ Agent 负责选择已声明能力、生成参数、设计 DataModel 初始结构
 - 静态卡片必须输出 CardSpec，但不要虚构 `dataBindings`。
 - 动态卡片必须包含 `dataBindings`。
 - 每个 `dataBindings[]` 表示一次端侧能力调用。
-- `capabilityId` 必须来自 `reference/data-capability/` 中选定能力 manifest 的 `id`。
+- `capabilityId` 必须来自 [`data-capability/`](data-capability/) 中选定能力 manifest 的 `id`。
 - `arguments` 只能使用该能力 `inputSchema.properties` 声明的字段；不要沿用旧示例参数或自行改名。
 - `writeResultTo` 必须是 `/data` 下的 JSON Pointer，例如 `/data/weather`。
 - 多个 binding 的 `writeResultTo` 不得相同、互为父子，或互相覆盖。
@@ -60,12 +69,12 @@ Agent 负责选择已声明能力、生成参数、设计 DataModel 初始结构
 
 ## 能力选择
 
-按场景从 `reference/data-capability/` 读取对应能力文档，不要一次加载所有能力。新增数据能力应继续放入该目录，模型按用户语义和 manifest 的 `description`、`inputSchema`、`required`、`outputSchema` 选择能力。
+按场景从 [`data-capability/`](data-capability/) 逐个读取必要能力文档，不要预先加载全部能力。新增数据能力应继续放入该目录，模型按用户语义和 manifest 的 `description`、`inputSchema`、`outputSchema` 选择能力。
 
-- 当前已有天气能力：`reference/data-capability/weather.md`
-- 当前已有日历能力：`reference/data-capability/calendar.md`
+- 当前已有天气能力：[`data-capability/weather.md`](data-capability/weather.md)
+- 当前已有日历能力：[`data-capability/calendar.md`](data-capability/calendar.md)
 
-如果用户请求的动态能力没有在 `reference/data-capability/` 中声明，不要编造能力。改用静态降级方案，或说明需要端侧补充 capability manifest。
+如果用户请求的动态能力没有在 [`data-capability/`](data-capability/) 中声明，不要编造能力。改用静态降级方案，或说明需要端侧补充 capability manifest。
 
 ## DataModel 映射
 
@@ -98,13 +107,13 @@ Agent 负责选择已声明能力、生成参数、设计 DataModel 初始结构
 }
 ```
 
-固定对象或标量优先用原生 `{path}` 绑定：
+固定对象或标量优先用表达式绑定；只有表达式不适合或端侧要求对象绑定时，才退回原生 `{path}`：
 
 ```json
 {
   "id": "current_value",
   "component": "Text",
-  "content": {"path": "/data/status/current/valueText"}
+  "content": "{{ $__dataModel.data.weather.current.temperatureText }}"
 }
 ```
 
@@ -121,7 +130,7 @@ Agent 负责选择已声明能力、生成参数、设计 DataModel 初始结构
 }
 ```
 
-模板内通过相对路径访问当前项：
+模板内通过原生相对路径访问当前项，这是模板作用域的协议写法：
 
 ```json
 {

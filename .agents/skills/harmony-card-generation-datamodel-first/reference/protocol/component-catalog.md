@@ -2,6 +2,13 @@
 
 这是卡片生成使用的 Form 组件子集。组件与属性规则以本文档和 [`protocol.md`](protocol.md) 为准。
 
+## 先判定
+
+- 先确认组件是否在支持列表内；不在列表内就不用。
+- 再查该组件的必需字段和常用样式；不要从 A2UI 非 Form 示例复制属性。
+- 动态展示值按 [`data-binding.md`](data-binding.md)；字符串拼接按 [`function.md`](function.md)。
+- root shell、事件边界、禁用能力和 JSONL 消息顺序按 [`protocol.md`](protocol.md)。
+
 ## 必需 Catalog
 
 使用：
@@ -65,7 +72,7 @@ Form 支持 10 个扩展组件：
 文本展示。必需字段是 `content`。
 
 ```json
-{"id":"title","component":"Text","content":{"path":"/title"},"styles":{"fontSize":16,"fontWeight":700,"fontColor":"#FFFFFFFF","maxLines":1,"textOverflow":"none"}}
+{"id":"title","component":"Text","content":"{{ $__dataModel.title }}","styles":{"fontSize":16,"fontWeight":700,"fontColor":"#FFFFFFFF","maxLines":1,"textOverflow":"none"}}
 ```
 
 常用样式：
@@ -118,11 +125,11 @@ Form 支持 10 个扩展组件：
 进度条/进度环。
 
 ```json
-{"id":"progress","component":"Progress","value":{"path":"/progress/value"},"total":{"path":"/progress/total"},"styles":{"type":"ring","color":"#A77DFF","width":72,"height":72}}
+{"id":"progress","component":"Progress","value":"{{ $__dataModel.progress.value }}","total":"{{ $__dataModel.progress.total }}","styles":{"type":"ring","color":"#A77DFF","width":72,"height":72}}
 ```
 
-- `value`：数字或 `{"path":"/..."}`
-- `total`：数字或 `{"path":"/..."}`，必选
+- `value`：数字、表达式，或 `{"path":"/..."}` 兜底
+- `total`：数字、表达式，或 `{"path":"/..."}` 兜底，必选
 - `styles.type`：`linear|ring|eclipse|scaleRing|capsule`
 - `styles.color`：颜色字符串
 
@@ -131,11 +138,11 @@ Form 支持 10 个扩展组件：
 语义按钮。使用 `label` 和 `onClick`，不要使用 `Button.action`。
 
 ```json
-{"id":"btn","component":"Button","label":{"path":"/action/label"},"onClick":[{"call":"openDetail","args":{"targetId":{"path":"/action/targetId"}}}]}
+{"id":"btn","component":"Button","label":"打开天气","onClick":[{"call":"clickToDeeplink","args":{"bundleName":"","abilityName":"","uri":"hww://www.huawei.com/totemweather?enterType=share&cityCode="}}]}
 ```
 
-- `label`：字符串、`{"path":"/..."}` 或 `formatString`
-- `enabled`：boolean 或 `{"path":"/..."}`
+- `label`：字符串、表达式，或 `{"path":"/..."}` / `formatString` 兜底
+- `enabled`：boolean、表达式，或 `{"path":"/..."}` 兜底
 - `onClick`：EventHandler 数组
 - `styles.fontWeight`：数字或 `normal|regular|medium|bold|bolder`
 - CTA 文本是受保护内容，避免窄固定宽度和省略。
@@ -145,15 +152,16 @@ Form 支持 10 个扩展组件：
 多选框。服务卡片中谨慎使用，通常只在用户明确要求切换状态时使用。
 
 ```json
-{"id":"done","component":"Checkbox","label":{"path":"/todo/label"},"select":{"path":"/todo/done"},"onClick":[{"call":"toggleTodo","args":{"id":{"path":"/todo/id"}}}]}
+{"id":"done","component":"Checkbox","label":"{{ $__dataModel.todo.label }}","select":"{{ $__dataModel.todo.done }}"}
 ```
 
-- `label`：字符串、`{"path":"/..."}` 或 `formatString`
-- `value`：字符串或 `{"path":"/..."}`
-- `group`：字符串或 `{"path":"/..."}`
-- `select`：boolean 或 `{"path":"/..."}`
+- `label`：字符串、表达式，或 `{"path":"/..."}` / `formatString` 兜底
+- `value`：字符串、表达式，或 `{"path":"/..."}` 兜底
+- `group`：字符串、表达式，或 `{"path":"/..."}` 兜底
+- `select`：boolean、表达式，或 `{"path":"/..."}` 兜底
 - `styles.selectedColor` / `styles.unSelectedColor`：颜色字符串
 - `styles.shape`：`circle|rounded_square`
+- 如需点击行为，必须使用已声明 event capability；不要虚构 `toggleTodo` 一类切换函数。
 - `styles.mark`：`{ strokeColor, size, strokeWidth }`
 
 ### List

@@ -1,5 +1,36 @@
 # 点击事件能力
 
+## DSL 映射规则
+
+- 本文件只指导 DSL `onClick`，不进入 CardSpec，也不新增第三个输出代码块。
+- `onClick.call` 必须使用 `capabilities[].functionCall` 中声明的值。不要把 `description`、应用名或页面名写成 `call`。
+- 先按用户意图匹配 `capabilities[].description`，再校验该能力的 `parameters` 和 `supportedTargets`；不能匹配时不要伪造点击能力。
+- `args` 只能包含该能力 `parameters` 中声明的参数。跳转类能力必须使用 `supportedTargets` 中列出的合法目标和值组合。
+- 拨号能力参数名必须严格使用 manifest 中声明的 `phoneNumber`，不要使用其它大小写变体。
+- `clickToIntent.args.params` 必须严格匹配所选 `supportedTargets` 里的 `params` 结构。不同 intent 的参数不同，不要把某个示例参数当成通用字段。
+- 当 `supportedTargets.params` 的叶子节点是 `type`、`description` 等 schema 说明时，生成 `onClick.args.params` 只保留参数 key 和实际运行时值；不要把 schema 元数据复制到 DSL。若说明中声明固定值，使用该固定值；若说明中要求由用户意图或 DataModel 推导，则填入安全静态值、完整表达式或 `{ "path": "..." }` 绑定。
+- 事件参数可以来自安全静态值、DataModel 绝对路径，或模板列表项的相对路径。来自 data capability 输出的字段，必须能从 `writeResultTo + outputSchema` 推导。
+
+下面仅示例 `ViewCalendarEvent` 这个 supported target 的映射方式；其它 intent 必须按各自 target 的 `params` 结构生成。
+
+```json
+{
+  "call": "clickToIntent",
+  "args": {
+    "intentName": "ViewCalendarEvent",
+    "params": {
+      "entityId": {"path": "entityId"}
+    }
+  }
+}
+```
+
+- 模板列表项内使用当前项字段时优先写相对路径，例如 `{"path": "entityId"}`；非模板区域可按本 skill 的 DataModel 表达式策略使用完整表达式，若参数 schema 或端侧要求对象绑定则使用绝对 JSON Pointer，例如 `{"path": "/data/calendar/items/0/entityId"}`。
+- 如果用户意图无法匹配本文件任一能力或目标，不要伪造点击能力；改为静态展示或说明需要宿主补充 event-capability manifest。
+- 后续新增事件能力时，应继续放入 [`./`](./)；生成卡片时按 manifest 选择能力，不要把事件逻辑写死到某个数据场景。
+
+## Manifest
+
 ```json
 {
   "schemaVersion": "1.0",
@@ -195,32 +226,3 @@
   ]
 }
 ```
-
-## DSL 映射规则
-
-- 本文件只指导 DSL `onClick`，不进入 CardSpec，也不新增第三个输出代码块。
-- `onClick.call` 必须使用 `capabilities[].functionCall` 中声明的值。不要把 `description`、应用名或页面名写成 `call`。
-- 先按用户意图匹配 `capabilities[].description`，再校验该能力的 `parameters` 和 `supportedTargets`；不能匹配时不要伪造点击能力。
-- `args` 只能包含该能力 `parameters` 中声明的参数。跳转类能力必须使用 `supportedTargets` 中列出的合法目标和值组合。
-- 拨号能力参数名必须严格使用 manifest 中声明的 `phoneNumber`，不要使用其它大小写变体。
-- `clickToIntent.args.params` 必须严格匹配所选 `supportedTargets` 里的 `params` 结构。不同 intent 的参数不同，不要把某个示例参数当成通用字段。
-- 当 `supportedTargets.params` 的叶子节点是 `type`、`description` 等 schema 说明时，生成 `onClick.args.params` 只保留参数 key 和实际运行时值；不要把 schema 元数据复制到 DSL。若说明中声明固定值，使用该固定值；若说明中要求由用户意图或 DataModel 推导，则填入安全静态值或 `{ "path": "..." }` 绑定。
-- 事件参数可以来自安全静态值、DataModel 绝对路径，或模板列表项的相对路径。来自 data capability 输出的字段，必须能从 `writeResultTo + outputSchema` 推导。
-
-下面仅示例 `ViewCalendarEvent` 这个 supported target 的映射方式；其它 intent 必须按各自 target 的 `params` 结构生成。
-
-```json
-{
-  "call": "clickToIntent",
-  "args": {
-    "intentName": "ViewCalendarEvent",
-    "params": {
-      "entityId": {"path": "entityId"}
-    }
-  }
-}
-```
-
-- 模板列表项内使用当前项字段时优先写相对路径，例如 `{"path": "entityId"}`；非模板区域使用绝对路径，例如 `{"path": "/data/calendar/items/0/entityId"}`。
-- 如果用户意图无法匹配本文件任一能力或目标，不要伪造点击能力；改为静态展示或说明需要宿主补充 event-capability manifest。
-- 后续新增事件能力时，应继续放入 `reference/event-capability/`；生成卡片时按 manifest 选择能力，不要把事件逻辑写死到某个数据场景。
