@@ -18,8 +18,7 @@ eventCandidates 只是候选事件能力列表，每一项只包含 call 和 arg
 assetCandidates 是用户 query 中抽取出的素材约束，不是 DSL 组件候选；asset.description 用于理解素材内容和适用场景，不是必须完整显示的 UI 文案，也不是布局、字号或组件类型指令。
 
 输出契约：
-- 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
-- 虽然原始 skill 支持 genui + cardspec 两个代码块，但本项目只让 A2UI 模型生成 DSL；不要生成、补全、推断或输出 CardSpec。
+- 只输出一个 3 行 JSONL 代码，不含任何代码块标识，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
 - genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
 - 每行必须包含 version:"v0.9"；createSurface.catalogId 必须是 "ohos.a2ui.extended.catalog"。
 - updateDataModel.path 必须是 "/"，value 必须原样等于 TaskSpec.dataModel.value。
@@ -56,6 +55,16 @@ DataModel 与绑定：
 - 受保护文本必须完整显示：标题、状态、CTA、主指标、用户要求显示的字段。不要依赖 ellipsis、clip 或 marquee 隐藏关键信息。
 - Row/Column 宽高预算必须成立；Row 内 Text + Button 并排时，父 Row、Text、Button 都要有明确宽高预算。
 - 间距优先使用 4/8/12/16，字号优先使用 10/12/14/16/18/20/32/40。
+
+模型输出样例：
+{"version":"v0.9","createSurface":{"surfaceId":"low_power_card","catalogId":"ohos.a2ui.extended.catalog","width":300,"height":140}}
+{"version":"v0.9","updateComponents":{"surfaceId":"low_power_card","root":"root","components":[{"id":"root","component":"Row","children":["meter_col","info_col"],"itemMargin":14,"wrap":"noWrap","styles":{"width":300,"height":140,"padding":12,"borderRadius":22,"clip":true,"backgroundColor":"#FFF7E8","justifyContent":"start","alignItems":"center"}},{"id":"meter_col","component":"Column","children":["level_text","status_text","battery_progress"],"itemMargin":6,"styles":{"width":108,"height":116,"justifyContent":"center","alignItems":"center","backgroundColor":"#FFFFF7","borderRadius":16,"padding":8}},{"id":"level_text","component":"Text","content":"{{ $__dataModel.battery.levelText }}","styles":{"width":92,"height":40,"fontSize":40,"fontWeight":700,"fontColor":"#D76000","textAlign":"center","maxLines":1,"textOverflow":"none"}},{"id":"status_text","component":"Text","content":"{{ $__dataModel.battery.statusText }}","styles":{"width":92,"height":18,"fontSize":14,"fontWeight":500,"fontColor":"#9A4B00","textAlign":"center","maxLines":1,"textOverflow":"none"}},{"id":"battery_progress","component":"Progress","value":"{{ $__dataModel.battery.level }}","total":100,"styles":{"width":92,"height":8,"type":"linear","color":"#D76000","backgroundColor":"#FFE0B8","borderRadius":4}},{"id":"info_col","component":"Column","children":["title_text","hint_text","mode_text","save_button"],"itemMargin":8,"styles":{"width":154,"height":116,"justifyContent":"center","alignItems":"start"}},{"id":"title_text","component":"Text","content":"当前电量","styles":{"width":154,"height":20,"fontSize":16,"fontWeight":700,"fontColor":"#262626","maxLines":1,"textOverflow":"none"}},{"id":"hint_text","component":"Text","content":"{{ $__dataModel.battery.hintText }}","styles":{"width":154,"height":18,"fontSize":14,"fontWeight":500,"fontColor":"#5C3B00","maxLines":1,"textOverflow":"none"}},{"id":"mode_text","component":"Text","content":"{{ $__dataModel.battery.modeText }}","styles":{"width":154,"height":16,"fontSize":12,"fontWeight":400,"fontColor":"#666666","maxLines":1,"textOverflow":"none"}},{"id":"save_button","component":"Button","label":"开启省电","onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":96,"height":32,"borderRadius":16,"backgroundColor":"#D76000","fontSize":14,"fontWeight":500,"fontColor":"#FFFFFFFF"}}]}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"low_power_card","path":"/","value":{"battery":{"level":18,"levelText":"18%","statusText":"电量偏低","hintText":"建议开启省电模式","modeText":"省电模式未开启"}}}}
+
+TaskSpec内容：
+{{TASK_SPEC_JSON}}
+
+请基于上面的TaskSpec内容和用户输入，生成这个 3 行 JSONL 的 genui DSL 输出。严格遵循上面描述的契约和规则。
 """
 
 
@@ -80,6 +89,19 @@ def read_task_spec(path: Path) -> str:
             raise ValueError(f"TaskSpec must contain top-level '{key}'")
     return text.strip()
 
+def read_user_query(path: Path | None) -> str:
+    if path is None:
+        return ""
+    if not path.is_file():
+        raise ValueError(f"user query path must be a text file: {path}")
+    return path.read_text(encoding="utf-8").strip()
+
+def read_genui_dsl(path: Path | None) -> str:
+    if path is None:
+        return ""
+    if not path.is_file():
+        raise ValueError(f"genui DSL path must be a text file: {path}")
+    return path.read_text(encoding="utf-8").strip()
 
 def build_content(task_spec_json: str, raw_content: bool) -> str:
     if raw_content:
@@ -99,17 +121,20 @@ def build_content(task_spec_json: str, raw_content: bool) -> str:
     )
 
 
-def build_request(task_spec_json: str, model: str, raw_content: bool) -> dict:
+def build_request(task_spec_json: str, user_query: str, genui_dsl: str) -> dict:
     return {
-        "model": model,
         "messages": [
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT,
+                "content": SYSTEM_PROMPT.replace("{{TASK_SPEC_JSON}}", task_spec_json),
             },
             {
                 "role": "user",
-                "content": build_content(task_spec_json, raw_content),
+                "content": user_query,
+            },
+            {
+                "role": "assistant",
+                "content": genui_dsl,
             },
         ],
     }
@@ -154,26 +179,17 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Write the generated chat-completions request JSON to this file. Defaults to stdout.",
     )
-    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Model name. Default: {DEFAULT_MODEL}")
     parser.add_argument(
-        "--endpoint",
-        default=DEFAULT_ENDPOINT,
-        help=f"Chat completions endpoint. Default: {DEFAULT_ENDPOINT}",
-    )
-    parser.add_argument(
-        "--raw-content",
-        action="store_true",
-        help="Use the raw TaskSpec JSON as the user message content without the extra instruction prefix.",
-    )
-    parser.add_argument(
-        "--invoke",
-        action="store_true",
-        help="POST the generated request to --endpoint using curl.",
-    )
-    parser.add_argument(
-        "--response-output",
+        "-q",
+        "--query",
         type=Path,
-        help="When --invoke is used, write the response body to this file. Defaults to stdout.",
+        help="Path to a text file containing the user query. If not provided, the userQuery field in the TaskSpec will be used.",
+    )
+    parser.add_argument(
+        "-d",
+        "--genui_dsl",
+        type=Path,
+        help="Path to a text file containing the Genui DSL. If not provided, the genuiDsl field in the TaskSpec will be used.",
     )
     return parser.parse_args()
 
@@ -183,39 +199,15 @@ def main() -> int:
 
     try:
         task_spec_json = read_task_spec(args.input_path)
-        request_payload = build_request(task_spec_json, args.model, args.raw_content)
+        user_query = read_user_query(args.query)
+        genui_dsl = read_genui_dsl(args.genui_dsl)
+        request_payload = build_request(task_spec_json, user_query, genui_dsl)
 
         if args.output:
             write_json(args.output, request_payload)
         else:
             print(json.dumps(request_payload, ensure_ascii=False, indent=2))
 
-        if args.invoke:
-            request_path = args.output
-            temporary_file = None
-            if request_path is None:
-                temporary_file = tempfile.NamedTemporaryFile(
-                    mode="w",
-                    encoding="utf-8",
-                    suffix=".json",
-                    delete=False,
-                )
-                try:
-                    json.dump(request_payload, temporary_file, ensure_ascii=False, indent=2)
-                    temporary_file.close()
-                    request_path = Path(temporary_file.name)
-                finally:
-                    if not temporary_file.closed:
-                        temporary_file.close()
-
-            response = invoke_with_curl(args.endpoint, request_path)
-            if args.response_output:
-                args.response_output.write_text(response, encoding="utf-8")
-            else:
-                print(response)
-
-            if temporary_file is not None:
-                Path(temporary_file.name).unlink(missing_ok=True)
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
