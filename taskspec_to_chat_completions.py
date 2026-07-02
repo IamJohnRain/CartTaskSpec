@@ -134,7 +134,7 @@ def build_request(task_spec_json: str, user_query: str, genui_dsl: str) -> dict:
             },
             {
                 "role": "assistant",
-                "content": genui_dsl,
+                "content": "<think>\n\n</think>\n\n" + genui_dsl,
             },
         ],
     }
