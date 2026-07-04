@@ -1,0 +1,81 @@
+{
+  "userQuery": "做张医院候诊的准备任务卡,磨砂质感的,左右分区:左边是候诊信息(科室、号码、状态),右边是动作按钮区(扫码签到、查看路线)。顶部几个勾选项:\"我已到达\"\"病历本已带\"\"空腹已准备\",要能勾能取消那种双向的。点中间要能跳进我那条预约日程。用夜间倒计时的渐变,提示准备就绪。纯文字加色块,不要任何图。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": {
+            "path": "/appointment/entityId"
+          }
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": {
+              "path": "/hospital/location/latitude"
+            },
+            "longitude": {
+              "path": "/hospital/location/longitude"
+            }
+          },
+          "trafficpe": {
+            "path": "/hospital/location/trafficpe"
+          }
+        }
+      }
+    }
+  ],
+  "dataModel": {
+    "value": {
+      "appointment": {
+        "entityId": "hospital-queue-339",
+        "title": "候诊准备",
+        "countdownText": "夜间倒计时 12 分钟",
+        "readyText": "准备就绪"
+      },
+      "queue": {
+        "department": "消化内科",
+        "number": "A-019",
+        "status": "候诊中"
+      },
+      "checks": [
+        {
+          "id": "arrived",
+          "label": "我已到达",
+          "done": true
+        },
+        {
+          "id": "record",
+          "label": "病历本已带",
+          "done": false
+        },
+        {
+          "id": "fasting",
+          "label": "空腹已准备",
+          "done": true
+        }
+      ],
+      "actions": {
+        "scanLabel": "扫码签到",
+        "routeLabel": "查看路线"
+      },
+      "hospital": {
+        "name": "门诊楼三层",
+        "location": {
+          "latitude": "22.3027",
+          "longitude": "114.1772",
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}
