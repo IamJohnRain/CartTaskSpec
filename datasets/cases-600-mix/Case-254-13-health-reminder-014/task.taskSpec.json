@@ -1,0 +1,68 @@
+{
+  "userQuery": "给老人做一张吃药卡,顶部大字写\"今日服药已完成 2/3\",下面横向并排三个勾选框分别对应早中晚,每个框旁边用小字写\"距离下次服药还有2小时15分\"这种固定话术加动态时间。点任意位置能跳到闹钟app设重复提醒,同时读取日历日程显示今天还有什么别的药要吃。卡片用淡淡的米色底,素雅一点,右上角放药丸图标,完成的对勾用绿色,不要任何渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModel": {
+    "value": {
+      "medication": {
+        "statusText": "今日服药已完成",
+        "completed": 2,
+        "total": 3,
+        "nextCountdown": "2小时15分",
+        "slots": [
+          {
+            "name": "早",
+            "done": true
+          },
+          {
+            "name": "中",
+            "done": true
+          },
+          {
+            "name": "晚",
+            "done": false
+          }
+        ],
+        "otherHint": "读取日历: 今天还有别的药"
+      },
+      "data": {
+        "calendar": {
+          "items": [
+            {
+              "entityName": "calendar_event",
+              "entityId": "mock-medicine-20260704-2000",
+              "title": "晚间钙片",
+              "dtStart": "20:00",
+              "dtEnd": "20:05"
+            }
+          ]
+        }
+      },
+      "state": {
+        "loading": true
+      },
+      "assets": {
+        "pillIcon": "resources/base/media/icon_remind.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "assetRef": "pill_reminder_icon",
+      "src": "resources/base/media/icon_remind.png",
+      "use": "medicine reminder icon",
+      "description": "提醒图标，可作为吃药提醒卡片右上角的轻量图标视觉锚点。",
+      "bindTo": "/assets/pillIcon",
+      "static": true
+    }
+  ]
+}
