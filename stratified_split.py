@@ -1,16 +1,4 @@
 #!/usr/bin/env python3
-"""按场景分层的 train/test 切分(适配两层级联目录结构)。
-
-新目录布局:
-    <input>/
-      01-low-power/Case-001/task.request.json
-      01-low-power/Case-002/task.request.json
-      ...
-      02-earphone-music/Case-001/...
-      ...
-
-分层键:场景号(父目录名前缀数字),与原行为一致。
-"""
 import argparse
 import json
 import random
@@ -18,97 +6,78 @@ import re
 import sys
 from pathlib import Path
 
-DEFAULT_INPUT = "datasets/Scenario/cases-10k-gpt-5.5"
+DEFAULT_INPUT = "datasets/cases-600-mix"
 SAMPLE_NAME = "task.request.json"
-
-# 父目录(场景):01-low-power / 02-earphone-music / ...
-SCEN_RE = re.compile(r"^(\d+)-[\w\u4e00-\u9fff-]+$")
-# 子目录(case):Case-001 / Case-123 / ...
-CASE_RE = re.compile(r"^Case-(\d+)$")
+STRATUM_RE = re.compile(r"^Case-\d{3}-(.+)-\d{3}$")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Stratified train/test split of chat-completion request samples "
-                    "(new two-level <scenario>/Case-NNN/ layout).",
+        description="Stratified train/test split of chat-completion request samples."
     )
     parser.add_argument(
-        "-i", "--input", type=Path, default=Path(DEFAULT_INPUT),
-        help=f"Root directory containing <scenario>/Case-NNN/ subdirectories. "
-             f"Default: {DEFAULT_INPUT}",
+        "-i",
+        "--input",
+        type=Path,
+        default=Path(DEFAULT_INPUT),
+        help=f"Root directory containing Case-aa-bbbb subdirectories. Default: {DEFAULT_INPUT}",
     )
     parser.add_argument(
-        "-o", "--output-dir", type=Path, default=None,
+        "-o",
+        "--output-dir",
+        type=Path,
+        default=None,
         help="Directory for train.jsonl / test.jsonl. Defaults to --input.",
     )
     parser.add_argument(
-        "-r", "--ratio", type=float, default=0.1,
+        "-r",
+        "--ratio",
+        type=float,
+        default=0.1,
         help="Test-set ratio in [0,1]. Default: 0.1",
     )
     parser.add_argument(
-        "-s", "--seed", type=int, default=42,
+        "-s",
+        "--seed",
+        type=int,
+        default=42,
         help="Random seed for reproducibility. Default: 42",
     )
     parser.add_argument(
-        "--scenarios", type=str, default=None,
-        help="Comma-separated scenario numbers to include (e.g. '01,03,05'). "
-             "Default: all scenarios.",
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="Print split statistics without writing files.",
-    )
-    parser.add_argument(
-        "--min-per-stratum", type=int, default=2,
-        help="Min samples per stratum; if a scenario has fewer, its data is "
-             "all kept in train. Default: 2",
     )
     return parser.parse_args()
 
 
-def load_samples(root: Path, only_scenarios: set[str] | None = None) -> dict[str, list[Path]]:
-    """两层级联遍历:先找场景目录,再找其中 Case-* 子目录,收集 task.request.json。
-
-    返回 {场景号(2位): [Path...]}。
-    """
+def load_samples(root: Path) -> dict[str, list[Path]]:
+    """Group sample paths by stratum key (the 'aa' part of Case-aa-bbbb)."""
     strata: dict[str, list[Path]] = {}
     missing: list[Path] = []
-
-    for scen_entry in sorted(root.iterdir()):
-        if not scen_entry.is_dir():
+    for entry in sorted(root.iterdir()):
+        if not entry.is_dir():
             continue
-        sm = SCEN_RE.match(scen_entry.name)
-        if not sm:
+        m = STRATUM_RE.match(entry.name)
+        if not m:
             continue
-        scen_id = sm.group(1)  # 2 位字符串
-        if only_scenarios and scen_id not in only_scenarios:
+        sample = entry / SAMPLE_NAME
+        if not sample.is_file():
+            missing.append(sample)
             continue
-        for case_entry in sorted(scen_entry.iterdir()):
-            if not case_entry.is_dir():
-                continue
-            if not CASE_RE.match(case_entry.name):
-                continue
-            sample = case_entry / SAMPLE_NAME
-            if not sample.is_file():
-                missing.append(sample)
-                continue
-            strata.setdefault(scen_id, []).append(sample)
+        strata.setdefault(m.group(1), []).append(sample)
 
     if missing:
-        preview = ", ".join(str(p.relative_to(root)) for p in missing[:5])
+        preview = ", ".join(str(p) for p in missing[:5])
         more = f" ... (+{len(missing) - 5} more)" if len(missing) > 5 else ""
-        print(f"warn: {len(missing)} missing {SAMPLE_NAME} files: {preview}{more}",
-              file=sys.stderr)
+        print(f"warn: {len(missing)} missing {SAMPLE_NAME} files: {preview}{more}", file=sys.stderr)
     if not strata:
-        raise FileNotFoundError(f"No samples found under {root}")
+        raise FileNotFoundError(f"No Case-aa-bbbb samples found under {root}")
     return strata
 
 
-def split_stratum(paths: list[Path], ratio: float, rng: random.Random,
-                  min_per_stratum: int) -> tuple[list[Path], list[Path]]:
+def split_stratum(paths: list[Path], ratio: float, rng: random.Random) -> tuple[list[Path], list[Path]]:
     n = len(paths)
-    if n < min_per_stratum:
-        return paths, []  # 样本太少,全入 train
     shuffled = paths[:]
     rng.shuffle(shuffled)
     n_test = round(n * ratio)
@@ -126,15 +95,11 @@ def main() -> int:
         print(f"error: input dir not found: {args.input}", file=sys.stderr)
         return 2
 
-    only_scenarios: set[str] | None = None
-    if args.scenarios:
-        only_scenarios = {s.strip() for s in args.scenarios.split(",") if s.strip()}
-
     output_dir = args.output_dir or args.input
     rng = random.Random(args.seed)
 
     try:
-        strata = load_samples(args.input, only_scenarios)
+        strata = load_samples(args.input)
     except FileNotFoundError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
@@ -151,7 +116,7 @@ def main() -> int:
     print("-" * (col_w + 24), file=sys.stderr)
     for stratum in sorted(strata):
         paths = sorted(strata[stratum])
-        train, test = split_stratum(paths, args.ratio, rng, args.min_per_stratum)
+        train, test = split_stratum(paths, args.ratio, rng)
         train_paths.extend(train)
         test_paths.extend(test)
         print(
@@ -162,8 +127,7 @@ def main() -> int:
     total = len(train_paths) + len(test_paths)
     actual_ratio = len(test_paths) / total if total else 0.0
     print(
-        f"{'TOTAL':<{col_w}}  {total:>5}  {len(train_paths):>5}  {len(test_paths):>5}  "
-        f"(test={actual_ratio:.1%})",
+        f"{'TOTAL':<{col_w}}  {total:>5}  {len(train_paths):>5}  {len(test_paths):>5}  (test={actual_ratio:.1%})",
         file=sys.stderr,
     )
 

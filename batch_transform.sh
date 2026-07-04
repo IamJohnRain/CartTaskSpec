@@ -18,7 +18,7 @@ if [ -z "$PY" ]; then
 fi
 echo "使用 Python: $PY"
 
-BASE_DIR="${BASE_DIR:-datasets/Scenario/cases-10k-gpt-5.5}"
+BASE_DIR="${BASE_DIR:-datasets/cases-600-mix}"
 
 if [ ! -d "${BASE_DIR}" ]; then
   echo "error: BASE_DIR 不存在: ${BASE_DIR}" >&2
@@ -29,33 +29,30 @@ total=0
 ok=0
 fail=0
 
-for SCEN_DIR in "${BASE_DIR}"/*/; do
-  [ -d "${SCEN_DIR}" ] || continue
-  SCEN_NAME=$(basename "${SCEN_DIR}")
-  for CASE_DIR in "${SCEN_DIR}"/Case-*; do
-    [ -d "${CASE_DIR}" ] || continue
-    CASE_NAME=$(basename "${CASE_DIR}")
-    [ -f "${CASE_DIR}/task.taskSpec.json" ] || {
-      echo "skip: ${SCEN_NAME}/${CASE_NAME} (no task.taskSpec.json)"
-      continue
-    }
-    [ -f "${CASE_DIR}/query.txt" ] || {
-      echo "skip: ${SCEN_NAME}/${CASE_NAME} (no query.txt)"
-      continue
-    }
-    total=$((total + 1))
-    echo ">>> [${total}] ${SCEN_NAME}/${CASE_NAME}"
-    if $PY taskspec_to_chat_completions.py \
-        "${CASE_DIR}/task.taskSpec.json" \
-        -q "${CASE_DIR}/query.txt" \
-        --genui_dsl "${CASE_DIR}/card.dsl.jsonl" \
-        -o "${CASE_DIR}/task.request.json"; then
-      ok=$((ok + 1))
-    else
-      fail=$((fail + 1))
-      echo "!!! Failed: ${SCEN_NAME}/${CASE_NAME}" >&2
-    fi
-  done
+for CASE_DIR in "${BASE_DIR}"/*/; do
+  echo ">>> Case: ${CASE_DIR}"
+  [ -d "${CASE_DIR}" ] || continue
+  CASE_NAME=$(basename "${CASE_DIR}")
+  [ -f "${CASE_DIR}/task.taskSpec.json" ] || {
+    echo "skip: ${BASE_DIR}/${CASE_NAME} (no task.taskSpec.json)"
+    continue
+  }
+  [ -f "${CASE_DIR}/query.txt" ] || {
+    echo "skip: ${BASE_DIR}/${CASE_NAME} (no query.txt)"
+    continue
+  }
+  total=$((total + 1))
+  echo ">>> [${total}] ${BASE_DIR}/${CASE_NAME}"
+  if $PY taskspec_to_chat_completions.py \
+      "${CASE_DIR}/task.taskSpec.json" \
+      -q "${CASE_DIR}/query.txt" \
+      --genui_dsl "${CASE_DIR}/card.dsl.jsonl" \
+      -o "${CASE_DIR}/task.request.json"; then
+    ok=$((ok + 1))
+  else
+    fail=$((fail + 1))
+    echo "!!! Failed: ${BASE_DIR}/${CASE_NAME}" >&2
+  fi
 done
 
 echo "─────────────"
