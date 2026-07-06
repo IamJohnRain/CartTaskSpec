@@ -1,7 +1,26 @@
-datasets\cases-600-mix\600Cases.tagged.jsonl文件包含了30个场景，场景里面里面每一行是一个设计好的Case，每个case让一个独立的subAgent调用使用这个skill实现对应的卡片DSL，同时参考TaskSpec.md的协议生成TaskSpec协议内容，最多同时启动5个Agents
-## 保存的目录：
-生成的文件保存到datasets/cases-600-mix目录下的单独子目录下（目录名包含场景名），如第一个场景的第一个Case则保存目录为Case-01-low-power-001，每个case目录下需要包含以下几个文件：1. 原始query文件query.txt、2.生成的CardSpec文件card.cardspec.json，3. DSL文件card.dsl.jsonl，4. TaskSpec文件task.taskSpec.json
-## 重要说明：
-1. DSL里面的数据可以先mock，读取文件按照UTF-8解码
-2. 模型不要降级5.4，必须用GPT5.5
-3. 不要修改任何的非datasets目录下内容，不要修改skill，你只能往datasets目录和其子目录下写文件
+$harmony-card-generation-datamodel-first datasets\case-600-mix-codex-mmx3\600Cases.tagged.jsonl 文件包含 30 个场景，每一行是一个设计好的 Case。每个 case 让一个独立的 subAgent 调用并使用这个 skill 实现对应的卡片 DSL，同时参考 TaskSpec.md 的协议生成 TaskSpec 协议内容，最多同时启动 5 个 Agents。
+
+## 保存目录
+
+生成的文件保存到 datasets/case-600-mix-codex-mmx3 目录下的单独子目录中，目录名必须包含该 case 的 scenario 字段。
+
+例如第一个场景的第一个 case：
+
+datasets/case-600-mix-codex-mmx3/Case-01-low-power-001
+
+每个 case 目录下需要包含以下文件：
+
+1. 原始 query 文件：query.txt
+2. 生成的 CardSpec 文件：card.cardspec.json
+3. DSL 文件：card.dsl.jsonl
+4. TaskSpec 文件：task.taskSpec.json
+
+## 重要说明
+
+1. 读取文件按照 UTF-8 解码。
+2. DSL 里面的数据可以先 mock，但 mock 数据必须写入 TaskSpec 的 dataModel.value，并且 DSL 第三行 updateDataModel.value 必须与其一致。
+3. DSL 中所有数据绑定路径必须能在 mock 的 dataModel.value 中找到。
+4. 模型不要降级 5.4，必须用 GPT-5.5。
+5. 不要修改任何非 datasets 目录下内容，不要修改 skill，只能往 datasets 目录和其子目录下写文件。
+6. 必须是“每个 case 一个独立 subAgent”生成结果，主 Agent 只负责调度和校验。
+7. 禁止主 Agent 或本地脚本批量生成 DSL、CardSpec、TaskSpec 或 mock 数据；本地命令只允许用于读取输入、统计、检查和校验。
