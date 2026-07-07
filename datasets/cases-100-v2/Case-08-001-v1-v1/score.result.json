@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-001-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.2,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图中用户三项核心诉求均已落实：左侧白色面板内显示'睡眠提醒'标题与'5小时42分'时长、红色'睡眠不足，建议今晚提前休息'预警文字；右侧显示'推荐入睡 23:10'推荐时间；底部'闹钟'按钮配置了 eventCandidates 中原样的 clickToDeeplink 事件，参数 bundleName/abilityName/uri 与契约一致。dataModel 三个字段都通过 {{ $__dataModel.sleep.xxx }} 绑定，截图中实际渲染出对应值。size=2x4、catalogId、version、updateDataModel.path=/、root width/height/borderRadius/clip 等硬约束均满足。仅扣 1 分：sleep_panel 与 action_panel 之间未做对称的视觉包装（右侧 action_panel 没有与左侧 sleep_panel 相同质感的容器），呈现略偏 '主-辅' 而非 '并列' 的观感，可读但不够均衡。",
+    "aesthetic": "截图整体配色克制：浅蓝 #EEF5FF 底色 + 白色左面板 + 深蓝 #1261A6 强调色 + 红色 #A14254 预警色，色相协调，色温统一。字号阶梯 14/20/20/11/12 清晰，主数值与时长用 20px 粗体作为最强字重，无第二强字重干扰。蓝色'闹钟'按钮在浅蓝底上对比度足够，白色文字可读。扣分点：1) 红色 alert 文本'睡眠不足，建议今晚提前休息'在 132 宽容器中以 11px 渲染时只换行一次，'息'字单字独占第二行，行末留白过大、视觉不规整；2) 左右面板一个白底一个透明蓝底，缺少对称感，'23:10' 与按钮漂浮在底色上略缺锚定。",
+    "layout": "截图无溢出、无截断、无 Stack 遮挡。Row 内 156+12+104=272 ≤ 内容区 276，sleep_panel 高 116 与 action_panel 高 116 在 alignItems:center 下纵向居中无挤压。左侧三行文本（标题 18+数值 28+预警 32=78，加 2 个 itemMargin 6 共 12，总 90）在 116 内容高内居中渲染，未触发裁切。右侧 bedtime_label 16+bedtime_text 28+alarm_button 32=76，加 2 个 itemMargin 10 共 20，总 96 ≤ 116，留白合理。'闹钟'按钮 88×32 热区超过 24vp 最低要求。卡片底边到内容底部留白约 12vp，符合 2x4 区间 10-14vp 要求。受保护文本（标题/时长/预警/推荐时间/按钮文字）均完整可见，无 ellipsis 截断。"
+  },
+  "issues": [
+    "右侧 alert 文本'睡眠不足，建议今晚提前休息'在 132 宽 / fontSize 11 下换行后'息'字单独成行，行末留白过大",
+    "action_panel 无容器背景，与左侧 sleep_panel 白色面板不对称，'23:10' 与按钮在浅蓝底上略显漂浮",
+    "左右两栏内容密度差异：左侧 3 行文字，右侧 1 行 label + 1 行数值 + 1 个按钮，视觉重量略不平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"sleep_reminder_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"sleep_reminder_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"sleep_panel\",\"action_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#EEF5FF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"duration_text\",\"alert_text\"],\"itemMargin\":6,\"styles\":{\"width\":156,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\",\"backgroundColor\":\"#FFFFFF\",\"borderRadius\":16,\"padding\":12}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"睡眠提醒\",\"styles\":{\"width\":132,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.durationText }}\",\"styles\":{\"width\":132,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#1261A6\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.alertText }}\",\"styles\":{\"width\":132,\"height\":32,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#A14254\",\"maxLines\":2,\"textOverflow\":\"none\",\"lineHeight\":14}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"bedtime_label\",\"bedtime_text\",\"alarm_button\"],\"itemMargin\":8,\"styles\":{\"width\":104,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#FFFFFF\",\"borderRadius\":16,\"padding\":10}},{\"id\":\"bedtime_label\",\"component\":\"Text\",\"content\":\"推荐入睡\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#51606F\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"bedtime_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.bedtimeText }}\",\"styles\":{\"width\":84,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#1261A6\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alarm_button\",\"component\":\"Button\",\"label\":\"闹钟\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#1261A6\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"sleep_reminder_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"durationText\":\"5小时42分\",\"alertText\":\"睡眠不足，建议今晚提前休息\",\"bedtimeText\":\"23:10\"}}}}"
+  ]
+}

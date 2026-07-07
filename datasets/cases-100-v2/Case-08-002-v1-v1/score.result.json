@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-002-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中可见顶部 SLP 蓝色徽标 + 红色「睡眠不足」标题 + 灰色状态「昨晚偏晚入睡」均按要求呈现；中间圆环进度图正确显示约 78% 比例（蓝色弧段约占四分之三强），右侧「6.2小时」主指标和「目标8小时」副指标清晰可见；底部「设置早睡提醒」按钮存在且 onClick 正确调用 eventCandidates 中的 clickToDeeplink（bundleName/abilityName 与闹钟应用一致）。因数据中 durationHours=6.2 < 7，标题已按规则标红。唯一轻微不足是「目标8小时」字面拼接缺少空格，可读性略受影响。",
+    "aesthetic": "截图中整体配色和谐：深蓝紫（#354A8C）作为主品牌色用于徽标/进度环/按钮，红色（#C73426）仅用于警示标题，灰色系（#99000000/#E5000000）用于副文本，对比度好，前景文字在浅灰卡片底上清晰可读。字重层级清晰（标题 14/700，主数值 20/500，按钮 14/500），仅一个最强字重。底部按钮宽度 168 在 276 内容区里略偏窄居中，视觉上略微「浮」在卡片中央偏右，未能形成底部贯通感，是主要扣分点。",
+    "layout": "从截图中可观察到：① 顶部 SLP 徽标与标题、状态文字排布整齐，未重叠；② 圆环进度与右侧主数值在垂直方向居中对齐良好，无堆叠遮挡；③ 「6.2小时」与「目标8小时」在 100x50 区域内纵向居中，无截断；④ 底部按钮完整可见，文字「设置早睡提醒」未截断；⑤ 按钮底边到卡片底边留白约 10vp 左右，满足 2x4 不大于 16vp 的约束；⑥ 卡片右侧整体留白略多，导致按钮偏中而非贯通底部，是布局上唯一可优化点。无任何文字被裁切或元素溢出。"
+  },
+  "issues": [
+    "「目标8小时」由表达式字符串拼接而成，缺少中英文之间的空格，影响可读性",
+    "底部按钮宽度 168 偏窄，视觉上未与卡片左右边界形成有效锚定，建议加宽至 220~240",
+    "按钮在内容区中居中（因 root alignItems:center）导致按钮相对卡片整体略偏中上，未能紧贴底部 8-12vp 安全区"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_08_002_sleep_supervision\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_08_002_sleep_supervision\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"sleep_mark\",\"title_group\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.iconText }}\",\"styles\":{\"width\":36,\"height\":22,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF354A8C\",\"borderRadius\":11,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":232,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":232,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFC73426\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.statusText }}\",\"styles\":{\"width\":232,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"progress_stack\",\"hours_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"progress_stack\",\"component\":\"Stack\",\"children\":[\"ring_progress\"],\"styles\":{\"width\":50,\"height\":50,\"alignContent\":\"center\"}},{\"id\":\"ring_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.progress }}\",\"total\":100,\"styles\":{\"width\":50,\"height\":50,\"type\":\"ring\",\"color\":\"#FF354A8C\",\"backgroundColor\":\"#FFF7F8FA\",\"strokeWidth\":7}},{\"id\":\"hours_col\",\"component\":\"Column\",\"children\":[\"hours_value\",\"target_text\"],\"itemMargin\":4,\"styles\":{\"width\":200,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"hours_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.hoursText }}\",\"styles\":{\"width\":200,\"height\":28,\"fontSize\":20,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"target_text\",\"component\":\"Text\",\"content\":\"{{ '目标 ' + $__dataModel.sleep.targetHours + ' 小时' }}\",\"styles\":{\"width\":200,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":232,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF354A8C\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_08_002_sleep_supervision\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠不足\",\"iconText\":\"SLP\",\"statusText\":\"昨晚偏晚入睡\",\"hoursText\":\"6.2小时\",\"durationHours\":6.2,\"targetHours\":8,\"progress\":78,\"actionText\":\"设置早睡提醒\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-006-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户要求睡眠卡片连手环、生成昨晚报告、打分、低于60分给建议。截图中可见：标题'昨晚睡眠'、评分'56分'（<60触发建议）、报告'深睡偏少'（橙色徽标）、建议'建议今晚提前30分钟入睡'、底栏'手环数据已同步'表明已连手环、CTA'查看详情'按钮携带 onClick 至 health://sleep/detail 事件，eventCandidates 原样使用。尺寸 300x140（2x4），catalogId、version、updateDataModel 全部合规。数据绑定全部走 {{ $__dataModel.sleep.* }} 表达式，无发明字段。唯一轻微不足：评分环内部仍以文字'56分'承担'打分'语义，缺少对'分'的强调，可酌情微调。",
+    "aesthetic": "整体配色克制：浅灰卡片底 #FFF7F8FA + 深色主文 #FF182431 + 橙色弱化报告 #FFD05000 + 红色评分环 #FFC73426 + 蓝色 CTA #FF354A8C，层级清晰，主字重（标题 16/600、报告 14/600、分数 13/700）一处最强，符合阶梯。留白密度尚可，左右对齐统一。扣分点：Progress 组件 width:56、height:56 配 backgroundColor:#FFE5E5EA，使环外层呈现一个明显可见的浅灰方形背景（环的圆形轨迹浮在方形之上），观感略显生硬，削弱了'环形进度'的精致感。",
+    "layout": "截图整体无文字截断、无组件溢出卡片边界、无 Stack 遮挡关键信息。底栏按钮距卡片底边约 10vp，合规。三行 Row 高度合计 24+56+32=112，加上 itemMargin 6×2=12，再加 padding 10×2=20，总 144，已微超 140。但因为 main_row 的实际渲染环高 56 被 Stack 收住，整卡未观察到溢出/裁切。唯一可观察的问题是 Progress 背景色导致方形灰底露在环外（见 D2），不构成排版严重问题。受保护文本（标题、56分、建议、查看详情）均完整可读。"
+  },
+  "issues": [
+    "Progress 组件 backgroundColor:#FFE5E5EA 使环形进度外围出现明显方形灰底，破坏环形视觉",
+    "Stack(64x56) 包裹 Progress(56x56) 时出现约 4vp 的不可见空白，叠加灰底使进度环区域显得不够紧凑",
+    "评分文字字号 13 偏小，作为卡片主指标可以更突出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_08_006_sleep_report\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_08_006_sleep_report\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"report_text\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":84,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"report_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.reportText }}\",\"styles\":{\"width\":186,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFD05000\",\"backgroundColor\":\"#FFFFF1E8\",\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"score_stack\",\"advice_text\"],\"itemMargin\":14,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"score_stack\",\"component\":\"Stack\",\"children\":[\"score_progress\",\"score_text\"],\"styles\":{\"width\":56,\"height\":56,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"score_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.scoreValue }}\",\"total\":100,\"styles\":{\"width\":56,\"height\":56,\"type\":\"ring\",\"color\":\"#FFC73426\",\"strokeWidth\":6}},{\"id\":\"score_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.scoreText }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFC73426\",\"textAlign\":\"center\",\"lineHeight\":20,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.adviceText }}\",\"styles\":{\"width\":210,\"height\":44,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF182431\",\"lineHeight\":22,\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"source_text\",\"detail_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":32,\"justifyContent\":\"space-between\",\"alignItems\":\"center\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"手环数据已同步\",\"styles\":{\"width\":136,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF6B7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"health://sleep/detail\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF354A8C\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_08_006_sleep_report\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"昨晚睡眠\",\"scoreText\":\"56分\",\"scoreValue\":56,\"reportText\":\"深睡偏少\",\"adviceText\":\"建议今晚提前30分钟入睡\",\"actionText\":\"查看详情\"}}}}"
+  ]
+}

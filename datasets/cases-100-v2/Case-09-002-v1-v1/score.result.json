@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-002-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求展示深圳老家天气/温度、极端天气标红提醒、一键打电话功能。截图中可见：标题'深圳老家天气'、温度'--°C'、天气状态'更新中'标签、关心提示语'温度升高，提醒爸妈少晒多补水'、预警行'极端天气 暂无预警'、电话号码'15012345678'及绿色'打给爸妈'按钮，所有关键字段均已落地。call 按钮的 onClick.call='clickToCallPhone' 与 args.phoneNumber 来自 eventCandidates，符合契约。当前数据为 loading 状态（--°C/更新中/暂无预警），故红色高亮未触发属于合理行为。扣分点：title_col 中 location_text 在 34px 紧贴容器、与 title_text 几乎贴在一起且信息冗余（标题已含'深圳'），实际呈现中副标题几乎不可辨。",
+    "aesthetic": "截图整体配色温暖协调：奶油底色 #FFF7ED 配橙色温度数字、橙色'更新中'胶囊、灰色预警胶囊、墨绿色 CTA 按钮，层次清晰。字号阶梯 16/20/12/14 合理，最强字重集中在温度与按钮上，单一焦点成立。前景文字在背景上对比度足够，可读性好。稍显拥挤：四行在 140vp 高度内排列，副标题与温度右侧对齐感稍弱。",
+    "layout": "截图显示四个 Row 全部可见且未被裁切：'深圳老家天气'与'--°C'同行、'更新中'胶囊与关心语同行、'极端天气 暂无预警'灰色胶囊整行、底部电话号码与'打给爸妈'按钮同行。底部按钮热区 84×32vp 满足 ≥24vp 要求，卡片底边到按钮底边约 12-14vp 处于合理区间。Column 纵向占用 34+4+20+4+22+4+32=120vp，正好等于内容区 120vp，恰好填满未溢出。受保护文本（标题、温度、CTA）均完整呈现，无堆叠遮挡。唯一可观察的小瑕疵：top_row 中 title_col 高度 34 与子项总高 18+2+14=34 完全相等，justifyContent='center' 下 location_text 紧贴 title_text 底部，实际截图中副标题位置与主标题几乎粘连、辨识度低。"
+  },
+  "issues": [
+    "title_col 高度 34 等于子项总高，location_text 紧贴 title_text 渲染，副标题'深圳'与主标题视觉粘连、辨识度低，且信息冗余（主标题已含'深圳'）",
+    "Column 总纵向占用 120vp 正好等于内容区 120vp，无任何富余，垂直布局偏紧",
+    "极高温/极端天气状态下 alert_row 缺少条件化红色高亮样式（当前固定灰色胶囊），未来 alertLevel 变化时无视觉区分度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"weather_care_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"weather_care_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"weather_row\",\"alert_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7ED\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_col\",\"temp_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"location_text\"],\"itemMargin\":3,\"styles\":{\"width\":200,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.titleText }}\",\"styles\":{\"width\":200,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.prefectureName + ($__dataModel.data.weather.location.prefectureName === $__dataModel.data.weather.location.districtName ? '' : ' · ' + $__dataModel.data.weather.location.districtName) }}\",\"styles\":{\"width\":200,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#8B7355\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":72,\"height\":36,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#C2410C\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"condition_text\",\"care_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#9A3412\",\"textAlign\":\"center\",\"backgroundColor\":\"#FFEDD5\",\"borderRadius\":10,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.careText }}\",\"styles\":{\"width\":200,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#3F3A32\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_prefix\",\"alert_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#F3F4F6\",\"borderRadius\":11,\"padding\":0}},{\"id\":\"alert_prefix\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alertPrefix }}\",\"styles\":{\"width\":68,\"height\":22,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#991B1B\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.alertLevel }}\",\"styles\":{\"width\":200,\"height\":22,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#374151\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"phone_note\",\"call_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"phone_note\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.phoneNumber }}\",\"styles\":{\"width\":188,\"height\":32,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#374151\",\"maxLines\":1,\"textAlign\":\"left\",\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.care.phoneLabel }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ $__dataModel.care.phoneNumber }}\"}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#16A34A\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"weather_care_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"深圳\",\"prefectureName\":\"深圳\"},\"current\":{\"temperatureText\":\"--°C\",\"condition\":\"更新中\",\"alertLevel\":\"暂无预警\"},\"daily\":[],\"updatedAt\":\"\"}},\"care\":{\"titleText\":\"深圳老家天气\",\"careText\":\"温度升高，提醒爸妈少晒多补水\",\"alertPrefix\":\"极端天气\",\"phoneLabel\":\"打给爸妈\",\"phoneNumber\":\"15012345678\",\"phoneNote\":\"未提供电话号码，使用 mock 父母电话 15012345678\"},\"state\":{\"loading\":true}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-009-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户原始指令要求：一键免打扰、番茄钟、白噪音。截图中三块信息均完整呈现：左侧面板显示'专注模式'标题、'一键安静进入工作流'副标题、'免打扰待开启'状态、绿色'开启专注'按钮；右侧上方面板显示'番茄钟/25分钟/短休5分钟'，下方面板显示'白噪音/雨声/进入后选择播放'。事件 clickToDeeplink 原样绑定在 Button 上，参数 bundleName/abilityName/uri 与 eventCandidates 完全一致。尺寸 2x4 (300x140)、catalogId、version、updateDataModel.path/value 均符合契约。资产未使用（assetCandidates 为空）也合规。唯一轻微扣分点：免打扰/番茄/白噪音三个独立子模块之间没有明显的差异化视觉标识（无图标），但用户未要求图标，信息层面已充分满足。",
+    "aesthetic": "截图整体观感干净专业：淡薄荷绿主背景 (#FFF4F7F5) 与左侧浅绿面板 (#FFE6F4EF)、白色子卡片形成柔和的层次，绿色 CTA (#FF007D58) 与左侧状态文字同色系，视觉协调。文字层级清晰：18px/700 为主标题与主指标、14px/500 为状态、12px/12px/10px 为辅助说明，可读性好。轻微扣分点：左标题、'25分钟'、'雨声'三处都用了 18px/700 的最强字重，违反'同一卡片只保留一个最强字重'原则，视觉重心略分散；右侧两个白卡片无阴影或描边，立体感偏弱。",
+    "layout": "截图中无任何元素堆叠或重叠，文字无截断/省略。左侧面板 (130x116) 内部 title→subtitle→dnd→button 依次居中排列，按钮 32vp 高，底部距卡片底边约 14-16vp，符合规范。右侧 detail_col (134x116) 内 tomato_row (55vp) 与 noise_row (55vp) 上下排列，间距 6vp，文字全部完整呈现，未越界。两条 Column 总高 116 与内容区一致，无溢出。左右两子容器之间距 12vp，左右各留 padding 12，整卡无内容被 root borderRadius 22+clip:true 切到。受保护的标题、状态、CTA、主数值 (25分钟/雨声) 全部清晰可读。底部 CTA 热区约 104x32vp，达标。"
+  },
+  "issues": [
+    "左标题、'25分钟'、'雨声'三处共用 18px/700 同一最强字重，层级焦点不够收敛",
+    "右侧两个白色子卡片没有阴影或描边，立体感略弱，与左侧浅绿面板的层次落差不够明显",
+    "主标题 '专注模式'、番茄 '25分钟'、白噪音 '雨声' 都使用居中且等大的 18px 加粗，视觉上像三个并列主指标，缺少真正的主从关系"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_04_009_focus_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_04_009_focus_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"detail_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF4F7F5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\",\"dnd_text\",\"focus_button\"],\"itemMargin\":6,\"styles\":{\"width\":130,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#FFE6F4EF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":114,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.subtitle }}\",\"styles\":{\"width\":114,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"dnd_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.dndStatus }}\",\"styles\":{\"width\":114,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF007D58\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"focus_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":104,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF007D58\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"detail_col\",\"component\":\"Column\",\"children\":[\"tomato_row\",\"noise_row\"],\"itemMargin\":6,\"styles\":{\"width\":134,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"tomato_row\",\"component\":\"Column\",\"children\":[\"tomato_title\",\"tomato_duration\",\"tomato_hint\"],\"itemMargin\":2,\"styles\":{\"width\":134,\"height\":55,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"borderWidth\":1,\"borderColor\":\"#FFE6F4EF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"tomato_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomatoTitle }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tomato_duration\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomatoDuration }}\",\"styles\":{\"width\":122,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tomato_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomatoHint }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_row\",\"component\":\"Column\",\"children\":[\"noise_title\",\"noise_name\",\"noise_hint\"],\"itemMargin\":2,\"styles\":{\"width\":134,\"height\":55,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"borderWidth\":1,\"borderColor\":\"#FFE6F4EF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"noise_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noiseTitle }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noiseName }}\",\"styles\":{\"width\":122,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noiseHint }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_04_009_focus_card\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"subtitle\":\"一键安静进入工作流\",\"dndStatus\":\"免打扰待开启\",\"tomatoTitle\":\"番茄钟\",\"tomatoDuration\":\"25分钟\",\"tomatoHint\":\"短休5分钟\",\"noiseTitle\":\"白噪音\",\"noiseName\":\"雨声\",\"noiseHint\":\"进入后选择播放\",\"actionText\":\"开启专注\"}}}}"
+  ]
+}
