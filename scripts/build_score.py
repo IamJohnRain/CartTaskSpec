@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import io
 import json
 import logging
 import os
@@ -45,6 +46,20 @@ except ImportError:  # pragma: no cover
     requests = None
 
 log = logging.getLogger("score")
+
+# Excel 导出依赖（仅 --excel 模式用到，缺失时给明确提示）
+try:
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+    from openpyxl.drawing.image import Image as XLImage
+except ImportError:  # pragma: no cover
+    Workbook = None
+
+try:
+    from PIL import Image as PILImage
+except ImportError:  # pragma: no cover
+    PILImage = None
 
 # --------------------------------------------------------------------------- #
 # 文件名约定（每个 case 目录）
@@ -545,6 +560,163 @@ def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
     return 0 if counters["fail"] == 0 else 1
 
 
+# --------------------------------------------------------------------------- #
+# Excel 分数汇总（只读 score.result.json，绝不调 API）
+# --------------------------------------------------------------------------- #
+THUMB_MAX = (130, 260)  # 缩略图最大宽高（px），保持原始比例
+
+# 条件着色：分数低 → 红，中 → 黄，高 → 绿
+_FILL_RED = PatternFill(start_color="FFFFC7CE", end_color="FFFFC7CE",
+                        fill_type="solid")
+_FILL_YELLOW = PatternFill(start_color="FFFFEB9C", end_color="FFFFEB9C",
+                           fill_type="solid")
+_FILL_GREEN = PatternFill(start_color="FFC6EFCE", end_color="FFC6EFCE",
+                          fill_type="solid")
+
+
+def _score_fill(score) -> PatternFill | None:
+    if not isinstance(score, (int, float)):
+        return None
+    if score < 4:
+        return _FILL_RED
+    if score < 7:
+        return _FILL_YELLOW
+    return _FILL_GREEN
+
+
+def _load_score(case_dir: Path) -> dict | None:
+    p = case_dir / SCORE_RESULT_NAME
+    if not p.is_file():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        log.warning(f"跳过 {case_dir.name}: score.result.json 解析失败: {e}")
+        return None
+
+
+def _make_thumb_bytes(png_path: Path):
+    """返回 (XLImage, width_pt, height_pt)；无 PNG 或无 PIL 返回 (None, 0, 0)。"""
+    if PILImage is None or not png_path.is_file():
+        return None, 0, 0
+    try:
+        im = PILImage.open(png_path)
+        im = im.convert("RGBA")
+        im.thumbnail(THUMB_MAX)
+        buf = io.BytesIO()
+        im.save(buf, format="PNG")
+        buf.seek(0)
+        img = XLImage(buf)
+        img.width = im.width
+        img.height = im.height
+        return img, im.width, im.height
+    except Exception as e:  # noqa: BLE001
+        log.warning(f"{png_path.parent.name}: 嵌图失败: {e}")
+        return None, 0, 0
+
+
+def export_excel(case_dirs: list[Path], dataset: Path,
+                 out_path: Path | None) -> int:
+    if Workbook is None:
+        print("error: 缺少 openpyxl，请 pip install openpyxl", file=sys.stderr)
+        return 1
+    if PILImage is None:
+        print("error: 缺少 Pillow，请 pip install Pillow", file=sys.stderr)
+        return 1
+
+    if out_path is None or str(out_path) == "":
+        out_path = dataset / "score_summary.xlsx"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "score summary"
+
+    headers = [
+        "case_id", "渲染图", "加权总分",
+        "指令遵从(0.4)", "样式美观(0.2)", "排版布局(0.4)",
+        "问题数", "问题清单", "排版原因", "指令原因", "美观原因",
+    ]
+    ws.append(headers)
+    # 表头样式
+    hdr_font = Font(bold=True, color="FFFFFFFF")
+    hdr_fill = PatternFill(start_color="FF305496", end_color="FF305496",
+                           fill_type="solid")
+    for col_idx in range(1, len(headers) + 1):
+        c = ws.cell(row=1, column=col_idx)
+        c.font = hdr_font
+        c.fill = hdr_fill
+        c.alignment = Alignment(horizontal="center", vertical="center")
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = f"A1:{get_column_letter(len(headers))}1"
+
+    wrap_align = Alignment(wrap_text=True, vertical="top")
+    center_align = Alignment(horizontal="center", vertical="center")
+    # 列宽
+    col_widths = [32, 24, 11, 13, 13, 13, 8, 50, 50, 45, 45]
+    for i, w in enumerate(col_widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+    written = 0
+    skipped = 0
+    for case_dir in case_dirs:
+        result = _load_score(case_dir)
+        if result is None:
+            skipped += 1
+            continue
+
+        scores = result.get("scores", {}) or {}
+        ins = scores.get("instruction", {}) or {}
+        aes = scores.get("aesthetic", {}) or {}
+        lay = scores.get("layout", {}) or {}
+        wt = result.get("weighted_total")
+        issues = result.get("issues", []) or []
+        reasons = result.get("reasons", {}) or {}
+        row_idx = ws.max_row + 1
+
+        ws.cell(row=row_idx, column=1, value=case_dir.name).alignment = wrap_align
+        ws.cell(row=row_idx, column=3, value=wt).alignment = center_align
+        ws.cell(row=row_idx, column=4,
+                value=ins.get("score")).alignment = center_align
+        ws.cell(row=row_idx, column=5,
+                value=aes.get("score")).alignment = center_align
+        ws.cell(row=row_idx, column=6,
+                value=lay.get("score")).alignment = center_align
+        ws.cell(row=row_idx, column=7,
+                value=len(issues)).alignment = center_align
+        ws.cell(row=row_idx, column=8,
+                value="\n".join(f"· {x}" for x in issues)).alignment = wrap_align
+        ws.cell(row=row_idx, column=9,
+                value=reasons.get("layout", "")).alignment = wrap_align
+        ws.cell(row=row_idx, column=10,
+                value=reasons.get("instruction", "")).alignment = wrap_align
+        ws.cell(row=row_idx, column=11,
+                value=reasons.get("aesthetic", "")).alignment = wrap_align
+
+        # 条件着色（总分与三个分维度）
+        for col, val in ((3, wt), (4, ins.get("score")),
+                         (5, aes.get("score")), (6, lay.get("score"))):
+            fill = _score_fill(val)
+            if fill:
+                ws.cell(row=row_idx, column=col).fill = fill
+
+        # 嵌入缩略图
+        img, w_px, h_px = _make_thumb_bytes(case_dir / PNG_NAME)
+        if img is not None:
+            ws.add_image(img, f"B{row_idx}")
+            # 行高按缩略图（1pt ≈ 1.333px）
+            ws.row_dimensions[row_idx].height = max(28, h_px / 1.333 + 4)
+        else:
+            ws.cell(row=row_idx, column=2, value="(无图)").alignment = center_align
+            ws.row_dimensions[row_idx].height = 28
+
+        written += 1
+
+    wb.save(out_path)
+    print(f"已生成 Excel: {out_path} | 数据行 {written} | 跳过(无评分) {skipped}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="为每个 case 目录生成 VLM 评分请求体 requestbody.json，"
@@ -576,6 +748,11 @@ def main() -> int:
     parser.add_argument("-v", "--version-out", type=Path, default=None,
                         help="改进版 -vN case 的输出根目录；不传则默认与"
                              "数据集同目录（-v 指定的目录不存在会自动创建）。")
+    parser.add_argument("-x", "--excel", type=Path, nargs="?", const=None,
+                        default=None,
+                        help="只读现有 score.result.json 汇总成分数 Excel"
+                             "（不调 API）。可跟输出路径；省略则输出到"
+                             " <dataset>/score_summary.xlsx。")
     parser.epilog = (
         "示例:\n"
         "  # 默认:生成请求体 + 调用 API 评分 + 提取改进 DSL 到 -vN 目录\n"
@@ -595,13 +772,19 @@ def main() -> int:
         "-j 10 --overwrite\n\n"
         "  # 调试单 case(单线程)\n"
         "  python scripts/build_score.py -d datasets/cases-600-mix "
-        "-c Case-007-01-low-power-007 -j 1"
+        "-c Case-007-01-low-power-007 -j 1\n\n"
+        "  # 只读现有 score.result.json 汇总成 Excel(不调 API)\n"
+        "  python scripts/build_score.py -d datasets/cases-600-mix --excel\n"
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
+        "--excel out/report.xlsx"
     )
     parser.formatter_class = argparse.RawDescriptionHelpFormatter
     args = parser.parse_args()
 
-    call_api = not args.disable_call_api
-    if call_api:
+    # --excel 模式：只读现有评分，绝不调 API，与其它模式互斥
+    excel_mode = "--excel" in sys.argv or "-x" in sys.argv
+    call_api = not args.disable_call_api and not excel_mode
+    if call_api or excel_mode:
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s | %(levelname)-7s | %(message)s",
@@ -621,6 +804,9 @@ def main() -> int:
     if not case_dirs:
         print("未找到任何符合条件的 case 目录。", file=sys.stderr)
         return 1
+
+    if excel_mode:
+        return export_excel(case_dirs, args.dataset, args.excel)
 
     if call_api:
         return run_api_batch(case_dirs, args)
