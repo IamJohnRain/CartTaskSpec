@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-011",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户明确要求歌单快捷入口使用 ★♫♪ 文字字符作为图标，DSL 中两个 Button 的 label 仅为 '每日' / '收藏'，完全缺少字符图标，是直接、显式的指令违反，因此指令遵从扣重分。其余诉求基本落实：顶部 40pt 大号电量百分比、Divider 分块、低电量警告文案、浅色背景 (#fffffbf2) 都已体现；两个 eventCandidates (clickToDeeplink 每日/收藏) 的 call/args 原样一致；数据绑定路径 battery.percentText / battery.warning / battery.playlistA / playlistB 均与 dataModel.value 推导吻合。updateDataModel 缺少 path 字段（按协议应为 \"/\"），是次要协议瑕疵。",
+    "aesthetic": "整体配色统一在暖色调（米白底 #fffffbf2、橙红警示、淡橙/淡粉按钮），层级清晰：40pt fontWeight 700 的红色 18% 为唯一最强字重，10pt 警告文、14pt 按钮字为次级，字号落在 10/14/40 阶梯上。Divider 使用半透明橙 (33ff9500) 与按钮/警示色调呼应。改进空间：缺少图标使按钮略显平淡；按钮底色对比偏弱（#fffff0d8 与背景 #fffffbf2 仅差 0x15），可读性够但视觉重量略不足。",
+    "layout": "逐项预算核算：root Column 纵向 = 12 (padding.top) + 12 (padding.bottom) + 2×4 (itemMargin×(5-1)) + (40+1+32+1+30) 子项高 = 24+8+104 = 136 ≤ 140 父高，无溢出，底部留 16vp（合规上界）。playlist_row 横向 = 0 padding + 8×1 (itemMargin) + 54+54 = 116 = 父宽 116，刚好填满。warning_text 宽 116, fontSize 10, 12 汉字宽 ≈ 120 需换行，2 行 × 6 字 ≈ 60px 宽，maxLines:2 + height:32 (2 行行高约 14×2=28) 内可容纳，无截断。按钮热区 30vp ≥ 24vp 合格。Stack 未使用，无遮盖。整体布局无堆叠/截断。"
+  },
+  "issues": [
+    "歌单 Button 缺少用户明确要求的 ★♫♪ 文字字符图标（直接违反 userQuery）",
+    "updateDataModel 缺少 path 字段，按协议应为 \"/\"",
+    "底部 playlist_row 距卡片底边 16vp，处于 2x2 规范上界（8-12 典型，不得 >16），偏空",
+    "按钮底色 #fffff0d8 与卡背景 #fffffbf2 差仅 0x15，对比偏弱",
+    "playlist 按钮宽度 54 仅 2 汉字+图标，加入图标后字号建议略缩以保边距"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_011\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_011\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"battery_text\",\"divider_top\",\"warning_text\",\"divider_mid\",\"playlist_row\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffffbf2\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.percentText }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffff3b30\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#33ff9500\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.warning }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff9f2a00\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"divider_mid\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#33ff9500\"}},{\"id\":\"playlist_row\",\"component\":\"Row\",\"children\":[\"playlist_daily\",\"playlist_fav\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"playlist_daily\",\"component\":\"Button\",\"label\":\"★ {{ $__dataModel.battery.playlistA }}\",\"styles\":{\"width\":54,\"height\":30,\"borderRadius\":12,\"backgroundColor\":\"#ffffe6c2\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ff6b3a00\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"playlist_fav\",\"component\":\"Button\",\"label\":\"♫ {{ $__dataModel.battery.playlistB }}\",\"styles\":{\"width\":54,\"height\":30,\"borderRadius\":12,\"backgroundColor\":\"#ffffd8d2\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ff8a1f11\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_011\",\"path\":\"/\",\"value\":{\"battery\":{\"percentText\":\"18%\",\"warning\":\"建议关闭后台音乐延长续航\",\"playlistA\":\"每日\",\"playlistB\":\"收藏\"}}}}"
+  ]
+}

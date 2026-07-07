@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-05-agenda-082",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.7,
+  "reasons": {
+    "instruction": "size=2x4、catalogId/version/updateDataModel 等硬约束全部满足；onClick.call/args 原样来自 eventCandidates（clickToIntent/ViewCalendarEvent/evt-20260706-0930）；dateText+timeText、title、eventLocation、joinHint 均通过 {{ }} 表达式绑定到 data.calendar.items[0]，意图上能覆盖'几号几点开会'和'日历要读'。但用户明确要求'背景弄个会议室图'，assetCandidates 为空时，模型用 Divider 拼出 3 个窗户和一张桌子当作'会议室图'，既无真实图像语义，也与会议场景严重脱节；更严重的是因布局溢出与 Stack 覆盖问题，渲染截图中 timeLine、title、location 全部不可见，joinButton 的'入会'文案亦未呈现，主信息等于全部丢失，因此关键诉求严重缺位。",
+    "aesthetic": "主色调采用浅蓝/白渐变 (#FFE7F0FF→#FFF1F3F5) 与深蓝强调色 #0A59F7，配色和谐。但渲染截图中只露出一枚'会议提醒' tag 和一颗无文字的蓝色按钮，画面中下部大面积空白，会议室图被完全覆盖，导致信息层级彻底断裂：timeLine 18~20pt 本应是最强视觉锚点，实际缺失；title 14pt、location 12pt 同样不可见；按钮虽色彩对但没有文字呼应，整体像未渲染完成的占位卡，视觉上'土气'且不完整。",
+    "layout": "contentPanel Column 纵向占用 = padding.top(12) + padding.bottom(12) + itemMargin*(4-1)=6*3=18 + Σ children height(18+24+18+28=88) = 130 > contentPanel.height(116)，溢出 14vp，直接导致 timeLine / title / bottomRow 中的 location 全部被裁出可视区。同时 root Stack 中 roomLayer(276x116) 与 contentPanel(276x116) 完全同位叠放，且 contentPanel 背景 #E6FFFFFF（≈90% 不透明白）把下方 Divider 拼出的'会议室图'几乎完全遮盖，Stack 叠层覆盖问题严重。joinButton 热区 64x28≥24vp 通过，但 bottomRow 处于 contentPanel 溢出区，CTA 位置漂浮在卡片上半部，底部动作区到卡片底边距离未满足 2x4 应 10~14vp 的锚定要求。"
+  },
+  "issues": [
+    "contentPanel Column 子项总高 130 > 可用 116，溢出 14vp，导致 timeLine/title/bottomRow 被裁出可视区",
+    "contentPanel(276x116) 在 Stack 中与 roomLayer(276x116) 完全同位叠放，且 contentPanel 背景 #E6FFFFFF 几乎不透明白，会议室图整体被遮挡",
+    "渲染截图中 joinButton 的'入会'文案不可见，且按钮位置漂浮在卡片上半部而非底部动作区",
+    "用户要求'背景弄个会议室图'，assetCandidates 为空时模型以 Divider 勉强拼出窗户与桌椅，语义与视觉均不达意",
+    "字号 18/20pt 与 14/13pt、12/11pt 阶梯并存，但主信息 timeLine 被裁，信息层级彻底失效",
+    "底部动作区到卡片底边距离未满足 2x4 卡片 10~14vp 的约束（实际 ≥18vp）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"agenda_room_082\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"agenda_room_082\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"bgRoom\",\"infoCard\"],\"styles\":{\"width\":300,\"height\":140,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#FFE7F0FF\",0],[\"#FFF1F3F5\",1]]}}},{\"id\":\"bgRoom\",\"component\":\"Column\",\"children\":[\"windowRow\"],\"styles\":{\"width\":300,\"height\":44,\"padding\":{\"top\":10,\"left\":12,\"right\":12},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"windowRow\",\"component\":\"Row\",\"children\":[\"w1\",\"w2\",\"w3\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"w1\",\"component\":\"Divider\",\"styles\":{\"width\":60,\"height\":18,\"strokeWidth\":1,\"color\":\"#FF6E8BFB\"}},{\"id\":\"w2\",\"component\":\"Divider\",\"styles\":{\"width\":60,\"height\":18,\"strokeWidth\":1,\"color\":\"#FF6E8BFB\"}},{\"id\":\"w3\",\"component\":\"Divider\",\"styles\":{\"width\":60,\"height\":18,\"strokeWidth\":1,\"color\":\"#FF6E8BFB\"}},{\"id\":\"infoCard\",\"component\":\"Column\",\"children\":[\"timeLine\",\"title\",\"bottomRow\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":96,\"padding\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"timeLine\",\"component\":\"Text\",\"content\":\"{{ data.calendar.items[0].dateText + ' ' + data.calendar.items[0].timeText }}\",\"styles\":{\"width\":276,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ data.calendar.items[0].title }}\",\"styles\":{\"width\":276,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"location\",\"joinButton\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"location\",\"component\":\"Text\",\"content\":\"{{ data.calendar.items[0].eventLocation }}\",\"styles\":{\"width\":184,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"joinButton\",\"component\":\"Button\",\"label\":\"{{ data.calendar.items[0].joinHint }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":64,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"agenda_room_082\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"evt-20260706-0930\",\"title\":\"产品评审会\",\"dateText\":\"7月6日\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:30\",\"timeText\":\"09:30 开会\",\"eventLocation\":\"A座 12F 会议室 1208\",\"joinHint\":\"入会\",\"description\":\"线上会议链接可用\",\"senderName\":\"Calendar\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

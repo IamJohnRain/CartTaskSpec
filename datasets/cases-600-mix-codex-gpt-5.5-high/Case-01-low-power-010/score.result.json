@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-01-low-power-010",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户四点诉求（省电模式页面、字写在背景图上、点击跳应用、红色提示）均已落实：title='低电模式'、icon 作为半透明背景图(opacity 0.22)、root 与 Button 双层 onClick 指向 eventCandidates 中的 clickToDeeplink(battery)、alert 文本使用 #ffff3b30 红色并配 #26ff3b30 红色徽章底。size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 均符合硬约束，dataModel 五个字段全部经表达式绑定。轻微扣分：背景图为图标而非满铺图片，'字写在背景图上'的语感只实现了一部分；以及 root 与 Button 上重复挂同一个 onClick，热区冗余。",
+    "aesthetic": "深色 #ff101417 背景 + 红色徽章 + 白色 CTA 按钮的三段式配色对比清晰、克制；字号阶梯 20/14/12/14 处于合法档位；红色徽章 borderRadius 10 与按钮 borderRadius 14 一脉相承，圆角体系统一。问题：title(20/700) 与 alert(12/700) 同时使用 700 字重，违反'同一卡片只保留一个最强字重'的约束；右上角图标虽为 0.22 透明度但占据约 30% 画面，视觉重量略偏重；按钮 fontWeight 'medium' 不在显式阶梯内。",
+    "layout": "content Column 可用高度 116，子项纵向占用核算：top_row.height(24) + title.height(26) + hint.height(20) + action.height(36) + itemMargin*3(8*3=24) = 130 > 116，溢出 14vp。叠加 Stack 内坐标：action 按钮底边位于 y_stack=12+130=142 > Stack 高度 140，超出 2vp 并触发 clip，导致按钮底部圆角被裁切。bg_icon 96x96 位于 x=200..296、y=34..130，未越界；与 content Column 叠层区域 y=34..128，title/hint 文本位于 (x<180)，未被背景图压住，受保护文本安全。Stack 内容排序 children=['bg_icon','content'] 正确，背景在底、信息在上。热区：action 高度 36 满足 ≥24vp；底部动作底边 142 - 卡片底 140 = 2vp，刚好踩线。"
+  },
+  "issues": [
+    "content Column 子项纵向总高 130 > 可用 116，溢出 14vp",
+    "action 按钮底边 y_stack=142 > Stack 高度 140，被 clip 裁掉 2vp 圆角",
+    "title(20/700) 与 alert(12/700) 同时使用最强字重，违反单最强字重约束",
+    "root 与 Button 重复绑定同一 onClick，热区冗余（无功能性问题）",
+    "按钮 fontWeight='medium' 不在合法字重阶梯（regular/medium/semibold/bold 对应 400/500/600/700 中 medium=500 可接受，但建议显式数值）",
+    "bg_icon 高度 96 + 96 ≈ 占卡片有效高度 116 的 83%，视觉占比偏重，建议缩到 80~88"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_010\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_010\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff101417\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.power.icon }}\",\"styles\":{\"width\":84,\"height\":84,\"objectFit\":\"contain\",\"opacity\":0.20,\"margin\":{\"left\":194,\"top\":28}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"title\",\"hint\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"alert\"],\"styles\":{\"width\":276,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.alert }}\",\"styles\":{\"width\":68,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffff3b30\",\"backgroundColor\":\"#26ff3b30\",\"borderRadius\":10,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":180,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.hint }}\",\"styles\":{\"width\":180,\"height\":18,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":92,\"height\":32,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff101417\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_010\",\"value\":{\"power\":{\"title\":\"低电模式\",\"alert\":\"电量偏低\",\"hint\":\"开启省电延长续航\",\"actionText\":\"进入设置\",\"icon\":\"resources/base/media/icon_save_power.png\"}}}}"
+  ]
+}

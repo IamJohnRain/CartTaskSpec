@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-065",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.3,
+  "reasons": {
+    "instruction": "用户三大诉求落实情况：1) 天气卡片 ✓（渲染为绿色天气块，显示 glyph/温度/天气状况）；2) 可点开导航的图 ✓（weather_tile 上挂载 onClick.clickToDeeplink，bundleName/abilityName/uri 与 eventCandidates 完全一致）；3) 底下显示已连上 ✓（connect_status 绑定 connection.statusText='已连接' 渲染于底部）。硬约束：size 2x2、width/height 140×140、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path='/' 且 value 与 TaskSpec.dataModel.value 一致，全部满足。轻微扣分点：用户原话'要有一张图'，DSL 用带背景色的可点击 Column 充当'图'而非 Image 组件，因 assetCandidates 为空尚可接受，但与字面诉求存在语义偏差。",
+    "aesthetic": "配色采用浅绿底+深绿主块+淡黄绿状态条+白色 glyph 胶囊，整体绿色系协调统一，可读性良好。字号阶梯 20/16/14/12 落在合法阶梯上，层级清晰，最强字重 700（用于温度/glyph/已连接标题）唯一，整体克制。扣分点：背景 #fff0fdf4 极浅、缺乏视觉层次与点缀，glyph 做成白色胶囊+深绿字虽新颖但易被误读为按钮；缺少渐变/插图等更丰富的视觉元素，整体偏'基础'。",
+    "layout": "逐项核算：\n1) root Column（140×140，padding 12/12/12/12，itemMargin 8）：可用高度 = 140-12-12 = 116；子项 weather_tile 84 + itemMargin 8 + connect_status 24 = 116，恰好等于 116，无溢出。\n2) weather_tile Column（116×84，padding left/right 10，top/bottom 8，itemMargin 4）：可用高度 = 84-8-8 = 68；子项 glyph 24 + itemMargin 4 + temp_text 24 + itemMargin 4 + weather_text 18 = 74，74 > 68，垂直溢出 6vp，受保护文本（温度 26℃、状况 多云）存在被裁切/挤压风险。\n3) weather_tile 横向：可用宽 116-10-10=96，glyph 36、temp_text 96、weather_text 96 均 ≤ 96，OK。\n4) connect_status 距底边：12vp，在 2x2 建议区间 8-12vp 内。\n5) 热区：weather_tile 116×84 远大于 24vp 最小热区。\n6) 截图佐证：天气块底部贴边、内容紧凑，存在隐患。综合判定：weather_tile 内部 6vp 垂直溢出，按规范需重扣分。"
+  },
+  "issues": [
+    "weather_tile Column 内部垂直占高 74 > 可用 68，溢出 6vp，温度/状况文本存在被裁切或挤压风险",
+    "用户字面要求'一张图'，DSL 用带背景色的可点击 Column 充当'图'，与 Image 组件语义有偏差（assetCandidates 为空可酌情接受）",
+    "背景色 #fff0fdf4 极浅，视觉层次感不足，整卡视觉偏单调",
+    "'晴'字做成白色胶囊+深绿字虽区分度好，但圆角与背景同色系，易被误读为可点击按钮（与 weather_tile 抢点击语义）",
+    "weather_text fontColor #ddffffff（带 alpha）受绿色背景影响，对比度略低于纯白，且该字段为受保护的主状态信息，应保证高对比"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_065\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_065\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather_tile\",\"connect_status\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff0fdf4\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_tile\",\"component\":\"Column\",\"children\":[\"glyph\",\"temp_text\",\"weather_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":84,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":16,\"backgroundColor\":\"#ff22c55e\",\"justifyContent\":\"center\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.maps\",\"abilityName\":\"com.huawei.hmos.maps.MainAbility\",\"uri\":\"map://weather/navigation\"}}]},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.glyph }}\",\"styles\":{\"width\":36,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":96,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"connect_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.connection.statusText }}\",\"styles\":{\"width\":116,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffd9f99d\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_065\",\"path\":\"/\",\"value\":{\"weather\":{\"location\":\"深圳\",\"condition\":\"多云\",\"temperatureText\":\"26℃\",\"glyph\":\"晴\",\"mock\":true},\"connection\":{\"connected\":true,\"statusText\":\"已连接\"},\"navigation\":{\"target\":\"天气导航\",\"uri\":\"map://weather/navigation\"}}}}"
+  ]
+}

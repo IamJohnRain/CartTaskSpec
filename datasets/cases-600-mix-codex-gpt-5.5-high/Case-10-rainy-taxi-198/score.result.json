@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-198",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "size=2x2、root 140x140、borderRadius 18、clip true、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.value 与 TaskSpec 一致、umrella Image 引用 assetCandidates、三个 Checkbox 横排且 onClick.call/args 原样来自 eventCandidates、linearGradient 雨天蓝渐变均满足协议。扣分点：用户明确要'勾选三个目的地'，但渲染中目的地文字标签被截断(只看到空圆圈和右下角'...'溢出)，可读性受损，等于'字段未完整呈现'，故不能给到 8+。",
+    "aesthetic": "浅蓝蓝灰渐变贴合'下雨天氛围'，title 16/800 唯一最强字重、checkbox 12 字号阶梯合理，圆角 12 与卡片 18 协调，整体克制干净。扣分点：1) 雨伞图渲染为灰色实心矩形，疑似图片未加载或被遮罩；2) checkbox 标签缺失导致信息残缺，圆圈孤立漂浮；3) 文字颜色 #ff1f3446 与背景对比尚可但 #f2ffffff 半透明白底在浅蓝背景上偏弱，CTA 视觉强度被削弱。",
+    "layout": "按预算公式核算：① root Column 纵向 = padding.top 12 + padding.bottom 12 + itemMargin 6×(3-1)=12 + Σ子项高 20+42+30=92 → 共 128 > 可用 116，溢出 12vp(被 justifyContent:spaceBetween 视觉上摊开掩盖，但公式上不通过)；② dest_row 横向 = 0+0+itemMargin 2×2=4 + Σ子项宽 37+37+38=112 → 共 116，恰好等于父宽 116，无任何冗余；③ 单个 checkbox 内部内容：圆形 14 + 标签'公司/客户' 中文 2 字×12=24 + 内边距 2 ≈ 40 > 容器 37，溢出 3-7vp，截图右下方出现的'...'正是 label 被 clip 的实证；④ 底部外框到卡片底 = 12vp，落在 8-12 区间合格。综合判定：根列溢出 + checkbox 标签裁切，多处堆叠/截断问题。"
+  },
+  "issues": [
+    "root Column 纵向占用 128 > 可用 116，溢出 12vp(虽被 spaceBetween 视觉掩盖但公式不通过)",
+    "dest_row 横向 116 = 父宽 116，零冗余，且子项 checkbox 内部内容(圆+中文标签)宽 ~40 超出 37，导致标签被截断为'...'",
+    "雨伞 Image 在截图中渲染为灰色实心矩形，疑似资源未加载或被样式覆盖，主视觉缺失",
+    "checkbox 标签受保护文本被裁，用户无法辨识目的地'公司/家/客户'，违背'勾选三个目的地'的明确诉求",
+    "checkbox 字号 12 + 宽 37 的组合在 2x2 卡片上先天不足，需要降到 10 才能挤出可读空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_198\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_198\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"umbrella\",\"dest_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffeaf3ff\",0],[\"#ffc7d8ed\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.title }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"umbrella\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.rainTaxi.icon }}\",\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"dest_row\",\"component\":\"Row\",\"children\":[\"office_check\",\"home_check\",\"client_check\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"office_check\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/rainTaxi/destinations/0/name\"},\"checked\":{\"path\":\"/rainTaxi/destinations/0/selected\"},\"styles\":{\"width\":37,\"height\":32,\"fontSize\":10,\"fontColor\":\"#ff1f3446\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":10,\"selectedColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=office&address=Shenzhen%20Bay%20Office\"}}]},{\"id\":\"home_check\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/rainTaxi/destinations/1/name\"},\"checked\":{\"path\":\"/rainTaxi/destinations/1/selected\"},\"styles\":{\"width\":36,\"height\":32,\"fontSize\":10,\"fontColor\":\"#ff1f3446\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":10,\"selectedColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=home&address=Nanshan%20Home\"}}]},{\"id\":\"client_check\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/rainTaxi/destinations/2/name\"},\"checked\":{\"path\":\"/rainTaxi/destinations/2/selected\"},\"styles\":{\"width\":37,\"height\":32,\"fontSize\":10,\"fontColor\":\"#ff1f3446\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":10,\"selectedColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=client&address=Futian%20Client\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_198\",\"value\":{\"rainTaxi\":{\"title\":\"雨天打车\",\"hint\":\"勾选即导航\",\"icon\":\"assets/rainy-umbrella.png\",\"destinations\":[{\"name\":\"公司\",\"address\":\"深圳湾科技园\",\"selected\":false},{\"name\":\"家\",\"address\":\"南山家里\",\"selected\":false},{\"name\":\"客户\",\"address\":\"福田客户处\",\"selected\":false}]}}}}"
+  ]
+}

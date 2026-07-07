@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-02-earphone-music-036",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户主要诉求全部满足：耳机主视觉 hero_img 绑定 $__dataModel.device.heroImage；暖色渐变 linearGradient 135° (#ffffe0c2→#ffff9f7a)；快捷面板 quick_panel 嵌入；横向两个歌单 Button；Checkbox 绑定 doneLabel/done 实现'已听完'勾选；note_icon 绑定 $__dataModel.asset.noteIcon；两个 deeplink 事件 call/args 原样来自 eventCandidates。硬约束：size 2x4、root 300x140、borderRadius 22、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path='/' 与 value 原样回填均符合。仅歌单只有 2 个（dataModel.playlists 仅 2 条），与'好几个'措辞略弱，但不违反数据契约。",
+    "aesthetic": "暖色渐变（米黄→橘红）营造温馨氛围，色彩和谐，面板 #ccffffff 半透叠加层与背景层次清晰。字号梯度合理：panel_title 16/700 为主最强字重，device_name 与按钮为 12 次级。颜色 token 多在橘色系，相互呼应。扣分：done_note 文案'歌单标记'为硬编码中文字符串，不在 dataModel 中，且与 Checkbox label'已听完'语义重复，造成视觉冗余。fontWeight 同时使用 700、'medium'、500 三种写法，建议统一数值。",
+    "layout": "根 Row 横向：12+88+12+176+12=300 ✓；hero_area Column 纵向 76+4+18=98 ≤116 ✓；panel_head Row 横向 126+8+22=156 ✓、纵向 22 ✓；playlist_row Row 横向 74+8+74=156 ✓；done_row Row 横向 88+8+60=156 ✓。关键溢出：quick_panel Column height=108，子项占高 = 10(padding.top)+22(panel_head)+8(itemMargin)+30(playlist_row)+8(itemMargin)+28(done_row)+10(padding.bottom)=116 > 108，溢出 8vp，面板内容会越过面板圆角底边。底部动作区底边 = 12(padding.top)+108=120，距卡底 20vp，超出 2x4 规范 ≤16vp 上限。CTA 热区 button 30vp ≥24 ✓。核心溢出扣重分。"
+  },
+  "issues": [
+    "quick_panel Column 子项总高 116 > 容器高 108，溢出 8vp，导致内容越过面板圆角底边",
+    "quick_panel 底边距卡底 20vp，超出 2x4 规范的 ≤16vp 上限",
+    "done_note 硬编码'歌单标记'与 Checkbox label'已听完'语义重复，挤占视觉空间且不绑定 dataModel",
+    "fontWeight 出现 700/'medium'/500 三种写法不统一，建议全用 400/500/700 数值",
+    "仅 2 个歌单，建议评估是否用模板循环 playlists 数组以兼容更多歌单（当前数据契约只有 2 个则保持）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_036\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_036\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_area\",\"quick_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffffe0c2\",0],[\"#ffff9f7a\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_area\",\"component\":\"Column\",\"children\":[\"hero_img\",\"device_name\"],\"itemMargin\":4,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"hero_img\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.device.heroImage }}\",\"styles\":{\"width\":80,\"height\":76,\"objectFit\":\"contain\"}},{\"id\":\"device_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.name }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff4f2c1d\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"quick_panel\",\"component\":\"Column\",\"children\":[\"panel_head\",\"playlist_row\",\"done_row\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#ccffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"panel_head\",\"component\":\"Row\",\"children\":[\"panel_title\",\"note_icon\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"panel_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.panel.title }}\",\"styles\":{\"width\":126,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff2d1b12\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"note_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.noteIcon }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"playlist_row\",\"component\":\"Row\",\"children\":[\"playlist_daily\",\"playlist_favorite\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"playlist_daily\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.playlists[0].name }}\",\"styles\":{\"width\":74,\"height\":30,\"borderRadius\":14,\"backgroundColor\":\"#fffff3e8\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff8a3c16\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"playlist_favorite\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.playlists[1].name }}\",\"styles\":{\"width\":74,\"height\":30,\"borderRadius\":14,\"backgroundColor\":\"#ffffe4d5\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff8a3c16\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}]},{\"id\":\"done_row\",\"component\":\"Row\",\"children\":[\"done_box\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"done_box\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.panel.doneLabel }}\",\"select\":\"{{ $__dataModel.panel.done }}\",\"styles\":{\"width\":120,\"height\":28,\"selectedColor\":\"#ffff8a3c\",\"unSelectedColor\":\"#ff9d7d68\",\"shape\":\"rounded_square\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_036\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeClip 2\",\"heroImage\":\"resources/base/media/earphone_real_warm.png\"},\"panel\":{\"title\":\"常听歌单\",\"doneLabel\":\"已听完\",\"done\":false},\"playlists\":[{\"name\":\"每日30首\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"},{\"name\":\"心动歌单\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}],\"asset\":{\"noteIcon\":\"resources/base/media/icon_music_note.png\"}}}}"
+  ]
+}

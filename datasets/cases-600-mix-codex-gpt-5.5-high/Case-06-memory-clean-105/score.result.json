@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-06-memory-clean-105",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户三个明确诉求：①内存清理图（title 内存清理 + clear_icon 已落实）②点一下进系统操作（clean_button 的 onClick.call/args 与 eventCandidates 完全一致）③从日历读日程（agenda_text 存在但截断）。最关键问题在于 agenda 表达式把 dtStart('15:30') 和 items[0].title('15:30 项目同步') 拼接，导致出现 '15:30 15:30 项目同步' 的语义冗余与重复时间；更严重的是渲染后受 120vp 容器约束被裁切到 '下一程 15:30'，事件名「项目同步」丢失，用户从日历读日程的诉求未充分满足。",
+    "aesthetic": "深蓝→墨绿渐变背景与白色/淡青文字对比清晰，按钮青绿色作为 CTA 主色突出，icon(垃圾桶) 与主题契合。不足：title 700 + button 700 出现两个最强字重，违反'一张卡片只保留一个最强字重'约束；agenda_text 文字与按钮字色同色系但层级略糊。整体留白合适、密度可控。",
+    "layout": "预算核算：①root Column 纵向占用 = 10+10(垂直 padding) + 6*2(itemMargin) + 44(hero_row) + 28(agenda_text) + 28(clean_button) = 132 ≤ 140，OK；②hero_row 横向占用 = 0+0 + 8*1 + 40(clear_icon) + 72(title_col) = 120 ≤ 120，OK；③title_col 纵向占用 = 2+2(padding) + 2*1(itemMargin) + 20(title_text) + 16(status_text) = 42 ≤ 44，仅余 2vp 极紧；④agenda_text 内容'下一程 15:30 15:30 项目同步'估算宽 ≈ 3*12 + 4.8*3 + 4*12 + 5*0.6*12 = 132vp > 容器 120vp，溢出 12vp 且 maxLines:1 + textOverflow:none 导致内容被硬裁切（截图佐证仅显示'下一程 15:30'，'项目同步'丢失）。受保护文本（日历日程）被截断，扣重分。"
+  },
+  "issues": [
+    "agenda_text 内容 '下一程 15:30 15:30 项目同步' 估算宽 132vp 超出容器 120vp，触发硬裁切，事件名 '项目同步' 不可见（受保护文本丢失）",
+    "表达式把 dtStart 与 title 拼接，title 已含 '15:30'，导致时间重复 '15:30 15:30'，语义冗余",
+    "title 700 与 clean_button 700 形成两个最强字重，违反单一最强字重约束",
+    "title_col 内部纵向 42/44 仅余 2vp 缓冲，字体行高稍大即可能溢出",
+    "clean_button 高度 28vp 接近点击热区下限 24vp，理想值 36-40vp 更佳"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_105\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":{\"width\":140,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_105\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"agenda_text\",\"clean_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff111827\",0],[\"#ff1e3a5f\",0.58],[\"#ff0f766e\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"clear_icon\",\"title_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"clear_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/assets/clearIcon\"},\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":76,\"height\":40,\"padding\":{\"top\":2,\"bottom\":2},\"justifyContent\":\"center\",\"alignItems\":\"flexStart\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.title }}\",\"styles\":{\"width\":76,\"height\":18,\"fontSize\":15,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.status }}\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#ff9eeadf\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"agenda_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.calendarLabel + '·' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":120,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#26ffffff\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffe5f6ff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"clean_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.memory.actionText }}\",\"styles\":{\"width\":120,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff14b8a6\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_105\",\"path\":\"/\",\"value\":{\"memory\":{\"title\":\"内存清理\",\"status\":\"可释放 1.8GB\",\"actionText\":\"去清理\"},\"assets\":{\"clearIcon\":\"resources/base/media/icon_clear.png\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-105-1\",\"title\":\"15:30 项目同步\",\"dtStart\":\"15:30\",\"dtEnd\":\"16:00\"}]}},\"state\":{\"calendarLabel\":\"下一程\"}}}}"
+  ]
+}

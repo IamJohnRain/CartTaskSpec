@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-09-weather-care-180",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "DSL 在协议层面较完整：2x4 尺寸、根 Stack 包含 storm_bg（乌云背景）+ dark_scrim（暗罩）+ content（左右分栏），createSurface.catalogId/width/height/borderRadius 全部合规；未使用渐变；数据绑定 {{$__dataModel.weather.title/advice/status/heroIcon/cloudBackground/actionText/daily}} 全部正确；事件 onClick[0] call=clickToDeeplink 与 eventCandidates 严格一致；Text.content / Image.src / Button.label 协议名正确；daily 数组用模板循环 componentId+path 正确。扣分点：①状态徽章 危险告警 被放在左侧 hero_panel，而用户语义'右边显示…状态显示红色危险告警'更可能期望它属于右侧文字区，存在排版意图偏差；②截图显示 storm_icon Image 在预览中未渲染为图标（按资产规则应取自 assetCandidates，绑定正确，但运行期未出图，导致主体缺失）。",
+    "aesthetic": "整体暗黑氛围（#ff111318 深色底 + 60% 暗罩 + 红 #ffe84026 状态徽章 + 白色/浅色文字）对比清晰，主题契合恶劣天气语义；字号阶梯 10/12/15/18 合理。扣分点：①storm_icon 在截图中显示为灰色矩形占位，左侧主体空洞；②右侧因 forecast_list 缺失导致版面空旷、上下密度不一致；③字重存在两个较强的 800（title）与 700（status_badge / day_condition / advice），按'同一卡片只保留一个最强字重'应将次级收敛为 600；④缺少乌云纹理或品牌细节，整体偏素。",
+    "layout": "关键溢出：①right_panel Column 父高 116，子项 headline(38)+forecast_list(42)+open_weather(28)+itemMargin*2(16)=124，溢出 8vp；②forecast_list Column 父高 42，3 个 day_item(12)+itemMargin*2(8)=44，溢出 2vp。这两处溢出直接导致 day_item 模板在截图中完全不可见，违反用户'纵向重复排列每天的预报'的核心诉求。其他预算均成立：content Row 横向 14+86+12+174+14=300 满；hero_panel 纵 68+26+10=104 ≤ 116；day_item Row 横 4*2+34+50+44=136 ≤ 174，文字 暴雨/今天/24°/28° 均不超宽；open_weather 按钮 88x28 热区 ≥ 24vp；按钮底到卡片底 12vp 处于 10-14 区间。改进方案将右栏重新分配为 headline(32)+forecast_list(48)+open_weather(24)+itemMargin*2(12)=116 满，day_item 升到 14 高、margin 3，使 3×14+2×3=48 满，确保预报列表完整可见。"
+  },
+  "issues": [
+    "right_panel Column 子项总占高 124 > 容器高 116，溢出 8vp，导致 forecast_list 与 open_weather 视觉重叠/挤出",
+    "forecast_list Column 子项总占高 44 > 容器高 42，溢出 2vp，day_item 模板 3 行在截图中整体不可见",
+    "截图未出现纵向排列的预报列表（今天/明天/周三），违反用户明确诉求'纵向重复排列每天的预报'",
+    "storm_icon Image 在渲染中显示为灰色矩形占位，未呈现库内雷雨/大风图标",
+    "状态徽章 危险告警 被置于左侧 hero_panel，与用户语义'右边显示…状态显示红色危险告警'的排版意图存在偏差",
+    "卡片最强字重不止一个：title=800、status_badge=700、day_condition=700、advice=700，按规则应将次级收敛到 600，仅保留一个最强字重 800",
+    "右侧文字区在原 DSL 中密度过低，headline 仅占 38，剩余空间被 forecast_list 溢出后挤出，导致视觉空洞"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_180\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_180\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"storm_bg\",\"dark_scrim\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff111318\",\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"storm_bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.weather.cloudBackground }}\",\"styles\":{\"width\":300,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"dark_scrim\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"backgroundColor\":\"#99111318\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"right_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":14,\"right\":14,\"top\":12,\"bottom\":12},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"storm_icon\",\"status_badge\"],\"itemMargin\":8,\"styles\":{\"width\":80,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"storm_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.weather.heroIcon }}\",\"styles\":{\"width\":60,\"height\":60,\"objectFit\":\"contain\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.status }}\",\"styles\":{\"width\":72,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"headline\",\"forecast_list\",\"open_weather\"],\"itemMargin\":6,\"styles\":{\"width\":180,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"headline\",\"component\":\"Column\",\"children\":[\"title\",\"advice\"],\"itemMargin\":2,\"styles\":{\"width\":180,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":180,\"height\":18,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.advice }}\",\"styles\":{\"width\":180,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffd7d3\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"forecast_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"day_item\",\"path\":\"/weather/daily\"},\"itemMargin\":3,\"styles\":{\"width\":180,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"day_item\",\"component\":\"Row\",\"children\":[\"day_name\",\"day_condition\",\"day_range\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":180,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"day_name\",\"component\":\"Text\",\"content\":{\"path\":\"day\"},\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day_condition\",\"component\":\"Text\",\"content\":{\"path\":\"condition\"},\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day_range\",\"component\":\"Text\",\"content\":{\"path\":\"range\"},\"styles\":{\"width\":48,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionText }}\",\"styles\":{\"width\":84,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffe84026\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_180\",\"value\":{\"weather\":{\"title\":\"暴雨预警\",\"advice\":\"不宜出行\",\"status\":\"危险告警\",\"heroIcon\":\"resources/base/media/icon_weather_rain.png\",\"cloudBackground\":\"assets/weather-storm-band.png\",\"actionText\":\"查看详情\",\"daily\":[{\"day\":\"今天\",\"condition\":\"暴雨\",\"range\":\"24°/28°\"},{\"day\":\"明天\",\"condition\":\"雷雨\",\"range\":\"23°/27°\"},{\"day\":\"周三\",\"condition\":\"大风\",\"range\":\"22°/26°\"}]}}}}"
+  ]
+}

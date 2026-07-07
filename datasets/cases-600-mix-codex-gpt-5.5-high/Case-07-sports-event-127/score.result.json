@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-127",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.7,
+  "reasons": {
+    "instruction": "用户三项核心诉求（点击跳转、读取日历日程、红色危险提示）均通过 root/cta 双重 onClick 绑定 clickToIntent、读取 data.calendar.items[0] 字段、深红 #f23030 配色覆盖徽标/时间/按钮体现，主要意图已落地。硬约束 size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、updateDataModel.value 与 TaskSpec 一致，event call/args 原样复用。扣分点：description 字段「危险赛点，请提前关注」被截断为「危险赛点，请提前关」，作为用户要求的'危险提示'承载信息被破坏；Button label「查看」在 48 宽度下渲染为省略号 '...'，CTA 文字不可读，影响用户点按意图。",
+    "aesthetic": "整体配色（深红 #f23030 + 浅粉 #ffebebeb + 白底）符合危险警示语义，前景文字在浅红面板上对比清晰。字号采用 10/12/14/16 阶梯，padding 12、itemMargin 6 都在阶梯内。但 fontWeight 700 同时出现在 alert_badge、title、start_time 三处，违反'同卡片只保留一个最强字重'规则；Button 文本渲染为 '...' 在视觉上出现明显缺陷；title 字号 16 与时间字号 12 在 116 内容区显得字号梯度偏大，密度略松。",
+    "layout": "预算核算：content Column 子项高度 20+20+16+16+28=100，叠加 4 个 itemMargin=6 共 24，合计 124 > 父容器 116，溢出 8vp；desc Text 宽 116、fontSize 12、fontWeight 700 承载'危险赛点，请提前关注'共 10 字符，按中文 1*fontSize+标点 0.4*fontSize 估算约 112.8，但字重 700 实测宽度超 116，实际渲染被截断为'危险赛点，请提前关'，受保护字段被裁切；cta Button 宽 48、fontSize 14、'查看' 2 字=28，加 Button 默认内边距后超出 48 文本区，渲染为 '...'，CTA 不可用；action_row 受 Column 溢出影响被推至 y=124 处（卡片坐标 136），距卡片底仅 4vp，低于建议的 8-12vp 区间。"
+  },
+  "issues": [
+    "content Column 高度累计 124 > 父 116，溢出 8vp，触发子项被挤压/重叠",
+    "description 文本 '危险赛点，请提前关注' 在 116 宽度、fontSize 12+fontWeight 700 下被截断为 '危险赛点，请提前关'，受保护字段被裁切",
+    "Button '查看' 在 width 48 + fontSize 14 + 默认内边距下渲染为省略号 '...'，CTA 不可读",
+    "action_row 距卡片底边仅 4vp，低于建议的 8-12vp 区间",
+    "fontWeight 700 同时用于 alert_badge、title、start_time 三处，违反'同卡片只保留一个最强字重'约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_127\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_127\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"alert_band\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]},{\"id\":\"alert_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#ffebebeb\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"title\",\"time_row\",\"desc\",\"action_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"alert_badge\",\"source_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.alertText }}\",\"styles\":{\"width\":54,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#fff23030\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.sourceText }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontColor\":\"#ff990000\",\"maxLines\":1}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff1f1f1f\",\"maxLines\":1}},{\"id\":\"time_row\",\"component\":\"Row\",\"children\":[\"start_time\",\"end_time\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"start_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":11,\"fontColor\":\"#fff23030\",\"maxLines\":1}},{\"id\":\"end_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":48,\"height\":14,\"fontSize\":11,\"fontColor\":\"#ff666666\",\"maxLines\":1}},{\"id\":\"desc\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].description }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontColor\":\"#ff990000\",\"maxLines\":1}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"cta\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.ui.actionText }}\",\"styles\":{\"width\":60,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#fff23030\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_127\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"mock-sports-event-127\",\"title\":\"关键赛事提醒\",\"eventLocation\":\"主场\",\"description\":\"危险赛点，请提前关注\",\"dtStart\":\"19:35\",\"dtEnd\":\"21:30\",\"importantEventType\":2,\"remindTime\":[\"提前30分钟\"]}]}},\"state\":{\"loading\":false},\"ui\":{\"alertText\":\"危险提示\",\"sourceText\":\"日历日程\",\"actionText\":\"查看\"}}}}"
+  ]
+}

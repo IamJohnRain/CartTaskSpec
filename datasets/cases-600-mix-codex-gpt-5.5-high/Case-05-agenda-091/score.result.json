@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-091",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "整体较好地落实了用户的核心诉求：暗紫渐变背景（#191326→#2f2450→#4b3670 倒计时氛围感）、左侧信息区含书本质感圆角徽章+标题'今晚夜读分享会'+时间'今晚 20:30'+倒计时'还有 45 分钟'、右侧动作区含纯文字按钮并以 onClick 完整复刻 eventCandidates（clickToDeeplink + music://playlist/reading-prep）、无任何 Image 组件、bookMark='书' 作为顶部语义图标。扣分点：用户明确要求'纯文字按钮'，当前实现 music_button 配了纯白 #ffffffff 实心背景+胶囊形 radius 17，更接近彩色块按钮而非纯文字 CTA，偏离字面诉求；action_col 额外加了 #1fffffff 浅色面板，强化了'块'感，进一步稀释'纯文字'语义。",
+    "aesthetic": "配色和谐，暗紫渐变营造倒计时氛围，标题白色高亮、倒计时用金黄色 #ffd166 突出，层次清晰。但字号阶梯虽然落在 12/14/16/18 阶梯上，字重体系违反'同一卡片只保留一个最强字重'原则：book_badge 700、event_title 700、countdown_text 700 共三处 700，最强字重被稀释；时间字段 #ccffffff 与主信息白几乎齐色，对比偏弱。",
+    "layout": "root Row 横向预算 = 12(padL) + 12(padR) + 12(itemMargin) + 170(info) + 94(action) = 300，恰好等于 width 300，无溢出。info_col 纵向预算 = 0 + 0 + 6*3(itemMargin) + 28(book_badge) + 24(event_title) + 18(time_text) + 20(countdown_text) = 108 ≤ 116，余 8vp。action_col 纵向预算 = 24(padT) + 12(padB) + 12(itemMargin) + 18(prep_text) + 34(music_button) = 100 ≤ 116，底边到卡片底 = 140-12-100=28vp（action_col 相对 root 底留 116-100=16vp），处于 16vp 临界。各文本宽度：'今晚夜读分享会' 7*18=126 ≤ 170；'还有 45 分钟' ≈ 5*14+0.4*14+2*0.6*14+0.4*14=98 ≤ 170；'歌单准备' 4*12=48 ≤ 78；'打开歌单' 4*14=56 ≤ 78，全部不截断。Stack 无叠层，按钮热区 34vp 满足 ≥24vp。底部动作区距 root 底 16vp 处于上限，可微调。",
+    "issues": [
+      "music_button 非纯文字：白色实心 #ffffffff + radius 17 构成实心药丸按钮，违反用户'纯文字按钮'的字面要求",
+      "action_col 增加了 #1fffffff 半透明白色面板背景，进一步弱化'纯文字'语义",
+      "book_badge / event_title / countdown_text 三处均使用 fontWeight 700，最强字重重复出现，违反字号阶梯字重唯一性原则",
+      "time_text 使用 #ccffffff 与 event_title #ffffff 对比弱，时间信息层级不够清晰",
+      "action_col 底边距 root 底 16vp，处于 2x4 卡片底部动作区临界值（10-14vp 理想区间），建议下移 2-4vp"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_091\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_091\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"info_col\",\"action_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff191326\",0],[\"#ff2f2450\",0.62],[\"#ff4b3670\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"book_badge\",\"event_title\",\"time_text\",\"countdown_text\"],\"itemMargin\":6,\"styles\":{\"width\":170,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"book_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.visual.bookMark }}\",\"styles\":{\"width\":32,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.title }}\",\"styles\":{\"width\":170,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.timeText }}\",\"styles\":{\"width\":170,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.countdownText }}\",\"styles\":{\"width\":170,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffd166\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"prep_text\",\"music_button\"],\"itemMargin\":10,\"styles\":{\"width\":94,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":28,\"bottom\":14},\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"prep_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.prepareText }}\",\"styles\":{\"width\":78,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.actionText }}\",\"styles\":{\"width\":78,\"height\":32,\"borderRadius\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffd166\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://playlist/reading-prep\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_091\",\"path\":\"/\",\"value\":{\"calendar\":{\"source\":\"calendar_mock\",\"nextEvent\":{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-091-night-reading\",\"title\":\"今晚夜读分享会\",\"timeText\":\"今晚 20:30\",\"countdownText\":\"还有 45 分钟\",\"prepareText\":\"歌单准备\"}},\"music\":{\"actionText\":\"打开歌单\"},\"visual\":{\"bookMark\":\"书\"}}}}"
+  ]
+}

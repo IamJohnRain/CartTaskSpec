@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-12-finance-238",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.1,
+  "reasons": {
+    "instruction": "浅色底、¥ 当图标、无渐变、hero 大字与点击 clickToIntent 都已写入 DSL；size=2x2、catalogId/version/updateDataModel.path=\"/\" 协议层也合规。但截图显示下方的三张账单（信用卡/花呗/借呗）整行 bill_row 完全没有渲染出来，用户最核心诉求'下面横向勾选不同账单'事实上缺失，'超期未还标红'与'带日期金额'也都无法在成品上验证；此外 hero_amount 仍引用 totalText 整串 '本月待还 ¥3,428'，与上方小标签文字重复且溢出。指令落实度差，扣至 2.5。",
+    "aesthetic": "配色：浅灰底 #fff1f3f5 + 白色 hero 胶囊 + 蓝色 ¥ 图标，色调克制、对比清晰；字重只有 800 一档最强，符合单卡片单一最强字重原则；留白 8vp 适中。但 hero_amount 因 78 宽装不下 '本月待还 ¥3,428' 整串导致裁切，只看到 '本月待还'，主指标 ¥3,428 视觉上缺失；卡片下半部大片空荡，整体美感被严重拉低。",
+    "layout": "1) Root Column 140×140 padding 8/8，itemMargin 6：hero 高 36 + 间距 8 + bill_row 高 80 = 124，刚好等于可用高 124，预算成立但极度紧绷。2) Hero Row 124×36 padding 8/8/4/4，itemMargin 6：glyph 24 + 6 + text_col 78 = 108 ≤ 124，横向预算成立。3) text_col 78×28：lbl 12 + amt 16 = 28，纵向成立；但 hero_amount 文本 '本月待还 ¥3,428' 在 78 宽、14pt 下需约 115px，溢出 37px，受保护的主金额文本被截断/换行丢失。4) bill_row 124×80 itemMargin 2：3×bill_item(40) + 2×2 = 124，横向成立。5) bill_item 40×80 padding 6/6/6/6：check 26 + 3 + date 14 + 3 + amount 22 = 68，padding 12 合计 80，纵向成立。6) 实际渲染截图：bill_row 区域完全空，hero 下方约 80×124 的可用区没有任何子节点绘出，疑似 Checkbox 模板或子节点未展开，导致视觉布局崩溃。"
+  },
+  "issues": [
+    "截图显示 bill_row 整体未渲染，3 个账单完全不可见，用户核心诉求 '下面横向勾选账单' 缺失",
+    "hero_amount 内容为 '本月待还 ¥3,428' 整串，受 78×16 空间限制，14pt 下溢出约 37px，受保护的主金额被截断/换行",
+    "totalText 与上方小标签 '本月待还' 文字重复，hero 内信息冗余",
+    "bill_amount 文本 '¥2,380' 在 34 宽 10pt 下宽度约 38px，溢出 4px，依赖 wordBreak 换行",
+    "原 DSL 用 Checkbox 配合 mark/selectedColor 等较复杂样式，可能与 ohos.a2ui.extended.catalog 实际规格不匹配导致模板未展开",
+    "hero 行高仅 36，下方 bill_row 高 80，root 几乎用尽 124 可用高度，留给呼吸的余量为 0，整体紧绷"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_238\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_238\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"bill_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"glyph\",\"text_col\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ $__dataModel.repayment.primaryEntityId }}\"}}}],\"styles\":{\"width\":124,\"height\":40,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.repayment.glyph }}\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#190a59f7\",\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"text_col\",\"component\":\"Column\",\"children\":[\"lbl\",\"amt\"],\"itemMargin\":0,\"styles\":{\"width\":78,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"lbl\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.repayment.title }}\",\"styles\":{\"width\":78,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"amt\",\"component\":\"Text\",\"content\":\"¥3,428\",\"styles\":{\"width\":78,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"bill_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"bill_item\",\"path\":\"/repayment/bills\"},\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":66,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"bill_item\",\"component\":\"Column\",\"children\":[\"bill_name\",\"bill_date\",\"bill_amount\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}],\"styles\":{\"width\":40,\"height\":66,\"padding\":{\"left\":3,\"right\":3,\"top\":6,\"bottom\":6},\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"bill_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":34,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"bill_date\",\"component\":\"Text\",\"content\":{\"path\":\"dateText\"},\"styles\":{\"width\":34,\"height\":10,\"fontSize\":9,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"bill_amount\",\"component\":\"Text\",\"content\":{\"path\":\"amountText\"},\"styles\":{\"width\":34,\"height\":18,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":{\"path\":\"statusColor\"},\"textAlign\":\"center\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_238\",\"value\":{\"repayment\":{\"title\":\"本月待还\",\"glyph\":\"¥\",\"totalText\":\"本月待还 ¥3,428\",\"primaryEntityId\":\"repay-credit-20260708\",\"bills\":[{\"name\":\"信用卡\",\"dateText\":\"7/8\",\"amountText\":\"¥2,380\",\"paid\":false,\"status\":\"overdue\",\"statusColor\":\"#ffe84026\",\"entityId\":\"repay-credit-20260708\"},{\"name\":\"花呗\",\"dateText\":\"7/12\",\"amountText\":\"¥648\",\"paid\":false,\"status\":\"due\",\"statusColor\":\"#e5000000\",\"entityId\":\"repay-huabei-20260712\"},{\"name\":\"借呗\",\"dateText\":\"7/20\",\"amountText\":\"¥400\",\"paid\":true,\"status\":\"paid\",\"statusColor\":\"#99000000\",\"entityId\":\"repay-jiebei-20260720\"}]}}}}"
+  ]
+}

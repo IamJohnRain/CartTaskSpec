@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-121",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "用户三条诉求基本落地：'整张比赛图当主体'有 hero Image 作为底层背景但未满铺(116/140，留 12vp 黑边)，未完全契合'整张'语义；'点能进系统操作'在 root 与 cta Button 上正确绑定 clickToDeeplink（call/args 原样来自 eventCandidates）；'红色危险提示'由红色 #fff23030 的 badge 文字与红色 cta 按钮共同体现。size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value 原样均合规。所有 dataModel 字段（title/time/alert/actionText/image）均通过完整表达式绑定展示，资产路径与 assetCandidates 一致。唯一扣分是 cta '进系统操作' 被截断为 '进系统...'，可读性受损。",
+    "aesthetic": "红色主题与'危险提示'语义契合，badge 白字红底对比度清晰。但 root 设了 backgroundColor:'#ff000000' 且 padding:12，导致 hero 周围出现 12vp 厚黑色实心边框，视觉上像加了黑框，破坏'整张图当主体'的沉浸感。信息层级清楚（title 16/700 > time 12/500 > badge 10/700），但内容因 5 个子项 + 28vp spacer 挤在 116vp 高度内，密度过高、底部按钮几乎贴到卡片下沿，红底 CTA 文字 '进系统操作' 渲染为 '进系统...' 出现省略号，是显著的美观与可读性瑕疵。",
+    "layout": "content Column 预算核算：width=116, height=116, padding=0, itemMargin=4。子项高度累加 badge(18)+spacer(28)+title(20)+time(16)+cta(28)=110；4 个 itemMargin 间隙=16；总占用=126，可用=116，溢出 10vp。叠加 justifyContent:spaceBetween 后渲染器对 spacer 区域压缩，但底部 cta 仍被推至 card 下沿且部分文字被裁。Button '进系统操作' 宽 92vp、fontSize 14：5×14=70 文字宽度 + Button 内边距 ≥86，92 临界，截图显示实际渲染为 '进系统...' 截断。root 内 padding 12 让 hero 实际只占 116×116，未填满 140×140 容器。Stack 层叠顺序 hero→shade→content 正确，shade 半透明黑可读性 OK，但与 hero 未对齐全幅。"
+  },
+  "issues": [
+    "content Column 子项总占高 126 > 可用 116，溢出 10vp",
+    "Button 宽 92 不足以容纳 '进系统操作'(5×14=70 + 内边距 >92)，渲染截断为 '进系统...'",
+    "root backgroundColor 黑 + padding 12 导致 hero 四周出现 12vp 黑色边框，未实现 '整张图当主体' 的满铺",
+    "spacer 28vp 在 116vp 高度中占比过大，挤压底部 CTA 至卡片边沿",
+    "底 CTA 底边距卡片底边仅约 4-6vp，违反 2x2 应在 8-12vp 区间、不得 >16vp 的硬约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_121\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_121\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"hero\",\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"borderRadius\":18,\"clip\":true},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-121\"}}]},{\"id\":\"hero\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.match.image }}\",\"styles\":{\"width\":140,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":140,\"height\":140,\"backgroundColor\":\"#66000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"badge\",\"bottomGroup\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.alert }}\",\"styles\":{\"width\":56,\"height\":20,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#fff23030\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomGroup\",\"component\":\"Column\",\"children\":[\"title\",\"time\",\"cta\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.time }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#fff23030\",\"fontSize\":14,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-121\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_121\",\"value\":{\"match\":{\"title\":\"申花 vs 海港\",\"time\":\"今晚 19:35 开赛\",\"alert\":\"危险赛点\",\"actionText\":\"进系统操作\",\"image\":\"assets/sports-match-hero.png\"}}}}"
+  ]
+}

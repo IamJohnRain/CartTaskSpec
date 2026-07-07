@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-023",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户五大明确诉求均已落实：以耳机图标作为主体（Image 绑定 $__dataModel.music.icon，assetCandidates 引用正确）、点击跳转到音乐 app（root onClick call/args 原样来自 clickToDeeplink 候选）、日历日程（calendar.nextTitle + nextTime 全部展示）、连接状态（device.connectionStatus=已连接 高亮置顶）。尺寸 2x4、catalogId、version、updateDataModel 全部合规。轻微扣分：用户要求\"主体是个图\"，当前 104x104 图标在 300x140 卡片中横向占比仅 35%，视觉主体性可进一步加强。",
+    "aesthetic": "渐变 #ff4e8cff→#ff57c7b6 蓝青过渡和谐统一，白/90%白/70%白三层字色在深色背景上对比清晰可读；字号阶梯 16/14/12、字重 700/500/400 层级分明且只有一个最强字重（700），符合规范。Image 加 #22ffffff 玻璃底与圆角 20 协调。扣分点：图标素材本身视觉抽象（仅一白色胶囊形状），缺乏明显的\"耳机\"语义识别度；卡片整体留白偏大、左下角图块与右下文本块之间未形成主次视觉锚定。",
+    "layout": "根 Row 横向预算：12(padding-left) + 104(earphoneImage) + 12(itemMargin) + 160(info) + 12(padding-right) = 300 = 父宽 300，无溢出；纵向 12 + 104 + 12 = 128 < 140，垂直居中 6vp 余量。Info Column 纵向预算：24(status) + 8 + 20(scheduleTitle) + 8 + 18(scheduleTime) = 78 < 父高 104，居中后上下各 13vp，可接受。文本宽度核算：\"已连接\" 3×16=48≤160；\"下一日程：听歌休息\" 4×14+0.4×14+4×14≈117.6≤160；\"今天 18:30\" 2×12+0.4×12+5×0.6×12≈64.8≤160，全部 fit。点击热区 300×140 ≫ 40vp，底距 12vp 在 10-14 区间。未使用 Stack，无遮盖风险。受保护文本均未截断。"
+  },
+  "issues": [
+    "用户说'主体是个图'，当前 104x104 图标横向占比仅 35%，可加大到 116x116 让图像真正成为视觉主体",
+    "Info Column 宽 160 配 12vp itemMargin，文本与图标之间留白稍大，可收紧至 148 让图像更突出",
+    "Image 使用 objectFit:contain 配合 22% 白色底，在浅色图标上会呈现白底泛白，可改 objectFit:cover 让图标填满圆角"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_023\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_023\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"earphoneImage\",\"info\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff4e8cff\",0],[\"#ff57c7b6\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}]},{\"id\":\"earphoneImage\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.music.icon }}\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":24,\"objectFit\":\"cover\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"status\",\"scheduleTitle\",\"scheduleTime\"],\"itemMargin\":8,\"styles\":{\"width\":148,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.connectionStatus }}\",\"styles\":{\"width\":148,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scheduleTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextTitle }}\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scheduleTime\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextTime }}\",\"styles\":{\"width\":148,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_023\",\"value\":{\"music\":{\"icon\":\"resources/base/media/earphone_music_icon.png\"},\"device\":{\"connectionStatus\":\"已连接\"},\"calendar\":{\"nextTitle\":\"下一日程：听歌休息\",\"nextTime\":\"今天 18:30\"}}}}"
+  ]
+}

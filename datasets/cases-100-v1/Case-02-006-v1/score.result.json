@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-006-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.3,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户提出的四点诉求——耳机名称/连接状态(显示为FreeBuds Pro + 耳机已连接)、自动弹歌单(收藏歌单 + 轻音乐·自动弹出 + 打开歌单按钮)、左右滑动切歌(手势提示已显示)、摘下自动暂停(右侧已显示)在截图中均完整呈现，事件 clickToDeeplink 的 call/args 原样来自 eventCandidates，尺寸 2x4 与 createSurface 协议均合规。微扣分点：pause_panel 的 #19FFFFFF 背景在浅紫渐变上几乎不可见，导致右侧'播放中/摘下自动暂停'与主体内容缺少视觉分组暗示，可读性未受影响但信息层次稍弱。",
+    "aesthetic": "截图整体观感较好：紫粉渐变背景克制柔和，主信息'夜色漫游'作为最大字号承担视觉焦点，渐变方向自然。文字主色为 #E5000000 接近纯黑，辅助信息用 #99000000/#66000000 形成清晰灰阶，CTA 紫色 #AC49F5 与渐变同色系，呼应协调。扣分点：右侧 pause_panel 的 #19FFFFFF (10% 白) 在该渐变上几乎看不出来，'播放中'与'摘下自动暂停'两个文本孤立漂浮，缺少一个可识别的'状态卡片'轮廓，视觉分组不足；此外 progress 进度条底色 #330A59F7 偏蓝紫，与主紫调略有冲突但尚可接受。",
+    "layout": "截图未观察到任何元素堆叠、重叠或溢出。主列(176 宽)与侧列(88 宽)在 300 宽容器内(含 12 padding + 12 itemMargin)分布合理，左右边界安全。所有受保护文本(设备名、状态、CTA、主指标'夜色漫游'、进度条)均完整可见，无 ellipsis/截断。'FreeBuds Pro' + '耳机已连接' 在 176 列内无重叠；'夜色漫游' 4 个汉字在 18 字号下宽度约 72，远小于 176 上限。底部'左右滑动切歌'与右侧'打开歌单'按钮底边大致平齐，底部到卡片底边距离约 14vp(在 2x4 要求的 10-14vp 范围内)。唯一微小瑕疵：右侧状态区因无可见背景框，与主列之间留白略显单薄。"
+  },
+  "issues": [
+    "右侧 pause_panel 使用 #19FFFFFF (10% 透明白) 作为背景，在浅紫粉渐变上几乎不可见，未能形成视觉分组",
+    "进度条底色 #330A59F7 偏蓝紫，与整体紫色调存在轻微色相冲突",
+    "侧列 play_state_text '播放中' 与上方状态行 device_text 在垂直高度上略有错位感(并非重叠，仅是节奏感稍弱)"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"headset_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"headset_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#F8F1FF\",0],[\"#FFF4F7\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"status_row\",\"track_col\",\"progress_bar\",\"gesture_text\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"device_text\",\"state_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":176,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"device_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.deviceName }}\",\"styles\":{\"width\":104,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.connectionText }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_col\",\"component\":\"Column\",\"children\":[\"playlist_text\",\"track_text\",\"artist_text\"],\"itemMargin\":3,\"styles\":{\"width\":176,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.playlistName }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.currentTrack }}\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"artist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.artistText }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.headset.progressValue }}\",\"total\":\"{{ $__dataModel.headset.progressTotal }}\",\"styles\":{\"width\":176,\"height\":6,\"type\":\"linear\",\"color\":\"#AC49F5\",\"backgroundColor\":\"#33AC49F5\",\"borderRadius\":3}},{\"id\":\"gesture_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.gestureHint }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_col\",\"component\":\"Column\",\"children\":[\"pause_panel\",\"music_button\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"pause_panel\",\"component\":\"Column\",\"children\":[\"play_state_text\",\"wear_state_text\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":58,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#3DFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"play_state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.playStateText }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wear_state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.wearStateText }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.headset.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#AC49F5\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"headset_music_card\",\"path\":\"/\",\"value\":{\"headset\":{\"deviceName\":\"FreeBuds Pro\",\"connectionText\":\"耳机已连接\",\"playlistName\":\"收藏歌单\",\"currentTrack\":\"夜色漫游\",\"artistText\":\"轻音乐 · 自动弹出\",\"gestureHint\":\"左右滑动切歌\",\"wearStateText\":\"摘下自动暂停\",\"playStateText\":\"播放中\",\"progressValue\":42,\"progressTotal\":100,\"actionLabel\":\"打开歌单\"}}}}"
+  ]
+}

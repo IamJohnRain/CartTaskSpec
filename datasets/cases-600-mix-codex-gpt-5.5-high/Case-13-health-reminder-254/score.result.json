@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-13-health-reminder-254",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.4,
+  "reasons": {
+    "instruction": "用户明确要求的'横向并排三个勾选框对应早中晚'在渲染结果中完全不可见——slotRow 的 children 写成对象而非数组，模板循环未生效，三枚 Checkbox 未生成。次要诉求方面：onClick clickToDeeplink 原样引自 eventCandidates、米色底 #FFFFF6E6、绿色对勾色 #FF2E7D32、无渐变、右上角 Image 资源都满足；但'距离下次服药还有2小时15分'被截断成'距离下次服药还有2小'（受保护话术丢失动态时间），nextText/calendarText 用了非标准的 formatString call 而非 {{...}} 表达式。calendarText 仍显示占位'读取中'属上游 dataModel 问题。",
+    "aesthetic": "米色底与暖棕色文字（#FF6D5D45/#FF8A6F3F）色调统一、克制素雅，符合'老人卡片'气质。字重主次分明：标题 800、时间 600、日历 500，只有一个最强字重。但因核心勾选框缺失，构图出现大块空白，视觉重心缺失；nextText 截断也破坏了文字节奏。",
+    "layout": "content Column 子项高度总和 38+26+18+18=100，itemMargin 5×3=15，合计 115vp < 容器 118vp，未溢出（3vp slack），Column 自身不崩。关键问题：①slotRow 的 children 写成对象 {'componentId':'slotTpl','path':'/reminder/slots'}，不是数组，模板循环未生效，导致 3 个 Checkbox 全部未渲染；②nextText 在 fontSize 12、width 116 下，'距离下次服药还有2小时15分' 估算宽 12×12=144vp > 116vp，溢出 28vp，maxLines:1 强制截断为'距离下次服药还有2小'，受保护文本丢失；③pillIcon margin left 96、width 18 定位 x=96-114，未与 title 文本（x=12-92）重叠，OK；④Stack 子项顺序 [content, pillIcon] 使 pillIcon 在上层但未遮罩任何受保护信息，OK；⑤底部留白 13vp 在 2x2 允许范围内。"
+  },
+  "issues": [
+    "slotRow 的 children 被写成单个对象 {'componentId':'slotTpl','path':'/reminder/slots'}，应改为数组 [{...}]，否则模板循环不生效，早/中/晚三个 Checkbox 全部不渲染（核心指令缺失）",
+    "nextText '距离下次服药还有2小时15分' 在 fontSize 12、width 116 下宽度 144vp，溢出 28vp，被 maxLines:1 + textOverflow:none 截断为 '距离下次服药还有2小'，受保护话术丢失动态时间",
+    "nextText/calendarText 使用非标准的 {'call':'formatString','args':{...}} 语法，协议要求使用 {{...}} 表达式读取 DataModel",
+    "title fontSize 16、width 92 强制 '今日服药已完成 2/3' 换行成 2 行（估算单行 147vp > 92vp），height 38 略小于 2×22vp 行高，存在轻微压字风险",
+    "asset icon_remind.png 实际渲染为铃铛状图标，与用户要求'药丸图标'语义不符（属 assetCandidates 端问题）",
+    "calendarText 显示 '读取中' 占位文案（loading 状态），实际未呈现真实日程药物清单（属 dataModel 端问题）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_254\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_254\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\",\"pillIcon\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF6E6\",\"alignContent\":\"topStart\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"slotRow\",\"nextText\",\"calendarText\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":122,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.summary }}\",\"styles\":{\"width\":92,\"height\":44,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#FF1F1F1F\",\"maxLines\":2,\"textOverflow\":\"none\",\"lineHeight\":22}},{\"id\":\"slotRow\",\"component\":\"Row\",\"children\":[{\"componentId\":\"slotTpl\",\"path\":\"/reminder/slots\"}],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"slotTpl\",\"component\":\"Checkbox\",\"label\":{\"path\":\"label\"},\"value\":{\"path\":\"id\"},\"select\":{\"path\":\"taken\"},\"styles\":{\"width\":34,\"height\":26,\"selectedColor\":\"#FF2E7D32\",\"unSelectedColor\":\"#FFE2D6BF\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#FF4B4232\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"nextText\",\"component\":\"Text\",\"content\":\"下次还有 {{ $__dataModel.reminder.nextIn }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF6D5D45\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendarText\",\"component\":\"Text\",\"content\":\"今日其他药:{{ $__dataModel.data.calendar.items.0.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FF8A6F3F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pillIcon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_remind.png\",\"styles\":{\"width\":18,\"height\":18,\"margin\":{\"left\":96,\"top\":2},\"objectFit\":\"contain\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_254\",\"path\":\"/\",\"value\":{\"reminder\":{\"summary\":\"今日服药已完成 2/3\",\"nextIn\":\"2小时15分\",\"slots\":[{\"id\":\"morning\",\"label\":\"早\",\"taken\":true},{\"id\":\"noon\",\"label\":\"中\",\"taken\":true},{\"id\":\"night\",\"label\":\"晚\",\"taken\":false}]},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"\",\"title\":\"读取中\",\"dtStart\":\"\",\"dtEnd\":\"\"}]}},\"state\":{\"loading\":true},\"asset\":{\"pillIcon\":\"resources/base/media/icon_remind.png\"}}}}"
+  ]
+}

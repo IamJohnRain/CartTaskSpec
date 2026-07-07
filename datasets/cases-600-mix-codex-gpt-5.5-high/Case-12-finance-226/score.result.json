@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-12-finance-226",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "用户明确要求'消费列表+余额+点一下进入系统操作+红色危险提示'。DSL 正确处理了 onClick 事件（clickToIntent+ViewCalendarEvent+entityId.path）与红色状态文本/余额值，但 dataModel 中 balanceLabel='余额' 字段未在任何组件中使用；同时最关键的是右侧 List 区域在渲染截图中完全空白（item_amount.content 用了非标准的 formatString 调用），导致用户核心诉求'消费列表'未真正落地，扣分较重。",
+    "aesthetic": "配色与字重选择合理（红色 #E84026 突出危险语义、灰白底色、标题 14/余额 20/状态 12 阶梯），但因右侧 List 完全不渲染，截图右半部是空白面板，与左侧信息密度对比悬殊，卡片整体观感'塌掉一半'，显得不完整，扣分明显。",
+    "layout": "逐项预算核算：root Row 12+128+10+138+12=300=父宽 300，无溢出；summary_panel Column 子项占高 18+4+30+4+32+4+24=116=父高 116，恰好填满，无溢出；spend_list List 高度 8+28*3+6*2+8=112 ≤ 116，无溢出；item_tpl Row 宽度 8+48+8+50+8=122=父宽 122，无溢出；item_tpl Row 高度 4+18+4=26 ≤ 28，无溢出。预算公式全部通过，但 item_amount.content 使用了 {\"call\":\"formatString\",\"args\":{\"value\":\"${amount}\"}} 这种带函数调用的表达式，渲染器无法解析，导致整条模板记录渲染失败，右侧面板在截图中呈空白，是布局的致命落地问题。"
+  },
+  "issues": [
+    "item_amount.content 使用了 formatString 调用表达式，不在协议推荐范围内，导致 List 模板项整体不渲染，右侧面板在截图中完全空白",
+    "dataModel.finance.balanceLabel='余额' 在 DSL 中未被任何组件引用，余额缺少语义标签",
+    "Button 高度 24vp 仅为最小热区，理想应接近 40vp；按钮文本在低分辨率下出现轻微渲染异常（截图首字不清晰）",
+    "summary_panel Column 占用高度 116 与父可用 116 几乎贴边，无任何容错空间",
+    "三个 item 的 amount 颜色为 #99000000（半透明黑），与左侧红色危险主题不一致，未能形成统一的'超支'视觉警示"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"finance_spend_226\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"finance_spend_226\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"summary_panel\",\"spend_list\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"summary_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"balance_row\",\"status_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":128,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"balance_row\",\"component\":\"Row\",\"children\":[\"balance_label\",\"balance_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":128,\"height\":26,\"alignItems\":\"baseline\"}},{\"id\":\"balance_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.balanceLabel }}\",\"styles\":{\"width\":36,\"height\":22,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"balance_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.balanceText }}\",\"styles\":{\"width\":86,\"height\":26,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusText }}\",\"styles\":{\"width\":128,\"height\":28,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/finance/entityId\"}}}}],\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"spend_list\",\"component\":\"List\",\"children\":{\"componentId\":\"item_tpl\",\"path\":\"/finance/items\"},\"space\":6,\"styles\":{\"width\":138,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"item_tpl\",\"component\":\"Row\",\"children\":[\"item_name\",\"item_amount\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":122,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#0C000000\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"item_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item_amount\",\"component\":\"Text\",\"content\":{\"path\":\"amount\"},\"styles\":{\"width\":50,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"finance_spend_226\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"消费记账\",\"balanceLabel\":\"余额\",\"balanceText\":\"¥-128.50\",\"statusText\":\"危险：本月已超支\",\"actionText\":\"系统操作\",\"entityId\":\"finance-over-budget-226\",\"items\":[{\"name\":\"餐饮\",\"amount\":\"-¥68.00\"},{\"name\":\"交通\",\"amount\":\"-¥24.50\"},{\"name\":\"购物\",\"amount\":\"-¥36.00\"}]}}}}"
+  ]
+}

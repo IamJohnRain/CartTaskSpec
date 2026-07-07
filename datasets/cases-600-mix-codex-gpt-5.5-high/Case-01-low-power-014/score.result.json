@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-01-low-power-014",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.2,
+  "reasons": {
+    "instruction": "用户明确要求'右边动作区横向排几个可勾选的小卡片'，但原 DSL 的 action_row 使用了模板循环 children={\"componentId\":\"check_item\",\"path\":\"/power/checks\"}，渲染时整条 action_row 缺席，右侧可勾选小卡片完全没出现，核心交互元素缺失；左侧信息区显示了 18%、电量低、日历占位等，橙色文字+按钮有警告语义体现；点击 deeplink 已配置到 settings battery 页，但未区分'省电/屏幕/电池优化'三类；背景渐变 dark slate→indigo→orange，底部 #ff7c2d12 偏暖橙偏亮，更像火光而非'夜空延伸'，渐变语义略偏。",
+    "aesthetic": "渐变有层次但底色 #ff7c2d12 太亮太暖，破坏了'夜空'氛围；CTA 按钮 width=34 装不下 '设置'（2 字 × 10 ≈ 20 + 按钮内边距），被截断显示为 '...'，是显著的视觉瑕疵；卡片底部约 30% 区域（action_row 应在的位置）全空，只有渐变背景，视觉重心严重失衡；字号字重和颜色层级（18%/电量低/日程）基本合理；只有一个最强字重 700，符合规范。",
+    "layout": "root Column（可用 116）子项占高 34+38+26+itemMargin 12=110 ≤ 116，整体不溢出；top_row（可用 116）子项占宽 24+46+34+itemMargin 12=116=116，刚好填满；power_info Column 占高 18+14+itemMargin 2=34=34，刚好填满；event_card 内容区高 26（38-12 padding），子项占高 14+16+itemMargin 3=33 > 26，溢出 7vp；action_row 宽度 116 满足 55+6+55=116，但模板循环未渲染，渲染图中该位置为空白；CTA 按钮 width=34 容纳不下 '设置'，文本被省略号替代。"
+  },
+  "issues": [
+    "action_row 模板循环未在渲染中展开，导致右侧可勾选小卡片完全缺失，是用户核心需求未满足",
+    "CTA 按钮 width=34 不足以容纳 '设置' 2 字，渲染为 '...' 省略号",
+    "event_card 内部 Column 子项占高 33 > 内容区 26，溢出 7vp",
+    "渐变底色 #ff7c2d12 偏暖橙偏亮，与'夜空延伸'语义不符",
+    "Text.textOverflow='none' 非标准值，可能导致未定义行为",
+    "Deeplink 仅跳转 battery 单个设置页，未区分'省电/屏幕/电池优化'三类",
+    "Deeplink 同时挂在 root/Button/Checkbox 上，多个事件源未做差异化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_014\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_014\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"event_card\",\"action_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":178,\"colors\":[[\"#ff0a0e27\",0],[\"#ff1e1b4b\",0.4],[\"#ff312e81\",0.78],[\"#ff5c1d09\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"power_icon\",\"power_info\",\"cta\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"power_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.powerIcon }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"power_info\",\"component\":\"Column\",\"children\":[\"power_value\",\"power_status\"],\"itemMargin\":2,\"styles\":{\"width\":44,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"power_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.levelText }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffb86b\",\"maxLines\":1}},{\"id\":\"power_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.status }}\",\"styles\":{\"width\":44,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffd7a3\",\"maxLines\":1}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":36,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffff8a3d\",\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"event_card\",\"component\":\"Column\",\"children\":[\"event_time\",\"event_title\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0] ? $__dataModel.data.calendar.items[0].dtStart : '今日日程' }}\",\"styles\":{\"width\":100,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0] ? $__dataModel.data.calendar.items[0].title : '等待日历同步' }}\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"check1\",\"check2\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":26,\"alignItems\":\"center\"}},{\"id\":\"check1\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.power.checks[0].label }}\",\"select\":\"{{ $__dataModel.power.checks[0].select }}\",\"styles\":{\"width\":55,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#22ffffff\",\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffff8a3d\",\"unSelectedColor\":\"#66ffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"check2\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.power.checks[1].label }}\",\"select\":\"{{ $__dataModel.power.checks[1].select }}\",\"styles\":{\"width\":55,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#22ffffff\",\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffff8a3d\",\"unSelectedColor\":\"#66ffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_014\",\"value\":{\"data\":{\"calendar\":{\"items\":[]}},\"power\":{\"levelText\":\"18%\",\"status\":\"电量低\",\"actionText\":\"设置\",\"checks\":[{\"label\":\"省电\",\"select\":true},{\"label\":\"屏幕\",\"select\":false}]},\"asset\":{\"powerIcon\":\"resources/base/media/icon_save_power.png\"},\"state\":{\"loading\":true}}}}"
+  ]
+}

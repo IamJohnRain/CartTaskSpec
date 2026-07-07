@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-06-memory-clean-113",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户语义诉求（横向清理面板、橙红渐变氛围背景、清微信/清相册勾选、80%风险提示、勿扰系统开关、纯文字色块无图、静态示例数据）全部体现：summaryBox+riskText+optionRow+actionButton 四段式布局落地，数据绑定路径 {{ memory.* }} 全部命中，onClick 的 call/args 原样来自 eventCandidates。但存在 3 处协议硬约束违反：(1) 全部 Text 组件使用 `text` 字段而非 `content`；(2) Button 使用 `text` 字段而非 `label`；(3) updateDataModel 行缺少必填的 `path:'/'` 字段。",
+    "aesthetic": "整体配色 #FFF8F4→#FFE4D6→#FF6B3A 渐变契合紧迫橙红主题；白色 summaryBox 衬出红色 usageText 主指标，对比清晰；风险色块 #FFF1E8 与红字 #B3261E 协调可读；CheckBox 选色 #FF6B3A 与按钮 #D71920 主题一致。字重层级合理（仅 usageText 18pt Bold 为最强），其余 Medium/Regular，留白基本合适。不足：optionRow 仅 30 高，密度偏紧；root 三个子段总高 108+12 间隙+20 padding=140 贴边，整体略显拥挤。",
+    "layout": "布局预算核算：(a) root Column：paddingT 10 + topRow 48 + itemMargin 6 + optionRow 30 + itemMargin 6 + bottomRow 30 + paddingB 10 = 140，等于容器 140，无安全余量；(b) summaryBox Column：paddingT 6 + titleText 16 + itemMargin 2 + usageText 22 + paddingB 6 = 52 > 容器 48，溢出 4vp，usageText 下半将被裁切；(c) usageText 文本『待清理 82%』在 18pt Bold 下估算宽 ≈ 3×18 + 0.4×18 + 2×0.6×18 + 0.4×18 = 90vp > 容器 86，溢出约 4vp；(d) optionRow：8×2+76+76+108 = 276 等于可用 276，紧贴；(e) riskText 内容『垃圾超过80%，注意风险』14pt 估算宽 ≈ 4×14 + 2×8.4 + 5.6 + 5.6 + 4×14 = 140 < 容器 142 通过但仅 2vp 边距。Button 热区 104×30 ≥ 24 满足，底部锚定 10vp 满足。"
+  },
+  "issues": [
+    "Text 组件使用 `text` 字段，违反协议『Text.content』硬约束",
+    "Button 组件使用 `text` 字段，违反协议『Button.label』硬约束",
+    "updateDataModel 缺少必填 `path:'/'` 字段，违反硬约束",
+    "summaryBox Column 子项占高 52 > 容器 48，溢出 4vp",
+    "usageText 文本『待清理 82%』宽 ~90 > 容器 86，可能被截断",
+    "root Column 总高 140 紧贴边界、无安全余量",
+    "optionRow 8×2+76+76+108=276 紧贴可用 276，缺冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_113\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_113\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"type\":\"Column\",\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"background\":{\"type\":\"linearGradient\",\"angle\":120,\"colors\":[\"#FFF8F4\",\"#FFE4D6\",\"#FF6B3A\"]},\"children\":[\"topRow\",\"optionRow\",\"bottomRow\"],\"itemMargin\":6,\"alignItems\":\"stretch\"},{\"id\":\"topRow\",\"type\":\"Row\",\"width\":276,\"height\":44,\"children\":[\"summaryBox\",\"riskText\"],\"itemMargin\":8,\"alignItems\":\"center\"},{\"id\":\"summaryBox\",\"type\":\"Column\",\"width\":108,\"height\":44,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#FFFFFF\",\"children\":[\"titleText\",\"usageText\"],\"itemMargin\":0,\"justifyContent\":\"center\",\"alignItems\":\"stretch\"},{\"id\":\"titleText\",\"type\":\"Text\",\"width\":92,\"height\":14,\"content\":\"{{ memory.title }}\",\"fontSize\":12,\"fontWeight\":\"Medium\",\"fontColor\":\"#7A2E12\",\"maxLines\":1},{\"id\":\"usageText\",\"type\":\"Text\",\"width\":92,\"height\":22,\"content\":\"{{ memory.usageText }}\",\"fontSize\":16,\"fontWeight\":\"Bold\",\"fontColor\":\"#D71920\",\"maxLines\":1},{\"id\":\"riskText\",\"type\":\"Text\",\"width\":160,\"height\":44,\"padding\":{\"left\":8,\"right\":8,\"top\":12,\"bottom\":12},\"borderRadius\":14,\"backgroundColor\":\"#FFF1E8\",\"content\":\"{{ memory.riskText }}\",\"fontSize\":13,\"fontWeight\":\"Medium\",\"fontColor\":\"#B3261E\",\"maxLines\":1},{\"id\":\"optionRow\",\"type\":\"Row\",\"width\":276,\"height\":28,\"children\":[\"wechatCheck\",\"albumCheck\",\"usageProgress\"],\"itemMargin\":6,\"alignItems\":\"center\"},{\"id\":\"wechatCheck\",\"type\":\"Checkbox\",\"width\":76,\"height\":28,\"label\":\"{{ memory.options.wechat.label }}\",\"select\":{\"path\":\"/memory/options/wechat/selected\"},\"fontSize\":12,\"fontColor\":\"#3A1C12\",\"selectedColor\":\"#FF6B3A\",\"unSelectedColor\":\"#C8A79A\",\"shape\":\"rounded_square\"},{\"id\":\"albumCheck\",\"type\":\"Checkbox\",\"width\":76,\"height\":28,\"label\":\"{{ memory.options.album.label }}\",\"select\":{\"path\":\"/memory/options/album/selected\"},\"fontSize\":12,\"fontColor\":\"#3A1C12\",\"selectedColor\":\"#FF6B3A\",\"unSelectedColor\":\"#C8A79A\",\"shape\":\"rounded_square\"},{\"id\":\"usageProgress\",\"type\":\"Progress\",\"width\":108,\"height\":10,\"value\":\"{{ memory.usageValue }}\",\"total\":\"{{ memory.totalValue }}\",\"progressColor\":\"#D71920\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":5},{\"id\":\"bottomRow\",\"type\":\"Row\",\"width\":276,\"height\":32,\"children\":[\"actionButton\"],\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"},{\"id\":\"actionButton\",\"type\":\"Button\",\"width\":104,\"height\":32,\"label\":\"{{ memory.actionText }}\",\"fontSize\":14,\"fontWeight\":\"Medium\",\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#D71920\",\"borderRadius\":12,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"do_not_disturb\",\"switchFlag\":1}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_113\",\"path\":\"/\",\"value\":{\"memory\":{\"title\":\"一键清理\",\"usageText\":\"待清理 82%\",\"usageValue\":82,\"totalValue\":100,\"riskText\":\"垃圾超过80%，注意风险\",\"actionText\":\"开启勿扰\",\"options\":{\"wechat\":{\"label\":\"清微信\",\"selected\":true},\"album\":{\"label\":\"清相册\",\"selected\":false}}}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-anti-addiction-055",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.0,
+  "reasons": {
+    "instruction": "用户要求'每组横向排好几个应用的超时情况',但 dataModel 中 groups[].usedText 只有一个,DSL 只能按数据 1 个/组渲染,未能在结构上表达'多个应用';其余 9 项关键诉求(纯文字色块、3 组+分隔线、'今日已用3小时12分'格式、静态示例数据、动态电量、黄色风险框、免渐变免图、一键开关省电面板、2x2 尺寸)均落实,事件 call/args 原样来自 eventCandidates,updateDataModel.path 与 value 与契约一致,主要诉求结构上满足但'好几个应用'语义有缺口。",
+    "aesthetic": "概念上做到了'纯文字色块素净'和'黄色风险提示框'(#fffff2cc),字重层级合理(粗体名称+常规用量),无渐变无图;但 Stack 居中+各子项 margin-left:16 偏移导致内容相对 paper_panel 右移并与右侧边界冲突,白底色块与根底色分层不干净,渲染中可见'开启''12分''46分'等关键字被裁,视觉上不完整,只能给到'勉强可用但有明显不统一'。",
+    "layout": "根 Stack 140x140、padding 12,内容区 116x116。竖向预算(各子项 top+h):group_0=32、divider_0=35、group_1=54、divider_1=57、group_2=76、risk_box=102、switch_panel=130。switch_panel 底端 y=130 > 内容区 116,溢出 14vp,且相对卡片底 140 仅余 10vp,触发 clip 后按钮下沿 2vp 被裁,底部动作区到底边 16vp 也已达上限。横向:group_0/divider_0/group_1/divider_1/group_2/risk_box/switch_panel 全部 margin-left 16,width 108,占据 x=28~136,内容相对 paper_panel(12~128)右探 8vp,paper_panel 左侧出现 16vp 空带。文字预算:used_0/used_1 内容'今日已用3小时12分'=4*10+1*6+2*10+2*6+1*10=88vp,容器 width 68,溢出 20vp,maxLines:1+textOverflow:'none' 被硬切。综合:多处严重溢出+关键文字截断+CTA 底部裁剪,D3 落到 2.0。"
+  },
+  "issues": [
+    "switch_panel margin-top:104 + height:26 = 130,超出 116 内容区 14vp,卡片底距离仅 10vp 且按钮下沿 2vp 被 clip:true 裁掉",
+    "used_0 / used_1 文本'今日已用3小时12分'/'今日已用1小时46分'估算宽度 88vp,容器 width 68,溢出 20vp,被 maxLines:1 + textOverflow:'none' 硬切(渲染中可见'12分''46分'丢失)",
+    "所有正文子项 margin-left:16 + width 108,占据 x=28~136,越过 paper_panel 右沿 128vp,paper_panel 左侧出现 16vp 空带,视觉偏移",
+    "用户语义要求'每组横向排好几个应用',dataModel 与 DSL 都只有 1 个 app/组,未表达'多个应用'的横向排列",
+    "root Stack 设了 alignContent:'center',而子项又用绝对 margin 定位,二者冲突,加剧布局混乱",
+    "formatString 包裹 DataModel 路径在 used/battery 上可改为直接 {{ $__dataModel... }} 表达式,系统规则更推荐"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_055\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_055\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"group_0\",\"divider_0\",\"group_1\",\"divider_1\",\"group_2\",\"risk_box\",\"switch_panel\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff8fafc\"}},{\"id\":\"group_0\",\"component\":\"Row\",\"children\":[\"name_0\",\"used_0\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"name_0\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.groups[0].name }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_0\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.groups[0].usedText }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ff4b5563\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_0\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#ffe5e7eb\"}},{\"id\":\"group_1\",\"component\":\"Row\",\"children\":[\"name_1\",\"used_1\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"name_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.groups[1].name }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.groups[1].usedText }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ff4b5563\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_1\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#ffe5e7eb\"}},{\"id\":\"group_2\",\"component\":\"Row\",\"children\":[\"name_2\",\"used_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"name_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.groups[2].name }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.groups[2].usedText }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ff4b5563\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk_box\",\"component\":\"Row\",\"children\":[\"risk_title\",\"battery_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":6,\"backgroundColor\":\"#fffff2cc\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"risk_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.riskTitle }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff8a5a00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.batteryText }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff8a5a00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"switch_panel\",\"component\":\"Button\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/antiAddiction/switchTitle} · ${/antiAddiction/switchDesc}\"}},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":116,\"height\":26,\"borderRadius\":10,\"backgroundColor\":\"#ff1f2937\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_055\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"groups\":[{\"name\":\"短视频\",\"usedText\":\"今日已用3小时12分\",\"riskText\":\"快超标\"},{\"name\":\"社交\",\"usedText\":\"今日已用1小时46分\",\"riskText\":\"偏高\"},{\"name\":\"游戏\",\"usedText\":\"今日已用58分\",\"riskText\":\"正常\"}],\"batteryText\":\"电量42%\",\"riskTitle\":\"近上限\",\"switchTitle\":\"省电模式\",\"switchDesc\":\"一键开启\"}}}}"
+  ]
+}

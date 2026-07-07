@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-11-fitness-205",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户原始诉求五项：徒步卡片、字在背景图上、点跳app、读日程、已连接。DSL在fitness.title/status/actionText/subtitle、clickToDeeplink(root+action)、calendar.items 模板循环上都做了绑定，核心字段基本到位。但存在多项硬性协议违规：(1) schedule_item.onClick 发明了 eventCandidates 中根本不存在的 clickToIntent 事件及参数 intentName=ViewCalendarEvent、params.entityId，违反'不得发明新事件或新参数'；(2) schedule_time 使用 {{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }} 字符串 + 拼接，多数模板引擎不支持 + 运算符，可能渲染为空或字面字符串；(3) schedule_title 使用 content:{'path':'title'} 对象式绑定，未采用 {{ $item.title }} 标准模板变量语法，渲染后截图也佐证日程面板中并未出现'徒步安排'与时间字样；(4) action 按钮 fontWeight 写为字符串 'medium'，应使用 400/500/600/700 等数值字重。此外'字在背景图上'诉求仅落实一半：icon_run.png 被作为 86×86 浮层小图放在右侧日程面板中部，opacity 0.28，而主文本(状态徽章/今日徒步/日程已连接/打开运动健康)实际位于绿色渐变之上而非图片之上。",
+    "aesthetic": "绿色径向渐变 #0a7d5a→#51b56d 与白色文字对比清晰，徒步/运动主题统一，状态徽章'已连接'采用白底深绿字辨识度好，半透明日程面板(#26ffffff)与图标叠层营造出不错的层次感。问题集中在字重阶梯：出现 'medium'/500/600/700 四个不同档位，违反'同一卡片只保留一个最强字重'的精神——最强 700 唯一保留可，但次级档分散显得层级不收敛；86×86 的 running figure 与 112×96 的日程面板在右半区形成视觉拥挤(图标占满面板高度的 90%)，日程序列文字与图标共存时呼吸感被压缩；Stack 多加了一个空 children 的 shade 列只为叠 #22000000 遮罩，结构冗余且不必要。",
+    "layout": "root Stack 300×140、padding 12，内容区 276×116。content Row：152(hero)+12(itemMargin)+112(side)=276，与可用宽度严格相等，无横向溢出。hero Column 纵向：20(status)+6+28(title)+6+18(subtitle)+6+32(action)=116，恰好等于 hero 高度 116，无溢出也无富余。side Column 自身 112×96，padding 8 内部 96×80；schedule_label 18 + 6(itemMargin) + schedule_list 56 = 80，与内可用 80 一致。schedule_item 22(title)+2+18(time)=42 ≤ 48。文本宽度核算：'今日徒步' 4 字×fontSize20=80 ≤ 152；'已连接' 3 字×12=36 ≤ 64-16=48；'日程已连接' 5×12=60 ≤ 152；'打开运动健康' 6×14=84 ≤ 118-内边距 ≈ 102；'徒步安排' 4×14=56 ≤ 96；'09:30-12:00' 8 字符×0.6×12+'-'×0.4×12≈62 ≤ 96，均不被截断。底距：12(root top padding)+116(hero)=128，距卡底 140-128=12vp，处于 2×4 规范 10-14vp 区间内。按钮热区 32vp ≥ 24vp 达标。Stack 叠层 background(86×86,margin 180/12)→shade(空)→content(276×116)顺序合理，content 上层信息不被遮罩。但 running figure 占据 176~262×12~98，恰与 side 列(176~288, 12~128)中上部重叠，与 schedule_label/列表前两项在视觉上叠压，截图佐证日程文字未明显出现(可能因模板 content:{'path':...} 解析失败)。"
+  },
+  "issues": [
+    "schedule_item.onClick 发明 eventCandidates 中不存在的 clickToIntent 事件及 intentName=ViewCalendarEvent 硬性协议违规",
+    "schedule_time 用 {{ ... + '-' + ... }} 字符串拼接，模板引擎可能不支持导致渲染失败",
+    "schedule_title 使用 content:{'path':'title'} 对象式绑定，未采用标准 {{ $item.title }} 模板变量语法，渲染后日程文字缺失",
+    "action 按钮 fontWeight 为字符串 'medium'，应使用 400/500/600/700 等数值字重",
+    "shade 列 children:[] 无任何子项且无 width/height 限制，仅为叠 #22000000 遮罩而存在，结构冗余",
+    "用户诉求'字在背景图上'未完全落实：icon_run.png 作为右侧 86×86 半透明小图，主文本实际位于渐变之上",
+    "字体层级出现 'medium'/500/600/700 四个不同档位，最强字重之外次级档分散，违反字重收敛原则",
+    "running figure 与 schedule_label/schedule_list 在 side 列右半区叠压，视觉拥挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_205\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_205\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_glyph\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a7d5a\",0],[\"#ff51b56d\",1]]},\"backgroundColor\":\"#ff0a7d5a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"bg_glyph\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.fitness.background }}\",\"styles\":{\"width\":276,\"height\":116,\"objectFit\":\"contain\",\"opacity\":0.18}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"status\",\"title\",\"subtitle\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":152,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.status }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff0a7d5a\",\"backgroundColor\":\"#eeffffff\",\"borderRadius\":10,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":152,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.subtitle }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":118,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff0a7d5a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"schedule_label\",\"schedule_list\"],\"itemMargin\":6,\"styles\":{\"width\":112,\"height\":96,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ddffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"schedule_item\",\"path\":\"/data/calendar/items\"},\"styles\":{\"width\":96,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_item\",\"component\":\"Column\",\"children\":[\"schedule_title\",\"schedule_time\"],\"itemMargin\":2,\"styles\":{\"width\":96,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ $item.title }}\",\"styles\":{\"width\":96,\"height\":22,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ $item.dtStart }}-{{ $item.dtEnd }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_205\",\"value\":{\"fitness\":{\"title\":\"今日徒步\",\"subtitle\":\"日程已连接\",\"status\":\"已连接\",\"actionText\":\"打开运动健康\",\"background\":\"resources/base/media/icon_run.png\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"hike-plan-205\",\"title\":\"徒步安排\",\"dtStart\":\"09:30\",\"dtEnd\":\"12:00\",\"eventLocation\":\"城市绿道\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-earphone-music-030",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "尺寸2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/与value原样均满足协议；eventCandidates中clickToIntent(ViewCalendarEvent,mock-calendar-music-030)被原样绑定到calendar_button；assetCandidates的musicIcon作为背景叠层（opacity 0.18）、earphoneIcon标识设备状态均符合语义；dataModel字段playlist/lyric/trackCountText/meter/calendar.title/device.name/device.actionText全部展示。歌词叠在背景图、带数字（30首徽标）、点一下系统操作（看日程按钮）、看日程（calendar_text）四要素齐备。扣分点：count_badge和calendar_text的content使用formatString call函数拼接，偏离协议优先推荐的{{ $__dataModel.* }}完整表达式。",
+    "aesthetic": "配色为#FFF7FBFF→#FFE7F6F0渐变+半透明白色面板+绿色（count_badge/meter）主色+蓝色CTA，整体克制清爽，绿色语义与音乐相关、蓝色语义与操作相关，配色合理。扣分点：(1) device_name 'FreeBuds Pro 3'因宽度90不足被截断为'FreeBuds Pro'，丢失尾字'3'，信息完整性受损；(2) count_badge压在meter_bar上方，绿色徽标遮挡绿色进度条右段，徽标与进度条产生视觉冲突；(3) 渲染中earphone_icon呈现为类似锁的形状，语义辨识度偏低。",
+    "layout": "逐容器核算：(1) lyric_group Column：内容高=20+8+20+8+6=62、容器h=78、justifyContent:center，meter_bar落在root y=96-102；(2) count_badge：margin top 84→root y=96-120、x=108-156，与meter_bar（x=24-156, y=96-102）在y=96-102、x=108-156区域完全重叠，徽标遮挡进度条右段约36%宽度，判定为堆叠溢出；(3) earphone_row：device_name width 90、fontSize 14，'FreeBuds Pro 3'估算宽≈11×0.6×14+2×0.4×14+1×0.6×14=112，超出22，受保护文本'FreeBuds Pro 3'被截断丢失'3'；(4) calendar_button：margin top 96、h=32，底边y=140=卡片底边，距卡底0vp，违反2x4底部动作区10-14vp（不得>16vp）要求；(5) info_group：margin left 172、width 116，root x=184-300，超出padding内容区x=288共12vp；(6) 右侧info_group无面板背景，仅靠渐变区分层次，视觉锚点不统一。综合存在多处溢出/截断/锚定违规。"
+  },
+  "issues": [
+    "count_badge（root y=96-120, x=108-156）与meter_bar（root y=96-102, x=24-156）在y=96-102区域完全重叠，绿色徽标遮挡绿色进度条右段约36%",
+    "device_name 'FreeBuds Pro 3'在width 90、fontSize 14下估算宽度约112，超出22，受保护文本被截断为'FreeBuds Pro'，丢失'3'",
+    "calendar_button底边y=140等于卡片底边，距卡底0vp，违反2x4底部动作区10-14vp间距且不得>16vp的硬约束",
+    "info_group右边界x=300超出root padding内容区x=288共12vp，贴边无安全间距",
+    "count_badge和calendar_text的content使用formatString call函数拼接，偏离协议优先推荐的{{ $__dataModel.* }}表达式",
+    "earphone_icon在渲染中呈现为类似锁的图标形状，设备语义辨识度偏低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_030\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_030\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_panel\",\"music_bg_icon\",\"lyric_group\",\"count_badge\",\"info_group\",\"calendar_button\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF7FBFF\",0],[\"#FFE7F6F0\",1]]}}},{\"id\":\"ambient_panel\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":156,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#CCFFFFFF\"}},{\"id\":\"music_bg_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.musicIcon }}\",\"styles\":{\"width\":72,\"height\":72,\"margin\":{\"left\":42,\"top\":22},\"objectFit\":\"contain\",\"opacity\":0.16}},{\"id\":\"lyric_group\",\"component\":\"Column\",\"children\":[\"playlist_text\",\"lyric_text\",\"meter_bar\"],\"itemMargin\":6,\"styles\":{\"width\":132,\"height\":70,\"margin\":{\"left\":12,\"top\":16},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlist }}\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF172331\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lyric_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.lyric }}\",\"styles\":{\"width\":132,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FF425466\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.music.meter }}\",\"total\":100,\"styles\":{\"width\":132,\"height\":6,\"type\":\"linear\",\"color\":\"#FF00A87E\",\"backgroundColor\":\"#2200A87E\",\"borderRadius\":3}},{\"id\":\"count_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackCountText }}\",\"styles\":{\"width\":52,\"height\":22,\"margin\":{\"left\":96,\"top\":92},\"borderRadius\":11,\"backgroundColor\":\"#FF00A87E\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_group\",\"component\":\"Column\",\"children\":[\"earphone_row\",\"calendar_text\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":68,\"margin\":{\"left\":156,\"top\":12},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"earphone_row\",\"component\":\"Row\",\"children\":[\"earphone_icon\",\"device_name\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.earphoneIcon }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"device_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.name }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF22313F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items.0.title }}\",\"styles\":{\"width\":120,\"height\":32,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#AA000000\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"calendar_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.device.actionText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"mock-calendar-music-030\"}}}],\"styles\":{\"width\":84,\"height\":28,\"margin\":{\"left\":192,\"top\":86},\"borderRadius\":14,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_030\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeBuds Pro 3\",\"actionText\":\"看日程\"},\"music\":{\"playlist\":\"今日歌词卡\",\"lyric\":\"把风景调成第30拍\",\"trackCount\":30,\"trackCountText\":\"30首\",\"meter\":68},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-music-030\",\"title\":\"20:30 乐队排练\",\"dtStart\":\"20:30\",\"dtEnd\":\"21:15\"}]}},\"asset\":{\"musicIcon\":\"resources/base/media/icon_music.png\",\"earphoneIcon\":\"resources/base/media/icon_earphone.png\"}}}}"
+  ]
+}

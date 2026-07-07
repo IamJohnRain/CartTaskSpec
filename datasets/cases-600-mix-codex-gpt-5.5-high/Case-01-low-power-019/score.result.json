@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-019",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "DSL 结构上包含了用户要求的所有元素：电池图标、18% 电量数字、3 个勾选小方块（调低亮度/关蓝牙/关定位）、省电模式开关、渐变色、静态数据；onClick 事件原样来自 eventCandidates（clickToIntent/SetSettingSwitch/battery_saving_mode/switchFlag:0），资源路径来自 assetCandidates。但渲染截图中 3 个 Checkbox 完全不可见，用户核心诉求'下面一排三个能勾选的小方块'未在视觉上呈现，且 Checkbox 内 4 字标签'调低亮度'在 52 宽容器内会被截断，整体指令落实严重不完整。",
+    "aesthetic": "蓝→青→绿三段式 linearGradient 配色和谐有动感，hero 区半透明白色圆角容器层次清晰，标题/电量/提示文字三段式字重字阶合理（20/12/10 配 700/600/500），省电模式白底蓝字胶囊按钮对比清晰。但 Checkbox 未渲染导致下半部分左侧大面积空白，视觉上严重失衡，不完整。",
+    "layout": "逐项核算：1) root Column：padding 12+12=24 + itemMargin 8 + hero_row 52 + control_row 36 = 120 < 140 OK；2) hero_row Row：padding 10+10=20 + itemMargin 10 + battery_icon 40 + hero_copy 206 = 276 OK；3) hero_copy Column 固定 height:40，但子项 title_text 14 + level_text 24 + hint_text 14 = 52，叠加 itemMargin 1×2=2 共需 54，溢出 14vp，导致 hint 文字被挤出圆角容器底部（截图佐证）；4) control_row Row：itemMargin 12 + check_list 168 + power_button 96 = 276 OK；5) check_list Row：itemMargin 6×2 + check_item 52×3 = 168 OK；6) check_item 宽 52，padding 4×2=8 后内部 44，Checkbox 视觉占 ~14，标签区仅 30vp，'调低亮度'4 字在 fontSize 10 下约需 40vp，溢出约 10vp；7) 渲染截图中 3 个 Checkbox 完全不可见，是最严重的渲染/布局问题。Button 热区 36vp ≥ 24vp OK，按钮底边距卡底 12vp 在 2x4 区间 10-14vp 内 OK。"
+  },
+  "issues": [
+    "hero_copy Column 固定高度 40，三段文字（14+24+14）+ itemMargin×2=2 共需 54，垂直溢出 14vp，hint 文字被挤出圆角容器",
+    "3 个 Checkbox 组件在渲染截图中完全不可见，用户核心诉求'三个能勾选的小方块'未视觉呈现",
+    "Checkbox 含有非标准属性 shape: rounded_square / selectedColor / unSelectedColor，疑似导致 Checkbox 渲染失败",
+    "check_item 宽 52，标签可用区仅 30vp，'调低亮度'4 字在 fontSize 10 下需 ~40vp，会被截断/换行",
+    "power_button 宽 96 偏大，与 check_list 168 共享底部 276 行时，左侧留白视觉不平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_019\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_019\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"control_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":120,\"colors\":[[\"#ff0a59f7\",0],[\"#ff61cfbe\",0.54],[\"#ff64bb5c\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"battery_icon\",\"hero_copy\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":64,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":18,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"battery_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.batteryIcon }}\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"hero_copy\",\"component\":\"Column\",\"children\":[\"title_text\",\"level_text\",\"hint_text\"],\"itemMargin\":1,\"styles\":{\"width\":206,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.title }}\",\"styles\":{\"width\":206,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":206,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.hint }}\",\"styles\":{\"width\":206,\"height\":11,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"control_row\",\"component\":\"Row\",\"children\":[\"check_list\",\"power_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"check_list\",\"component\":\"Row\",\"children\":{\"componentId\":\"check_item\",\"path\":\"/battery/checks\"},\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":204,\"height\":36,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"check_item\",\"component\":\"Checkbox\",\"label\":{\"path\":\"label\"},\"checked\":{\"path\":\"checked\"},\"styles\":{\"width\":64,\"height\":36,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"fontSize\":10,\"fontColor\":\"#ffffffff\"}},{\"id\":\"power_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.battery.actionText }}\",\"styles\":{\"width\":60,\"height\":36,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_019\",\"value\":{\"battery\":{\"title\":\"低电模式\",\"levelText\":\"18%\",\"hint\":\"建议开启省电\",\"checks\":[{\"label\":\"调低亮度\",\"checked\":true},{\"label\":\"关蓝牙\",\"checked\":true},{\"label\":\"关定位\",\"checked\":false}],\"actionText\":\"省电模式\"},\"asset\":{\"batteryIcon\":\"resources/base/media/icon_electricity.png\"}}}}"
+  ]
+}

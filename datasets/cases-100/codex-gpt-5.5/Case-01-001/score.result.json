@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-001",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户三项明确诉求全部满足：当前电量以 18% 突出显示；电量偏低（statusText='电量偏低'、hintText='建议开启省电模式'、modeText='省电模式未开启'）三重提示齐全；省电模式快速入口 Button 使用 eventCandidates 中原样的 clickToIntent + SetSettingSwitch/battery_saving_mode 事件，未发明任何新事件或参数。dataModel 路径 $__dataModel.battery.* 与 TaskSpec.dataModel.value 完全对应。尺寸 2x4 (300x140)、catalogId、version、updateDataModel.path='/' 与 value 原样等硬约束全部满足。唯一小瑕疵：底部 Button 距卡片底边 15vp，略高于理想的 10-14vp 但仍落在 ≤16vp 的硬限内，未扣大分。",
+    "aesthetic": "整体采用暖橙色低电警告配色，背景 #FFF7E8 + 卡片白底 + 橙色主色和谐统一。层级清晰：18% (40px/700) 为最强视觉锚点，'当前电量' (16px/700) 副标题次之，'建议开启省电模式' (14px) 提示，'省电模式未开启' (12px) 弱化状态，按钮实色高对比。可微调点：左侧 meter_col 加底色形成卡片'嵌套'，但与右侧无明显分隔条略显漂浮；正文色 #5C3B00/#666666 阶梯合理。",
+    "layout": "预算核算：①Root Row 横向 = padding-left 12 + meter_col 108 + itemMargin 14 + info_col 154 + padding-right 12 = 300，正好等于父宽 300，无溢出；纵向 = padding-top 12 + max(116,116) + padding-bottom 12 = 140，无溢出。②meter_col Column 纵向 = padding-top 8 + level_text 40 + itemMargin 6 + status_text 18 + itemMargin 6 + battery_progress 8 + padding-bottom 8 = 94 < 116，余 22，水平 padding 8+92+8=108=父宽，无溢出。③info_col Column 纵向 = title_text 20 + itemMargin 8 + hint_text 18 + itemMargin 8 + mode_text 16 + itemMargin 8 + save_button 32 = 110 < 116，余 6，justifyContent:center 上下各分配 3；save_button 底边距卡片底边 = 140 - (12+3+110) = 15vp，处于 ≤16vp 硬限内但略高于 10-14vp 理想带。④文本宽度核算：18% 在 fontSize 40 下约 72 < 92；'建议开启省电模式' 8 字在 fontSize 14 下约 112 < 154；'当前电量' 4 字在 fontSize 16 下约 64 < 154；'省电模式未开启' 7 字在 fontSize 12 下约 84 < 154，全部不截断。⑤Button 热区 96x32 ≥ 24vp，达标。⑥无 Stack 层叠，无受保护文本被覆盖。综合来看除底部 margin 15vp 微超理想带外，无堆叠/截断/CTA 受压问题。"
+  },
+  "issues": [
+    "info_col 底部 Button 距卡片底边 15vp，略高于 10-14vp 理想带（仍在 ≤16vp 硬限内）",
+    "左侧 meter_col 虽设有底色但与右侧 info_col 之间缺少视觉分隔（Divider），导致'双卡片'观感稍弱",
+    "Progress 高度 8 在 116 高的 Column 中占比偏小，电量刻度感不够强"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"low_power_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"low_power_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"meter_col\",\"divider\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7E8\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_col\",\"component\":\"Column\",\"children\":[\"level_text\",\"status_text\",\"battery_progress\"],\"itemMargin\":6,\"styles\":{\"width\":104,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#FFFFF7\",\"borderRadius\":16,\"padding\":8}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":88,\"height\":40,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#D76000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.statusText }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#9A4B00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.level }}\",\"total\":100,\"styles\":{\"width\":88,\"height\":10,\"type\":\"linear\",\"color\":\"#D76000\",\"backgroundColor\":\"#FFE0B8\",\"borderRadius\":5}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":96,\"backgroundColor\":\"#F2DDB8\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"hint_text\",\"mode_text\",\"save_button\"],\"itemMargin\":6,\"styles\":{\"width\":155,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"当前电量\",\"styles\":{\"width\":155,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.hintText }}\",\"styles\":{\"width\":155,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#5C3B00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.modeText }}\",\"styles\":{\"width\":155,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#888888\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"save_button\",\"component\":\"Button\",\"label\":\"开启省电\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":140,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#D76000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"low_power_card\",\"path\":\"/\",\"value\":{\"battery\":{\"level\":18,\"levelText\":\"18%\",\"statusText\":\"电量偏低\",\"hintText\":\"建议开启省电模式\",\"modeText\":\"省电模式未开启\"}}}}"
+  ]
+}

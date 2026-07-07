@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-002",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "卡片基本满足用户诉求：顶部蓝色'会'圆形 logo + '会议日程'标题；中间'项目站会'主字段、时间与会议ID同行；底部'查看日程'按钮带 clickToIntent/ViewCalendarEvent 事件；右下角红色'3'圆形徽章显示待处理会议数。问题：1) time_text width:84 无法容纳 '09:30-10:00'（fontSize 16 粗体估算宽 ~109），被截断为 '09:30-10:'，丢失关键结束时间 '00'，违反受保护文本不可截断原则；2) 按钮文案为 '查看日程' 而非 '入会'，但该值由 TaskSpec.dataModel.meeting.joinLabel 给定，DSL 正确读取；3) 协议硬约束（catalogId、version、updateDataModel.path=/、事件 call/args）全部满足。",
+    "aesthetic": "配色和谐：主蓝 #0A59F7、提醒红 #E84026、底色 #F7FAFF，文字与背景对比清晰可读。问题：1) 全卡有 5 处使用 fontWeight:700（logo_badge、schedule_title、meeting_name、time_text、pending_badge），违反'同一卡片只保留一个最强字重'，主次不分明；2) 底部因垂直溢出 8vp 导致按钮与徽章紧贴底边，留白不均；3) 字号 14/16/18/20 处于阶梯内，整体层级可识别但字重过多削弱对比。",
+    "layout": "核心预算核算：1) root Column 纵向占用 = padding-top 12 + top_row 26 + itemMargin 6 + meeting_name 24 + 6 + time_id_row 20 + 6 + bottom_row 36 + padding-bottom 12 = 148vp > 可用 140vp，溢出 8vp，导致底部 join_button 与 pending_badge 被 clip 切割；2) time_id_row 横向 = 84 + 10 + 182 = 276 = 父 276，结构上无溢出，但 time_text 内部 '09:30-10:00' 在 fontSize 16/fontWeight 700 下估算宽 ≈ 109 > 容器 84，'00' 被裁；3) bottom_row 用 itemMargin:140 把 100+36=136 的两项硬撑到 276，属于'间距黑魔法'，正确做法应为 justifyContent:space-between；4) 受保护时间文本被截断，违反硬规则。"
+  },
+  "issues": [
+    "root Column 纵向溢出 8vp：子项总高 124 + 3×6 间距 + 24 padding = 148 > 140，底部按钮/徽章被 clip 截断",
+    "time_text width:84 容纳不下 '09:30-10:00'（fontSize 16 粗体估算宽 ~109），'00' 被截断为 '09:30-10:'，丢失关键结束时间",
+    "5 处使用 fontWeight:700（logo/schedule_title/meeting_name/time_text/pending_badge），违反'只保留一个最强字重'",
+    "bottom_row 用 itemMargin:140 硬编码间距把按钮与徽章撑到两端，应改用 justifyContent:space-between",
+    "底部动作区紧贴卡片底边，因溢出可能进一步被压缩"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"one_tap_meeting_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"one_tap_meeting_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"meeting_name\",\"time_id_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F7FAFF\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"logo_badge\",\"schedule_title\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"logo_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.logoText }}\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#0A59F7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.scheduleTitle }}\",\"styles\":{\"width\":248,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meeting_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":280,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_id_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"id_text\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"id_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.meetingIdLabel + ' ' + $__dataModel.data.meeting.meetingId }}\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"join_button\",\"pending_badge\"],\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":30,\"justifyContent\":\"space-between\",\"alignItems\":\"center\"}},{\"id\":\"join_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.meeting.joinLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":100,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"pending_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.pendingCount }}\",\"styles\":{\"width\":30,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#E84026\",\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"one_tap_meeting_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-meeting-05002\",\"title\":\"项目站会\",\"eventLocation\":\"线上会议\",\"description\":\"会议ID 486 209 735\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"oneClickServiceType\":\"meeting\",\"oneClickServiceLink\":\"\",\"isServiceValid\":0}]},\"meeting\":{\"logoText\":\"会\",\"scheduleTitle\":\"会议日程\",\"meetingIdLabel\":\"会议ID\",\"meetingId\":\"486 209 735\",\"joinLabel\":\"查看日程\",\"pendingCount\":\"3\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

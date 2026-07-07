@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-08-sleep-145",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "DSL 中 6 个 dataModel 路径（sleep.title / deepSleep / lightSleep / quality / weatherSummary / actionText）均使用 {{ $__dataModel.sleep.X }} 完整表达式绑定，onClick 的 call='clickToDeeplink' 与 args.bundleName/abilityName/uri 原样来自 eventCandidates，catalogId/version/size 2x4/updateDataModel 路径与 value 全部符合协议。userQuery 三大诉求'深睡浅睡的 / 点一下能进操作 / 能读天气'都被编码进 DSL。但 content Column 严重溢出导致 5 项关键文本（标题、天气、深睡值、浅睡值、质量评语）在渲染结果中被裁切，用户在卡片上看不到核心数据，视觉交付失败，故 D1 不能给到 7+。",
+    "aesthetic": "配色采用深蓝线性渐变（#101417→#1A2435→#26384A）+ 白色文字与白色 CTA，深浅对比清晰、配色和谐有夜景感；字号 12/14/16/18 与字重 500/600/700/800 处于阶梯上；sky_band 极淡蓝色叠加增加层次。设计意图专业克制，但实际渲染中 8 个文本元素里仅 2-3 个可见（深睡/浅睡 label、按钮），标题、天气、双值、质量全部丢失，CTA 文字也几乎不可读，整体画面半残，美感被严重破坏。",
+    "layout": "根因在 content Column：高度 116、padding top/bottom 10/10，内可用高度 = 116-20 = 96vp。4 个子项高度 = top_row 22 + stage_row 42 + divider 1 + bottom_row 28 = 93vp；itemMargin 8 × 3 = 24vp；合计 93+24 = 117vp > 96vp，溢出 21vp。其中 stage_row 高度 42 来自 deep_block（label 16 + itemMargin 4 + value 22）是最主要的纵向消耗。子项被 itemMargin 8 依次向下推出 root 边界，root clip:true 在 y=140 处裁切，导致标题'睡眠阶段'、天气'晨间多云 22°C'、深睡'2小时10分'、浅睡'4小时05分'、质量'深睡偏少'全部被裁。bottom_row 底沿距卡片底 22vp 也超过 2x4 推荐上限 16vp。"
+  },
+  "issues": [
+    "content Column 子项总高 117vp > 内可用 96vp，溢出 21vp",
+    "5 项关键文本（title / weatherSummary / deepSleep / lightSleep / quality）被 root clip 裁切，用户在卡片上完全看不到",
+    "stage_row 高度 42（label 16 + itemMargin 4 + value 22）过大，占用过多纵向空间",
+    "content Column padding 10/10/10/10 + itemMargin 8 加剧纵向堆积",
+    "bottom_row 底沿距卡片底 22vp，超出 2x4 推荐的 10-14vp 上限",
+    "原 DSL 标题 fontSize 16 与数值 fontSize 18 同处 700-800 字重层级，违反'同一卡片只保留一个最强字重'原则"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_145\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_145\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"sky_band\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF101417\",0],[\"#FF1A2435\",0.62],[\"#FF26384A\",1]]}}},{\"id\":\"sky_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1A64B5F6\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"stage_row\",\"divider\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":2},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"weather\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":100,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.weatherSummary }}\",\"styles\":{\"width\":140,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stage_row\",\"component\":\"Row\",\"children\":[\"deep_block\",\"light_block\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"deep_block\",\"component\":\"Column\",\"children\":[\"deep_label\",\"deep_value\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"deep_label\",\"component\":\"Text\",\"content\":\"深睡\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"deep_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.deepSleep }}\",\"styles\":{\"width\":120,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"light_block\",\"component\":\"Column\",\"children\":[\"light_label\",\"light_value\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"light_label\",\"component\":\"Text\",\"content\":\"浅睡\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"light_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.lightSleep }}\",\"styles\":{\"width\":120,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFE0F2FF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":252,\"height\":1,\"backgroundColor\":\"#33FFFFFF\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"quality\",\"action_btn\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"quality\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.quality }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FF1A2435\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"sleep\":{\"title\":\"睡眠阶段\",\"deepSleep\":\"2小时10分\",\"lightSleep\":\"4小时05分\",\"quality\":\"深睡偏少\",\"weatherSummary\":\"晨间多云 22°C\",\"actionText\":\"进入操作\"}}}}"
+  ]
+}

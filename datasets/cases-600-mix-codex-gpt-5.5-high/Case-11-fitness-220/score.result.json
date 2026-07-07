@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-220",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户主要诉求基本落实：'♪'作为音符图标用文本形式实现'不用图片'约束、'已跑步5公里'动态值、分区不同底色（root深紫渐变/left半透白/right近白/countdown带渐变）、点击 deeplink 跳音乐 APP 放松歌单、夜晚倒计时渐变均已体现。轻微扣分：1) 用户要求日程显示'晚上8点瑜伽'，DSL 用 dtStart+title 拼接成'20:00 瑜伽'，未直接使用 data.calendar.items[0].description='晚上8点瑜伽' 字段；2) root 与 action_btn 同时挂载相同 onClick，存在冗余/双触发风险。",
+    "aesthetic": "整体配色和谐：root 深紫到亮紫渐变呼应夜晚氛围，countdown 带状区用同色调渐变形成统一识别；left 透明白+right 浅白+深紫渐变三层叠加层次清晰；'♪' 用 32 号字白底圆胶囊替代图标，做法巧妙；字号阶梯 10/12/14/16/32 合理。微瑕：relax_label 14+700 与 run_text 16+700 同为最强字重，略违反'同一卡片只保留一个最强字重'原则；schedule_text 12+700 与 countdown_text 14+700 在不同容器内，主次仍可辨。",
+    "layout": "预算核算：root Row 横向 12+12+10+128+138=300 ✓；left_panel Column 纵向 10+10+6*2+18+40+20=110 ≤116 ✓；right_panel Column 纵向 10+10+8*2+38+28+30=132 >116，溢出 16vp；countdown_band Column 纵向 5+5+2+12+18=42 >38，溢出 4vp；schedule_group Column 纵向 0+2+12+16=30 >28，溢出 2vp。三处纵向溢出虽被框架压缩后视觉尚可，但右栏内 action_btn 顶部 y≈104 接近 right_panel 底 128，紧贴边界存在被挤压风险。底边距 12vp 在 2x4 区间 10-14 内 ✓；按钮热区 30vp ≥24 ✓；左右内边距 12vp 共享 ✓。综合扣 3.0 分。"
+  },
+  "issues": [
+    "right_panel Column 纵向占用 132 > 可用 116，溢出 16vp",
+    "countdown_band Column 纵向占用 42 > 可用 38，溢出 4vp",
+    "schedule_group Column 纵向占用 30 > 可用 28，溢出 2vp",
+    "日程文本渲染为'20:00 瑜伽'，未按用户原话显示'晚上8点瑜伽'（应使用 data.calendar.items[0].description）",
+    "root 与 action_btn 重复挂载同一 onClick，存在事件冒泡双触发风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"fitness_relax_220\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"fitness_relax_220\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff202224\",0],[\"#564af7\",0.58],[\"#8c55c2\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"relax_label\",\"music_mark\",\"run_text\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"relax_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.relax.title }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"music_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.relax.musicMark }}\",\"styles\":{\"width\":58,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#ffffffff\",\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#564af7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"run_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.relax.runText }}\",\"styles\":{\"width\":108,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"countdown_band\",\"schedule_group\",\"action_btn\"],\"itemMargin\":6,\"styles\":{\"width\":138,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#f2ffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"countdown_band\",\"component\":\"Column\",\"children\":[\"countdown_label\",\"countdown_text\"],\"itemMargin\":2,\"styles\":{\"width\":122,\"height\":32,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":14,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ff202224\",0],[\"#8c55c2\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"countdown_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.relax.countdownLabel }}\",\"styles\":{\"width\":106,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.relax.countdownText }}\",\"styles\":{\"width\":106,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_group\",\"component\":\"Column\",\"children\":[\"schedule_label\",\"schedule_text\"],\"itemMargin\":2,\"styles\":{\"width\":122,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.relax.scheduleLabel }}\",\"styles\":{\"width\":122,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].description }}\",\"styles\":{\"width\":122,\"height\":12,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.relax.actionText }}\",\"styles\":{\"width\":122,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#564af7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"fitness_relax_220\",\"path\":\"/\",\"value\":{\"relax\":{\"title\":\"运动后放松\",\"musicMark\":\"♪\",\"runText\":\"已跑步5公里\",\"countdownLabel\":\"夜晚放松倒计时\",\"countdownText\":\"距瑜伽 2小时\",\"scheduleLabel\":\"今晚日程\",\"actionText\":\"放松歌单\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"fitness-yoga-2000\",\"title\":\"瑜伽\",\"dtStart\":\"20:00\",\"dtEnd\":\"21:00\",\"eventLocation\":\"\",\"description\":\"晚上8点瑜伽\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

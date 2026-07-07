@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-anti-addiction-041",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "DSL 结构上覆盖了用户五大诉求：Checkbox 组件表达可勾选项、{{$__dataModel.antiAddiction.remainingText}}='8分钟' 显示剩余时间、Button 的 onClick 调用 clickToDeeplink 且 args 来自 eventCandidates、weather.condition+temperatureText 拼出 '多云 26°'、status='快超时' 用胶囊高亮。但 updateDataModel 缺失 path:'/' 字段（违反硬约束），且渲染截断使 Checkbox.label '休息提醒' 与 Button.label '打开应用' 沦为 '...'，导致用户最关心的可勾选条目与点击入口文字不可读，扣分。",
+    "aesthetic": "配色采用 #FFFFF7ED 浅橙底 + #FF7A2E00 深棕标题 + #FFFFA000 暖橙按钮 + #FFFFE0B2 胶囊底，色系统一且暖橙主题和谐。字号梯度 20/16/12/10 合理，数字主指标层级最强。但底部 Checkbox 旁 '...' 截断、Button 内 '...' 截断直接破坏卡片专业感，'wrap':'noWrap' 与 Button fontWeight:'medium' 是非标准属性/值，渲染兼容性存疑。",
+    "layout": "预算核算：root Column 占用 = padding 24 + top 20 + margin 8 + timeBlock 46 + margin 8 + bottom 34 = 140 = 父高 140，无溢出；top Row 占用 = title 54 + margin 6 + status 56 = 116 = 父宽 116，无溢出；timeBlock Column 占用 = remaining 28 + margin 2 + weather 16 = 46 = 父高 46，无溢出；bottom Row 占用 = todo 64 + margin 6 + action 46 = 116 = 父宽 116，无溢出。预算数字全部成立，但实际渲染时：底 todo 的 Checkbox 组件 width=64 容纳不下 '休息提醒'（4 中文字 × fontSize 12 ≈ 48vp）+ 勾选方块占位 + 内部留白，label 被截断为 '...'；底 action Button width=46 容纳不下 '打开应用'（4 中文字 × fontSize 12 = 48vp > 46），文字被截断为 '...'。两个受保护的 CTA 与可勾选项文字被截断，布局名义未溢出但实际呈现失败，扣重分。"
+  },
+  "issues": [
+    "bottom Row 中 Checkbox 组件 width=64 容纳不下 '休息提醒' 4 字 + 勾选方块，label 被截断为 '...'，用户看不到勾选项内容",
+    "bottom Row 中 Button width=46 容纳不下 '打开应用' 4 字 × fontSize 12 = 48vp，文字被截断为 '...'，CTA 不可读",
+    "Button 的 fontWeight:'medium' 是非标准 CSS 值，应改为数字（如 500/700）",
+    "Row 的 wrap:'noWrap' 是非标准属性，建议改为 flexWrap:'nowrap' 或省略",
+    "updateDataModel 缺失 path:'/' 字段，违反硬约束",
+    "'休息提醒' 与 '打开应用' 在 2x2 的 116vp 底部宽度内必须降到 fontSize 10 并显式分容器布局才能完整显示"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_041\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_041\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"timeBlock\",\"bottom\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF7ED\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"width\":54,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF7A2E00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.status }}\",\"styles\":{\"width\":56,\"height\":18,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#FFFFE0B2\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFB45309\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"timeBlock\",\"component\":\"Column\",\"children\":[\"remaining\",\"weather\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"remaining\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.remainingText }}\",\"styles\":{\"width\":116,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FF111827\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition + ' ' + $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#FF6B7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"todo\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"todo\",\"component\":\"Row\",\"children\":[\"todoBox\",\"todoLabel\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":28,\"alignItems\":\"center\"}},{\"id\":\"todoBox\",\"component\":\"Checkbox\",\"select\":\"{{ $__dataModel.antiAddiction.todo.done }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#FFFFA000\",\"unSelectedColor\":\"#FFB45309\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"todoLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.todo.label }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF374151\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"styles\":{\"width\":50,\"height\":30,\"borderRadius\":15,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"backgroundColor\":\"#FFFFA000\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_041\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"防沉迷\",\"remainingMinutes\":8,\"remainingText\":\"8分钟\",\"status\":\"快超时\",\"actionText\":\"打开应用\",\"todo\":{\"label\":\"休息提醒\",\"done\":false}},\"weather\":{\"temperatureText\":\"26°\",\"condition\":\"多云\"}}}}"
+  ]
+}

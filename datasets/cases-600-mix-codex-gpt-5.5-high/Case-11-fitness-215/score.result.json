@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-11-fitness-215",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "全部主要诉求都已落实：顶部日字大文字符号作主视觉（fontSize 32 + fontWeight 700）、'今天适合跑步'固定文案、'上午9-10点空闲'日历展示、整体 onClick 绑定 clickToDeeplink 且 uri 与 eventCandidates 完全一致、三块分区采用不同底色（白/半透白/浅黄）、橙黄渐变（#fff7ed→#ffedd5→#ff9500）、纵向三项（跑 晨跑 / 走 午餐散步 / 瑜 晚间瑜伽）使用文字符号无状态色。dataModel 与 TaskSpec 一致。扣分点：sun_panel 多了一个 '看天气' weatherHint 子项，userQuery 并未要求这块辅助文字，属于轻微多余信息。",
+    "aesthetic": "橙黄线性渐变（135°）运动感到位，sun_panel 白色块与 summary_panel 半透明白形成层次，前景深棕 #ff7c2d12 / 暖橙 #ff92400e / 亮橙 #ffff9500 在浅色底上对比清晰。扣分点：sun_glyph（700）与 title_text（700）同时使用最强字重 700，违反'同一卡片只保留一个最强字重'原则；plan_list 字号 10 偏小，文字密度感觉略拥挤；summary_panel 的 ccffffff 半透白与渐变底色融合，层次稍弱。",
+    "layout": "关键预算核算：(1) root Column 高 140：padding.top 12 + padding.bottom 12 + itemMargin 4×1=8 + hero_row 66 + plan_list 42 = 140，可用 140，紧贴边界无空间冗余；(2) hero_row 宽 276：itemMargin 10 + sun_panel 78 + summary_panel 188 = 276 ✓；(3) sun_panel 高 66：padding 6+6=12 + itemMargin 4 + sun_glyph 36 + weather_hint 14 = 66 ✓；(4) summary_panel 高 66：padding 8+8=16 + itemMargin 8 + title 24 + calendar 20 = 68 > 66，溢出 2vp；(5) plan_list 高 42：padding 5+5=10 + itemMargin 4×2=8 + 3×10=30 = 48 > 42，溢出 6vp。summary_panel 与 plan_list 均发生 Column 内容超出固定高度，配合 root.clip=true 会导致底边被裁切或文本压紧。底边到卡片底 12vp 在 2x4 允许范围 (10-14vp) 内 ✓。"
+  },
+  "issues": [
+    "plan_list Column 内容计算高 48 > 固定高 42，溢出 6vp",
+    "summary_panel Column 内容计算高 68 > 固定高 66，溢出 2vp",
+    "sun_glyph 与 title_text 同时使用 fontWeight 700，违反单一最强字重原则",
+    "root Column 内部无任何余量空间，hero_row 高度与 plan_list 高度均为边界值",
+    "weatherHint '看天气' 子项为 userQuery 未要求的额外信息",
+    "summary_panel 背景 ccffffff 在橙黄渐变上对比不足，层次偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_215\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_215\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"plan_list\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fffff7ed\",0],[\"#ffffedd5\",0.58],[\"#ffff9500\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"sun_panel\",\"summary_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":64,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sun_panel\",\"component\":\"Column\",\"children\":[\"sun_glyph\"],\"styles\":{\"width\":78,\"height\":64,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"sun_glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.heroGlyph }}\",\"styles\":{\"width\":62,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffff9500\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"calendar_text\"],\"itemMargin\":4,\"styles\":{\"width\":188,\"height\":64,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"borderRadius\":18,\"backgroundColor\":\"#fffffaf0\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":164,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff7c2d12\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.freeTimeText }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff92400e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_list\",\"component\":\"Column\",\"children\":[\"plan_morning\",\"plan_noon\",\"plan_evening\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":48,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":16,\"backgroundColor\":\"#fffef3c7\",\"justifyContent\":\"center\",\"alignItems\":\"stretch\"}},{\"id\":\"plan_morning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.plans[0].glyph + '  ' + $__dataModel.fitness.plans[0].label }}\",\"styles\":{\"width\":256,\"height\":10,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff7c2d12\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_noon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.plans[1].glyph + '  ' + $__dataModel.fitness.plans[1].label }}\",\"styles\":{\"width\":256,\"height\":10,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff7c2d12\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_evening\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.plans[2].glyph + '  ' + $__dataModel.fitness.plans[2].label }}\",\"styles\":{\"width\":256,\"height\":10,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff7c2d12\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_215\",\"value\":{\"fitness\":{\"heroGlyph\":\"日\",\"weatherHint\":\"看天气\",\"title\":\"今天适合跑步\",\"freeTimeText\":\"上午9-10点空闲\",\"plans\":[{\"glyph\":\"跑\",\"label\":\"晨跑\"},{\"glyph\":\"走\",\"label\":\"午餐散步\"},{\"glyph\":\"瑜\",\"label\":\"晚间瑜伽\"}]},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

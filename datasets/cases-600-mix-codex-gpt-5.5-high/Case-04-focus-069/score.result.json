@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-069",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户三大诉求均已落实：①显示专注时长——以32pt大字号展示'48分钟'；②点一下能跳到app——root Row与action Button均挂载clickToDeeplink，call/args原样来自TaskSpec（bundleName/abilityName/uri一致）；③看到已完成——以浅绿胶囊徽章展示'已完成'状态。数据字段title/durationText/statusText/progressValue/progressTotal/actionText均通过{{ $__dataModel.focus.* }}正确绑定。createSurface.catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、width=300/height=140、borderRadius=22、padding=12均满足2x4协议。updateDataModel.path='/'且value与TaskSpec完全一致。轻微扣分：进度环中心也写'已完成'造成信息冗余，略有重复。",
+    "aesthetic": "配色采用同色系绿色（#fff0fdf4→#ffffffff渐变背景、#ff166534/#ff14532d深绿文字、#ff22c55e强调色、#ffd9f99d徽章底色），整体和谐统一，绿色完成态语义契合。进度环作为视觉焦点合理。但存在两个明显样式问题：①全卡有5处元素（title、duration、status、ring_label、action）均使用fontWeight=700，违反'同一卡片只保留一个最强字重'的硬约束，视觉权重混乱；②'已完成'同时出现在状态徽章和进度环中心，信息冗余。",
+    "layout": "按预算公式逐项核算：root Row横向=padding(12+12)+itemMargin(12)+main_panel(154)+side_panel(110)=300✓，纵向=padding(12+12)+max(116,116)=140✓。main_panel Column纵向=padding(0+0)+itemMargin(8×2)+22+38+24=100≤116✓。side_panel Column纵向=padding(8+8)+itemMargin(12)+meter(68)+action(28)=124>116，溢出8vp（明确违反硬约束）；横向=padding(8+8)+max(68,84)=100≤110✓。虽然justifyContent:center让action底部落在y≈124、距卡片底≈16vp（恰好在≤16vp的边界），但side_panel内容区仅100高而内容总高108，元素已被压入padding区，布局过紧。Button热区84×28≥24vp✓。"
+  },
+  "issues": [
+    "side_panel Column纵向预算124>116，溢出8vp（硬约束违反）",
+    "全卡5处元素使用fontWeight=700，违反'同一卡片只保留一个最强字重'约束",
+    "'已完成'在状态徽章和进度环中心重复显示，信息冗余",
+    "进度环68×68在side_panel中占用过大，挤压action与底部锚定空间",
+    "action底部到卡片底部距离≈16vp，恰好压在≤16vp的边界上，容错空间不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_069\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_069\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#fff0fdf4\",0],[\"#ffffffff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus/record\"}}]},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title\",\"duration\",\"status\"],\"itemMargin\":8,\"styles\":{\"width\":154,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":8,\"bottom\":8},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":154,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ff166534\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.durationText }}\",\"styles\":{\"width\":154,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff14532d\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":76,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffd9f99d\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"meter\",\"action\"],\"itemMargin\":0,\"styles\":{\"width\":110,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"meter\",\"component\":\"Stack\",\"children\":[\"ring\",\"ring_label\"],\"styles\":{\"width\":60,\"height\":60,\"alignContent\":\"center\"}},{\"id\":\"ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.focus.progressValue }}\",\"total\":\"{{ $__dataModel.focus.progressTotal }}\",\"styles\":{\"type\":\"ring\",\"width\":60,\"height\":60,\"color\":\"#ff22c55e\",\"backgroundColor\":\"#ffe5e7eb\"}},{\"id\":\"ring_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.progressValue }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":84,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus/record\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_069\",\"path\":\"/\",\"value\":{\"focus\":{\"mock\":true,\"title\":\"专注时长\",\"durationText\":\"48分钟\",\"statusText\":\"已完成\",\"progressValue\":48,\"progressTotal\":60,\"actionText\":\"查看\"}}}}"
+  ]
+}

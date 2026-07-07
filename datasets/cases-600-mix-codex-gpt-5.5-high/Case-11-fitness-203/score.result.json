@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-11-fitness-203",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户诉求基本落实：户外跑步卡 ✓、公里数绑定 run.distanceText ✓、点击调用 clickToDeeplink 跳转到 huaweischeme deeplink ✓、从 data.calendar.items[0] 读取 dtStart 与 title ✓、状态显示'已完成' ✓。事件 call/args 原样来自 eventCandidates，Image.src 原样来自 assetCandidates，size=2x2、root 140x140、borderRadius=18、catalogId/version 均正确。轻微扣分：'文字压在背景图上'的设计意图被运行图标遮挡文字所削弱。",
+    "aesthetic": "绿色线性渐变（#0f7b63→#23c16b）配色和谐，白色文字在绿底上对比清晰，状态药丸（白底绿字）设计精致。但存在明显问题：1) 同一卡片同时使用 fontWeight 700（title/distance/status）与 600（time/eventTitle），违反'只保留一个最强字重'的规则；2) 运行图标 72x72 过大且置于右侧中央，与受保护文字发生严重视觉交叉，整体显得凌乱不专业。",
+    "layout": "预算核算：content Column 子项占高 18+42+16+22=98 + 3*5=15 = 113 ≤ 116，可用 116，OK；topRow 横向 62+48+6=116 = 116，OK。但 Stack 内 runBg 图像 72x72 位于 margin left:44 top:30 即 root 坐标 (44,30)-(116,102)，与 distance 文字区 (12,36)-(128,78) 在 x∈[44,84]、y∈[36,78] 重叠约 40x42 区域，'6'字被人形线条穿过；与 eventTitle 文字区 (12,84)-(128,100) 在 x∈[44,72]、y∈[84,100] 重叠约 28x16 区域，'跑'字被腿部线条穿过。两条受保护文本被运行图标视觉穿透，扣重分。"
+  },
+  "issues": [
+    "运行图标 72x72 与主指标'5.6'大面积重叠（约 40x42 区域），'6'字被人形线条穿过",
+    "运行图标与日程标题'公园户外跑'重叠（约 28x16 区域），'跑'字被人形腿部线条穿过",
+    "同一卡片同时使用 fontWeight 700 与 600，违反单一最强字重规则",
+    "距离数字 fontSize 40 占用约 64vp 宽，与右侧 72x72 图标横向争抢空间，导致 Stack 层叠遮盖"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_203\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_203\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"runBg\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0f7b63\",0],[\"#ff23c16b\",1]]}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"runBg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.runGlyph }}\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\",\"margin\":{\"left\":76,\"top\":60}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"topRow\",\"distance\",\"eventTitle\",\"status\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"title\",\"time\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.run.title }}\",\"styles\":{\"width\":62,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ddffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.run.distanceText }}\",\"styles\":{\"width\":70,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":64,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#eeffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.run.status }}\",\"styles\":{\"width\":54,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#eeffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0f7b63\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_203\",\"value\":{\"run\":{\"title\":\"户外跑步\",\"distanceText\":\"5.6\",\"status\":\"已完成\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"fitness-203-run\",\"title\":\"公园户外跑\",\"dtStart\":\"07:30\",\"dtEnd\":\"08:10\"}]}},\"asset\":{\"runGlyph\":\"resources/base/media/icon_run.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

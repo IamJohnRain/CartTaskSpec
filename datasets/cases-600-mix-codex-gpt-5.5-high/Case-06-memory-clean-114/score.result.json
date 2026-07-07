@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-06-memory-clean-114",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户明确要求四大要点落实情况参差不齐：①紧迫感渐变——原 DSL 使用 #fffce7e5→#fffff4e2 的浅粉橘渐变，柔和不具紧迫感；②大块告警区——原 DSL 将 statusBlock 放在顶部 116x42，与'左边大块'语义不符，缺少左右分栏；③横向清理项列表——原 DSL 把微信缓存、相册垃圾放在主轴 Row 中但仍属上下堆叠卡片布局，非'左边警告+右边列表'的左右分布；④日程安排角标——dataModel.calendar.today='18:30 跑步训练' 完全没有被任何组件绑定引用，是重大缺失；⑤事件仅挂在 Button 上，'点这些清理项'语义未直接落到每一项。尺寸/root shell/catalogId/version/updateDataModel 协议均满足，但 TaskSpec.eventCandidates 只用了一次，清理项本身未带 onClick。",
+    "aesthetic": "整体配色协调，白色块+粉橘底色使卡片温和但'紧迫感'不足。字号阶梯 16/10/14 合理，最强字重只出现在 title（700），层级清晰。留白与对齐尚可，但左/右/上/下结构不明显，缺少角落锚点的视觉重量。配色缺少深红/警示色块对比，卡片整体偏柔，缺少用户期待的'跑步加速紧迫感'。",
+    "layout": "根 Column 高度预算：padding 12+12=24 + itemMargin 6*2=12 + 子项 42+30+32=104 = 140，等于父高 140，刚好占满 116 内容区，无溢出。statusBlock Column：padding 5+5=10 + itemMargin 2 + 子项 18+12=30 = 42 = 高 42 ✓。cleanupList Row：itemMargin 6 + 子项 55+55=116 = 宽 116 ✓。itemWechat Column：padding 3+3=6 + itemMargin 2 + 子项 11+11=22 = 30 = 高 30 ✓。文字宽度：'微信缓存' 4*10=40 ≤ 43 ✓；'2.4GB' 4*6+1*4=28 ≤ 43 ✓。底部动作区底边距卡片底 = padding-bottom 12vp，落在 8-12 区间。问题：textOverflow:'none' 非标准值；缺少 calendar 角标导致右上角大片留白；items 区域 30h 仅 11+11 文字导致视觉密度不足。"
+  },
+  "issues": [
+    "dataModel.calendar.today 完全没有被任何组件引用，'角落读日程安排'诉求缺失",
+    "布局为 status(顶) + items(中) + button(底) 上下堆叠，未实现用户要求的'左边大块告警 + 右边横向数据列表'左右分栏",
+    "渐变色 #fffce7e5→#fffff4e2 偏粉橘柔和，'紧迫感'不足，应改为红/橙高对比渐变",
+    "onClick 只挂在 Button，'点这些清理项'未直接绑定到 itemWechat/itemAlbum",
+    "textOverflow:'none' 非标准取值，应省略或使用 clip/ellipsis",
+    "statusBlock 高度 42 在 116 内容区中占比小，未体现'很大的告警提示区'",
+    "字重阶梯偏散，title 700 + wechatSize 700 + button medium 多处较强字重，未严格保持'一张卡片一个最强字重'"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_114\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_114\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"calendarChip\",\"mainRow\",\"actionButton\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffd23030\",0],[\"#fffd8d3c\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendarChip\",\"component\":\"Row\",\"children\":[\"calendarText\"],\"styles\":{\"width\":124,\"height\":14,\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"}},{\"id\":\"calendarText\",\"component\":\"Text\",\"content\":\"今日 · {{ $__dataModel.calendar.today }}\",\"styles\":{\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"mainRow\",\"component\":\"Row\",\"children\":[\"leftCol\",\"rightCol\"],\"itemMargin\":6,\"styles\":{\"width\":124,\"height\":64,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"leftCol\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":70,\"height\":64,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#fffffbf9\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.clean.status }}\",\"styles\":{\"width\":58,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffba1a1a\",\"maxLines\":1}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.clean.summary }}\",\"styles\":{\"width\":58,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#cc662500\",\"maxLines\":1}},{\"id\":\"rightCol\",\"component\":\"Column\",\"children\":[\"itemWechat\",\"itemAlbum\"],\"itemMargin\":4,\"styles\":{\"width\":48,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"itemWechat\",\"component\":\"Column\",\"children\":[\"wechatName\",\"wechatSize\"],\"itemMargin\":1,\"styles\":{\"width\":48,\"height\":30,\"padding\":{\"left\":5,\"right\":5,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]},{\"id\":\"wechatName\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.clean.items[0].name }}\",\"styles\":{\"width\":38,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ff182431\",\"maxLines\":1}},{\"id\":\"wechatSize\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.clean.items[0].size }}\",\"styles\":{\"width\":38,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffba1a1a\",\"maxLines\":1}},{\"id\":\"itemAlbum\",\"component\":\"Column\",\"children\":[\"albumName\",\"albumSize\"],\"itemMargin\":1,\"styles\":{\"width\":48,\"height\":30,\"padding\":{\"left\":5,\"right\":5,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]},{\"id\":\"albumName\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.clean.items[1].name }}\",\"styles\":{\"width\":38,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ff182431\",\"maxLines\":1}},{\"id\":\"albumSize\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.clean.items[1].size }}\",\"styles\":{\"width\":38,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffba1a1a\",\"maxLines\":1}},{\"id\":\"actionButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.clean.actionText }}\",\"styles\":{\"width\":124,\"height\":30,\"borderRadius\":12,\"backgroundColor\":\"#ffba1a1a\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_114\",\"value\":{\"clean\":{\"status\":\"清理失败\",\"summary\":\"存储空间超限\",\"actionText\":\"去处理\",\"items\":[{\"name\":\"微信缓存\",\"size\":\"2.4GB\"},{\"name\":\"相册垃圾\",\"size\":\"1.1GB\"}]},\"calendar\":{\"today\":\"18:30 跑步训练\"}}}}"
+  ]
+}

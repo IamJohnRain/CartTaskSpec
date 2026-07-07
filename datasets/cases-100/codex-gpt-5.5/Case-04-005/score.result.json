@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-04-005",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "尺寸 2x4（300x140）、catalogId/version/root shell/onClick(call=clickToDeeplink,args 原样)均满足。dataModel 字段映射齐全：title、modeText、pomodoro.remainingText/label/progress、study.durationText/goalText、breakReminder.triggerText/message 全部绑定到组件。但用户明确点名的'该休息了，起来接杯水'休息提示被截断，丢失了'接杯水'关键信息，扣分。",
+    "aesthetic": "配色采用 #2E7D32 深绿 + #F6FAF7 浅薄荷底 + #9A6700 琥珀色提醒，色相协调，信息层级清晰，背景与前景文字对比度足够。但违规点：focus_mark、title_text、timer_value、duration_text 四处均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'的硬规则；此外最强字重落在装饰性 FOC 徽标上而非主指标 25:00，权重分布不当。",
+    "layout": "核心问题三处：(1) root Column 纵向预算：可用 116，children 占 22(top_row)+58(main_row)+28(focus_button)=108，itemMargin 8*(3-1)=16，padding 24，总计 148>140，溢出 8vp（依赖 clip:true 才能不暴露）。(2) study_col 纵向预算：可用 58，children 22+14+18=54，itemMargin 4*2=8，总计 62>58，溢出 4vp。(3) reminder_text 内容'满2小时提醒 · 该休息了，起来接杯水'估算宽度 ≈ 13*10 + 4*4 = 154 > 容器 140，必被截断，截图证实仅显示到'该休息了，起来'，用户原文'接杯水'丢失。Button 112x28 热区达标、底边 12vp 在 10-14 区间，受保护文本 timer_value/title 完整显示，但 reminder_text 属用户显式诉求字段被截断属严重违规。"
+  },
+  "issues": [
+    "root Column 内容纵向占高 148>116，溢出 8vp，依赖 clip 才能隐藏",
+    "study_col 内容纵向占高 62>58，溢出 4vp",
+    "reminder_text 文本宽度 154>容器 140，关键文案'接杯水'被截断丢失",
+    "fontWeight 700 在 focus_mark/title_text/timer_value/duration_text 四处共用，违反'只保留一个最强字重'",
+    "最强字重落在装饰徽标 FOC 上，弱化了主指标 25:00 的视觉主导",
+    "focus_mark 高度 22 与 mode_text 高度 18 在 alignItems:center Row 中存在基线不齐"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_04_005_study_focus\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_04_005_study_focus\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"focus_button\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF6FAF7\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"mode_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.modeText }}\",\"styles\":{\"width\":180,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF2E7D32\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"timer_col\",\"study_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"timer_col\",\"component\":\"Column\",\"children\":[\"timer_value\",\"timer_label\",\"timer_progress\"],\"itemMargin\":4,\"styles\":{\"width\":124,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"timer_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.pomodoro.remainingText }}\",\"styles\":{\"width\":124,\"height\":30,\"fontSize\":24,\"fontWeight\":700,\"fontColor\":\"#FF2E7D32\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.pomodoro.label }}\",\"styles\":{\"width\":124,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.focus.pomodoro.progress }}\",\"styles\":{\"width\":124,\"height\":4,\"progressColor\":\"#FF2E7D32\",\"trackColor\":\"#1F2E7D32\"}},{\"id\":\"study_col\",\"component\":\"Column\",\"children\":[\"duration_text\",\"goal_text\",\"reminder_text\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.study.durationText }}\",\"styles\":{\"width\":140,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"goal_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.study.goalText }}\",\"styles\":{\"width\":140,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.breakReminder.message }}\",\"styles\":{\"width\":140,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF9A6700\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"focus_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":124,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF2E7D32\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_04_005_study_focus\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"图书馆专注\",\"modeText\":\"社交APP通知已屏蔽\",\"buttonText\":\"开启专注\",\"pomodoro\":{\"remainingText\":\"25:00\",\"label\":\"番茄钟倒计时\",\"progress\":0},\"study\":{\"durationText\":\"已学 0小时00分\",\"goalText\":\"目标 2小时\"},\"breakReminder\":{\"triggerText\":\"满2小时提醒\",\"message\":\"该休息了，起来接杯水\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

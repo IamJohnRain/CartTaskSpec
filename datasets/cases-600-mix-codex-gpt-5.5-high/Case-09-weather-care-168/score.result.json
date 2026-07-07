@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-09-weather-care-168",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "用户要求天气卡、文字叠图、数字可变、点击能开app且app能念、要显示已完成，全部满足：标题/温度/状态/朗读文本完整呈现；temperatureText 通过 {{...}} 绑定支持变化；root 与 Button 都接 clickToDeeplink 到 weather://home；天气图标作为低透明度背景实现「文字叠图」；「已完成」在右上绿色徽章显著展示，并在 hint 中再次出现。轻微扣分点：状态文本「已完成」在徽章和底部 hint 出现两次略显重复；Button fontWeight 用了字符串 'medium' 而非规范数值。",
+    "aesthetic": "整体配色和谐，深青→翠绿 135° 渐变 + 白色主文字 + 暖黄 condition 强调色 + 绿色 status 徽章 + 白色 CTA 按钮，层次清晰可读性良好。低透明度的天气图标在右上作底纹装饰富有质感。扣分点：title(12/700)、status(12/700)、condition(14/700)、temperature(32/700) 四个元素共用 700 字重，最强字重不止一个，标题与徽章的视觉权重被 condition 14/700 反超，层级略有混乱；Button 字重用了 'medium' 字符串不够规范。",
+    "layout": "逐项预算核算：root Stack 300x140 padding12 → 内容 276x116；content Column 纵向 = 8*2 + 28 + 42 + 30 = 116 = 可用 116，刚好填满不溢出；top_row 横向 = 10 + 176 + 64 = 250 ≤ 276 ✅；title_group Column 纵向 = 2 + 14 + 12 = 28 = 28 ✅；main_row 横向 = 12 + 88 + 176 = 276 = 276 刚好相等 ✅；weather_text Column 纵向 = 4 + 18 + 18 = 40 = 40 ✅；bottom_row 横向 = 10 + 158 + 92 = 260 ≤ 276 ✅；Button 92x30 热区≥24vp；底部到卡片底边距离 140-(12+28+8+42+8+30)=12vp，处于 10-14vp 区间内。文本宽度：title 「天气关怀」≈48≤176；location 「杭州 西湖」≈54≤176；status 「已完成」≈36≤64；temperature 「32°C」≈51.2≤88；condition 「多云转晴」≈56≤176；readout「多云转晴 32 度，午后注意防晒」≈156≤176 临界但单行通过；hint「语音播报 已完成」≈88.8≤158；无截断。Stack 叠层：weather_bg(opacity 0.3, 182-274, 12-104) 与 status_badge 区域(224-288, 14-38)重叠但 badge 有绿色实底覆盖；与 readout(112-268, 71-89) 部分重叠但 readout 文字在最上层且 Image 透明度低，不影响阅读。综合无溢出、无截断、无关键遮挡。"
+  },
+  "issues": [
+    "状态文本「已完成」在右上 status_badge 和底部 hint 中重复出现，信息冗余",
+    "title/status/condition/temperature 四个元素共用 fontWeight:700，最强字重不唯一，标题与徽章视觉权重被 condition(14/700) 反超，层级不够清爽",
+    "Button 的 fontWeight 使用了字符串 'medium'，应改为规范数值 500",
+    "底部 hint 文本「语音播报 已完成」与右上徽章内容重复，建议改为「已为您播报」之类更克制的措辞",
+    "weather_bg 图片 x=182-274 与 readout 文字 x=112-268 在 182-268 区间重叠，虽然 opacity 0.3 与文字上层层级不构成阅读障碍，但理论上有微弱干扰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_168\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_168\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"weather_bg\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a4b5a\",0],[\"#ff148f8f\",0.62],[\"#ff39b6a3\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"weather_bg\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":84,\"height\":84,\"objectFit\":\"contain\",\"margin\":{\"left\":190,\"top\":16},\"opacity\":0.28}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_group\",\"status_badge\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title\",\"location\"],\"itemMargin\":2,\"styles\":{\"width\":176,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.location }}\",\"styles\":{\"width\":176,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.statusText }}\",\"styles\":{\"width\":64,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff1aab89\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"temperature\",\"weather_text\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temperature\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":88,\"height\":42,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Column\",\"children\":[\"condition\",\"readout\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#fffff2b3\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"readout\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.readout }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"hint\",\"open_weather\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"已为您语音播报\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionText }}\",\"styles\":{\"width\":92,\"height\":30,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a6f73\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_168\",\"value\":{\"weather\":{\"title\":\"天气关怀\",\"location\":\"杭州 西湖\",\"temperature\":32,\"temperatureText\":\"32°C\",\"condition\":\"多云转晴\",\"readout\":\"多云转晴 32 度，午后注意防晒\",\"statusText\":\"已完成\",\"actionText\":\"看天气\"}}}}"
+  ]
+}

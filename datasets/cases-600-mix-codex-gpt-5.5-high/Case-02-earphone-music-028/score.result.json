@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-028",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求耳机卡、主体是图、点一下跳app、有提醒说快不行了。卡片标题'耳机音乐'、主体为 72x72 耳机图标、Button 带 clickToDeeplink 事件（call/args 原样来自 eventCandidates）、warningText'耳机快不行了'均已落实。assetCandidates 的 earphone_icon 与 music_icon 正确绑定到 /asset/earphoneIcon 和 /asset/musicIcon。size=2x4、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 与 value 与 TaskSpec 一致，协议硬约束全部满足。轻微扣分：仅按钮可点击，未将整个卡片设为可点击热区（用户口语'点一下跳app'可能期望整卡可点）。",
+    "aesthetic": "配色和谐（米色底 #FFF7F0 + 暖橙面板 #FFE3C2 + 红色警告 #E84026 + 蓝色 CTA #1A73E8），前景文字在背景上对比清晰可读。字号阶梯 16/14/12 在合理范围。但存在明显字重层级问题：title 700、warning 700、button 700、battery_badge 700 共 4 处使用最强字重，违反'同一卡片只保留一个最强字重'规则，导致视觉重点不收敛、层级扁平化。间距 12/8/6 与对齐基本统一，留白合理。",
+    "layout": "root Row 横向：padding 12+12 + itemMargin 12 + visual_panel 108 + info_col 156 = 300 ✓。root Row 纵向：alignItems center，116 居中于 116 可用空间 ✓。info Column 纵向：itemMargin 8×3 + 子项 22+18+18+28 = 110 ≤ 可用 116 ✓。title Row 横向：itemMargin 6 + 20 + 130 = 156 ✓。Stack 中电池徽章 margin(left:60,top:76)→位置 (60,76)-(100,96) 与耳机图标 72×72 居中位置 (18,22)-(90,94) 存在约 30×18 区域重叠，但属于可接受的通知徽章设计模式（信息在上层、视觉在底层），图标主体仍清晰可辨。底部动作区底边到卡片底边约 15vp，符合 ≤16vp 要求。Button 热区 96×28 ≥ 24vp ✓。title 文本'耳机音乐'4 字×16=64 ≤ 130 ✓，device_name 'FreeBuds Pro' ≈ 98 ≤ 156 ✓，warning '耳机快不行了' 6×14=84 ≤ 156 ✓，button '打开音乐' 4×14=56 ≤ 96 ✓，无文字截断风险。"
+  },
+  "issues": [
+    "多个元素（title、warning、button、battery_badge）均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'的层级规则",
+    "电池徽章 (60,76)-(100,96) 与耳机图标 (18,22)-(90,94) 存在约 30×18 区域重叠（属于可接受的通知徽章设计模式）",
+    "仅 Button 可点击，整卡未设为可点击热区，与用户口语'点一下跳app'的潜在期望略有偏差"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_02_028_earphone_music\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_02_028_earphone_music\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"visual_panel\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFF7F0\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"visual_panel\",\"component\":\"Stack\",\"children\":[\"earphone_icon\",\"battery_badge\"],\"styles\":{\"width\":108,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#FFFFE3C2\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.earphoneIcon }}\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\"}},{\"id\":\"battery_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.batteryText }}\",\"styles\":{\"width\":40,\"height\":20,\"margin\":{\"left\":60,\"top\":76},\"borderRadius\":10,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_row\",\"device_name\",\"warning_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":156,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"music_icon\",\"title_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.musicIcon }}\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.title }}\",\"styles\":{\"width\":130,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FF26180A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"device_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.name }}\",\"styles\":{\"width\":156,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF5C3B00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.warningText }}\",\"styles\":{\"width\":156,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.device.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF1A73E8\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_02_028_earphone_music\",\"path\":\"/\",\"value\":{\"device\":{\"title\":\"耳机音乐\",\"name\":\"FreeBuds Pro\",\"batteryLevel\":9,\"batteryText\":\"9%\",\"warningText\":\"耳机快不行了\",\"actionText\":\"打开音乐\"},\"music\":{\"playlistName\":\"收藏歌单\"},\"asset\":{\"earphoneIcon\":\"resources/base/media/icon_earphone.png\",\"musicIcon\":\"resources/base/media/icon_music.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

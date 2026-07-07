@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-10-rainy-taxi-193",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "尺寸 2x4、root shell、catalogId、version、updateDataModel 均满足协议；伞字符图标、标题/副标题、三个目的地(公司/家/学校)在 dataModel 中齐备，设置提醒 onClick 的 call/args 原样来自 eventCandidates。但 Button 组件使用了 'content' 字段而非协议规定的 'label' 字段（违反硬约束 '用 Text.content / Image.src / Button.label'），导致按钮文字在渲染中不显示；横排三个目的地色块在截图中完全缺失（模板循环未渲染或被吞），属于关键诉求缺失，扣重分。",
+    "aesthetic": "蓝紫 135° 渐变（#2f6df6→#7b61ff）方向与配色与指令契合，伞字圆形徽章+白字标题层级清晰、留白合理。问题在于底部按钮文字因 Button.content 协议违规未渲染、三个目的地色块整行未出现，导致卡片下半部分留有大片空白，视觉重心偏上，密度失衡、看起来未完成。",
+    "layout": "预算核算：root Column 内容区 276x116，子项 itemMargin=8，三子项高度 40+30+30=100，加上 padding 12+12 与 itemMargin 16 共 140，等于容器高度 140，无溢出。top_row Row：40(umbrella)+10(margin)+226(title_block)=276，恰好等于父宽 276，无溢出。title_block Column：20+2+16=38=容器高 38，无溢出。dest_row Row：86*3+8*2=274 ≤ 276，水平方向不溢出（剩余 2vp）。但渲染截图显示 dest_row 三个目的地色块整行未出现、remind_btn 文字因协议字段错误丢失，下半部分大面积空白；Button 热区 30 高度≥24vp 满足，但 CTA 文字不可见属于严重可读性问题。"
+  },
+  "issues": [
+    "Button 组件使用 'content' 字段，违反硬约束 'Button.label'，导致 '设置提醒' 文字在渲染中不显示",
+    "横排三个目的地色块（公司/家/学校）在渲染截图中完全缺失，dest_row 区域为空白",
+    "卡片下半部因上述问题出现大片空白，密度与重心失衡",
+    "title 字体 fontWeight=800 与其他元素 700/500 共存时层级尚可，但 title 16 + subtitle 12 的字号差偏小，subtitle 视觉权重不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"dest_row\",\"remind_btn\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff2f6df6\",0],[\"#ff7b61ff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"umbrella_badge\",\"title_block\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":40,\"alignItems\":\"center\"}},{\"id\":\"umbrella_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.iconText }}\",\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#26ffffff\",\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_block\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":4,\"styles\":{\"width\":226,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":226,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.subtitle }}\",\"styles\":{\"width\":226,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dest_row\",\"component\":\"Row\",\"children\":[{\"componentId\":\"dest_item\",\"path\":\"/taxi/destinations\"}],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":30,\"alignItems\":\"center\"}},{\"id\":\"dest_item\",\"component\":\"Text\",\"content\":\"{{ $item.name }}\",\"styles\":{\"width\":86,\"height\":30,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":15,\"backgroundColor\":\"#33ffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remind_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.reminderText }}\",\"styles\":{\"width\":104,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff2f6df6\",\"textAlign\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.deskclock\",\"abilityName\":\"com.huawei.deskclock.MainAbility\",\"uri\":\"clock://alarm\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"value\":{\"taxi\":{\"iconText\":\"伞\",\"title\":\"雨天打车\",\"subtitle\":\"常用目的地一键准备\",\"destinations\":[{\"name\":\"公司\"},{\"name\":\"家\"},{\"name\":\"学校\"}],\"reminderText\":\"设置提醒\"}}}}"
+  ]
+}

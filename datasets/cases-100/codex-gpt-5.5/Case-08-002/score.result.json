@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-08-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.3,
+  "reasons": {
+    "instruction": "用户要求的所有要素都已落实：顶部睡眠图标（SLP 徽标）+ 标题显示当前睡眠状态（睡眠不足），中间圆环进度图展示比例（78%），右侧显示具体时长（6.2小时），标题因 6.2<7 小时被设为红色（#FFC73426），底部按钮通过 clickToDeeplink 事件正确调用闹钟应用。数据绑定路径与 dataModel 完全一致，事件 call/args 原样来自 eventCandidates，size=2x4、catalogId、version、updateDataModel 等硬约束均满足。轻微扣分：圆环旁的 '78%' 文本因 Stack 渲染行为非重叠导致视觉上出现在圆环下方灰盒中；assetCandidates 为空未能使用真实睡眠图标。",
+    "aesthetic": "配色和谐：深蓝主色（#354A8C）与红色警告（#FFC73426）形成清晰对比，背景浅灰（#FFF7F8FA）柔和不刺眼。字号阶梯合理：20pt 主指标/14pt 标题/12pt 辅助/10pt 次要。底部按钮使用主色填充与 16 圆角，视觉锚点明确。扣分点：圆环下方的灰色方块（progress_text 实际渲染结果）显得突兀且不专业，破坏了中部的视觉平衡；title_text 与 hours_value 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'原则。",
+    "layout": "逐项核算：①Root Column 纵向占用 = padding-top(12) + top_row(26) + itemMargin(8) + main_row(50) + itemMargin(8) + button(32) + padding-bottom(12) = 148 > 父高 140，溢出 8vp，底部按钮存在被 clip 裁剪或挤压风险。②progress_stack(74x50) 内含 ring(50x50)+text(50x18)=68，但 A2UI Stack 实际按垂直流布局（截图佐证），text 溢出 Stack 底部 18vp，渲染为圆环下方独立灰盒。③hours_col 子项占高 28+4+16=48 < 50 OK；④top_row 34+8+234=276 OK；⑤title_group 14+2+10=26 OK；⑥main_row 50+14+92=156 < 276（justifyContent:center 留白）OK；⑦按钮热区 132x32 ≥ 24vp OK。底部动作区距卡片底边=padding-bottom 12vp（在 10-14 范围内）OK。"
+  },
+  "issues": [
+    "Root Column 纵向溢出 8vp：26+8+50+8+32+24=148 > 140，底部按钮存在被 clip 裁剪或挤压风险",
+    "progress_stack(74x50) 中 text 与 ring 按 Stack 垂直流布局（实际行为非重叠），导致 '78%' 文本出现在圆环下方独立灰盒中，破坏视觉",
+    "Stack alignContent:center 期望子项重叠居中，但 A2UI 渲染器实际按顺序垂直排列，与协议预期不一致",
+    "title_text 与 hours_value 同时使用 fontWeight:700，两个最强字重并存，违反'同一卡片只保留一个最强字重'原则"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_08_002_sleep_supervision\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_08_002_sleep_supervision\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"sleep_mark\",\"title_group\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.iconText }}\",\"styles\":{\"width\":34,\"height\":22,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF354A8C\",\"borderRadius\":11,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":234,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":234,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFC73426\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.statusText }}\",\"styles\":{\"width\":234,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"progress_stack\",\"hours_col\"],\"itemMargin\":14,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"progress_stack\",\"component\":\"Stack\",\"children\":[\"ring_progress\"],\"styles\":{\"width\":50,\"height\":50,\"alignContent\":\"center\"}},{\"id\":\"ring_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.progress }}\",\"total\":100,\"styles\":{\"width\":50,\"height\":50,\"type\":\"ring\",\"color\":\"#FF354A8C\",\"backgroundColor\":\"#FFE5E5EA\",\"strokeWidth\":7}},{\"id\":\"hours_col\",\"component\":\"Column\",\"children\":[\"hours_value\",\"target_text\"],\"itemMargin\":4,\"styles\":{\"width\":92,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"hours_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.hoursText }}\",\"styles\":{\"width\":92,\"height\":28,\"fontSize\":20,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"target_text\",\"component\":\"Text\",\"content\":\"{{ '目标' + $__dataModel.sleep.targetHours + '小时' }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":132,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF354A8C\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_08_002_sleep_supervision\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠不足\",\"iconText\":\"SLP\",\"statusText\":\"昨晚偏晚入睡\",\"hoursText\":\"6.2小时\",\"durationHours\":6.2,\"targetHours\":8,\"progress\":78,\"actionText\":\"设置早睡提醒\"}}}}"
+  ]
+}

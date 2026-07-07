@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-209",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户三大诉求(跑步卡/完成比例/点击跳转)全部落实：title='今日跑步'、percent='68%'与Progress双通道展示完成比例，Button.onClick.call='clickToDeeplink'、args与eventCandidates逐字符一致(bundleName='',abilityName='',uri='huaweischeme://healthapp/home/sport?sportType=2')；size=2x4、createSurface.catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/'与value原样与TaskSpec相等；dataModel所有字段(title/completedText/completedPercent/totalPercent/distanceText/paceText/actionText)均被绑定且无多余字段。assetCandidates为空且未引用任何图，正常。扣分点：未主动使用Stack/插画强化'完成比例'的视觉表达，依赖单纯的68%文本+小进度条，指令完成度略有折扣。",
+    "aesthetic": "配色使用#fff7f8fa背景与#ff0a7f64绿色(主色+按钮)对跑步健康主题契合；字号12/14/16/18均在合法阶梯(10/12/14/16/18/20)上；间距itemMargin 4/8/12与padding 12均合规；左对齐与spaceBetween组合清爽。主要扣分：①title/percent/distance三处均使用fontWeight=700，违反'同一卡片只保留一个最强字重'的硬约束，视觉最强项被稀释；②Progress仅50x8、过短(只占主行宽度18%)，对'完成比例'这一用户首要诉求的视觉权重不足；③percent 18px > title 16px虽合理但两者同字重导致标题反被'压'。",
+    "layout": "root Column纵向占用=padding(12+12)+itemMargin*2(16)+子项高(20+50+30)=140，可用=root.height=140，刚好在极限(0余量)，受保护文本虽未被截断但抗误差能力差；headerRow横向=8+160+72=240<276✓；mainRow横向=12+50+214=276=276(贴边)✓，纵向max(runProgress 8, detailColumn 50)=50=50✓；detailColumn纵向=4+20+16=40<50✓(居中后10vp留白)；actionButton热区30vp≥24vp✓，底边距卡片底=12vp在2x4推荐10-14vp区间✓；左/右内边界共享12vp与12vp，未截断。但Progress 50x8过小(高度8vp、宽度仅为主行18%)对完成比例这一核心信息呈现不足，视为D3轻度扣分项。"
+  },
+  "issues": [
+    "fontWeight=700出现3次(titleText/percentText/distanceText)，违反'同一卡片只保留一个最强字重'硬约束",
+    "Progress尺寸50x8过小，仅占主行宽度18%，对'完成比例'这一首要诉求的视觉权重不足",
+    "root Column占用140=140刚好极限，无任何抗误差buffer；mainRow横向276=276贴边",
+    "percent 18px反而比title 16px更大但同字重，标题视觉被弱化",
+    "未利用Stack或更大视觉元素强化完成比例，信息密度偏文本化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_209\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_209\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"headerRow\",\"mainRow\",\"actionButton\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"headerRow\",\"component\":\"Row\",\"children\":[\"titleText\",\"percentText\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/title\"},\"styles\":{\"width\":160,\"height\":22,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff6b7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"percentText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/completedText\"},\"styles\":{\"width\":80,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff0a7f64\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"mainRow\",\"component\":\"Column\",\"children\":[\"progressBar\",\"detailRow\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"progressBar\",\"component\":\"Progress\",\"value\":{\"path\":\"/run/completedPercent\"},\"total\":{\"path\":\"/run/totalPercent\"},\"styles\":{\"type\":\"linear\",\"width\":276,\"height\":6,\"color\":\"#ff0a7f64\",\"backgroundColor\":\"#1a0a7f64\",\"borderRadius\":3}},{\"id\":\"detailRow\",\"component\":\"Row\",\"children\":[\"distanceText\",\"paceText\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"distanceText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/distanceText\"},\"styles\":{\"width\":160,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff25313b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"paceText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/paceText\"},\"styles\":{\"width\":104,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ff6b7280\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"actionButton\",\"component\":\"Button\",\"label\":{\"path\":\"/run/actionText\"},\"styles\":{\"width\":276,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a7f64\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_209\",\"value\":{\"run\":{\"title\":\"今日跑步\",\"completedText\":\"68%\",\"completedPercent\":68,\"totalPercent\":100,\"distanceText\":\"3.4 / 5.0 km\",\"paceText\":\"配速 6'20\\\"\",\"actionText\":\"打开跑步\"}}}}"
+  ]
+}

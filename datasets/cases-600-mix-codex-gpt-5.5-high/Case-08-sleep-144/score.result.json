@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-08-sleep-144",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "DSL结构上满足大部分契约：size=2x4(300x140)、catalogId=ohos.a2ui.extended.catalog、version=v0.9均正确；3条records通过List模板与path='/sleep/records'绑定，onClick的call和args原样取自eventCandidates；updateDataModel.value与TaskSpec完全一致。但updateDataModel缺少path='/'字段，属轻微协议违规。更关键的是记录列表在渲染中完全不可见，用户'列一串'和'每一项点一下能跳进去'的可见诉求在视觉上未真正达成，扣分显著。",
+    "aesthetic": "深蓝三段渐变背景与白色文字层次有设计感，配色协调；#22FFFFFF的胶囊背景与文字颜色搭配也较克制。但因布局严重溢出，渲染图只能看到header一行，剩余约70%的卡片区域是空渐变，整体视觉像'未完成'，观感破碎，单一最强字重规则也未严格遵循。",
+    "layout": "核心溢出三处：1) content Column（父高116，padding.top+bottom=20，内可用96）子项占高=24(header)+8(itemMargin)+74(list)=106>96，叠加padding后Column纵向占用=10+10+8+24+74=126>116，溢出10，导致record_list被推出可视区，与截图'只有header'完全一致；2) title_block Column 高24，子项title 16 + itemMargin 2 + subtitle 12 = 30 > 24，溢出6；3) record_middle Column 高18，子项duration 12 + range 10 = 22 > 18，溢出4。三处堆叠/截断使受保护的记录主信息和CTA全部不可见，列宽/行宽本身也接近临界。"
+  },
+  "issues": [
+    "content Column 纵向占用 126 > 父高 116，溢出 10，record_list 整体被推出可视区",
+    "title_block Column 子项占高 30 > 列高 24，溢出 6",
+    "record_middle Column 子项占高 22 > 列高 18，溢出 4",
+    "updateDataModel 缺少 path='/' 字段，违反协议硬约束",
+    "渲染截图中 3 条睡眠记录完全不可见，用户'列一串'与'点一下能跳进去'诉求在视觉上未达成",
+    "字号阶梯与最强字重唯一性未严格遵守（title 16+title 700 与 date 700 同存）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_144\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_144\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_band\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF10151F\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF10151F\",0],[\"#FF1B2A3A\",0.64],[\"#FF263E52\",1]]}}},{\"id\":\"ambient_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1A64B5F6\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"header\",\"record_list\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":4,\"bottom\":4},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title_block\",\"hint\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_block\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":112,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":92,\"height\":12,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.subtitle }}\",\"styles\":{\"width\":60,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"点记录查看详情\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"record_list\",\"component\":\"List\",\"children\":{\"componentId\":\"record_item\",\"path\":\"/sleep/records\"},\"space\":4,\"styles\":{\"width\":252,\"height\":80,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"record_item\",\"component\":\"Row\",\"children\":[\"record_date\",\"record_middle\",\"record_status\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#22FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]},{\"id\":\"record_date\",\"component\":\"Text\",\"content\":{\"path\":\"date\"},\"styles\":{\"width\":36,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"record_middle\",\"component\":\"Column\",\"children\":[\"record_duration\",\"record_range\"],\"itemMargin\":0,\"styles\":{\"width\":100,\"height\":20,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"record_duration\",\"component\":\"Text\",\"content\":{\"path\":\"duration\"},\"styles\":{\"width\":96,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFE0F2FF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"record_range\",\"component\":\"Text\",\"content\":{\"path\":\"range\"},\"styles\":{\"width\":96,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"record_status\",\"component\":\"Text\",\"content\":{\"path\":\"status\"},\"styles\":{\"width\":64,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sleep_144\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠记录\",\"subtitle\":\"近三次\",\"records\":[{\"date\":\"今天\",\"duration\":\"7小时12分\",\"status\":\"质量良好\",\"range\":\"23:18-06:30\"},{\"date\":\"昨天\",\"duration\":\"6小时45分\",\"status\":\"深睡偏少\",\"range\":\"00:05-06:50\"},{\"date\":\"周三\",\"duration\":\"7小时30分\",\"status\":\"入睡稳定\",\"range\":\"22:58-06:28\"}]}}}}"
+  ]
+}

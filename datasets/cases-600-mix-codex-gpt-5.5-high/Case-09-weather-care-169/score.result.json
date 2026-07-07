@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-09-weather-care-169",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户要求'文字放图片上的卡+点一下跳应用+读天气'三项均落实：背景使用 icon_weather1.png 作为叠层，root 与 Button 均挂载 clickToDeeplink（call/args 原样来自 eventCandidates），title/temperatureText/readout/actionText 四个 dataModel 字段全部以表达式绑定展示。尺寸 2x2、root 140x140、borderRadius 18、clip、catalogId、version、updateDataModel.value 等硬约束均满足。扣分点：Button 使用了 fontWeight:\"medium\" 字符串而非数字字重（如 500），与 title/main_value 的 700 数字字重不统一，属轻微协议/规范瑕疵。",
+    "aesthetic": "青绿渐变（#0a4b5a→#148f8f→#39b6a3）配白色文字，色调和谐且对比度足够，文字可读。字重层级 700/700/500/medium 共 3 档，违反'只保留一个最强字重'原则。主指标 32 字号突出，title/readout 12 字号辅助，Button 14 字号+胶囊白底形成清晰 CTA。扣分点：天气图标半透明叠在主指标上虽有'文字放图片上'的设计意图，但图标位于中右、压住 '27°C' 与 readout 视觉重心稍乱；Button 字重用 'medium' 字符串与其它字段不一致略不专业。",
+    "layout": "content Column 子项高 = 16+38+18+28 = 100，itemMargin=6 时 3 个间距 = 18，总占用 100+18=118 > 父容器 116，溢出 2vp（虽 justifyContent:spaceBetween 可重分配，但 itemMargin=6 仍触发最小间距约束，存在裁切风险）。image 宽 86、margin.left=42，在 116 内容区内右侧边 42+86=128 > 116，溢出 12vp，但因 root.clip=true 被裁至卡边，渲染上 OK。Button 底边 12+16+6+38+6+18+6+28=130，距卡底 10vp，在 8-12vp 区间内合规。文字宽度：'晴 27度,适合出行' ≈ 96vp ≤ 116，未截断；'27°C' ≈ 60vp ≤ 116 未截断。受保护文本与 CTA 全部可见，无被 Stack 遮盖。综合扣分：Column 存在 2vp 内容溢出风险。"
+  },
+  "issues": [
+    "content Column 子项总高 100 + 间距 18 = 118 > 116，存在 2vp 溢出，建议 itemMargin 改为 4 或 main_value height 略减",
+    "Button.fontWeight 用了字符串 'medium'，应改为数字 500 以与其它字段一致",
+    "字重出现 700/700/500/medium 共 3 档，违反'只保留一个最强字重'原则",
+    "weather_picture 图标位置偏中右且 margin.left=42 导致 86 宽图越出 116 内容区 12vp，依赖 root.clip 裁切，视觉略拥挤",
+    "image 与主指标 27°C 在中右区域叠压，'文字放图片上'效果 OK 但 readout 行正下方被图标的雨线元素轻微干扰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_169\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_169\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"weather_picture\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a4b5a\",0],[\"#ff148f8f\",0.7],[\"#ff39b6a3\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"weather_picture\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\",\"margin\":{\"left\":48,\"top\":8},\"opacity\":0.26}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"main_value\",\"readout\",\"open_weather\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":116,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"readout\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.readout }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionText }}\",\"styles\":{\"width\":72,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a6f73\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_169\",\"value\":{\"weather\":{\"title\":\"天气关怀\",\"temperature\":27,\"temperatureText\":\"27°C\",\"readout\":\"晴 27度,适合出行\",\"actionText\":\"看天气\"}}}}"
+  ]
+}

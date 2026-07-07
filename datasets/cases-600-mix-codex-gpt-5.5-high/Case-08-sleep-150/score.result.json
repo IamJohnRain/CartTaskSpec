@@ -1,0 +1,39 @@
+{
+  "case_id": "Case-08-sleep-150",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户要求基本满足：'文字叠在睡眠背景上'通过深色渐变+睡眠图标实现，'数字会变'通过 {{ $__dataModel.sleep.scoreText }} 绑定实现，'点哪个跳app'通过 action_btn 的 onClick clickToDeeplink 实现（call/args 与 eventCandidates 完全一致），'读日历'通过 calendarLabel/calendarEvent 体现，'提醒我快撑不住了'通过 status_text 体现。dataModel 全部字段都被引用，Image.src 来自 assetCandidates，size=2x4/catalogId/version 正确。轻微扣分：action_btn 的 fontWeight 使用字符串 'medium' 而非数字，违反协议规范；updateDataModel 缺少 path:'/' 字段。",
+    "aesthetic": "配色氛围合理：深色渐变(#101417→#1C2533→#3A1518)配红色点缀营造睡眠/警示主题，告警徽章红色突出可读。但问题明显：(1) 字体字重过多，800/700/600/500/'medium' 共5种，违反'同一卡片只保留一个最强字重'的规则；(2) status_text 使用 #FFFF3B30 红色字体叠加在 #1AFF3B30 红色背景上，对比度极低不可读；(3) action_btn 的 'medium' 字符串字重是渲染失败的疑似根因，按钮文字在截图中完全不可见；(4) sleep_icon 64x64 (opacity 0.78) 与 score_block 在 (38-102,70-86) 区域大量重叠，视觉杂乱干扰主指标 38 的呈现。",
+    "layout": "布局问题严重。content Column 纵向占用 = 父 padding(0) + itemMargin×3(8×3=24) + Σ子项高(24+34+18+28=104) = 128vp，可用高度仅 104vp，溢出 24vp。action_btn 底边在 root 中 y=18+128=146vp，超出卡片底边 140vp 达 6vp，被 clip:true 裁剪（截图中可见红色按钮被底边切断）。calendar_row Column 子项占高 12+2+18=32 ≤ 34 成立但无余量。score_block 内部 score_row 横向 52+2+18=72 ≤ 104、纵向 score_row 34 + itemMargin 2 + status_text 16 = 52 ≤ 52 成立。Stack 中 sleep_icon (margin left:26, top:10 → root 38-102, 22-86) 与 score_block (root 24-128, 70-122) 在 y:70-86 区域重叠，图标位于 score 下方但 opacity 0.78 干扰主指标。渲染截图中除告警徽章、灰色图标和被裁剪的红色按钮外，其余文本（'38'/'睡眠提醒'/'日历提醒'/'22:30 准备休息'/'欠睡2小时'/'快撑不住了'/'跳到App'）均未显示，证实溢出/裁剪/字重失效导致大面积内容丢失。底部动作区外框底边到卡片底边 = -6vp（按钮在卡片外），违反 2x4 应为 10-14vp（不得>16vp）的约束。"
+  },
+  "issues": [
+    "content Column 纵向溢出 24vp（占用 128vp > 可用 104vp）",
+    "action_btn 底边超出卡片底边 6vp（root y=146 > 卡片 y=140），被 clip:true 裁剪",
+    "status_text 红色 #FFFF3B30 叠在红色 #1AFF3B30 背景上，对比度极低不可读",
+    "字体字重过多（800/700/600/500/'medium'），违反单最强字重规则",
+    "action_btn fontWeight 使用字符串 'medium' 而非数字，违反协议且疑似导致按钮文字不渲染",
+    "updateDataModel 缺少必需的 path:'/' 字段",
+    "sleep_icon 64x64 与 score_block 大量重叠，视觉干扰主指标 38",
+    "渲染截图中除告警徽章外其余文本均未显示，证实溢出/裁剪/字重失效导致大面积内容丢失",
+    "底部动作区外框底边到卡片底边为 -6vp（按钮在卡片外），违反 2x4 应为 10-14vp 约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_150\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_150\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"sleep_bg\",\"icon_bg\",\"score_block\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF101417\",0],[\"#FF1C2533\",0.62],[\"#FF3A1518\",1]]}}},{\"id\":\"sleep_bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1AFF3B30\"}},{\"id\":\"icon_bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.sleep.icon }}\",\"styles\":{\"width\":60,\"height\":60,\"margin\":{\"left\":-4,\"top\":28},\"objectFit\":\"contain\",\"opacity\":0.22}},{\"id\":\"score_block\",\"component\":\"Column\",\"children\":[\"score_row\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":60,\"margin\":{\"left\":0,\"top\":28},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"score_row\",\"component\":\"Row\",\"children\":[\"score_value\",\"score_unit\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":100,\"height\":40,\"alignItems\":\"end\",\"justifyContent\":\"center\"}},{\"id\":\"score_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.scoreText }}\",\"styles\":{\"width\":56,\"height\":40,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.unit }}\",\"styles\":{\"width\":20,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.status }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFD37A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"calendar_row\",\"debt_text\",\"action_btn\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":108,\"margin\":{\"left\":112,\"top\":8},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"warning_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":160,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":100,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"告警\",\"styles\":{\"width\":42,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#FFFF3B30\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_row\",\"component\":\"Column\",\"children\":[\"calendar_label\",\"calendar_event\"],\"itemMargin\":2,\"styles\":{\"width\":160,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"calendar_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.calendarLabel }}\",\"styles\":{\"width\":160,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_event\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.nextEventTime + ' ' + $__dataModel.sleep.nextEventName }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"debt_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.sleepDebt }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":72,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FFFF3B30\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepCalendar\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠提醒\",\"score\":38,\"scoreText\":\"38\",\"unit\":\"分\",\"status\":\"快撑不住了\",\"calendarLabel\":\"日历提醒\",\"nextEventTime\":\"22:30\",\"nextEventName\":\"准备休息\",\"sleepDebt\":\"欠睡2小时\",\"actionText\":\"跳到App\",\"icon\":\"resources/base/media/icon_sleep.png\"}}}}"
+  ]
+}

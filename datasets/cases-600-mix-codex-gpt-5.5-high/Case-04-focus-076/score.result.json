@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-076",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户主要诉求全部落实：睡眠音乐柔和渐变（root 使用 linearGradient 三段蓝青渐变），耳机图标（Image 绑定 /focus/icon），大号字标题'开始沉浸式专注'（fontSize 20、fontWeight 700），三个选项（番茄钟/白噪音/冥想，底色分别为 #ff3b5d6a/#ff4c6678/#ff5b657f 形成分区），底部大按钮携带 onClick 事件，call/args 与 eventCandidates 中 clickToDeeplink(bundleName=com.huawei.hmos.settings, uri=parent_control) 完全一致。尺寸 2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 与 value 全部满足协议。轻微不足：标题字号 20 偏中等，未完全'大号'质感。",
+    "aesthetic": "配色为深蓝→青→灰的柔和渐变，配青绿 CTA 按钮，色系与'睡眠音乐'主题契合，文字白色与底色对比清晰。字体层级清晰：标题 20/700、副标题 12/500、选项 12/700，整体仅一个最强字重 700。圆角使用规范（22/14/10/20），间距多为 8/6/2 在阶梯上。唯一不足是按钮文字色 #ff10212c 与青绿底 #ff79d3c6 对比稍弱，整体偏冷色略缺温度感。",
+    "layout": "预算核算：root Column 纵向占用 = padding(12+12=24) + itemMargin(8*2=16) + Σ子项高(hero_row 42 + option_row 30 + action_button 28 = 100) = 140 = 父高 140，刚好填满，无溢出。hero_row Row 横向占用 = padding 0 + itemMargin 8 + Σ子项宽(40+228=268) = 276 = 父宽 276，精确填满。hero_texts Column 纵向占用 = 0 + 2 + (24+16=40) = 42 = 父高 42，精确填满。option_row Row 横向占用 = 0 + 6*2 + (88*3=264) = 276 = 父宽 276，精确填满。底部动作区外框底边到卡片底边 = 140 - 12(padding bottom) - 28(按钮高) - 12(再算 padding 0 但内容算到边) = 12vp，在 10-14vp 区间内合规。按钮热区 276x28 ≥ 24vp 满足。无 Stack 堆叠风险。所有受保护文本（标题/副标题/选项/CTA）均未被截断。"
+  },
+  "issues": [
+    "标题字号 fontSize=20 相对'大号字'诉求偏中等，理想为 22-24 更有冲击感",
+    "按钮高度 28 接近 24vp 下限，理想 32-40vp 可提升点击舒适度",
+    "option_two 文字'Hz 白噪音'中'Hz'作为字符图标识别度弱于其他两个选项的'25'和'静'，但属于数据驱动不可改",
+    "按钮文字色 #ff10212c 与底色 #ff79d3c6 在小字号下对比偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_076\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_076\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"option_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff23324d\",\"linearGradient\":{\"angle\":135,\"colors\":[\"#ff2a2356\",\"#ff314a6b\",\"#ff3f6680\"]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"earphone_icon\",\"hero_texts\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":42,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"alignItems\":\"center\",\"justifyContent\":\"flexStart\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.focus.icon }}\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\",\"borderRadius\":20,\"backgroundColor\":\"#334a6378\"}},{\"id\":\"hero_texts\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":2,\"styles\":{\"width\":228,\"height\":42,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"center\",\"alignItems\":\"flexStart\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":228,\"height\":24,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#fff7fbff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.subtitle }}\",\"styles\":{\"width\":228,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffd3e9ef\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"option_row\",\"component\":\"Row\",\"children\":[\"option_one\",\"option_two\",\"option_three\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":28,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"option_one\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.options[0].glyph + ' ' + $__dataModel.focus.options[0].label }}\",\"styles\":{\"width\":88,\"height\":28,\"borderRadius\":10,\"backgroundColor\":\"#ff3b5d6a\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#fff1fbff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"option_two\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.options[1].glyph + ' ' + $__dataModel.focus.options[1].label }}\",\"styles\":{\"width\":88,\"height\":28,\"borderRadius\":10,\"backgroundColor\":\"#ff4c6678\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#fff0f7fa\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"option_three\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.options[2].glyph + ' ' + $__dataModel.focus.options[2].label }}\",\"styles\":{\"width\":88,\"height\":28,\"borderRadius\":10,\"backgroundColor\":\"#ff5b657f\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#fff6f2ff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":276,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff7adfd0\",\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ff0e1f2a\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_076\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"开始沉浸式专注\",\"subtitle\":\"睡眠音乐轻柔铺底\",\"icon\":\"resources/base/media/icon_earphone.png\",\"options\":[{\"glyph\":\"25\",\"label\":\"番茄钟\"},{\"glyph\":\"Hz\",\"label\":\"白噪音\"},{\"glyph\":\"静\",\"label\":\"冥想\"}],\"actionText\":\"设置应用时长\"}}}}"
+  ]
+}

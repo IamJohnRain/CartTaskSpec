@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-067",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户四项明确诉求（背景+文字、专注倒计时、点开始、显示已连接状态）全部体现：根 Stack 使用 linearGradient 绿青渐变作背景；title_text/countdown_text 显示「专注倒计时/25:00」；start_button 含 onClick，call 与 args 与 TaskSpec.eventCandidates 原样一致；status_text 显示「已连接」。focusIcon 通过表达式绑定到 dataModel.focus.asset.focusIcon，路径与 assetCandidates 的 bindTo 一致。createSurface 尺寸 2x4（300x140）、catalogId/version、borderRadius 22、clip:true 等硬约束均满足，updateDataModel.value 与 TaskSpec.dataModel.value 原样相等。running 字段未在 UI 体现但用户未明确要求，不扣分。",
+    "aesthetic": "绿→青 135° 渐变与白色半透明面板搭配清爽，深绿描字在白底上对比清晰，整体观感专业、克制。但卡片内出现 4 处 fontWeight=700（title、countdown、mode、start_button）以及 1 处 600（status），违反「同一卡片只保留一个最强字重」原则，层级出现两个并列强字重，节奏略显嘈杂。状态文字字号 12 偏小，与主指标 40 形成跳跃但仍可接受。",
+    "layout": "对根 Stack 子层与所有 Row/Column 做预算核算：① content_row（Row 276×116）：itemMargin=10 + 174(info) + 92(action) = 276，未溢出。② info_panel（Column 174×116，padding 12/12，itemMargin 8）：12+12+8*2+(22+42+18)=122 > 可用 116，溢出 6vp；status_text 将被 Column 末端截断或被挤到面板外，是主要布局缺陷。③ action_panel（Column 92×116，padding 14/10/10/10，itemMargin 14）：14+10+14*1+(36+34)=108 ≤ 116，未溢出。④ bg_band（Column 276×116，padding 204/12/18/18）：204+12+56=272 ≤ 276，水平 18+18+56=92 ≤ 116，未溢出；但 bg_band 与 content_row 同为 Stack 子元素且都铺满 276×116，焦点图标（位于 right 4vp 区域）刚好落在 action_panel 同位置，Stack 叠层产生视觉穿透/竞争，CTA 按钮热区虽 ≥24vp 但与图标层叠影响可读性。Button 底部边到卡片底边 10+padding 10=约 22-23vp，接近 2x4 合理区间。综合存在 1 处明确溢出 + 1 处叠层冲突，给 5.5。"
+  },
+  "issues": [
+    "info_panel Column 纵向占用 122vp（12+12+8*2+22+42+18）> 可用 116vp，溢出 6vp，status_text 受影响",
+    "Stack 叠层中 bg_band（带 focus_icon）与 content_row 同位 276×116，焦点图标穿透至 action_panel 区域，与「开始」按钮形成视觉竞争",
+    "卡片内 fontWeight=700 出现 4 次（title/countdown/mode/start_button），违反「同一卡片只保留一个最强字重」",
+    "status_text 受 Column 溢出影响，在 12px 字号下贴近面板底边，留白不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_067\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_067\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff22c55e\",0],[\"#ff14b8a6\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"info_panel\",\"action_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"countdown_text\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":186,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#e6ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":162,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff064e3b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.countdownText }}\",\"styles\":{\"width\":162,\"height\":42,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff022c22\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.connectionStatus }}\",\"styles\":{\"width\":162,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff047857\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"focus_icon\",\"mode_text\",\"start_button\"],\"itemMargin\":6,\"styles\":{\"width\":80,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"focus_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.focus.asset.focusIcon }}\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\",\"opacity\":0.95}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.modeText }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"start_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":64,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff047857\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_067\",\"value\":{\"focus\":{\"title\":\"专注倒计时\",\"countdownText\":\"25:00\",\"connectionStatus\":\"已连接\",\"modeText\":\"专注模式\",\"actionText\":\"开始\",\"asset\":{\"focusIcon\":\"resources/base/media/icon_focus.png\"},\"running\":false}}}}"
+  ]
+}

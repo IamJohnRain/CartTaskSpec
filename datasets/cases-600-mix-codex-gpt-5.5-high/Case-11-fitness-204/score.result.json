@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-204",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "主要诉求基本落实：步数卡 ✓，文字叠在 runGlyph 背景上 ✓（Image 透明度 0.2 + Stack 叠层），onClick 绑定 clickToDeeplink 且 args 原样来自 eventCandidates ✓，天气(condition + temperatureText)展示 ✓，目标完成展示 ✓。扣分点：(1) updateDataModel 缺失 path 字段，违反硬约束 'path 必须是 /'；(2) 按钮 label '去运动' 因 Button 宽度过窄被截断为 '去...'，影响 '点一下跳app' 这一核心 CTA 的可读性。",
+    "aesthetic": "配色统一（灰底 + 蓝色步数 + 绿色状态 + 蓝绿渐变按钮），视觉锚点 runGlyph 作为低透明度背景字符有设计感，32vp 步数形成主层级，字重主要使用 700，符合'只保留一个最强字重'原则。扣分点：按钮文字被截断成 '去...' 严重破坏完成度；Column 内部纵向被压得很紧，行间呼吸感不足；status 文字与按钮视觉对位略不整齐。",
+    "layout": "关键预算核算：\n1) content Column(width 116, height 80, padding 4+4=8, itemMargin 4)：子项 title 18 + steps 34 + weather 14 + status 14 = 80；itemMargin 合计 4×3=12；Column 实际所需高度 = 8(padding) + 12(margins) + 80(children) = 100 > 80，溢出 20vp。\n2) actionBtn 宽 56，label '去运动'(3 汉字)在 fontSize 14 下文本宽度 ≈ 3×14 = 42，加上 Button 内边距约 16 共需 58 > 56，文字被裁切 2-3vp（截图显示 '去...'）。\n3) 底部外框：actionBtn 底边到卡片底边 12vp，在 2x2 的 8-12vp 区间内合格。\n4) Stack 叠层：background opacity 0.2 不遮挡文本，叠层顺序合格。\n5) 受保护文本（title/steps/weather/status）未被 ellipsis/clip，但实际渲染受 Column 高度约束而挤压，紧贴 button。"
+  },
+  "issues": [
+    "updateDataModel 缺少 path:'/' 字段，违反协议硬约束",
+    "content Column 高度 80 不足，子项实际需要 100，溢出 20vp",
+    "actionBtn 宽度 56 不够容纳 '去运动' 标签，文字被截断为 '去...'",
+    "content Column 与 actionBtn 水平范围有重叠 (x=60-116)，依赖垂直分层错开，存在隐患",
+    "Button 内边距与字号组合未做容量核算"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_204\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_204\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"background\",\"content\",\"actionBtn\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"background\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.runGlyph }}\",\"styles\":{\"width\":116,\"height\":116,\"objectFit\":\"contain\",\"opacity\":0.18}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"steps\",\"weather\",\"status\"],\"itemMargin\":4,\"styles\":{\"width\":108,\"height\":84,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"steps\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.stepsText }}\",\"styles\":{\"width\":108,\"height\":30,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff536471\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.statusText }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff178c4e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionBtn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":60,\"height\":24,\"margin\":{\"left\":52,\"top\":92},\"borderRadius\":12,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a59f7\",0],[\"#ff23c16b\",1]]},\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"surfaceId\":\"surface_fitness_204\",\"value\":{\"fitness\":{\"title\":\"今日步数\",\"stepsText\":\"8,420\",\"statusText\":\"目标完成\",\"actionText\":\"去运动\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"多云\",\"temperatureText\":\"26°C\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false},\"assets\":{\"runGlyph\":\"resources/base/media/icon_run.png\"}}}}"
+  ]
+}

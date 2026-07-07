@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-09-weather-care-163",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "用户五大诉求逐项落实：1) 文字压在背景上（线性渐变深棕→橙→亮黄作底，白色信息层）✓；2) 一行带数字的话（39°C 独立突出展示）✓；3) 点一下能跳到应用（root.onClick 完整复用 eventCandidates 中的 clickToDeeplink 三参）✓；4) 能读天气（title 天气关怀 / 39°C / 高温橙色预警 完整呈现）✓；5) 提醒语 '热到快不行了' 已显式渲染 ✓。assetCandidates 的 weather_icon 通过 Image.src 引用，路径在资源范围内。updateDataModel.value 与 TaskSpec.dataModel.value 完全一致。轻微扣分：dataModel 中 location '广州 天河' 未被任何组件读取（用户未显式要求但遗漏略可惜）；root 与 button 重复声明同一 onClick，冗余。",
+    "aesthetic": "暖色渐变（#5f2c16→#c75b12→#ffb84d）与高温主题（39°C / 高温橙色预警）契合度高，主指标 32px 突出，CTA 白色按钮在暖底色上对比鲜明，标题 14px、状态 12px 形成清晰字号阶梯。扣分点：title、temperature、condition 三个文本均使用 fontWeight:700，违反'同一卡片只保留一个最强字重'规则；weather_mark 图标 76x76 偏大且未放置在角落，正面遮挡 '高温橙色预警' 与 '热到快不行了'，视觉凌乱；渐变 stops 颜色过渡偏暗，色相对比略弱。整体可用但有明显可改进处。",
+    "layout": "按布局预算公式逐项核算：1) content Column 纵向占用 = padding.top(0)+padding.bottom(0)+itemMargin*(4-1)=6*3=18 + Σ(子项 height)=16+34+16+40=106，合计 124vp > 父可用 116vp，溢出 8vp；2) bottom_row Column 占用 = 0+0+4*1+(14+24)=42vp > 父可用 40vp，溢出 2vp；3) weather_mark Image 宽 76 高 76 margin(52,8)，实际占据 (64,20)→(140,96)，与 '高温橙色预警' (y≈74-90) 及 '热到快不行了' (y≈94-108) 在 x≈64-100 区间发生叠层覆盖，违反'Stack 叠层不得覆盖受保护文本'规则；4) 受两个 Column 溢出影响，按 spaceBetween 排布后 Button 底边到卡片底边仅约 2vp，远低于 8-12vp 理想区间、逼近 16vp 上限，存在视觉截断风险。综合判定堆叠/溢出/裁剪风险中等偏重。"
+  },
+  "issues": [
+    "content Column 子项纵向占用 124vp > 可用 116vp，溢出 8vp，下层元素被推至卡片边缘",
+    "bottom_row Column 子项占用 42vp > 可用 40vp，溢出 2vp",
+    "weather_mark Image 76x76 margin(52,8) 覆盖 '高温橙色预警' 与 '热到快不行了' 受保护文本区域，违反 Stack 叠层规则",
+    "Button 底边距卡片底边仅约 2vp，远低于 8-12vp 理想区间，存在视觉截断风险",
+    "title、temperature、condition 三个文本均使用 fontWeight 700，违反'一个最强字重'规则",
+    "root 与 button 重复声明同一 clickToDeeplink 事件，冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_163\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_163\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"weather_mark\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff5f2c16\",0],[\"#ffc75b12\",0.58],[\"#ffffb84d\",1]]},\"alignContent\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"weather_mark\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\",\"margin\":{\"left\":80,\"top\":4},\"opacity\":0.2}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"temperature\",\"condition\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temperature\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperature + '°C' }}\",\"styles\":{\"width\":116,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#fffff3c4\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Column\",\"children\":[\"reminder\",\"open_weather\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"end\",\"alignItems\":\"start\"}},{\"id\":\"reminder\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.reminder }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#f2ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionText }}\",\"styles\":{\"width\":88,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff8a3d08\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_163\",\"path\":\"/\",\"value\":{\"weather\":{\"title\":\"天气关怀\",\"location\":\"广州 天河\",\"temperature\":39,\"condition\":\"高温橙色预警\",\"reminder\":\"热到快不行了\",\"actionText\":\"打开天气\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-201",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户四点诉求均已落实：①运动卡片以'运动健康'为标题呈现；②Button 使用 eventCandidates 中唯一事件 clickToDeeplink，args 三项(bundleName/abilityName/uri)与契约完全一致，可跳转健康 app；③天气面板用绑定表达式正确读取 condition/temperatureText/airQuality，显示'多云 26°C''空气优'；④状态行'今天已连接'以 18pt 加粗绿色作为最强视觉锚点。尺寸 2x4、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、root 300x140/borderRadius 22/clip true 均满足硬约束；assetCandidates 为空故未引入网络图或占位图，亦合规。唯一扣分项：updateDataModel 缺少硬约束要求的 'path: \"/\"' 字段，仅以 surfaceId 标识数据落点，违反协议。",
+    "aesthetic": "配色克制而和谐：卡底 #fff7f8fa 浅灰白、状态子卡纯白、天气子卡 #ffeaf6ff 浅蓝、主品牌色 #ff0a7f64 墨绿用于 CTA；按钮白字在深绿底上对比度充足，状态绿字在白底上识别度高。字号阶梯 10/14/18 三档，配 700/500/400 三级字重，层级清晰；最强视觉焦点确实落在 18pt bold 的'今天已连接'上，符合'一张卡只一个最强字重'原则。两张内卡片圆角 16 一致，padding 12/10 对齐工整，密度合理无空洞。",
+    "layout": "逐项预算核算：①根 Column 纵向占用 = padding.top(12) + padding.bottom(12) + itemMargin(10) + topRow(72) + actionButton(34) = 140，等于父高 140，无溢出；②topRow 横向占用 = itemMargin(10) + statusPanel(174) + weatherPanel(92) = 276，等于父宽 276，无溢出；③statusPanel 纵向占用 = padding.top(10) + padding.bottom(10) + itemMargin×(3-1)(8) + Σ子项 height(18+20+14=52) = 80，超出父高 72 共 8vp（按公式严格溢出）；④weatherPanel 纵向占用 = padding.top(10) + padding.bottom(10) + 8 + 14+18+14(46) = 74，超出父高 72 共 2vp。截图实际未出现文字被切（依赖行高小于声明 height 的渲染容差），但按预算公式 statusPanel 溢出 8 / weatherPanel 溢出 2 客观存在，扣重分。CTA 底边 y=128 距卡底 12vp，符合 2x4 的 10-14vp 区间；按钮热区高度 34vp > 24vp 达标。"
+  },
+  "issues": [
+    "updateDataModel 缺少硬约束要求的 'path: \"/\"' 字段，仅以 surfaceId 标识落点，违反协议 schema",
+    "statusPanel 纵向占用 80 > 父高 72，溢出 8vp（padding.top 10 + padding.bottom 10 + itemMargin×2 8 + 文字高度合计 52）",
+    "weatherPanel 纵向占用 74 > 父高 72，溢出 2vp（padding.top 10 + padding.bottom 10 + itemMargin×2 8 + 文字高度合计 46）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_201\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_201\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"topRow\",\"actionButton\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"statusPanel\",\"weatherPanel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":72,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"statusPanel\",\"component\":\"Column\",\"children\":[\"titleText\",\"statusText\",\"deviceText\"],\"itemMargin\":2,\"styles\":{\"width\":174,\"height\":72,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.connectionStatus }}\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff0a7f64\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"deviceText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.deviceName }}\",\"styles\":{\"width\":150,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff6b7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherPanel\",\"component\":\"Column\",\"children\":[\"weatherTitle\",\"weatherMain\",\"weatherAir\"],\"itemMargin\":2,\"styles\":{\"width\":92,\"height\":72,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffeaf6ff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weatherTitle\",\"component\":\"Text\",\"content\":\"今日天气\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff27627a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherMain\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff173a4a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherAir\",\"component\":\"Text\",\"content\":\"{{ '空气' + $__dataModel.data.weather.current.airQuality }}\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff27627a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":276,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ff0a7f64\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_201\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"运动健康\",\"connectionStatus\":\"今天已连接\",\"deviceName\":\"运动手环\",\"actionText\":\"开始运动\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"优\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

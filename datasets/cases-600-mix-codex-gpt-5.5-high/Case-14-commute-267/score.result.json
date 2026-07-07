@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-14-commute-267",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求『一行带数字 + 点开跳到应用 + 红色危险提示』三条诉求全部落实：metric_line 显示『拥堵指数 87分』含数字 87，onClick 正确绑定 clickToDeeplink 且 args 与 eventCandidates 完全一致，alertText「危险」以红色徽章 + 红色数字 + 红色渐变按钮三重视觉强调危险语义。尺寸 2x4、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path '/' 与 value 全部符合硬约束；dataModel 七字段（title/metricLabel/riskNumber/riskUnit/alertText/routeHint/actionText）均被使用。扣分点：metric_line.content 使用了 formatString 调用配合 ${/commute/...} 模板语法，系统规范『展示值优先用完整表达式 {{ ... }} 读取 DataModel』，formatString 并非协议明文支持的 Text 内容构造，写法非首选，可靠性略低。",
+    "aesthetic": "配色以白底+红色 (#ffe84026) + 橙渐变 (#ffe84026→#ffed6f21) 传递危险主题，语义统一，灰底卡托 (#fff1f3f5) 与白色 panel 对比清晰。字号阶梯 16/20/12/14 落在合法阶梯上。问题：fontWeight 出现 700（alert_badge、title_text）+ 800（metric_line、alert_mark）共两个『强』字重，未严格满足『同一卡片只保留一个最强字重』；alert_badge 12px 配 700 字重且无 padding，视觉略偏拥挤。整体留白与对齐良好，渐变按钮质感合格，badge 与圆形 警示符的搭配有信息冗余但未影响美感。",
+    "layout": "逐项预算核算：(1) root Row：父 padding 24 + itemMargin×(3-1)=20 + 子项 176+1+79=256 → 占用 300，父宽 300，无溢出（贴合）。(2) paper_panel Column：父 padding 24 + itemMargin×(3-1)=16 + 子项 24+34+18=76 → 占用 116，父高 116，无溢出（贴合）。(3) title_row Row：itemMargin 8 + 子项 52+92=144 → 占用 152，父宽 152，无溢出（贴合）。(4) action_area Column：itemMargin 12 + 子项 38+34=72 → 占用 84，父高 116，居中布局上下各留 16，无溢出。(5) 底部动作区到卡片底边：140 - 12 - 116 = 12vp，处于 2x4 推荐的 10-14vp 区间内。(6) Button 热区 79×34，≥24vp 标准。(7) 无 Stack 层叠、无文字截断（截图佐证『拥堵指数 87分』『建议避开主路』『通勤提醒』『危险』『看天气』均完整显示）。唯一隐患是 paper_panel Column 与 title_row Row 占用率 100%，未来文本变长将溢出。"
+  },
+  "issues": [
+    "metric_line.content 用了 formatString + ${} 模板调用，非系统规范『优先用 {{ ... }} 完整表达式』，应改为模板字符串直接绑定 DataModel",
+    "fontWeight 出现 700（alert_badge、title_text）与 800（metric_line、alert_mark）两档强字重，违反『同一卡片只保留一个最强字重』，应将辅助元素降至 600 或 medium",
+    "paper_panel Column 内容占高 92/92 满载、title_row 宽 152/152 满载，文本微变即溢出，建议为 hint_text 顶部或 title_text 右侧预留 2-4vp buffer",
+    "alert_badge 内部文本无 padding，紧贴圆角边界，可读性略受影响"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_267\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_267\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"paper_panel\",\"divider\",\"action_area\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"metric_line\",\"hint_text\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"shadow\":{\"radius\":8,\"color\":\"#18000000\",\"offsetX\":0,\"offsetY\":2},\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"alert_badge\",\"title_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":152,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.alertText }}\",\"styles\":{\"width\":52,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.title }}\",\"styles\":{\"width\":92,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.metricLabel }} {{ $__dataModel.commute.riskNumber }}{{ $__dataModel.commute.riskUnit }}\",\"styles\":{\"width\":152,\"height\":34,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.routeHint }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"width\":1,\"height\":88,\"color\":\"#33000000\"}},{\"id\":\"action_area\",\"component\":\"Column\",\"children\":[\"alert_mark\",\"open_button\"],\"itemMargin\":12,\"styles\":{\"width\":79,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"alert_mark\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":38,\"height\":38,\"borderRadius\":19,\"backgroundColor\":\"#19ed6f21\",\"fontSize\":20,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.commute.actionText }}\",\"styles\":{\"width\":79,\"height\":34,\"borderRadius\":17,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ffe84026\",0],[\"#ffed6f21\",1]]},\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_267\",\"value\":{\"commute\":{\"title\":\"通勤提醒\",\"metricLabel\":\"拥堵指数\",\"riskNumber\":\"87\",\"riskUnit\":\"分\",\"alertText\":\"危险\",\"routeHint\":\"建议避开主路\",\"actionText\":\"看天气\"}}}}"
+  ]
+}

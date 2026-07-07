@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-12-finance-236",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "用户要求基本覆盖：标题、本月已花数字、¥4,860、'快要超支'红色状态、'省钱歌单'按钮 onClick（call/args 原样来自 eventCandidates）、纯文字色块、纵向排分类（DSL 用 Column 模板循环实现）。扣分点：①updateDataModel 缺少 path:'/' 字段，违反硬约束；②环形图实际展示的是 usage/total（92/100）的整体进度而非用户要求的'各分类占比'（42%/24%/26% 多段环），与用户原意'环形图显示各分类占比'不符；③渲染中 3 条分类项完全未显示（中部留白），'纵向排分类''不同分类用不同底色分区'两项核心诉求在视觉上未落实。",
+    "aesthetic": "配色和谐：奶油底 #FFFFFBF2 配分类黄/青/粉与红色状态，¥4,860 大字红色突出，对比清晰。扣分点：①底部 CTA'省钱歌单'被裁切后视觉残缺（截图显示'尖钱歌单'下半截丢失），破坏卡片完整性；②中部留白巨大显得空洞，密度严重失衡；③同时存在 700/800/medium 多种字重，违反'只保留一个最强字重'原则，层级有些噪。",
+    "layout": "root Column 高度 140、padding top/bottom 8/8，可容纳子项高度 124。子项纵向占用 = top_row 54 + itemMargin 6 + category_list 42 + itemMargin 6 + action_button 22 = 130 > 可用 124，溢出 6vp，导致 action_button 被底部 clip 切掉（截图可见'省钱歌单'文字下半截被裁）。category_list 区 128x42 在视觉上完全空白，3 条 category_item 未渲染，'纵向排分类'与'不同分类用不同底色分区'两项诉求在版面上缺失。category_item Row 宽度 128 - padding 10 - itemMargin 8 = 110，子项 30+25+52=107，刚好容纳；top_row 子项 54+8+62=124 恰填满。整体来看 root 列整体溢出 6vp + 分类未呈现 + 底部 CTA 不可用，布局多处失败。"
+  },
+  "issues": [
+    "root Column 子项总高 54+6+42+6+22=130 > 可用 124，溢出 6vp",
+    "action_button '省钱歌单' 因溢出被底部 clip 切掉，下半截不可见",
+    "category_list 区域在渲染中完全空白，3 条分类项未呈现",
+    "updateDataModel 缺少 path:'/' 字段，违反硬约束",
+    "环形图展示 usage/total 进度，未按用户要求呈现 42%/24%/26% 分类占比环",
+    "多字重并存（fontWeight 700/800/medium），违反'一个最强字重'原则",
+    "中部巨大留白，密度严重失衡，底部 CTA 距离卡片底边过近（被裁后实际不可点）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_236\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_236\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"category_list\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":6,\"right\":6,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFFBF2\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"ring_stack\",\"amount_panel\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":128,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"spend_ring\",\"ring_label\"],\"styles\":{\"width\":40,\"height\":40,\"alignContent\":\"center\"}},{\"id\":\"spend_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.finance.usage }}\",\"total\":\"{{ $__dataModel.finance.total }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#FFE84040\",\"width\":40,\"height\":40}},{\"id\":\"ring_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusText }}\",\"styles\":{\"width\":34,\"height\":12,\"borderRadius\":6,\"backgroundColor\":\"#FFE84040\",\"fontSize\":8,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_panel\",\"component\":\"Column\",\"children\":[\"title\",\"amount_label\",\"amount_value\"],\"itemMargin\":1,\"styles\":{\"width\":82,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":82,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF26211A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.totalLabel }}\",\"styles\":{\"width\":82,\"height\":10,\"fontSize\":8,\"fontWeight\":700,\"fontColor\":\"#FF7A7266\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.totalAmount }}\",\"styles\":{\"width\":82,\"height\":16,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#FFE84040\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"category_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"category_item\",\"path\":\"/finance/categories\"},\"itemMargin\":3,\"styles\":{\"width\":128,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"category_item\",\"component\":\"Row\",\"children\":[\"category_label\",\"category_percent\",\"category_amount\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":128,\"height\":14,\"padding\":{\"left\":6,\"right\":6,\"top\":0,\"bottom\":0},\"borderRadius\":6,\"backgroundColor\":{\"path\":\"color\"},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"category_label\",\"component\":\"Text\",\"content\":{\"path\":\"label\"},\"styles\":{\"width\":30,\"height\":14,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":{\"path\":\"textColor\"},\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"category_percent\",\"component\":\"Text\",\"content\":{\"path\":\"percent\"},\"styles\":{\"width\":24,\"height\":14,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":{\"path\":\"textColor\"},\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"category_amount\",\"component\":\"Text\",\"content\":{\"path\":\"amount\"},\"styles\":{\"width\":54,\"height\":14,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":{\"path\":\"textColor\"},\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":128,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FF26211A\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_236\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"分类支出\",\"totalLabel\":\"本月已花\",\"totalAmount\":\"¥4,860\",\"usage\":92,\"total\":100,\"statusText\":\"快要超支\",\"statusColor\":\"#FFE84040\",\"categories\":[{\"label\":\"餐饮\",\"percent\":\"42%\",\"amount\":\"¥2,041\",\"color\":\"#FFFFD66B\",\"textColor\":\"#FF4D3500\"},{\"label\":\"交通\",\"percent\":\"24%\",\"amount\":\"¥1,166\",\"color\":\"#FF84DCC6\",\"textColor\":\"#FF003D34\"},{\"label\":\"娱乐\",\"percent\":\"26%\",\"amount\":\"¥1,264\",\"color\":\"#FFFF8A80\",\"textColor\":\"#FF5F0000\"}],\"actionText\":\"省钱歌单\"}}}}"
+  ]
+}

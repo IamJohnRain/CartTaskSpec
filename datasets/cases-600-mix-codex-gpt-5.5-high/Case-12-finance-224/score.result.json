@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-12-finance-224",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.9,
+  "reasons": {
+    "instruction": "用户明确要求'红色提示'，但 alert_text 颜色为 #ffed6f21（橙色），违反红色要求；用户要求'显示一行带金额'，但渲染截图中 record_list 区域完全空白，唯一的交易记录 '待支付 ￥128' 不可见；这是因为 List 模板内 Text.content 使用了非标准格式 {\"path\":\"name\"} 和 {\"call\":\"formatString\",...}，不是规范的 {{ $__dataModel... }} 表达式，导致绑定失败；onClick 事件落实了 clickToDeeplink，但该 deeplink 指向设置而非支付，与用户意图不符（这是 TaskSpec 限制）；标题、笔数、按钮、事件绑定、协议壳（catalogId/version/size/path）均正确；总体主要诉求未全部落实，扣重分。",
+    "aesthetic": "配色上浅灰底 + 橙字 + 蓝按钮，层次基本清晰；但用户要红色高亮，实际为暖橙，色系不一致；中部 List 渲染失败导致大块留白，视觉密度不均；title 与 alert_text 均使用 fontWeight:700，按钮用 medium，不符合'同一卡片只保留一个最强字重'的规范，字重对比喧宾夺主；字阶 14/12 基本合规；整体尚可但有明显空旷与色偏问题。",
+    "layout": "根 Column：padding 12+12=24 横向，内容宽 116；纵向可用 116，children 高 18+18+26+30=92，itemMargin=6*3=18，合计 110 ≤ 116，且使用 justifyContent:spaceBetween 时纵向预算成立。header_row：72+4+40=116 ✓；record_item（即使可见）：内 padding 8+8+16=32，56+6+38=100 ≤ 116-16=100，横向紧贴边缘无溢出。但 List 区域在渲染中实际高度 26 但未绘制任何 item，造成中部 26vp 高的'空白容器'，从视觉上像内容丢失；底部 pay_button 底边到卡片底边 12vp，符合 2x2 区间 8-12vp；按钮热区 116x30 充足。核心扣分项是 List 渲染为空，导致关键信息缺失。"
+  },
+  "issues": [
+    "alert_text 颜色为橙色 #ffed6f21，与用户'红色提示'要求不符",
+    "List 组件未渲染任何 item，'待支付 ￥128' 在截图中完全不可见",
+    "Text.content 用了 {\"path\":\"name\"} 和 {\"call\":\"formatString\",...} 非标准格式，未使用 {{ $__dataModel... }} 表达式",
+    "title/alert_text/record_amount 三处均使用 fontWeight:700，违反'同一卡片只保留一个最强字重'",
+    "deeplink 指向 com.huawei.hmos.settings 而非支付，与用户'点一下跳到支付'意图不一致（TaskSpec 限制）",
+    "中部 List 区域空白导致视觉密度不均，整体显得空旷"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_224\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_224\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"alert_text\",\"record_item\",\"pay_button\"],\"itemMargin\":0,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff5f6f8\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title\",\"count_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.countText }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.alertText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"record_item\",\"component\":\"Row\",\"children\":[\"record_name\",\"record_amount\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffffebee\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"record_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.transactions[0].name }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"record_amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.transactions[0].amount }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"pay_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_224\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"交易记录\",\"countText\":\"1笔\",\"alertText\":\"异常5笔\",\"actionText\":\"去支付\",\"transactions\":[{\"name\":\"待支付\",\"amount\":\"￥128\"}]}}}}"
+  ]
+}

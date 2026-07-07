@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-02-earphone-music-038",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "主要诉求基本落实：2x4 尺寸正确，左右分栏（电池面板/右侧栏），左耳78%电量，红黑色135度渐变（#ff0b0b0f→#ff7a1018），闪电符号+红色告警条带+'左耳电量过低'文案齐全，跑步歌单按钮+onClick 跳转到 hwmusic://...running&type=4 来自 eventCandidates 原样。扣分点：1) 用户明确说'一排横向排列的歌单快捷按钮'与'多放几个常用图标'，按字面应理解为多个并列独立按钮，当前只做了一个含两个图标的组合按钮，不算完整满足；2) 闪电/天气/跑步三个关键图标在截图中均显示为灰色占位方块（earphone_icon 和 music_icon 渲染正常），视觉上'闪电符号'和'跑步'语义缺失；3) 卡片整体偏黑底，与'运动风'的明亮色块对比有所欠缺。",
+    "aesthetic": "配色有运动冲击感：红黑渐变电板+红色告警 pill+蓝色跑步按钮形成强烈对比，呼应'急人'语气。字号阶梯 32/18/14/12/10 合理。但扣分点：1) 闪电图标、天气图标、跑步图标渲染为灰色占位块，严重影响视觉完整性和'运动'语义；2) 多处使用 fontWeight 700（78%、左耳、告警、29°C、跑步歌单），违反'同一卡片只保留一个最强字重'的约束，缺少字体层级对比；3) 右栏上下两块密度较紧，蓝色按钮与天气区之间留白偏小，'急人'靠的是告警红+渐变，不是密度堆砌。",
+    "layout": "核心溢出：battery_panel Column 纵向占用 = padding 10+10=20 + itemMargin 8×2=16 + Σ子项 24(battery_head)+38(battery_value)+24(battery_warning)=86 = 122，而可用高度 116，溢出 6vp，底部告警 pill 在 Column 边界外突出，可能与电池面板圆角渐变框视觉脱节。Root Row 横向占用 = 12+12+10+128+138=300 刚好顶格，无水平余量。其他核算：right_panel Column 116 vs 子项 2+12+44+40=100 余 16 OK；weather_row 138 子项 8+28+102=138 顶格 OK；playlist_row 138 子项 padding 16+margin 12+icon 40+text 70=138 顶格 OK，但 text 70 容纳 fontSize 14 的'跑步歌单 打开'(估算 ~9 字符×14≈126) 实际被压缩/截断，截图证实文字'跑步歌单'被裁切到只剩'跑步歌单'前 4 字。底部锚定：playlist_row 底距 root 12+2=14vp 在 2x4 允许范围 10-14vp 内 OK。"
+  },
+  "issues": [
+    "battery_panel Column 子项总高 122 > 可用 116，溢出 6vp，告警 pill 越过电池面板圆角底边",
+    "root Row 横向 300 刚好顶格，battery_panel(128) + itemMargin(10) + right_panel(138) = 276 加 padding 24 = 300，无任何缓冲",
+    "playlist_text width 70 容纳不下 '跑步歌单 打开' 9 字符@fontSize 14（估算 126），被截断",
+    "闪电/天气/跑步三个 asset 图标渲染为灰色占位方块，语义丢失",
+    "'一排歌单快捷按钮'按字面应多个并列入口，当前只做了一个组合按钮",
+    "多组件 fontWeight 700 违反单一最强字重约束，字重层级不清晰",
+    "右侧栏 116 高度内 weather_row 44 + playlist_row 40 = 84 + margin 12 + padding 4 = 100，余量偏紧"
+  ]
+}

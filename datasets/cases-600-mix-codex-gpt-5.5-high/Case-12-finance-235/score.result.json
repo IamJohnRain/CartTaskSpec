@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-12-finance-235",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.4,
+  "reasons": {
+    "instruction": "用户明确要求'本月支出爆了要红色告警'，原 DSL 状态胶囊与环均使用 #ffed6f21（橙色），明显违反红色告警要求；spendList 通过模板循环声明了 2 条日历消费项，但渲染截图中中部消费列表完全不可见（关键诉求'读日历里最近几笔大额消费'未呈现），这是主要扣分点。事件 onClick 全部正确映射到 eventCandidates 的 clickToIntent+ViewCalendarEvent，size/root shell/catalogId/version 等硬约束满足，但 updateDataModel 缺少 path:'/' 字段，属轻微协议瑕疵。叠层视觉、环内数字、浅色底、内嵌面板、纯文字图标、纵向排列等其余诉求基本落实。",
+    "aesthetic": "配色采用统一的暖橙主题，层次清晰（800 中心数字 > 700 标题/胶囊 > 600 列表 > 500 按钮 > 400 副标题），但橙色与用户要求的'红色告警'语义冲突，告警张力不足；中部消费列表缺失导致卡片'空心'，视觉重心不稳；detailButton 受溢出影响有 10px 落在白色面板之外的浅灰底上，破坏'内嵌面板'的整体感；环与右上状态胶囊在 y=43-52 有 9px 视觉重叠（环弧覆盖胶囊底沿）。",
+    "layout": "核心溢出：paperPanel Column 纵向占用 = 6+6（padding）+ 6×2（itemMargin）+ 28（topRow）+ 36（spendList）+ 24（detailButton）= 112 > 可用 96，溢出 16px，是导致中部消费列表在截图中不可见的根因。Stack 层叠冲突：centerRing 位于 (204,43)-(262,101)，与 topRow 内 statusPill 位于 (200,28)-(270,52) 在 (204-262, 43-52) 区域产生 58×9 重叠，环弧覆盖胶囊底沿。detailButton 在溢出后底边落至 root y=128，底部 12px 留白尚可，但有 10px 延伸至 paperPanel 白底之外。topRow 横向 16+134+70+8×2=240 等于 240 处于临界；spendList/titleBlock/ringContent 等子容器预算虽成立但因父级溢出而不可见。按钮热区 96×24≥24vp 满足。"
+  },
+  "issues": [
+    "paperPanel 子项总高 112 > 可用 96，溢出 16px，是消费列表不可见的根因",
+    "Stack 中 centerRing (204,43)-(262,101) 与 statusPill (200,28)-(270,52) 在 y=43-52 区域 58×9 重叠，环弧覆盖胶囊底沿",
+    "用户要求'红色告警'，但状态胶囊和环均使用橙色 #ffed6f21",
+    "渲染截图中 spendList 消费明细完全不可见，'读日历里最近几笔大额消费'核心诉求未呈现",
+    "detailButton 受溢出影响有 10px 落在 paperPanel 白底之外的浅灰底上",
+    "updateDataModel 缺少 path:'/' 字段，轻微违反协议硬约束",
+    "root onClick 与子项 onClick 事件层级未做处理，存在事件冒泡冲突风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_235\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_235\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"leftPanel\",\"centerRing\",\"ringContent\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\"}},{\"id\":\"leftPanel\",\"component\":\"Column\",\"children\":[\"topRow\",\"spendList\",\"detailButton\"],\"itemMargin\":0,\"styles\":{\"width\":186,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":2},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"glyph\",\"titleStack\",\"statusPill\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":170,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"¥\",\"styles\":{\"width\":16,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"titleStack\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":1,\"styles\":{\"width\":88,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":88,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#de000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.subtitle }}\",\"styles\":{\"width\":88,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#8a000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusPill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusText }}\",\"styles\":{\"width\":54,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#ffe53935\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"spendList\",\"component\":\"Column\",\"children\":{\"componentId\":\"spendItem\",\"path\":\"/data/calendar/items\"},\"itemMargin\":4,\"styles\":{\"width\":170,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"spendItem\",\"component\":\"Row\",\"children\":[\"spendTitle\",\"spendTime\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":170,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"spendTitle\",\"component\":\"Text\",\"content\":{\"path\":\"title\"},\"styles\":{\"width\":118,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#de000000\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"spendTime\",\"component\":\"Text\",\"content\":{\"path\":\"dtStart\"},\"styles\":{\"width\":48,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#8a000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detailButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"styles\":{\"width\":84,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#1affe53935\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffe53935\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]},{\"id\":\"centerRing\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.finance.ratio }}\",\"total\":\"{{ $__dataModel.finance.ratioTotal }}\",\"styles\":{\"type\":\"ring\",\"width\":58,\"height\":58,\"color\":\"#ffe53935\",\"backgroundColor\":\"#1affe53935\",\"margin\":{\"left\":220,\"top\":41}}},{\"id\":\"ringContent\",\"component\":\"Column\",\"children\":[\"mainAmount\",\"ringCaption\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":36,\"margin\":{\"left\":220,\"top\":52},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"mainAmount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.monthSpendText }}\",\"styles\":{\"width\":58,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#de000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ringCaption\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.ringCaption }}\",\"styles\":{\"width\":58,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#8a000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_235\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"本月大额消费\",\"subtitle\":\"来自日历事件\",\"statusText\":\"支出爆了\",\"monthSpendText\":\"¥8.6k\",\"ringCaption\":\"月支出\",\"ratio\":86,\"ratioTotal\":100,\"actionText\":\"查看详情\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar-spend-001\",\"title\":\"大额消费 ¥3200\",\"dtStart\":\"07/02\",\"dtEnd\":\"07/02\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-spend-002\",\"title\":\"家电消费 ¥2100\",\"dtStart\":\"07/04\",\"dtEnd\":\"07/04\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

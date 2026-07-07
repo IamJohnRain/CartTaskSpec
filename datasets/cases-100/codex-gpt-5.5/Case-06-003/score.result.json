@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-06-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "尺寸 2x2（root 140x140，borderRadius 18，clip true，padding 12）满足；catalogId 为 ohos.a2ui.extended.catalog，version v0.9，updateDataModel.path='/' 且 value 与 TaskSpec 完全一致。展示字段完整：title/subtitle/totalText/usedText/usedPercent/usedPercentText/settingsText 全部经 {{}} 表达式绑定。事件 onClick 正确转译为 clickToDeeplink，args 三项原样来自 eventCandidates。assetCandidates 为空故无素材问题。唯一可商榷：用户原话是『内存清理』，但 TaskSpec 数据为整机储存，DSL 忠实于 TaskSpec，无错。扣 1 分是因 percent_text 与 title_text 同时使用 fontWeight 700 略有多余。",
+    "aesthetic": "配色使用 #F6F8FA 浅灰底 + #0A59F7 蓝主色 + #E5000000/99000000 文字，对比清晰，蓝色进度条与百分比呼应，CTA 蓝色实底白字识别度高。字号阶梯 32/14/10 合理，层级清楚。不足：percent_text(32/700) 与 title_text(14/700) 同时使用最强字重 700，违反『只保留一个最强字重』原则；卡片整体留白偏紧，header 与 percent 之间几乎贴在一起。",
+    "layout": "root Column 纵向预算：padding 12+12=24，itemMargin 6×4=24，子项 18(头行)+34(percent)+6(progress)+16(detail)+30(button)=104，合计 24+24+104=152 > 可用 140，溢出 12vp。这意味着 settings_button 底部越出卡片底边 0-12vp，会被 clip 裁掉；底部动作区到卡片底边距离不满足 8-12vp 规范。header_row 横向：6+62+48=116 = 116，恰好填满，无溢出。detail_row 横向：4+56+56=116 = 116，恰好填满，无溢出。Button 高度 30vp≥24vp 热区合格，但因 Column 溢出实际被切。综合：纵向严重溢出导致关键 CTA 被裁，扣重分。"
+  },
+  "issues": [
+    "root Column 子项占高 24(padding)+24(margin)+104(子项)=152 > 父容器 140，溢出 12vp",
+    "settings_button 因列溢出被 clip 裁切，CTA 不可用",
+    "percent_text 与 title_text 均使用 fontWeight 700，违反单一最强字重原则",
+    "itemMargin=6 在 116 内容区偏大，建议 4",
+    "底部动作区到卡片底边实际为 0vp，不满足 8-12vp 规范"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_06_003_storage_clean\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_06_003_storage_clean\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"percent_text\",\"storage_progress\",\"detail_row\",\"settings_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF6F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.title }}\",\"styles\":{\"width\":62,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.subtitle }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"percent_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.usedPercentText }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"storage_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.storage.usedPercent }}\",\"total\":100,\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":4,\"borderRadius\":2,\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#1F0A59F7\"}},{\"id\":\"detail_row\",\"component\":\"Row\",\"children\":[\"total_text\",\"used_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"total_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.totalText }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.usedText }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"settings_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.storage.settingsText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_06_003_storage_clean\",\"path\":\"/\",\"value\":{\"data\":{\"storage\":{\"title\":\"整机储存\",\"subtitle\":\"空间占用\",\"totalText\":\"总 512GB\",\"usedText\":\"已用 386GB\",\"usedPercent\":75,\"usedPercentText\":\"75%\",\"settingsText\":\"储存设置\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

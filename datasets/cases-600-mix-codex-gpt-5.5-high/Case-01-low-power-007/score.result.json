@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-007",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户5项诉求中4项较好落实：'字叠在背景上'通过Stack+渐变+白字实现；'电池数字会变'使用{{ $__dataModel.power.levelText }}绑定'12%'；'点进去开省电'由action Button的onClick调用SetSettingSwitch(battery_saving_mode,switchFlag=0)实现，call/args原样来自eventCandidates；'提醒没电了'由warningText'电量低，请开启省电'体现。硬约束满足：size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value与dataModel一致。扣分点：eventCandidates[0]的ViewCalendarEvent(entityId=mock-low-power-charge)未使用，calendar_row不可点击，'能看日历'只能看概要无法查看详情，丢失一个交互入口。",
+    "aesthetic": "深红到深黑的对角渐变与低电主题高度契合，警示感强；白色文字在暗色渐变上对比度好，可读性高；calendar胶囊采用#19ffffff半透明白，层次自然；action按钮白底红字(#ffd94838与渐变stop同色)形成主CTA，视觉聚焦准确。字号阶梯14/20/12/12/14符合规范，层级清晰。扣分点：title(14px/700)与level(20px/700)同时使用最强字重700，违反'同一卡片只保留一个最强字重'的原则，虽有尺寸差作为补偿，但视觉上仍有双重心。shade为空Column、仅作暗角叠加，与root渐变功能重叠，显得冗余。",
+    "layout": "逐项预算核算：① root Stack 高140，root padding 12+12，可用高116；② content Column 子项高 16+38+22+28=104，3×itemMargin(4)=12，纵向占用 12+12+12+104=140=root高，无溢出；③ battery Column 子项高 24+14=38，0间距，占高38=容器高，无溢出；④ calendar_row Row padding 8+8+4+4=24，子项宽 34+62+4=100，加padding横向占用 8+8+4+34+62=116=容器宽，纵向 max(16)+3+3=22=容器高，无溢出；⑤ 受保护文本 title(4中×14=56<116)、level(3×12=36<116)、warning(8中×12+1×12=108<116)、cal_time('18:30'≈34)、cal_title(4中×12=48<62)均无截断；⑥ Stack层叠 shade(116×116)在底、content(116×116)在上，不遮挡受保护文本与CTA；⑦ action按钮热区 116×28≥24vp，达标；⑧ 底部动作底边到卡底 12vp，在2x2的8-12vp范围内。整体布局稳健。"
+  },
+  "issues": [
+    "eventCandidates[0] ViewCalendarEvent未被使用，calendar_row缺少onClick，无法进入日历事件详情",
+    "title与level同时使用fontWeight 700，违反'同一卡片只保留一个最强字重'",
+    "shade为空Column，仅作暗角叠加，与root渐变视觉功能重叠，建议简化或移除",
+    "calendar_row高度22，若考虑可点击则热区不达24vp最低要求"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_007\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_007\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":120,\"colors\":[[\"#ff191a1c\",0],[\"#ffd94838\",0.58],[\"#ff202224\",1]]},\"alignContent\":\"center\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"backgroundColor\":\"#33000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"battery\",\"calendar_row\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery\",\"component\":\"Column\",\"children\":[\"level\",\"warning\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"level\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.levelText }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.warningText }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_row\",\"component\":\"Row\",\"children\":[\"cal_time\",\"cal_title\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"borderRadius\":12,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"mock-low-power-charge\"}}}]},{\"id\":\"cal_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":34,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cal_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":62,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffd94838\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_007\",\"path\":\"/\",\"value\":{\"power\":{\"title\":\"低电提醒\",\"levelPercent\":12,\"levelText\":\"12%\",\"warningText\":\"电量低，请开启省电\",\"actionText\":\"开启省电\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-low-power-charge\",\"title\":\"充电提醒\",\"dtStart\":\"18:30\",\"dtEnd\":\"18:45\",\"eventLocation\":\"\",\"description\":\"电量不足时提醒充电\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

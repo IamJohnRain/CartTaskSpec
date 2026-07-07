@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-03-anti-addiction-059",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "用户要求深色主题带渐变背景（已实现）、顶部显示天气（已实现）、横向排开多个应用使用情况（结构正确但渲染时整段被裁切不可见）、超时应用显示红色'超限危险'（仅以全局徽标呈现，未按 overLimit 字段做按应用粒度状态）、勾选框双向绑定（select 为单路径绑定，无 setState 事件无法回写）、底部按钮跳转数字健康（onClick clickToDeeplink 参数原样正确）。主要问题是 app_list 区域因 root Column 溢出 4vp 在渲染中完全不可见，导致用户核心诉求'横向排开应用使用情况'未被满足；'超限危险' 未做到按应用粒度触发；勾选框双向绑定在当前协议下无实现路径。",
+    "aesthetic": "深色渐变（#101820→#24304a→#3a1f2f）契合管控告警氛围，配色和谐；标题'寒假应用管控' 与白色按钮形成强对比；'超限危险' 红色徽标醒目。但因 app_list 整段被裁切，卡片中段出现大片空洞，视觉密度严重失衡；title/danger/app_name 三个 Text 均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'规范；底部按钮距卡片底边约 8vp，略低于 2x4 卡片 10-14vp 区间。",
+    "layout": "硬约束核算：(1) root Column 纵向占用 = 8(pad top) + 30(top) + 8(itemMargin) + 48(app_list) + 8(itemMargin) + 30(bottom) + 8(pad bottom) = 144 > 父容器 height 140，溢出 4vp，app_list 整段在 clip 下不可见；(2) app_card Column 纵向占用 = 5(pad top) + 14(app_name) + 2(itemMargin) + 12(app_used) + 2(itemMargin) + 18(app_delay) + 5(pad bottom) = 58 > 父容器 height 48，溢出 10vp；(3) app_list Row 横向 3 卡片 88*3+6*2 = 276 = 父 276，紧贴边缘无呼吸空间。底部 lock_btn 热区 30vp 满足 ≥ 24vp；app_list 渲染图中完全缺失，根列纵向 4px 溢出 + app_card 内部 10px 溢出是主要祸因。"
+  },
+  "issues": [
+    "root Column 纵向占 144 超出 height 140 父高 4vp，app_list 整段被 clip 不可见",
+    "app_card Column 子项纵向 58 超出 height 48 父高 10vp，内部三件套堆叠/裁切",
+    "app_list 在渲染截图中完全缺失，用户核心诉求'横向排开应用使用情况'未视觉达成",
+    "'超限危险' 以全局徽标呈现，未按 overLimit 字段做按应用粒度的危险状态指示",
+    "勾选框 select 为单向路径绑定，协议未提供 setData 事件，双向绑定名不副实",
+    "app_used 使用非标准 formatString call 绑定（带 ${used}/${limit} 模板），存在解析兼容性风险",
+    "title/danger/app_name 三个 Text 共享 fontWeight 700，违反'同一卡片只保留一个最强字重'规范",
+    "bottom row 底边距卡片底仅约 8vp，低于 2x4 卡片 10-14vp 推荐区间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_059\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_059\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"app_list\",\"bottom\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff101820\",0],[\"#ff24304a\",0.6],[\"#ff3a1f2f\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"icon\",\"header\",\"danger\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":{\"path\":\"/assets/mainIcon\"},\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title\",\"weather\"],\"itemMargin\":2,\"styles\":{\"width\":176,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.control.title }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":176,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"danger\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.control.status }}\",\"styles\":{\"width\":64,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#ffba1a1a\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"app_list\",\"component\":\"Row\",\"children\":{\"componentId\":\"app_card\",\"path\":\"/control/apps\"},\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":60,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"app_card\",\"component\":\"Column\",\"children\":[\"app_name\",\"app_used\",\"app_delay\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":60,\"padding\":{\"left\":5,\"right\":5,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#29ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"app_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":78,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"app_used\",\"component\":\"Text\",\"content\":{\"path\":\"used\"},\"styles\":{\"width\":78,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffff4d4f\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"app_delay\",\"component\":\"Checkbox\",\"label\":\"延时\",\"select\":{\"path\":\"extendApproved\"},\"styles\":{\"width\":78,\"height\":18,\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffff4d4f\",\"unSelectedColor\":\"#80ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"note\",\"lock_btn\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"note\",\"component\":\"Text\",\"content\":\"超限应用优先锁定\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lock_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.control.actionText }}\",\"styles\":{\"width\":96,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ff101820\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_059\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"本地\"},\"current\":{\"condition\":\"多云\",\"temperatureText\":\"28℃\"},\"daily\":[],\"updatedAt\":\"\"}},\"control\":{\"title\":\"寒假应用管控\",\"status\":\"超限危险\",\"apps\":[{\"name\":\"抖音\",\"used\":\"3小时20分\",\"limit\":\"限1小时\",\"overLimit\":true,\"extendApproved\":false},{\"name\":\"游戏\",\"used\":\"50分\",\"limit\":\"限1小时\",\"overLimit\":false,\"extendApproved\":false},{\"name\":\"视频\",\"used\":\"1小时30分\",\"limit\":\"限1小时\",\"overLimit\":true,\"extendApproved\":true}],\"actionText\":\"数字健康\"},\"assets\":{\"mainIcon\":\"resources/base/media/icon_tiktok.png\"}}}}"
+  ]
+}

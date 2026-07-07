@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.3,
+  "reasons": {
+    "instruction": "用户四点诉求（耳机卡片/连上自动弹歌单/左右滑切歌/摘了自动停）均完整呈现：deviceName+connectionText 表连接状态，playlistName+artistText 表自动弹歌单，gestureHint 表左右滑切歌，wearStateText 表摘下暂停。事件 onClick.call=clickToDeeplink 与 args.uri 原样来自 eventCandidates。size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/'、value 与 TaskSpec 完全一致，全部硬约束满足。无网络图/非法组件/自造事件。扣 1 分因 device_text 'FreeBuds Pro' 在 92 宽+fontSize14 估算下文本宽度约 106，存在被裁风险。",
+    "aesthetic": "渐变配色（#F8F1FF→#FFF4F7）柔和干净，紫色 CTA 与进度条主色 #AC49F5 与渐变呼应，半透明白色 pause_panel 提升层次。字号阶梯 10/12/14/18 在规范内。但 device_text、track_text、play_state_text 三处同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'规则，标题层级被稀释，扣 1.5 分。",
+    "layout": "按公式逐项核算：(1) track_col 子项纵向占高 = 16+22+14 + itemMargin 4*(3-1) = 60 > 自身 height 52，溢出 8；(2) main_col 子项纵向 = 20+8+60+8+6+8+14 = 124 > 可用 116，溢出 8；(3) device_text 文本 'FreeBuds Pro' 估算宽 12*0.6*14≈106 > width 92，溢出约 14，状态文本属受保护字段，存在裁切隐患；(4) status_row 横向 92+8+76=176=父宽，刚好不溢出；(5) side_col 居中布局下 music_button 底到卡片底距离约 20vp，超过 2x4 允许的 16vp 上限；(6) 三处 700 字重违反层级唯一性原则。多处预算不成立，扣重分。"
+  },
+  "issues": [
+    "track_col 高度 52 < 内容实际需求 60（16+22+14+4+4），纵向溢出 8vp",
+    "main_col 累计子项高 124 > 可用 116，纵向溢出 8vp（因 track_col 溢出传导）",
+    "device_text 'FreeBuds Pro' 估算宽 106 > width 92，宽度溢出约 14vp，受保护标题存在裁切风险",
+    "三处组件（device_text、track_text、play_state_text）同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'",
+    "side_col 居中布局下，music_button 底到卡片底约 20vp，超过 2x4 允许的 ≤16vp 上限",
+    "pause_panel 内 wear_state_text '摘下自动暂停' 6 字 × fontSize12 = 72 ≈ width 72，为紧贴极限，无安全余量"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"headset_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"headset_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#F8F1FF\",0],[\"#FFF4F7\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"status_row\",\"track_col\",\"progress_bar\",\"gesture_text\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"device_text\",\"state_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":176,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"device_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.deviceName }}\",\"styles\":{\"width\":104,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.connectionText }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_col\",\"component\":\"Column\",\"children\":[\"playlist_text\",\"track_text\",\"artist_text\"],\"itemMargin\":3,\"styles\":{\"width\":176,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.playlistName }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.currentTrack }}\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"artist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.artistText }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.headset.progressValue }}\",\"total\":\"{{ $__dataModel.headset.progressTotal }}\",\"styles\":{\"width\":176,\"height\":6,\"type\":\"linear\",\"color\":\"#AC49F5\",\"backgroundColor\":\"#330A59F7\",\"borderRadius\":3}},{\"id\":\"gesture_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.gestureHint }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_col\",\"component\":\"Column\",\"children\":[\"pause_panel\",\"music_button\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"pause_panel\",\"component\":\"Column\",\"children\":[\"play_state_text\",\"wear_state_text\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":58,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"play_state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.playStateText }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wear_state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.wearStateText }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.headset.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#AC49F5\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"headset_music_card\",\"path\":\"/\",\"value\":{\"headset\":{\"deviceName\":\"FreeBuds Pro\",\"connectionText\":\"耳机已连接\",\"playlistName\":\"收藏歌单\",\"currentTrack\":\"夜色漫游\",\"artistText\":\"轻音乐 · 自动弹出\",\"gestureHint\":\"左右滑动切歌\",\"wearStateText\":\"摘下自动暂停\",\"playStateText\":\"播放中\",\"progressValue\":42,\"progressTotal\":100,\"actionLabel\":\"打开歌单\"}}}}"
+  ]
+}

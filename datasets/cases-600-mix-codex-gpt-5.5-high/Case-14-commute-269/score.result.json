@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-14-commute-269",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户需求落实度高：通勤卡片✓、两个 Checkbox（带伞/日程）✓、带数字的'28° 查天气'按钮带 onClick 跳天气 deeplink✓、日历时间 08:30 已读✓、红色危险提示存在✓；assetCandidates 中的 icon_car.png 正确用作通勤图标；eventCandidates 的 clickToDeeplink 与 uri 原样使用；root shell 140x140、borderRadius 18、clip true、catalogId/version/updateDataModel.path=/ 均合规。扣 1 分主要因为 Checkbox label 用 formatString 是非主流做法，且本可以更直接。",
+    "aesthetic": "配色总体和谐：蓝绿渐变背景 + 红色危险条 + 绿色 CTA 按钮，红色危险用 #ffe84026 + 白字对比清晰。但 (1) title、alert、button 三个元素都使用 fontWeight 800，违反'同一卡片只保留一个最强字重'原则，层级不分明；(2) alert 文字截断成'路况拥'、button 底部被裁切，视觉上明显不完整，专业度下降。",
+    "layout": "核心堆叠与截断问题严重。Root Column 预算：padding 10/10/10/10 → 内容区 120×120；4 个子项 itemMargin 6，累加子项高度 title_row(20) + check_list(44) + alert_text(20) + weather_button(30) = 114；3×6 = 18；总占用 114+18 = 132 > 可用 120，溢出 12vp，截图证实绿色 button 底部被卡片底边裁切。alert_text 宽度预算：width 120，padding 8/8 → 内宽 104，文本'红色危险：路况拥堵'在 fontSize 12 下估算宽度 ≈ 4×12 + 12 + 4×12 = 108 > 104，溢出 4vp，截图证实'堵'字被裁掉。受保护的 alert 受保护文本与底部 CTA 均被截断/裁切，重扣。"
+  },
+  "issues": [
+    "Root Column 内容纵向总高 132vp > 可用 120vp，溢出 12vp，绿色 weather_button 底部被卡片底边裁切",
+    "alert_text 文本宽 108vp > 可用内宽 104vp，'红色危险：路况拥堵' 中'堵'被截断成'红色危险：路况拥'",
+    "title、alert、button 三处均使用 fontWeight 800，违反'一个最强字重'规则",
+    "底部 button 距卡片底边过近，未保留 8-12vp 安全边距（实际为 0/负值）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_269\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_269\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_row\",\"check_list\",\"alert_text\",\"weather_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a59f7\",0],[\"#ff86c5e3\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"commute_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"commute_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.title }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_list\",\"component\":\"Column\",\"children\":[\"calendar_check\",\"umbrella_check\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"calendar_check\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/commute/calendarLabel} ${/data/calendar/items/0/dtStart}\"}},\"select\":\"{{ $__dataModel.commute.calendarReady }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"umbrella_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.commute.checks.umbrella }}\",\"select\":\"{{ $__dataModel.commute.umbrellaReady }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.alert.text }}\",\"styles\":{\"width\":120,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#ffe84026\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/weather/tempNumber}° 查天气\"}},\"styles\":{\"width\":120,\"height\":28,\"borderRadius\":14,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ff64bb5c\",0],[\"#ff92c48d\",1]]},\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_269\",\"path\":\"/\",\"value\":{\"commute\":{\"title\":\"通勤清单\",\"calendarLabel\":\"日程\",\"calendarReady\":true,\"checks\":{\"umbrella\":\"带伞\"},\"umbrellaReady\":false},\"alert\":{\"text\":\"红色危险：路况拥堵\"},\"weather\":{\"tempNumber\":28},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"\",\"title\":\"通勤前日程\",\"dtStart\":\"08:30\",\"dtEnd\":\"09:00\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

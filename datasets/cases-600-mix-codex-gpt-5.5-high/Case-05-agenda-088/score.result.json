@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-088",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求日程卡、显示倒计时数字、点击进入系统日程、从日历读取数据：1) size=2x4 正确；2) root shell 300x140、borderRadius 22、clip true、padding 12 全部符合硬约束；3) catalogId=ohos.a2ui.extended.catalog、version=v0.9 正确；4) countdown.value/unit/label、title、time、source、actionText 字段全部以 {{ $__dataModel.calendar... }} 表达式正确绑定到 dataModel；5) 事件 clickToDeeplink 完整还原 eventCandidates 的 bundleName/abilityName/uri；6) 同时在 root 和 Button 上挂同一 onClick 提升了整卡可点击性，符合'点一下'语义；7) updateDataModel.value 与 TaskSpec.dataModel.value 完全一致。轻微扣分：updateDataModel 缺少 path:'/' 字段（虽然语义上等价）。",
+    "aesthetic": "整体配色克制：浅蓝紫色背景 #fff3f6ff + 蓝色高亮块 #ff0a59f7 + 白色文字形成清晰对比，蓝色块上的 28 大字与'设置日程'按钮同色形成视觉呼应。字号阶梯 40/18/14/12 层级清晰，间距 8/10/12 也基本在阶梯上。但存在两点小瑕疵：1) 出现两个 fontWeight 700（countNumber 与 title），违反'同一卡片只保留一个最强字重'规则，应只保留 28 这一个；2) countUnit 颜色 #e6ffffff（90% 白）在蓝色块上对比度尚可但略弱。整体观感专业、密度合理、对齐统一。",
+    "layout": "逐项预算核算：\n[Root Column] padding 12+12 + itemMargin 10*(2-1) + main.height 70 + footer.height 36 = 140 = 父 140，恰好填满无溢出 ✓\n[main Row] padding 0+0 + itemMargin 12 + countBlock.width 88 + eventBlock.width 176 = 276 = 父 276 ✓\n[countBlock Column] padding top 6 + bottom 6 + itemMargin 2 + countNumber 42 + countUnit 16 = 72 > 父 70，溢出 2vp ✗\n[eventBlock Column] padding 0+0 + itemMargin 5*(3-1)=10 + countLabel 16 + title 24 + time 18 = 68 > 父 66，溢出 2vp ✗\n[footer Row] padding 0+0 + itemMargin 12 + source 154 + action 110 = 276 ✓；max(18,36)=36 ✓\n底部锚定：footer 底边到卡片底 = 140-(12+70+10+36) = 12vp，符合 2x4 的 10-14vp 区间 ✓\nButton 热区 110x36 > 24vp ✓\n两处 2vp 内部 Column 溢出属于硬性预算违规（虽然截图靠 justifyContent:center 视觉未明显截断，但本质上子项高于父容器）。受保护文本 28/项目同步/今天 16:00/设置日程 视觉未截断，但 countBlock 内部留白不足是隐患。"
+  },
+  "issues": [
+    "countBlock Column 纵向占用 72 > 父 70，溢出 2vp",
+    "eventBlock Column 纵向占用 68 > 父 66，溢出 2vp",
+    "countNumber 与 title 同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'",
+    "updateDataModel 缺少 path:'/' 字段（语义上等价于 '/'，建议补全以严格符合契约）",
+    "countUnit 颜色 #e6ffffff 在蓝底上对比度略弱，可考虑纯白 #ffffffff"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_088\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_088\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main\",\"footer\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff3f6ff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/agenda-088\"}}]},{\"id\":\"main\",\"component\":\"Row\",\"children\":[\"countBlock\",\"eventBlock\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":70,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countBlock\",\"component\":\"Column\",\"children\":[\"countNumber\",\"countUnit\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":70,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"countNumber\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.countdown.value }}\",\"styles\":{\"width\":72,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"countUnit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.countdown.unit }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"eventBlock\",\"component\":\"Column\",\"children\":[\"countLabel\",\"title\",\"time\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":66,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"countLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.countdown.label }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.title }}\",\"styles\":{\"width\":176,\"height\":24,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.time }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"source\",\"action\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"source\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.source }}\",\"styles\":{\"width\":154,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.actionText }}\",\"styles\":{\"width\":110,\"height\":36,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/agenda-088\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_088\",\"path\":\"/\",\"value\":{\"calendar\":{\"title\":\"项目同步\",\"time\":\"今天 16:00\",\"source\":\"系统日历\",\"countdown\":{\"value\":28,\"unit\":\"分钟后\",\"label\":\"距离开始\"},\"actionText\":\"设置日程\"}}}}"
+  ]
+}

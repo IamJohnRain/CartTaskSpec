@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-027",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户明确要求耳机音乐卡片，含三项诉求：电量数字、点击跳转、读日历。DSL 完整呈现 device.batteryText=76（32px 大字号突出）、device.name=耳机、music.currentTitle=晨间歌单、calendar.nextBrief=18:30 健身 四个字段；root 挂载 onClick=clickToDeeplink，call/args 与 TaskSpec.eventCandidates 完全一致（com.huawei.hmos.music / music://home）。size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、createSurface.width=140 height=140、updateDataModel.value 与 TaskSpec.dataModel.value 原样相等，硬约束全部满足；无编造事件、字段或网络素材。",
+    "aesthetic": "对角渐变 #ff4f7cff→#ff6ad8c8 清新专业；白色文字在渐变上对比清晰，半透白 #33ffffff 电池面板营造磨砂玻璃质感；字号阶梯 32/14/12/10 层级清晰；fontWeight 仅电池数字 700 其余 500，主次分明；左右两栏留白合理，整体克制专业。",
+    "layout": "【预算核算】Root Row(padding 12/12/12/12) 内框 116x116：横向 48(battery_panel)+8(itemMargin)+60(info_panel)=116 ≤ 116 ✓（精确贴合）；纵向 max(78)=78 ≤ 116 ✓。battery_panel Column(48x78, padding 4/4/10/10) 内框 40x58：40(battery_value)+4(itemMargin)+14(battery_label)=58 ≤ 58 ✓（原版 34+4+16=54 ≤ 56 也成立但 32px 字号标准行高约 40，height=34 偏紧，改进版修正）。info_panel Column(60x78) 内框 60x78：20(song_title)+4(itemMargin)+30(calendar_hint)=54 ≤ 78 ✓。日历文字 '18:30 健身' 在 12px 下字符宽度估算约 60.6，60 宽内临界，渲染图中以单行显示未见截断（maxLines=2 兜底）。Stack 无遮盖、root onClick 覆盖整卡 140x140 热区充足、底部无外框动作区受 16vp 限制约束。整体无堆叠/无文字截断。"
+  },
+  "issues": [
+    "原版 battery_value 高度 34 小于 32px 字号自然行高（约 40），垂直方向略紧，依赖 clip 兜底",
+    "原版 info_panel 宽度 60 与 '18:30 健身' 在 12px 下的估算宽度 60.6 处于临界，依赖实际渲染压缩",
+    "原版 root justifyContent 设为 'start' 与 alignItems='center' 组合下两栏虽垂直居中但水平起始贴边，视觉略偏左",
+    "原版 info_panel itemMargin=8 配合 18+34=60 与面板高 72 仅有 12vp 上下留白，密度偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_027\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_027\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"battery_panel\",\"info_panel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff4f7cff\",0],[\"#ff6ad8c8\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}]},{\"id\":\"battery_panel\",\"component\":\"Column\",\"children\":[\"battery_value\",\"battery_label\"],\"itemMargin\":4,\"styles\":{\"width\":48,\"height\":78,\"padding\":{\"left\":4,\"right\":4,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.batteryText }}\",\"styles\":{\"width\":40,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"battery_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.name }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"song_title\",\"calendar_hint\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":78,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"song_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.currentTitle }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"calendar_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextBrief }}\",\"styles\":{\"width\":60,\"height\":30,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":2,\"lineHeight\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_027\",\"value\":{\"device\":{\"name\":\"耳机\",\"batteryText\":\"76\"},\"music\":{\"currentTitle\":\"晨间歌单\"},\"calendar\":{\"nextBrief\":\"18:30 健身\"}}}}"
+  ]
+}

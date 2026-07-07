@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-05-agenda-096",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "用户明确要求纵向排列三个会议、每行带'距离开始还有X分钟'倒计时文字、纯文字无图片、可点击进入详情。原 DSL 在数据模型、列表循环模板、onClick(clickToIntent)绑定、assetCandidates 为空时不引入图片、size 2x4、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path '/ '/value 与 TaskSpec 一致等硬约束上均已满足。但渲染结果中三行会议与倒计时文字完全不可见（被根 Column 溢出挤出），最核心的信息诉求未呈现，按 D1 标准属于关键诉求缺失，扣重分。",
+    "aesthetic": "已渲染部分（标题'今日关键议程'、副标题'三场重要会议'、右上药丸'09:30 起'、分隔线）配色克制，蓝色时间与灰色倒计时对比合理，字号阶梯（18/12/10）大体合规。但因布局溢出导致会议区域为大片空白，整体留白严重失衡、卡片显得残缺不可用，扣分。",
+    "layout": "根 Column 预算核算：父 padding.top(10)+padding.bottom(10)+itemMargin(8)*2+header(30)+rule(1)+meetingList(76)=143>父容器高度 140，溢出 3（按协议内容区 116 计则溢出 27）。titleBlock Column：itemMargin(2)+headline(20)+itemMargin(2)+subtitle(12)=36>声明高度 30，溢出 6，subtitle 被裁。meetingItem Row：padding(6+6)+itemMargin(8)*2+timeBox(38)+meetingMain(78)+countdown(134)=278>父宽 276，溢出 2。meetingList 高度 76 仅容 3*22+2*4=70，但根 Column 已先溢出把它挤出可见区。多重溢出导致 D3 严重扣分。"
+  },
+  "issues": [
+    "根 Column 纵向占用 143 超过父容器高度 140，溢出 3（超过协议内容区 116 达 27），三会议行完全被裁出可见区",
+    "titleBlock Column 纵向占用 36 超过声明高度 30，溢出 6，subtitle 被压",
+    "meetingItem Row 横向占用 278 超过父宽 276，溢出 2，countdown 紧贴右边界",
+    "根 padding 10+10 与 itemMargin 8 占用过多纵向预算，挤占 meetingList 空间",
+    "三个会议行 + 倒计时文字在渲染截图中完全不可见，核心信息缺失",
+    "countPill 使用 ${/calendar/items/0/dtStart} 硬编码首项，对用户无明确价值，可考虑改为 '3 场' 之类汇总"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_096\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_096\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"rule\",\"meetingList\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"headline\",\"countPill\"],\"itemMargin\":8,\"styles\":{\"width\":288,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"headline\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.headline }}\",\"styles\":{\"width\":200,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countPill\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/calendar/items/0/dtStart} 起\"}},\"styles\":{\"width\":80,\"height\":22,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#ffe8edf3\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff314155\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rule\",\"component\":\"Divider\",\"styles\":{\"width\":288,\"height\":1,\"strokeWidth\":1,\"color\":\"#ffd9dee7\"}},{\"id\":\"meetingList\",\"component\":\"Column\",\"children\":{\"componentId\":\"meetingItem\",\"path\":\"/calendar/items\"},\"itemMargin\":4,\"styles\":{\"width\":288,\"height\":87,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"meetingItem\",\"component\":\"Row\",\"children\":[\"timeBox\",\"meetingMain\",\"countdown\"],\"itemMargin\":8,\"styles\":{\"width\":288,\"height\":26,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":6,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"timeBox\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${dtStart}\"}},\"styles\":{\"width\":38,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff2563eb\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meetingMain\",\"component\":\"Text\",\"content\":{\"path\":\"title\"},\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${countdownText}\"}},\"styles\":{\"width\":150,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff475569\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_096\",\"value\":{\"calendar\":{\"headline\":\"今日关键议程\",\"subtitle\":\"三场重要会议\",\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-096-standup\",\"title\":\"产品站会\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"countdownText\":\"距离开始还有5分钟\"},{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-096-review\",\"title\":\"方案评审\",\"dtStart\":\"11:00\",\"dtEnd\":\"11:45\",\"countdownText\":\"距离开始还有1小时35分钟\"},{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-096-sync\",\"title\":\"交付同步\",\"dtStart\":\"15:30\",\"dtEnd\":\"16:00\",\"countdownText\":\"距离开始还有6小时5分钟\"}]}}}}"
+  ]
+}

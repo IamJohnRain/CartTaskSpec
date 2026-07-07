@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-06-memory-clean-119",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "用户要求的横排三个环形进度条（总容量/已用/剩余）、已用条红色且显示'告警状态'、清理图标点击跳转系统应用管理、天空配色无图片，DSL 均已落实：3 个 Progress 环形横向排列、已用环绑 #ffba1a1a 红色且 status 文本绑 '告警状态'、onClick 完整照搬 eventCandidates 中 clickToDeeplink 的 bundleName/abilityName/uri、渐变背景采用 #ffe8f6ff→#ffffffff→#ffeaf8ef 浅蓝→白→薄荷的天空色系、未使用 Image/SVG。但受保护文本 '告警状态' 在 2x2 容器中被裁切为 '告警状'，导致红色警示信息缺失一字，指令呈现不完整；cleanButton.fontWeight 写成字符串 'medium' 而非 100-900 数字，属轻微协议瑕疵。",
+    "aesthetic": "天空渐变（#ffe8f6ff→#ffffffff→#ffeaf8ef）从浅蓝过渡到薄荷绿，与'从风景图延伸的天空配色'主题契合；环形三色（蓝 #2f80ed / 红 #ba1a1a / 绿 #36a268）配色和谐，红环突出告警语义；字号 10/12/14 严格落在阶梯上。但全卡存在 4 处 fontWeight:700（totalValue / usedStatus / freeValue / cleanIcon），违反'同一卡片只保留一个最强字重'的准则；cleanIcon 仅为字符 'C' 套白底圆，语义表达力偏弱（受 assetCandidates 为空、禁止 SVG/网络图限制，只能算色块+字符占位）。",
+    "layout": "逐项预算核算：① root Column 纵向 = 12（pad-top）+ 78（meterRow）+ 8（itemMargin）+ 30（bottomRow）+ 12（pad-bottom）= 140，等于父高 140，无溢出；② meterRow 横向 = 0+0+6×2+34×3 = 12+102 = 114 ≤ 父宽 116，无溢出；③ totalCol/usedCol/freeCol 纵向 = 12+30+2+14 = 58 ≤ 父高 78，无溢出；④ bottomRow 横向 = 0+0+8+24+68 = 100 ≤ 父宽 116，无溢出；⑤ 按钮热区 68×30 与 24×24 均 ≥24vp 达标；⑥ 底距 12vp 落在 8-12vp 区间，达标。但 usedStatus 文本'告警状态'4 汉字在 fontSize=10 下约 40vp 宽 > 列宽 34vp，最后一字'态'被裁掉为'告警状'（见截图），属受保护状态文本溢出，违反'受保护文本不得依赖省略/裁切隐藏'原则，是本卡最严重的排版失败。"
+  },
+  "issues": [
+    "受保护文本'告警状态' 4 字 @ 10pt ≈ 40vp > 列宽 34vp，渲染截断为'告警状'（参见截图），信息不完整",
+    "全卡 fontWeight:700 出现在 4 处（totalValue / usedStatus / freeValue / cleanIcon），违反单一最强字重准则",
+    "cleanButton.fontWeight 写成字符串 'medium'，应改为 100-900 数字（建议 500）",
+    "cleanIcon 仅为字符 'C' 套白底圆，清理语义表达力弱；受协议无法使用真实图标，建议保留 'C' 但降字重避免与主指标争抢视觉焦点",
+    "root 默认 padding 12 在 2x2 下过紧，导致 3 列均分后列宽仅 34vp 装不下 4 字告警文本"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_119\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_119\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"meterRow\",\"bottomRow\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#ffe8f6ff\",0],[\"#ffffffff\",0.58],[\"#ffeaf8ef\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"meterRow\",\"component\":\"Row\",\"children\":[\"totalCol\",\"usedCol\",\"freeCol\"],\"itemMargin\":2,\"styles\":{\"width\":124,\"height\":78,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"totalCol\",\"component\":\"Column\",\"children\":[\"totalLabel\",\"totalRing\",\"totalValue\"],\"itemMargin\":4,\"styles\":{\"width\":40,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"totalLabel\",\"component\":\"Text\",\"content\":\"总容量\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontColor\":\"#99182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"totalRing\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.memory.total.value }}\",\"total\":\"{{ $__dataModel.memory.total.total }}\",\"styles\":{\"type\":\"ring\",\"width\":30,\"height\":30,\"strokeWidth\":4,\"color\":\"#ff2f80ed\"}},{\"id\":\"totalValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.total.display }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usedCol\",\"component\":\"Column\",\"children\":[\"usedLabel\",\"usedRing\",\"usedStatus\"],\"itemMargin\":4,\"styles\":{\"width\":40,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"usedLabel\",\"component\":\"Text\",\"content\":\"已用\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontColor\":\"#99182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usedRing\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.memory.used.value }}\",\"total\":\"{{ $__dataModel.memory.used.total }}\",\"styles\":{\"type\":\"ring\",\"width\":30,\"height\":30,\"strokeWidth\":4,\"color\":\"#ffba1a1a\"}},{\"id\":\"usedStatus\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.used.status }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffba1a1a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"freeCol\",\"component\":\"Column\",\"children\":[\"freeLabel\",\"freeRing\",\"freeValue\"],\"itemMargin\":4,\"styles\":{\"width\":40,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"freeLabel\",\"component\":\"Text\",\"content\":\"剩余\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontColor\":\"#99182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"freeRing\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.memory.free.value }}\",\"total\":\"{{ $__dataModel.memory.free.total }}\",\"styles\":{\"type\":\"ring\",\"width\":30,\"height\":30,\"strokeWidth\":4,\"color\":\"#ff36a268\"}},{\"id\":\"freeValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.free.display }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"cleanIcon\",\"cleanButton\"],\"itemMargin\":8,\"styles\":{\"width\":124,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"cleanIcon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.iconText }}\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff2f80ed\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cleanButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.memory.actionText }}\",\"styles\":{\"width\":68,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff2f80ed\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.android.settings\",\"abilityName\":\"com.android.settings.applications.ManageApplications\",\"uri\":\"settings://applications/manage\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_119\",\"value\":{\"memory\":{\"total\":{\"label\":\"总容量\",\"value\":128,\"total\":128,\"display\":\"128G\"},\"used\":{\"label\":\"已用\",\"value\":116,\"total\":128,\"display\":\"116G\",\"status\":\"告警状态\"},\"free\":{\"label\":\"剩余\",\"value\":12,\"total\":128,\"display\":\"12G\"},\"actionText\":\"清理\",\"iconText\":\"C\"}}}}"
+  ]
+}

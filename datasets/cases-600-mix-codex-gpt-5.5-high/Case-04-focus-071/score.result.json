@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-071",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.4,
+  "reasons": {
+    "instruction": "用户诉求大部分落实：浅色背景、顶部实时天气（小雨 19℃ 86%）、中部番茄钟（24:36 专注中）、底部白噪音区（雨声+进度条）、三个横向铃铛按钮（带 clickToDeeplink 跳到时钟闹钟）均存在。但 updateDataModel 缺少 path: '/' 字段，违反协议；3 个铃铛按钮渲染为空圆（铃字未显示），功能存在但视觉缺失；rain_glyph 写死为「雨」而未绑定 condition，可接受但不够严谨。",
+    "aesthetic": "整体淡蓝调与下雨主题契合，层次清晰：32pt 时间为主视觉，12pt 天气次级，10pt 辅文，节奏合理。但渲染截图中 3 个铃铛按钮完全空白（「铃」字未渲染），严重削弱了关键 CTA 视觉；底部进度条 28x4 偏纤细；itemMargin:8 在极小空间下略显拥挤。",
+    "layout": "按预算公式核算：root Column 12+24+8+46+8+30+12=140，等于容器高 140，剩余 0，无溢出但完全无呼吸空间；weather_row 24+4+58+4+26=116 等于宽 116，恰填满；timer_panel 28+2+12=42 ≤ 46 OK；bottom_row 36+4+76=116 OK；alarm_buttons 24+2+24+2+24=76 OK；noise_panel 12+4+4=20 ≤ 30 OK。所有受保护文本（时间/天气/86%/专注中/雨声）单行 maxLines:1 + textOverflow:none，未发生裁剪。底部外框到底边 12vp（root 底 padding）位于 8-12vp 区间。按钮热区 24x28 满足 ≥24vp。主要问题是 root 无 spaceBetween 余量。"
+  },
+  "issues": [
+    "updateDataModel 缺少 path: '/' 字段，违反硬约束",
+    "root Column 纵向占用 12+24+8+46+8+30+12=140 等于 height 140，零呼吸空间，spaceBetween 无意义",
+    "3 个 alarm Button 在渲染中未显示「铃」字，CTA 视觉缺失",
+    "rain_glyph 使用硬编码「雨」而非绑定 dataModel.focus.weather.condition",
+    "底部 alarm_buttons 子项 24x28 较扁圆（borderRadius:12），与 height 28 配合形成偏圆形态，不够接近 40vp 理想热区"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_071\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_071\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather_row\",\"timer_panel\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff4f7fb\",\"alignItems\":\"center\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"rain_glyph\",\"weather_text\",\"rain_rate\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"rain_glyph\",\"component\":\"Text\",\"content\":\"雨\",\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ff60a5fa\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.weather.condition + ' ' + $__dataModel.focus.weather.temperature }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rain_rate\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.weather.precipitation }}\",\"styles\":{\"width\":26,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff2563eb\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer_panel\",\"component\":\"Column\",\"children\":[\"timer_text\",\"phase_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":44,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"timer_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomato.timeLeft }}\",\"styles\":{\"width\":100,\"height\":24,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ff111827\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"phase_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomato.phase }}\",\"styles\":{\"width\":100,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64748b\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"noise_panel\",\"alarm_buttons\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"noise_panel\",\"component\":\"Column\",\"children\":[\"noise_name\",\"noise_progress\"],\"itemMargin\":4,\"styles\":{\"width\":36,\"height\":32,\"padding\":{\"left\":4,\"right\":4,\"top\":6,\"bottom\":6},\"borderRadius\":10,\"backgroundColor\":\"#ffe0f2fe\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"noise_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noise.name }}\",\"styles\":{\"width\":28,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff0369a1\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.focus.noise.progress }}\",\"styles\":{\"width\":28,\"height\":4,\"trackColor\":\"#ffffffff\",\"progressColor\":\"#ff0284c7\",\"borderRadius\":2}},{\"id\":\"alarm_buttons\",\"component\":\"Row\",\"children\":[\"alarm_one\",\"alarm_two\",\"alarm_three\"],\"itemMargin\":2,\"styles\":{\"width\":76,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"alarm_one\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.alarmGlyphs[0] }}\",\"styles\":{\"width\":24,\"height\":28,\"borderRadius\":12,\"backgroundColor\":\"#ffdbeafe\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff1d4ed8\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://alarm/create\"}}]},{\"id\":\"alarm_two\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.alarmGlyphs[1] }}\",\"styles\":{\"width\":24,\"height\":28,\"borderRadius\":12,\"backgroundColor\":\"#ffbfdbfe\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff1d4ed8\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://alarm/create\"}}]},{\"id\":\"alarm_three\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.alarmGlyphs[2] }}\",\"styles\":{\"width\":24,\"height\":28,\"borderRadius\":12,\"backgroundColor\":\"#ff93c5fd\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://alarm/create\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_071\",\"path\":\"/\",\"value\":{\"focus\":{\"weather\":{\"condition\":\"小雨\",\"temperature\":\"19℃\",\"precipitation\":\"86%\"},\"tomato\":{\"timeLeft\":\"24:36\",\"phase\":\"专注中\"},\"noise\":{\"name\":\"雨声\",\"progress\":62,\"progressText\":\"62%\"},\"alarmGlyphs\":[\"铃\",\"铃\",\"铃\"]}}}}"
+  ]
+}

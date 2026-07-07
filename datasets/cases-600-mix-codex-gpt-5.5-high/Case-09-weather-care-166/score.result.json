@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-09-weather-care-166",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.0,
+  "reasons": {
+    "instruction": "用户明确要求'几项打勾'，DSL 中定义了 2 个 Checkbox 模板（量体温、喝热水），但由于根 Column 纵向溢出 20vp，整个 checks 区域被裁切，渲染截图中完全看不到勾选项，核心交互要素缺失。标题/天气/提醒/更新时间的字段齐全且数据绑定正确，事件无需绑定（eventCandidates 为空），素材无需求也未引入。协议层 size=2x2、width/height、catalogId、version、updateDataModel.path='/' 均符合要求。",
+    "aesthetic": "配色和谐：暖米白底 #fff7f5f2 + 深色标题 #182431 + 暗红提醒 #b3261e + 墨绿天气 #3f6f75 + 翠绿勾选 #007d69，层级清晰。仅保留 title 一个 700 字重作为最强字重，10/12/14/16 字号阶梯合规。但因勾选区被裁切，画面下半留有大段空白，视觉密度严重失衡，呈现未完成感。",
+    "layout": "根 Column 预算：padding 12+12=24 + itemMargin 6×(4-1)=18 + 子项 head 32 + alert 30 + checks 44 + foot 12 = 160vp，父容器高度 140vp，溢出 20vp。checks Column 自身预算 2×20+4=44 正常，但处于根 Column 第 3 位，被纵向溢出连同父级 clip:true 一并裁掉。alert '降温了,快不行就多休息' 12pt 实测宽 124vp>116 容器宽，被迫 2 行换行占 30h。check_row 横向 18+6+92=116 正常。底部动作外框 foot 与卡片底边距离过大，留白异常。"
+  },
+  "issues": [
+    "根 Column 纵向溢出 20vp（160 > 140），导致 checks 整块被 clip:true 裁掉，渲染中完全看不到勾选框",
+    "alert 文本 '降温了,快不行就多休息' 在 12pt 下宽 124vp，超 116 容器宽，强制 2 行换行，消耗 30h 高度",
+    "head Column itemMargin=2 + title h18 + weather h12 = 32，加上 foot h12，单一子项累加过高",
+    "check_box 18×18 低于推荐 24vp 可点击热区，缺少 onClick 但语义上为可交互",
+    "spaceBetween 在内容超出容器时分布异常，造成卡片中段出现大块空白"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_166\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_166\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"head\",\"alert\",\"checks\",\"foot\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7f5f2\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"head\",\"component\":\"Column\",\"children\":[\"title\",\"weather\"],\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.weatherText }}\",\"styles\":{\"width\":116,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff3f6f75\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alert }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffb3261e\",\"maxLines\":2,\"lineHeight\":12,\"textOverflow\":\"none\"}},{\"id\":\"checks\",\"component\":\"Column\",\"children\":[{\"componentId\":\"check_row\",\"path\":\"/care/items\"}],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"check_box\",\"check_label\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check_box\",\"component\":\"Checkbox\",\"checked\":\"{{ $item.checked }}\",\"styles\":{\"width\":18,\"height\":18,\"selectedColor\":\"#ff007d69\",\"unselectedColor\":\"#ffc8d0d2\"}},{\"id\":\"check_label\",\"component\":\"Text\",\"content\":\"{{ $item.label }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"foot\",\"component\":\"Text\",\"content\":\"{{ '更新 ' + $__dataModel.care.updatedAt }}\",\"styles\":{\"width\":116,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff6f7d83\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_166\",\"value\":{\"care\":{\"title\":\"感冒关怀\",\"weatherText\":\"阵雨 18°C\",\"alert\":\"降温了,快不行就多休息\",\"updatedAt\":\"08:30\",\"items\":[{\"label\":\"量体温\",\"checked\":true},{\"label\":\"喝热水\",\"checked\":true}]}}}}"
+  ]
+}

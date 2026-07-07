@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-03-anti-addiction-045",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "用户的三项诉求均有体现：3 个 Checkbox 响应'能勾选几项'，Button+clickToIntent 响应'点进设置操作'，status 徽章'快到上限'+remainText'还剩8分钟'+hint'建议马上收尾休息'响应'提醒我快不行了'。onClick 的 call/args 原样来自 eventCandidates。素材无 assetCandidates 需求也未引用外部图。但 updateDataModel 缺失 'path':'/' 字段，违反硬约束，扣分。",
+    "aesthetic": "配色采用暖橙警示色（#FFFF9500 / #FFFFE0B2）整体协调，渐变背景与白色/半透明白卡片叠加有层次感。但存在明显瑕疵：①同一卡片出现 4 处 fontWeight 700（glyph、status、remain、title），违反'同一卡片只保留一个最强字重'；②action_btn 使用了非标准字重 'medium'，不在常规字重阶梯；③Checkbox 标签在 48vp 宽度下 4 个中文字符被截断（截图清晰可见标签被 '...' 替换），核心信息缺失严重影响可读性。",
+    "layout": "核心堆叠/溢出问题严重：①right_panel Column 高 116，子项 title_row(30)+check_row(42)+hint_row(20)=92，加上 itemMargin 8*2=16 和 padding 20，共需 128，溢出 12vp；②left_panel Column 高 116，子项 glyph_box(44)+status_badge(20)+remain_text(20)=84，加 itemMargin 8*2=16 和 padding 20，共需 120，溢出 4vp；③check_row 宽 154，3 个 48vp Checkbox 加 2*6=12 共 156，溢出 2vp；④受保护的 Checkbox 标签在 48vp 宽度内被强制截断（截图证实），属于受保护文本截断违规。底部动作区为顶部 title_row 内 Button，不触发 16vp 底边约束。"
+  },
+  "issues": [
+    "updateDataModel 缺少 'path':'/' 硬约束字段",
+    "right_panel Column 纵向占用 128 > 116，溢出 12vp",
+    "left_panel Column 纵向占用 120 > 116，溢出 4vp",
+    "check_row 横向占用 156 > 154，溢出 2vp",
+    "Checkbox 标签 4 字中文在 48vp 宽容器内被截断（截图证实显示为 '...'）",
+    "4 处 fontWeight 700 违反'同一卡片只保留一个最强字重'",
+    "action_btn 使用非标准字重 'medium'",
+    "title_row 横向占用 158 > 154，子项贴边"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_045\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_045\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFF7ED\",0],[\"#FFFFEDD5\",0.62],[\"#FFFFD4A3\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"glyph_box\",\"status_badge\",\"remain_text\"],\"itemMargin\":6,\"styles\":{\"width\":96,\"height\":120,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_box\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.glyph }}\",\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":12,\"backgroundColor\":\"#FFFF9500\",\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.status }}\",\"styles\":{\"width\":72,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#FFFFE0B2\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF9A3412\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remain_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.remainText }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FF111827\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"check_row\",\"hint_row\"],\"itemMargin\":8,\"styles\":{\"width\":174,\"height\":120,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#F0FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"action_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":154,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"width\":86,\"height\":22,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#FF7C2D12\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"styles\":{\"width\":60,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FFFF9500\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"digital_balance\",\"switchFlag\":1}}}]},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"check_rest\",\"check_sleep\",\"check_guard\"],\"itemMargin\":14,\"wrap\":\"noWrap\",\"styles\":{\"width\":154,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"check_rest\",\"component\":\"Checkbox\",\"select\":{\"path\":\"/antiAddiction/checks/0/checked\"},\"styles\":{\"width\":30,\"height\":30,\"selectedColor\":\"#FFFF9500\",\"unSelectedColor\":\"#FFB45309\",\"shape\":\"rounded_square\",\"backgroundColor\":\"#FFFFF7ED\",\"borderRadius\":8,\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"check_sleep\",\"component\":\"Checkbox\",\"select\":{\"path\":\"/antiAddiction/checks/1/checked\"},\"styles\":{\"width\":30,\"height\":30,\"selectedColor\":\"#FFFF9500\",\"unSelectedColor\":\"#FFB45309\",\"shape\":\"rounded_square\",\"backgroundColor\":\"#FFFFF7ED\",\"borderRadius\":8,\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"check_guard\",\"component\":\"Checkbox\",\"select\":{\"path\":\"/antiAddiction/checks/2/checked\"},\"styles\":{\"width\":30,\"height\":30\",\"selectedColor\":\"#FFFF9500\",\"unSelectedColor\":\"#FFB45309\",\"shape\":\"rounded_square\",\"backgroundColor\":\"#FFFFF7ED\",\"borderRadius\":8,\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"hint_row\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.hint }}\",\"styles\":{\"width\":154,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF9A3412\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_045\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"防沉迷\",\"status\":\"快到上限\",\"remainText\":\"还剩8分钟\",\"hint\":\"建议马上收尾休息\",\"glyph\":\"限\",\"actionText\":\"去设置\",\"checks\":[{\"label\":\"休息提醒\",\"checked\":true},{\"label\":\"睡前停用\",\"checked\":false},{\"label\":\"家长守护\",\"checked\":true}]}}}}"
+  ]
+}

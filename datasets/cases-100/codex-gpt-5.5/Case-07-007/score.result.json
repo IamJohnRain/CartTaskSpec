@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-007",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户要求展示赛前一天开球时间(reminderText+matchTime 已展示)、赛中实时比分/控球率/射门次数(score+possession+shots 已展示)、70分钟后平局/只差一球时给出标记(tensionFlag 已展示)。所有 11 个 DataModel 字段中除 title 外均已可视化,信息覆盖较全。eventCandidates 为空,卡片无法绑定 onClick,弹提醒与自动刷新属系统级能力,卡片只展示数据可接受。硬约束全部满足:2x4 尺寸、root shell、catalogId、version、updateDataModel.path=/ 与 value 一致。扣分点:title 字段未使用;没有展示比赛/赛季级别视觉锚点(如标题行),赛事卡片信息层级稍弱。",
+    "aesthetic": "配色合理:浅蓝底(#F4F8FF)配利物浦红(#E84026)及警示红强调,白字在红/蓝底上对比度足够;32pt 比分作为视觉主体,12-16pt 文字构建次级层级,字号阶梯符合规范。但存在以下问题:(1) 多个 700 字重(reminder_text/time_text/home_team/score_text/away_team/status_text/flag_text 共 7 处)争夺视觉权重,违反'同一卡片只保留一个最强字重'的准则;(2) 底部 tensionFlag 文字被卡片下边界裁切,影响整体观感专业度;(3) 提示胶囊/状态胶囊宽度与内容紧贴,排版稍显拥挤。",
+    "layout": "核心问题:Root Column 子项纵向总高 = padding(12+12) + itemMargin(6×3=18) + Σ子项height(32+38+24+22) = 24+18+116 = 158,超出父容器 height=140,溢出 18vp;match_info_col 子项纵向 = itemMargin(2) + Σ(competition_text.height 16 + time_text.height 18) = 2+34 = 36,超出 col 自身 height=32,溢出 4vp。截图佐证:'70分钟后仍平局'文字被卡片 clip:true 截断,底边超出卡片可视边界。其余 Row 横向预算成立:top_row=176+8+92=276=父宽 276;score_row=82+12+88+12+82=276=父宽 276;stats_row=72+6+92+6+100=276=父宽 276。子项宽度均在父宽内,无横向溢出。受保护文本(tensionFlag)被 clip 裁切,严重扣分。"
+  },
+  "issues": [
+    "Root Column 内容总高 158 > 父容器高 140,溢出 18vp,直接导致 flag_text 被裁切",
+    "match_info_col 子项总高 36 > col 自身高 32,溢出 4vp,导致 competition_text 与 time_text 重叠/裁切风险",
+    "受保护文本'70分钟后仍平局'(tensionFlag)被 root.clip:true 截断,信息丢失",
+    "7 处 Text 共享 fontWeight:700,违反'同一卡片只保留一个最强字重'准则",
+    "DataModel.title 字段('利物浦比赛提醒')未被使用,信息冗余但卡片无标题锚点"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"liverpool_match_alert_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"liverpool_match_alert_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"score_row\",\"stats_row\",\"flag_text\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F4F8FF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"match_info_col\",\"reminder_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"match_info_col\",\"component\":\"Column\",\"children\":[\"competition_text\",\"time_text\"],\"itemMargin\":2,\"styles\":{\"width\":176,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"competition_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.competition }}\",\"styles\":{\"width\":176,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.matchTime }}\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.reminderText }}\",\"styles\":{\"width\":92,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#007DFF\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_row\",\"component\":\"Row\",\"children\":[\"home_team\",\"score_text\",\"away_team\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"home_team\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.homeTeam }}\",\"styles\":{\"width\":80,\"height\":22,\"fontSize\":15,\"fontWeight\":600,\"fontColor\":\"#E84026\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.score }}\",\"styles\":{\"width\":86,\"height\":30,\"fontSize\":26,\"fontWeight\":700,\"fontColor\":\"#182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"away_team\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.awayTeam }}\",\"styles\":{\"width\":80,\"height\":22,\"fontSize\":15,\"fontWeight\":600,\"fontColor\":\"#182431\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stats_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"possession_text\",\"shots_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.status }}\",\"styles\":{\"width\":72,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#E84026\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"possession_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.possession }}\",\"styles\":{\"width\":92,\"height\":20,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"shots_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.shots }}\",\"styles\":{\"width\":100,\"height\":20,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#182431\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"flag_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.liverpoolMatch.tensionFlag }}\",\"styles\":{\"width\":276,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#E84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"liverpool_match_alert_card\",\"path\":\"/\",\"value\":{\"data\":{\"liverpoolMatch\":{\"title\":\"利物浦比赛提醒\",\"competition\":\"英超 第21轮\",\"matchTime\":\"明天 03:00\",\"reminderText\":\"提前一天提醒\",\"status\":\"70' 焦灼\",\"homeTeam\":\"利物浦\",\"awayTeam\":\"热刺\",\"score\":\"1 - 1\",\"possession\":\"控球 58%\",\"shots\":\"射门 12:8\",\"tensionFlag\":\"70分钟后仍平局\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-004",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "四项用户诉求基本落实：左上角有感叹号徽标+标题'低电量提醒'，中间用Progress条+百分比'16%'显示电量，旁边有'电量偏低'+'建议立即开启省电模式'提示文本，底部有'开启省电模式'按钮且onClick.call/args与eventCandidates完全一致。size=2x4,catalogId/version/clip/borderRadius/padding与updateDataModel.path/value均合规,数据绑定路径可从dataModel.value推导。扣分点:用户明确要求'图标',在无assetCandidates情况下用styled Text '!'替代Image组件,属合规但语义略弱;'百分比图形'采用线性Progress,虽合理但未使用更强图形语言。",
+    "aesthetic": "配色采用暖橙色调('#FFF7E8'底 + '#D76000'主 + '#FFE0B8'辅),与'低电量警告'语义高度契合,前景文字在浅色底上对比清晰。间距基本在4/8/12阶梯上,层次分明。扣分点:title_text/level_text/status_text/alert_mark四处都使用fontWeight:700,违反'同一卡片只保留一个最强字重'规则,主指标'16%'与标题字重相同导致层级不突出;按钮字重500与正文400区分度尚可,整体字重管理略松。",
+    "layout": "逐项预算核算:①root Column:padding.top+bottom=24,3子项高度22+48+30=100,itemMargin*2=16,总占用140≤140,恰好装下;②top_row:20(alert_mark)+6(itemMargin)+180(title_text)=206≤276,✓;③middle_row:102(meter_stack)+12(itemMargin)+162(suggest_col)=276=276,恰好装下;④meter_stack Column:padding.top+bottom=12+itemMargin 4+level_text.h 28+battery_progress.h 8=52>48,**溢出4vp**,进度条被圆角边缘切到;⑤suggest_col:18+4+18=40≤48,✓;⑥按钮热区30vp≥24vp,✓;⑦按钮底到卡片底=12vp,在2x4推荐10-14vp区间,✓。核心扣分项为meter_stack内部4vp溢出。"
+  },
+  "issues": [
+    "meter_stack Column内部纵向占用52(12 padding + 4 itemMargin + 28 level_text + 8 battery_progress) > 可用48,溢出4vp,battery_progress被圆角底部裁切",
+    "title_text/level_text/status_text/alert_mark四处共用fontWeight:700,违反'同一卡片只保留一个最强字重'规则",
+    "root Column与middle_row均为精确等式占用(140=140, 276=276),无任何缓冲,容错性低",
+    "用户明确要求'图标',但因assetCandidates为空,模型用styled Text '!'替代Image,语义表达略弱(可接受但非最佳)"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"low_battery_reminder_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"low_battery_reminder_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"middle_row\",\"save_button\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7E8\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"alert_mark\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_mark\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":20,\"height\":20,\"borderRadius\":6,\"backgroundColor\":\"#D76000\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.title }}\",\"styles\":{\"width\":180,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"middle_row\",\"component\":\"Row\",\"children\":[\"meter_stack\",\"suggest_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Column\",\"children\":[\"level_text\",\"battery_progress\"],\"itemMargin\":4,\"styles\":{\"width\":102,\"height\":48,\"padding\":5,\"borderRadius\":14,\"backgroundColor\":\"#FFFFF7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":90,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#D76000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.level }}\",\"total\":100,\"styles\":{\"width\":86,\"height\":6,\"type\":\"linear\",\"color\":\"#D76000\",\"backgroundColor\":\"#FFE0B8\",\"borderRadius\":3}},{\"id\":\"suggest_col\",\"component\":\"Column\",\"children\":[\"status_text\",\"suggestion_text\"],\"itemMargin\":4,\"styles\":{\"width\":162,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.statusText }}\",\"styles\":{\"width\":162,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#9A4B00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"suggestion_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.suggestionText }}\",\"styles\":{\"width\":162,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#5C3B00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"save_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.battery.buttonText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":276,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#D76000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"low_battery_reminder_card\",\"path\":\"/\",\"value\":{\"battery\":{\"level\":16,\"levelText\":\"16%\",\"title\":\"低电量提醒\",\"statusText\":\"电量偏低\",\"suggestionText\":\"建议立即开启省电模式\",\"buttonText\":\"开启省电模式\"}}}}"
+  ]
+}

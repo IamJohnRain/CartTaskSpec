@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-earphone-music-035",
+  "scores": {
+    "instruction": {
+      "score": 7.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "硬约束全部满足：size=2x2、root 140x140、catalogId/version/updateDataModel.path 均正确；3 个耳机图、'耳机已连接'、两行歌单、3 个语义小图标、playlist_panel.onClick 携带原样 clickToDeeplink URI 齐全。但用户明确要求'一排大号耳机图标'，当前 hero 三个图最大仅 30vp、内容区 116vp 中只占 ~98vp、视觉上更像'中号'而非'大号'，扣 0.5；两行歌单文字视作完整名称但层级扁平，影响指令中'纵向两行字是歌单名称'的语义呈现，扣 0.7。",
+    "aesthetic": "灰蓝渐变 #ff6f8192→#ffbcc8d2 与雨天氛围契合，playlist_panel 33% 透明白做磨砂卡片有质感，三档透明度(0.76/0.96/0.86) 制造前后景层次。但主要问题：1) line1 与 line2 均为 fontSize 14 / fontWeight 700，完全同质，缺乏主次层级；2) 状态文字与歌单文字同样白色 12/500 vs 14/700 对比偏弱；3) 三个语义小图标 18vp，颜色与线宽和上方耳机图标语言不统一；4) 整体只有一个最强字重(line1/line2) 合格但执行不锐利。",
+    "layout": "逐项预算核算：① root Column 纵向占用 = 10 + 30 + 4 + 18 + 4 + 42 + 4 + 18 + 10 = 140，可用 140，零余量、无溢出；② hero_icons Row 横向 = 26+8+30+8+26 = 98 ≤ 116，OK；③ status_text 宽 116、'耳机已连接' ≈ 5×12 = 60 ≤ 116，OK；④ playlist_panel Column 纵向 = 4+16+2+16+4 = 42，可用 42，零余量；⑤ 内部 '雨天通勤' 4×14=56 ≤ 84 ✓、'轻爵士歌单' 5×14=70 ≤ 84 ✓(紧张)；⑥ semantic_row 横向 18+10+18+10+18=74 ≤ 116 ✓。结论：所有 Row/Column 预算均成立，未出现溢出或截断，但 root 与 playlist_panel 均零余量(140/42 满载)，对字号微调鲁棒性差，且 line2 文本占宽 70/84=83% 较为紧绷，扣 0.4。"
+  },
+  "issues": [
+    "hero_icons 三个图最大仅 30vp，未达'大号'语义，建议将中部图标提升到 34vp、两侧提升到 30vp",
+    "playlist_line1 与 playlist_line2 同为 14/700 同字号同字重，缺失主次层级，建议 line1 14/700、line2 12/500 形成主副标题关系",
+    "status_text 12/500 与歌单 14/700 差距偏小，建议将状态文字降到 11/400 进一步让位给歌单",
+    "root Column 总占用 140(零余量)、playlist_panel 内部 42(零余量)，对字号微调与边距调整鲁棒性差",
+    "playlist_panel 内边距 4vp 偏小，建议增加到 5~6vp 提升磨砂卡片的高级感",
+    "语义小图标 18vp 与耳机图标语言不统一(耳机为线性、语义图标为彩色面性)，可考虑统一为线性表达以提升整体克制感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_035\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_035\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_icons\",\"status_text\",\"playlist_panel\",\"semantic_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff6f8192\",0],[\"#ffbcc8d2\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero_icons\",\"component\":\"Row\",\"children\":[\"earphone_icon_left\",\"earphone_icon_mid\",\"earphone_icon_right\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon_left\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.earphoneIcon }}\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\",\"opacity\":0.78}},{\"id\":\"earphone_icon_mid\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.earphoneIcon }}\",\"styles\":{\"width\":34,\"height\":34,\"objectFit\":\"contain\",\"opacity\":0.98}},{\"id\":\"earphone_icon_right\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.earphoneIcon }}\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\",\"opacity\":0.78}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.status }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_panel\",\"component\":\"Column\",\"children\":[\"playlist_line1\",\"playlist_line2\"],\"itemMargin\":2,\"styles\":{\"width\":108,\"height\":40,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#40ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"playlist_line1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.playlist.line1 }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_line2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.playlist.line2 }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"semantic_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"music_icon\",\"like_icon\"],\"itemMargin\":10,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.weatherIcon }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\",\"opacity\":0.86}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.musicIcon }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\",\"opacity\":0.9}},{\"id\":\"like_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.likeIcon }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\",\"opacity\":0.86}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_035\",\"path\":\"/\",\"value\":{\"device\":{\"status\":\"耳机已连接\"},\"playlist\":{\"line1\":\"雨天通勤\",\"line2\":\"轻爵士歌单\"},\"weather\":{\"condition\":\"小雨\",\"mood\":\"灰蓝雨天\"},\"asset\":{\"earphoneIcon\":\"resources/base/media/icon_earphone.png\",\"weatherIcon\":\"resources/base/media/icon_weathe2.png\",\"musicIcon\":\"resources/base/media/icon_music.png\",\"likeIcon\":\"resources/base/media/icon_like.png\"}}}}"
+  ]
+}

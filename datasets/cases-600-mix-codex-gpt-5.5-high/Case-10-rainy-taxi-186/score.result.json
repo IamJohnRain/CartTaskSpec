@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-10-rainy-taxi-186",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "用户要求能点的按钮、数字会变、点了进系统里、红色警告。卡片提供了带 onClick 的 Button，事件 call/args 严格来自 eventCandidates（clickToIntent→ViewCalendarEvent→taxi-rain-alert-186），红色警告以红色徽章+红色按钮双重体现，尺寸 2x4、catalogId、version、updateDataModel.value 与 TaskSpec 完全一致。但用户原话明确要求'数字会变'，三个核心数字 18/46/27 中仅 18 可见且单位'分钟'被截断，46 与 27 完全不可见，违背用户对数字展示的明确诉求，扣分明显。",
+    "aesthetic": "深色卡片配红色强调色和谐，胶囊徽章与胶囊指标统一造型；字号梯度 18/16/14/12 合理，最强字重 700（按钮 medium 次之），层次清晰。但中间三个指标胶囊因文字被截断（显示成'预计等待 18'、'预估'、'排队人数'）在视觉上显得残缺，影响整体完成度与专业感。",
+    "layout": "Root Column 纵向占用 = padding(12+12) + itemMargin×2(16) + top_row(26) + metric_row(42) + action_row(32) = 140，等于容器 140，无纵向溢出但完全没有呼吸空间。top_row 横向 184+8+84=276✓。metric_row 横向 96+8+80+8+84=276✓。action_row 横向 84+12+128=224≤276✓。但 metric_row 内三个 Text 胶囊全部存在文字溢出：wait_panel 文本'预计等待 18 分钟' 14pt 实宽 112 > 内容区 96-16=80，截断为'预计等待 18'；fare_panel 文本'预估 ¥46' 16pt 实宽 67.2 > 内容区 80-16=64，截断为'预估'；queue_panel 文本'排队人数 27' 14pt 实宽 78.4 > 内容区 84-16=68，截断为'排队人数'。三个受保护主指标被裁，违反'受保护文本不得依赖截断'硬约束，3/3 文字溢出且 2/3 关键数字完全丢失，是布局层面的严重失败。"
+  },
+  "issues": [
+    "wait_panel 文本'预计等待 18 分钟'（14pt 实宽 112px）> 内容区 80px，截断为'预计等待 18'，单位'分钟'丢失",
+    "fare_panel 文本'预估 ¥46'（16pt 实宽 67.2px）> 内容区 64px，仅显示'预估'，数字 46 完全丢失",
+    "queue_panel 文本'排队人数 27'（14pt 实宽 78.4px）> 内容区 68px，仅显示'排队人数'，数字 27 完全丢失",
+    "用户原话'数字会变'明确要求数字可见，2/3 关键数字（46、27）不可见，严重违反指令",
+    "Root Column 纵向预算 24+16+100=140 精确占满，无任何呼吸/微调空间，3 个子 Row 高度全固定",
+    "fontSize 16/14 与内容宽度不匹配，是导致截断的直接原因"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_186\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_186\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"metric_row\",\"action_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"alert_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":184,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.status }}\",\"styles\":{\"width\":84,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#ffd94838\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"wait_panel\",\"fare_panel\",\"queue_panel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":42,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"wait_panel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.waitText }}\",\"styles\":{\"width\":112,\"height\":42,\"padding\":{\"left\":4,\"right\":4,\"top\":12,\"bottom\":12},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"fare_panel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.fareText }}\",\"styles\":{\"width\":64,\"height\":42,\"padding\":{\"left\":4,\"right\":4,\"top\":12,\"bottom\":12},\"borderRadius\":12,\"backgroundColor\":\"#33d94838\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffdad6\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"queue_panel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.surgeText }}\",\"styles\":{\"width\":80,\"height\":42,\"padding\":{\"left\":4,\"right\":4,\"top\":12,\"bottom\":12},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"open_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":84,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffdad6\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.actionText }}\",\"styles\":{\"width\":128,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffd94838\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"taxi-rain-alert-186\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_186\",\"value\":{\"taxi\":{\"title\":\"雨天打车\",\"status\":\"红色警告\",\"waitText\":\"预计等待 18 分钟\",\"fareText\":\"预估 ¥46\",\"surgeText\":\"排队人数 27\",\"actionText\":\"进入系统\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"taxi-rain-alert-186\",\"title\":\"雨天出行提醒\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:00\",\"eventLocation\":\"公司门口\"}]}}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-181",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户要求'整个按钮能点的卡'已通过 root.onClick clickToDeeplink 落实（事件 args 完全来自 eventCandidates）；'连接成功就告诉我'通过 statusText 浅绿胶囊标签展示；'导航看天气'deeplink 正确。但用户明确要求'一行带数字的话'，而 hero_line 文案'85%雨 看天气'因容器宽 116 不够被换行成两行，违反单行要求。此外 hero_line 使用了 formatString 拼接而非协议推荐的 {{ $__dataModel.weather.rainChance }} 表达式形式。",
+    "aesthetic": "青绿渐变背景与浅绿胶囊配色协调，主标题白色加粗 800 突出，状态/提示/主指标三层字号阶梯 12/20/12 清晰。但 hero_line 换行导致'85%雨 看天'与单独一个'气'的断行破坏节奏和美感。status 字体颜色 #ffccffcc 写法非标准 8 位色顺序，对工程可读性略差。整体克制但局部断行扣分。",
+    "layout": "Root Column 高度核算：padding.top+bottom=24 + status.h=24 + hero_line.h=42 + hint.h=18 + itemMargin(8)*2=16 → 24+24+42+16+18=124 ≤ 140，Column 纵向不溢出。关键问题在 hero_line 横向：宽 116、字号 20、文案'85%雨 看天气'(8 字符) 估算宽 = '8'(0.6*20)=12 + '5'(12) + '%'(0.4*20)=8 + '雨'(20) + ' '(8) + '看'(20) + '天'(20) + '气'(20) = 120 > 116，溢出约 4vp，触发两行换行（截图证实'气'被挤到第二行）。底部 hint 距卡片底边 padding.bottom=12，在 2x2 允许的 8-12vp 区间内。整卡可点，热区 140x140 充分。"
+  },
+  "issues": [
+    "hero_line 文案'85%雨 看天气'在 fontSize 20、宽 116 容器中估算宽 120，溢出约 4vp，被换行成两行（截图可见'85%雨 看天' + '气'），直接违反用户'一行带数字的话'的明确诉求",
+    "hero_line 使用了非协议的 formatString 拼接形式（{call:formatString,args:{value:'${/weather/rainChance}%雨 看天气'}}），未采用协议推荐的完整表达式 {{ $__dataModel.weather.rainChance }}",
+    "hero_line 高度被预留为 42（≈2 行）且 maxLines=2、textOverflow=none，放任换行；应改为 maxLines=1 + 单行高度",
+    "status fontColor 写成 '#ffccffcc'，8 位色顺序在 AARRGGBB 与 RRGGBBAA 间存在歧义，建议显式标注",
+    "hero_line 与 hint 都使用 width:116 显式宽度，hero_line 容器 116 与字号 20 组合下，文本宽度临界，应做更稳健的留白预算"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_181\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_181\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status\",\"hero_line\",\"hint\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a6f73\",0],[\"#ff39b6a3\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.weather\",\"abilityName\":\"com.huawei.weather.MainAbility\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.statusText }}\",\"styles\":{\"width\":72,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ccffce\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"hero_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.rainChance }}% 降雨\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.hint }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_181\",\"value\":{\"taxi\":{\"statusText\":\"连接成功\",\"hint\":\"点整卡查看天气\"},\"weather\":{\"rainChance\":85}}}}"
+  ]
+}

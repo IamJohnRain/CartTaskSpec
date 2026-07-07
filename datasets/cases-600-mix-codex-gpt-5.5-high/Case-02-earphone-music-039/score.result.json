@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-earphone-music-039",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "用户明确要求在顶部横向排列四个快捷标签（我的歌单、最近播放、私人FM、本地音乐），原 DSL 完全缺失这一核心诉求。其余诉求落实较好：深色渐变（#182433→#30495c）满足'纯文字和色块''深色渐变'要求；电池 85% 与绿色 #ff64bb5c 的'耳机已连接'状态均正确显示并与 dataModel 绑定；日历项 '15:30 下午约会' 已从 $__dataModel.data.calendar.items[0] 读取；底部白色大按钮存在并绑定 clickToDeeplink 跳转 com.huawei.hmos.clock，call/args 与 eventCandidates 完全一致；硬约束 size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、root 140x140、borderRadius 18、clip true 全部满足；updateDataModel.value 与 TaskSpec.dataModel.value 严格一致。核心要素'4 个快捷标签'整体缺失是主要扣分点。",
+    "aesthetic": "深色对角渐变氛围感尚可，与'沉浸式''深色渐变'诉求基本契合；电池 18/700、状态 12/500、日历 12/400 形成清晰字号字重阶梯，且只有一个最强字重（700）符合规则；绿色 #ff64bb5c 用于'已连接'状态语义正向正确；白色按钮与深色背景对比强烈，CTA 突出。但缺少 Chip/标签的色彩点缀与圆角背景，整体偏朴素单一，未充分体现'沉浸式听歌卡片'应有的氛围感；'15:30 下午约会' 用半透明白 ccffffff 在深底上略显平淡。",
+    "layout": "Root Column 纵向占用 = padding.top(12) + padding.bottom(12) + itemMargin(8)×2 + Σ(子项 height: 44+18+34) = 24 + 16 + 96 = 136，卡片高 140，余量 4vp，低于 2x2 推荐 8-12vp 区间但未超 16vp 上限，未发生溢出；main Column 占用 = 0+4+(24+16)=44 与声明 44 一致；电量文本 '耳机电量 85%' 在 fontSize 18 下估算宽 ≈ 4×18 + 0.4×18 + 2×0.6×18 + 0.4×18 = 107.2 < 116，未截断；状态 '耳机已连接' 5×12=60 < 116；日历 '15:30 下午约会' ≈ 86.4 < 116；按钮 '设置闹钟' 4×14=56 < 116；按钮热区 34vp 满足 ≥ 24vp；无 Stack 叠层遮盖。整体布局无溢出/截断，但 4vp 余量偏紧。"
+  },
+  "issues": [
+    "用户明确要求的四个快捷标签（我的歌单、最近播放、私人FM、本地音乐）整体缺失，是核心指令违反",
+    "updateDataModel 缺少 path:'/' 字段（虽然 value 内容正确），与协议建议不完全一致",
+    "根 Column itemMargin 8 偏大，总高 136vp/140vp 利用率约 97%，底部留白仅 4vp 偏紧",
+    "Button.fontWeight 使用字符串 'medium'（非数字），可能不被渲染器正确解析，应使用 500/600",
+    "Text.textOverflow:'none' 不是标准值（应为 ellipsis/clip/marquee），存在解析风险",
+    "4 个标签在 2x2 内确实难以容纳全中文标签，模型至少应尝试使用 2 字符缩写或更小字号"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_039\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_039\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"tags\",\"main\",\"calendar\",\"alarmButton\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff182433\",0],[\"#ff30495c\",1]]},\"alignItems\":\"center\"}},{\"id\":\"tags\",\"component\":\"Row\",\"children\":[\"tag1\",\"tag2\",\"tag3\",\"tag4\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"tag1\",\"component\":\"Text\",\"content\":\"歌单\",\"styles\":{\"width\":27,\"height\":18,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"tag2\",\"component\":\"Text\",\"content\":\"最近\",\"styles\":{\"width\":27,\"height\":18,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"tag3\",\"component\":\"Text\",\"content\":\"FM\",\"styles\":{\"width\":27,\"height\":18,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"tag4\",\"component\":\"Text\",\"content\":\"本地\",\"styles\":{\"width\":27,\"height\":18,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"battery\",\"status\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":38,\"alignItems\":\"start\"}},{\"id\":\"battery\",\"component\":\"Text\",\"content\":\"{{ '耳机电量 ' + $__dataModel.earphone.batteryText }}\",\"styles\":{\"width\":120,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.earphone.statusText }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1}},{\"id\":\"calendar\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":11,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"alarmButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"styles\":{\"width\":120,\"height\":28,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff182433\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"surfaceId\":\"surface_earphone_music_039\",\"value\":{\"earphone\":{\"batteryText\":\"85%\",\"statusText\":\"耳机已连接\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-afternoon-meeting-039\",\"title\":\"下午约会\",\"dtStart\":\"15:30\",\"dtEnd\":\"16:30\"}]}},\"action\":{\"label\":\"设置闹钟\"}}}}"
+  ]
+}

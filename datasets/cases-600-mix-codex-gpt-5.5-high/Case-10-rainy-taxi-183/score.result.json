@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-183",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户四点诉求全部落实：①雨天打车标题来自 /taxi/title；②天气摘要来自 /weather/summary（暴雨 21°C）；③红色危险提醒来自 /weather/alertText，文字颜色使用 #FFE84026（红色）；④按钮绑定 clickToDeeplink，args.uri 原样采用 'taxiapp://open?scene=rainy_weather'。size 2x2、catalogId/version/updateDataModel.path/=全部合规，assetCandidates 中 rainTaxiGlyph 已正确绑定到 Image.src。无多余字段，无发明事件。仅微瑕：图标素材在渲染截图中显示为灰色占位方块（资源加载/渲染问题，非协议违规），故未给满分。",
+    "aesthetic": "整体配色（#FFFFF2F0 暖粉底 + #FF26110D 深红棕标题 + #FFE84026 红色警示与按钮）主题统一，红色警示与危险语义高度匹配。字号 16/14/14/14 在阶梯上，层级清晰。不足：①渲染截图中雨滴打车图标显示为灰色方块占位，视觉上像缺失图，影响美观；②title_text、alert_text、action_button 三处均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'的层级准则，可将其中 CTA 降为 600；③整体留白略显单薄，2x2 卡片右半部分大量空旷。",
+    "layout": "预算核算（2x2 卡片 140x140，padding 12）：①root Column 纵向占用 = padding.top(12) + padding.bottom(12) + itemMargin×3(18) + Σ子项高(22+20+18+30=90) = 132 ≤ 140，可用区 116 内含 108，也 ≤ 116，无溢出；②title_row Row 横向占用 = padding(0) + itemMargin(6) + image(20) + text(90) = 116 ≤ 父宽 116，正好贴边无溢出；③title_text '雨天打车' 4 字 × 16 = 64 ≤ 90 ✓；④weather_text '暴雨 21°C' ≈ 28+16.8+11.2 ≈ 56 ≤ 116 ✓；⑤alert_text '红色危险提醒' 6 × 14 = 84 ≤ 116、height 18 ≥ 14 ✓；⑥action_button 96x30 热区 ≥ 24vp，底部到卡片底 12vp（在 8-12vp 区间）✓。无 Stack 遮盖、无文字截断。扣分点：title_row 116 贴边无任何安全余量，且三个 fontWeight 700 影响视觉层级。"
+  },
+  "issues": [
+    "rain_taxi_glyph 在渲染截图中显示为灰色占位方块，视觉上像缺失图，建议增大尺寸或加深描边以便图标无论是否加载都有存在感",
+    "title_row 宽度 116 恰好等于可用区宽度，无安全余量，建议子项 width 留 2vp 余量",
+    "title_text / alert_text / action_button 三处 fontWeight 均为 700，违反'同一卡片只保留一个最强字重'原则，建议 CTA 降为 600",
+    "2x2 卡片右半部分空旷，可在 alert_text 旁加一个小型 danger 标识符（用纯色 8x8 Column 当作信号点）以提升信息密度",
+    "title_row 子项 itemMargin 6 偏离标准阶梯 4/8/12/16，可统一为 8"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_10_183_rainy_taxi\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_10_183_rainy_taxi\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_row\",\"weather_text\",\"alert_row\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF2F0\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"rain_taxi_glyph\",\"title_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":114,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"rain_taxi_glyph\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.rainTaxiGlyph }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":86,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF26110D\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.summary }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF6B2B22\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_dot\",\"alert_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_dot\",\"component\":\"Column\",\"styles\":{\"width\":6,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#FFE84026\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.alertText }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"taxiapp://open?scene=rainy_weather\"}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFE84026\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_10_183_rainy_taxi\",\"path\":\"/\",\"value\":{\"taxi\":{\"title\":\"雨天打车\",\"actionText\":\"打开打车\"},\"weather\":{\"summary\":\"暴雨 21°C\",\"alertText\":\"红色危险提醒\"},\"asset\":{\"rainTaxiGlyph\":\"resources/base/media/icon_rain_taxi.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

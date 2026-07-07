@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-005",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "用户要求显示剩余电量、电池状态、充电状态三项信息，DSL 中 levelText(36%)、batteryStatus(低电模式)、chargingStatus(未充电)三项均已通过 {{ ... }} 表达式正确绑定展示，三项核心诉求均落实；eventCandidates 为空故无 onClick，符合预期；assetCandidates 为空故未引用图片，符合协议；尺寸 2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 与 value 完整一致，硬约束均满足。扣分点：title_text 使用了硬编码字符串 \"低电模式\"，未走数据绑定，且与下方 status_panel 的\"电池状态: 低电模式\"完全重复，语义上容易让用户误解标题含义，建议改为\"电池信息\"等通用描述或绑定 batteryStatus。",
+    "aesthetic": "整体配色克制和谐：浅灰底 #FFF1F3F5 + 深色文字 #E5000000 + 红色进度条 #FFE84026 + 半透明状态面板 #19000000 视觉层次清晰，文字对比度充足。字号阶梯 32/14/12/10 使用合理，主指标 36% 突出，状态面板分两列对齐工整。字重 700(标题与主指标)/500(状态值)/400(标签) 满足\"只保留一个最强字重 700\"的要求。但 title 与 battery_value 文字内容重复造成视觉冗余，title 位置略显单薄、未传达卡片主题，扣分。",
+    "layout": "逐项核算如下：(1) root Column(140×140,padding 12,itemMargin 6)：可用宽 116,可用高 116；子项累加 = 18(title)+6+36(level)+6+8(progress)+6+36(status_panel) = 116，占高恰等可用 116，无溢出。(2) status_panel Row(宽 116,padding 4,itemMargin 4)：内容区宽 108；子项宽 = 52+4+52 = 108，恰等无溢出；高度 36 与两个高 28 的 Column 子项一致。(3) battery_state / charge_state Column(52×28,itemMargin 2)：12+2+14 = 28，恰等。(4) 文本宽度核算：level_text \"36%\" ≈ 19.2+19.2+12.8 = 51.2 < 116；title \"低电模式\" ≈ 4×14 = 56 < 116；label/value 字段宽度均 ≤ 52，字宽 4×10=40 / 4×12=48 全部安全。底部 status_panel 距卡片底边 = 140-(12+18+6+36+6+8+6+36) = 12，符合 2x2 应在 8-12vp 区间。整卡无 Stack 叠加、无截断、无文字被遮挡。"
+  },
+  "issues": [
+    "title_text 内容硬编码为 '低电模式'，未走数据绑定 {{ $__dataModel.battery.batteryStatus }}，数据变化时标题不会刷新",
+    "title 与下方 status_panel 中 '电池状态: 低电模式' 文字完全重复，语义冗余，建议改为 '电池信息' 或 '设备电量' 等通用描述",
+    "Progress 组件 type/color 字段在渲染截图中颜色表现偏灰，未明显呈现 #FFE84026 的红色调，可能存在渲染兼容性问题或被 backgroundColor 覆盖，建议复核 Progress 样式属性命名（如是否需要 strokeColor）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"low_power_status_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"low_power_status_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"level_text\",\"battery_progress\",\"status_panel\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"电池信息\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":116,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.level }}\",\"total\":100,\"styles\":{\"width\":116,\"height\":8,\"type\":\"linear\",\"color\":\"#FFE84026\",\"backgroundColor\":\"#33000000\",\"borderRadius\":4}},{\"id\":\"status_panel\",\"component\":\"Row\",\"children\":[\"battery_state\",\"charge_state\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":36,\"padding\":4,\"borderRadius\":12,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"battery_state\",\"component\":\"Column\",\"children\":[\"battery_label\",\"battery_value\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"battery_label\",\"component\":\"Text\",\"content\":\"电池状态\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.batteryStatus }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"charge_state\",\"component\":\"Column\",\"children\":[\"charge_label\",\"charge_value\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"charge_label\",\"component\":\"Text\",\"content\":\"充电状态\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"charge_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.chargingStatus }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"low_power_status_card\",\"path\":\"/\",\"value\":{\"battery\":{\"level\":36,\"levelText\":\"36%\",\"batteryStatus\":\"低电模式\",\"chargingStatus\":\"未充电\"}}}}"
+  ]
+}

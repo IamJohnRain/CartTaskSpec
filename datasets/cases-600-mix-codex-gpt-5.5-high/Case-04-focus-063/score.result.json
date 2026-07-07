@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-063",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户4项诉求中：①专注时长卡片——标题、状态、时长、提示齐全；②中间是个图——assetCandidates为空，模型用蓝色圆角文字块居中作为视觉中心，合理但非真正图片，扣0.5分；③点了能跳——Button带onClick调用clickToDeeplink且args原样来自eventCandidates；④显示已完成——右上角绿色徽章+底部100%进度条双重表达。硬约束方面：size=2x4、width/height=300/140、borderRadius=22、clip=true、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value与TaskSpec完全一致，全部满足。",
+    "aesthetic": "配色克制：浅灰白底+蓝色glyph+绿色status/进度+深色CTA，主对比清晰。字号阶梯20/16/14/12命中规范。字重虽出现多次700，但hint_text为500、其余title/duration/badge/glyph/button统一为最强档700，符合'只保留一个最强字重'。徽章圆角11/glyph圆角18-22/button圆角16-18形成统一胶囊语言。留白与密度合理，无空洞无过密。底部进度条100%是点睛之笔，强化完成语义。轻微扣分点：glyph仅靠纯文字+色块替代插图，质感略平。",
+    "layout": "预算逐项核算：①Root Column纵向=12(顶pad)+24(top_row)+8(itemMargin)+54(hero_row原值)+8(itemMargin)+8(bottom_row)+12(底pad)=126，content可用140-24=116，children占高24+8+54+8+8=102≤116，OK；②Top Row横向=8(itemMargin)+(160+68)=236≤276，OK；③Hero Row横向=12*2+(84+76+80)=264≤276，OK；④Duration Block Column纵向=2+(30+18)=50≤54，OK；⑤各文本宽度均≤容器（如duration_text 64≤84、glyph FOCUS 42≤76、button '查看记录' 48≤80）。受保护文本无一被裁，Button热区80x32(原)/80x36(优化)≥24vp，底部进度条距内容下边14vp处于10-14区间。Stack未使用，层叠无风险。"
+  },
+  "issues": [
+    "glyph_block 实际为Text+背景色模拟图形，因assetCandidates为空属合理替代，但视觉表现力弱于真图",
+    "原DSL hero_row 仅高54，三列垂直居中后duration_block与glyph_block未被拉满，可适度提高hero_row与glyph尺寸以强化'中间是图'的视觉中心感",
+    "原DSL action_button 高度32，靠近24vp热区下限，可适度提升到36-40vp更符合点击舒适度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_063\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_063\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"hero_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff8fafc\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff111827\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.status }}\",\"styles\":{\"width\":68,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffdcfce7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"duration_block\",\"glyph_block\",\"action_block\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"duration_block\",\"component\":\"Column\",\"children\":[\"duration_text\",\"hint_text\"],\"itemMargin\":4,\"styles\":{\"width\":78,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.duration }}\",\"styles\":{\"width\":78,\"height\":32,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"本次完成\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64748b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"glyph_block\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.glyph }}\",\"styles\":{\"width\":92,\"height\":58,\"borderRadius\":22,\"backgroundColor\":\"#ff2563eb\",\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_block\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":80,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff111827\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.MainAbility\",\"uri\":\"clock://focus\"}}]},{\"id\":\"bottom_row\",\"component\":\"Progress\",\"value\":100,\"styles\":{\"width\":276,\"height\":8,\"borderRadius\":4,\"backgroundColor\":\"#ffe2e8f0\",\"progressColor\":\"#ff22c55e\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_063\",\"value\":{\"focus\":{\"title\":\"专注时长\",\"duration\":\"45分钟\",\"status\":\"已完成\",\"glyph\":\"FOCUS\",\"actionText\":\"查看记录\"}}}}"
+  ]
+}

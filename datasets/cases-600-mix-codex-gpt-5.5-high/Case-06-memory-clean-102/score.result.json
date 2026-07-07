@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-102",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "用户四个诉求均已落实：内存比例（Progress 86%）、一行数字（'内存 86%' 20pt 大字）、点击跳转（Button.onClick → clickToIntent ViewCalendarEvent）、查看日程（actionText='查看日程'）、提醒文案（statusText='提醒快不行了'）。事件参数 entityId 通过 path 正确绑定到 /calendar/next/entityId，与 eventCandidates[0] 完全一致；第二个 deeplink 事件未使用，但用户场景是查看日程，使用 intent 合理。轻微扣分：usageText 用了非标准的 formatString call 来拼接'内存'+数值，不如直接用表达式绑定更规范；statusText 使用 $__dataModel 前缀而非常规 /memory/statusText 路径。",
+    "aesthetic": "暖橙渐变（#ff7a2e0e → #ffc85200）与'警告/清理'语义契合；主指标 20pt/700 白色、状态 12pt/500 浅橙、CTA 14pt/medium 深橙字白底，层级清晰且只有 700 一处最强字重；圆角 18/14 风格统一；留白节奏合理，无拥挤感。",
+    "layout": "预算核算：根 Column 内容区 140-12-12=116。子项高 = 44(top) + 8(margin) + 10(progress) + 8(margin) + 38(button) = 108，叠加 spaceBetween 后分布至 116 内，无溢出。top Column 宽 116，子项宽 116、margin 0，无横向溢出；纵向 18+2+24=44 等于 top.height=44，闭合。statusText 6 字符×12=72 < 116 ✓；usageText '内存 86%' ≈ 2×20+0.4×20+2×12+0.4×20=80 < 116 ✓。按钮热区 116×38 ≥ 24vp ✓。底边距（按钮底 128 → 卡片底 140）= 12vp，落在 2x2 推荐 8-12vp 区间内 ✓。Stack 无层叠覆盖；Progress 主值由白色大字 86% 表达，不被遮盖。整体无截断、无堆叠。"
+  },
+  "issues": [
+    "usageText.content 使用 formatString call 拼接硬编码 '内存' 与 dataModel 值，不符合'展示值优先用 {{ 表达式 }} 读取 DataModel'的最佳实践，建议改为 '内存 {{ /memory/usagePercent }}' 的字符串模板",
+    "statusText / usageText / usageProgress / calendarAction 均使用 $__dataModel.xxx 路径前缀，与规范更推荐的 /xxx 绝对路径不一致",
+    "根容器 linearGradient 与 backgroundColor 同时设置会冗余，backgroundColor 被渐变覆盖",
+    "onClick 仅绑定了 eventCandidates[0]（ViewCalendarEvent），eventCandidates[1] deeplink 未使用是合理选择，但应确认用户场景确实只需跳转日程"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_102\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_102\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"usageProgress\",\"calendarAction\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff7a2e0e\",0],[\"#ffc85200\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"statusText\",\"usageText\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ /memory/statusText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#fffff2e5\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usageText\",\"component\":\"Text\",\"content\":\"内存 {{ /memory/usagePercent }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usageProgress\",\"component\":\"Progress\",\"value\":\"{{ /memory/usageValue }}\",\"total\":\"{{ /memory/totalValue }}\",\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":10,\"color\":\"#ffffb74d\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":5}},{\"id\":\"calendarAction\",\"component\":\"Button\",\"label\":\"{{ /calendar/actionText }}\",\"styles\":{\"width\":116,\"height\":38,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff7a2e0e\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/calendar/next/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_102\",\"value\":{\"memory\":{\"statusText\":\"提醒快不行了\",\"usagePercent\":\"86%\",\"usageValue\":86,\"totalValue\":100},\"calendar\":{\"actionText\":\"查看日程\",\"next\":{\"entityId\":\"calendar-cleanup-102\",\"title\":\"16:30 清理提醒\"}}}}}"
+  ]
+}

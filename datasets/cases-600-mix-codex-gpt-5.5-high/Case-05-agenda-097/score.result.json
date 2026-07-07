@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-097",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "用户三大核心诉求中：1) 大字标题'今日气象调研行程'已正确显示并绑定到 dataModel.calendar.headline；2) 跳转天气APP的 onClick.call/args 与 TaskSpec.eventCandidates 完全一致；3) 但'按时间纵向排成一列纯文字列表'这一关键诉求未在渲染结果中体现——截图显示标题下方整片空白，3 条 agenda 行程未出现。TaskSpec 提供 3 条 items 但未渲染，相当于主要信息缺失。事件已落实、素材无需使用均达标，但行程列表缺失是严重遗漏，给 4.0 分。",
+    "aesthetic": "标题使用浅灰蓝底色块+18sp 加粗黑字，色块拼接风格契合'极简纯文字色块'的诉求，配色也较克制。但卡片约 80% 区域为空白，没有任何色块承载列表内容，整体显得空洞、不完整。视觉重心严重偏上，留白失衡，标题之外缺乏层级。给 3.0 分。",
+    "layout": "按预算公式核算：1) root Column 纵向占用 = padding(12+12) + itemMargin(10) + 26(headline) + 80(agendaList) = 140，恰好等于 root.height 140，预算成立；2) agendaList Column 纵向占用 = 6*2 + 22*3 = 78 < 80，余 2vp，预算成立；3) agendaItem Row 横向占用 = padding(8+8) + itemMargin(8*2) + 42+112+82 = 268 < 276，余 8vp，预算成立；4) headline Text 宽度估算：8 个汉字×18 = 144 < (276-16)=260，预算成立。理论上无溢出/截断问题，但实际渲染中行程列表完全消失，根因是 agendaList.children 被写成单对象而非数组、timeText.content 使用非标准的 formatString+${} 语法，模板未正确实例化，导致 D3 不能给高分。给 3.5 分。"
+  },
+  "issues": [
+    "agendaList.children 写成单对象 {\"componentId\":\"agendaItem\",\"path\":\"/calendar/items\"}，应包裹在数组中，导致模板未实例化",
+    "timeText.content 使用 {\"call\":\"formatString\",\"args\":{\"value\":\"${dtStart}\"}} 非标准绑定语法，路径未被正确解析",
+    "渲染截图中 3 条行程列表完全未出现，卡片下方约 100vp 区域为空白",
+    "agendaList.height 80 中 3 条 item(22×3=66) + margin(6×2=12) = 78，仅余 2vp，可适度放宽 item 高度提升可读性",
+    "titleText.width=112 对'南站雨量记录'(6字×12=72)足够，但'云湖公园走访'(6字)也接近上限，无安全余量"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_097\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_097\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"headline\",\"agendaList\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff5f7fb\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"headline\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.headline }}\",\"styles\":{\"width\":276,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#ffe6edf5\",\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"agendaList\",\"component\":\"Column\",\"children\":[{\"componentId\":\"agendaItem\",\"path\":\"/calendar/items\"}],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":90,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"agendaItem\",\"component\":\"Row\",\"children\":[\"timeText\",\"titleText\",\"locationText\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":{\"path\":\"weatherUri\"}}}]},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ dtStart }}\",\"styles\":{\"width\":46,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0f766e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ title }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"locationText\",\"component\":\"Text\",\"content\":\"{{ location }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff526070\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_097\",\"value\":{\"calendar\":{\"source\":\"calendar_mock\",\"headline\":\"今日气象调研行程\",\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-097-river\",\"title\":\"滨江湿地观测\",\"location\":\"滨江湿地\",\"dtStart\":\"09:20\",\"dtEnd\":\"10:10\",\"weatherUri\":\"weather://city?name=滨江湿地\"},{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-097-park\",\"title\":\"云湖公园走访\",\"location\":\"云湖公园\",\"dtStart\":\"11:30\",\"dtEnd\":\"12:20\",\"weatherUri\":\"weather://city?name=云湖公园\"},{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-097-station\",\"title\":\"南站雨量记录\",\"location\":\"城南气象站\",\"dtStart\":\"15:00\",\"dtEnd\":\"15:40\",\"weatherUri\":\"weather://city?name=城南气象站\"}]}}}}"
+  ]
+}

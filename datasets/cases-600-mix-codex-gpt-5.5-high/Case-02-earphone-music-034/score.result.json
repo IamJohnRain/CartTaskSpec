@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-02-earphone-music-034",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.5,
+  "reasons": {
+    "instruction": "用户明确要求的最关键字段'左耳电量10%'实际渲染中'10%'被maxLines=2裁掉，仅显示'左耳/电量'，主信息缺失严重。CTA按钮'打开音乐'被截断为'打...'，用户无法识别操作含义。歌单前的'小符号'未被独立处理（A/B/C是label内的字母，非装饰性符号）。深紫→浅紫渐变、左侧设备区/右侧操作区的左右分栏结构、电量告急红色醒目色块、clickToDeeplink事件参数完全对齐TaskSpec，结构与协议基本合规。updateDataModel缺少path='/'，轻微违反硬约束。",
+    "aesthetic": "深紫到浅紫对角渐变氛围感较好，与'听音乐'主题契合；红色#ffff3b30告急徽标在深紫底上对比强烈，起到醒目提示作用。扣分点：device_name/battery_line/warning_badge均使用fontWeight=700、playlists用600、按钮用medium，存在多重最强字重，违反'同一卡片只保留一个最强字重'约束；device_col内部三行纵向紧贴、留白不均；歌单块三种不同透明度（#26/#33/#40）差异过弱、层次不明。",
+    "layout": "device_col：宽50、padding 6+6=12，内容宽仅38。'左耳电量10%'在fontSize 14下文本估算宽≈78.4 > 38，maxLines=2强制换行成'左耳'/'电量'，'10%'被第三行裁掉（高度32只够2行）——核心指标溢出且关键数值被截。'FreeBuds'在fontSize 12下估算宽≈57.6 > 38，渲染为'FreeB'，溢出7px。'电量告急'在fontSize 12下估算宽≈48 > 38，强制换行成'电量告/急'。music_button：宽60、label'打开音乐'在fontSize 14下文本宽≈56，按钮内部padding后可用宽不足，渲染为'打...'——CTA被截断。action_col纵向预算：18×3+30+6×3=102 ≤ 116，高度未溢出但按钮宽度溢出。Root Row横向预算：12+6+50+60+12=140，恰好填满但两列均内容超宽。"
+  },
+  "issues": [
+    "device_col 内容宽仅38，'左耳电量10%' 被 maxLines=2 截断为 '左耳/电量'，丢失 '10%'，违反受保护文本不得截断规则",
+    "device_name 'FreeBuds' 在 fontSize 12 下宽度 57.6 > 内容宽 38，渲染为 'FreeB'",
+    "warning_badge '电量告急' 宽度 48 > 内容宽 38，被迫换行成 '电量告/急'",
+    "music_button 宽度 60 不够容纳 '打开音乐'（14pt≈56px + 按钮内边距），渲染为 '打...'，CTA 不可读",
+    "用户要求 '歌单名字前面用文字加个小符号代替图片'，原始 DSL 仅使用 label 内嵌字母 A/B/C，未独立添加装饰性文字符号",
+    "updateDataModel 缺少 path='/' 字段，违反硬约束",
+    "卡片存在 700/600/medium 三种字重，违反 '同一卡片只保留一个最强字重' 约束",
+    "歌单块三种背景透明度 #26ffffff/#33ffffff/#40ffffff 视觉差异过弱，层次不清晰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_034\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_034\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"device_col\",\"action_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff39235f\",0],[\"#ff8f67d9\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"device_col\",\"component\":\"Column\",\"children\":[\"battery_line\",\"warning_badge\",\"device_name\"],\"itemMargin\":6,\"styles\":{\"width\":64,\"height\":116,\"padding\":{\"left\":4,\"right\":4,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"battery_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.leftBatteryText }}\",\"styles\":{\"width\":56,\"height\":32,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.warningText }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffff3b30\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"device_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.name }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"playlist_one\",\"playlist_two\",\"playlist_three\",\"music_button\"],\"itemMargin\":4,\"styles\":{\"width\":46,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"playlist_one\",\"component\":\"Text\",\"content\":\"> {{ $__dataModel.music.playlists[0].label }}\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#26ffffff\",\"borderRadius\":6,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_two\",\"component\":\"Text\",\"content\":\"> {{ $__dataModel.music.playlists[1].label }}\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#40ffffff\",\"borderRadius\":6,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_three\",\"component\":\"Text\",\"content\":\"> {{ $__dataModel.music.playlists[2].label }}\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#5cffffff\",\"borderRadius\":6,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.actionText }}\",\"styles\":{\"width\":46,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ff39235f\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_034\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeBuds\",\"leftBatteryText\":\"左耳电量10%\",\"warningText\":\"电量告急\"},\"music\":{\"playlists\":[{\"label\":\"A 通勤\"},{\"label\":\"B 放松\"},{\"label\":\"C 夜听\"}],\"actionText\":\"打开音乐\"}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-13-health-reminder-243",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.7,
+  "reasons": {
+    "instruction": "用户5项诉求（喝水打卡标题/打勾/数字行/点跳app/红色危险提醒）中4项基本落实：title、status、countText、buttonText均通过 {{ $__dataModel.* }} 绑定，onClick 正确使用 clickToDeeplink 且 args 原样引用 eventCandidates，红橙渐变 hero 体现'危险提醒'。但 Checkbox.label 使用 {call:'formatString', args:{value:'${label}'}} 非标准模板字符串调用，渲染时未生效，导致用户最强调的'打勾'功能缺失；Button.fontWeight 写为字符串 'medium' 不在合法字重范围内，触发文字渲染异常。",
+    "aesthetic": "配色采用红橙渐变配合白色卡片底，对'危险提醒'主题契合度尚可。但 hero 内 title/status/count 三行字号合计 18+16+18=52，加 padding 12、margin 4 共 68，超出 hero 高度 58 达 10vp，'今日 2/8 杯' 被截断；'今日 2/8 杯' 的白底橘字胶囊视觉上越出 hero 区边缘；'打开提醒' 按钮文字出现重影/双层效果（fontWeight='medium' 非法值所致），严重破坏质感；checkbox 区域因渲染失败出现一大片空白，破坏视觉平衡。",
+    "layout": "逐项核算：① root Column 纵向 = padding 20 + itemMargin 8 + hero 58 + task_list 30 + open_btn 24 = 140，与父容器 140 等值刚好压满，无任何空隙；② hero Column 纵向 = padding 12 + itemMargin 4 + title 18 + status 16 + count 18 = 68 > hero height 58，溢出 10vp（'今日 2/8 杯' 被裁）；③ task_list 区域 120x30 内 checkbox 因 formatString 调用不被识别而完全不渲染；④ open_btn 底边 y=120，距卡片底 20vp，超出 2x2 规定的 8-16vp 上限 4vp。综合：核心 hero 溢出 10vp + checkbox 缺失 + 底边锚定超标 4vp。"
+  },
+  "issues": [
+    "hero Column 子项占高 68 > 可用 58，溢出 10vp，导致 '今日 2/8 杯' 被截断",
+    "Checkbox.label 使用 {call:'formatString', args:{value:'${label}'}} 非标准模板，渲染未生效，'打勾' 功能缺失",
+    "Button.fontWeight 写为字符串 'medium' 不在合法字重值（100-900/600/normal/bold 等）范围内，触发文字重影",
+    "open_btn 底边 y=120，距卡片底 20vp，超出 2x2 规定的 8-16vp 范围",
+    "root Column 纵向总占 140 = 父高 140，无任何垂直空隙，视觉上显得拥挤",
+    "Button 未指定 textAlign，文字可能非居中显示"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_243\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_243\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"task_list\",\"open_btn\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"status\",\"count\"],\"itemMargin\":2,\"styles\":{\"width\":124,\"height\":60,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffed1c24\",0],[\"#ffff7a45\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.hydration.title }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.hydration.status }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.hydration.countText }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"task_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"task_item\",\"path\":\"/reminder/tasks\"},\"itemMargin\":0,\"styles\":{\"width\":124,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"task_item\",\"component\":\"Row\",\"children\":[\"task_check\"],\"itemMargin\":0,\"styles\":{\"width\":124,\"height\":24,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#fff5f5f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"task_check\",\"component\":\"Checkbox\",\"label\":\"{{ $item.label }}\",\"select\":\"{{ $item.done }}\",\"value\":\"{{ $item.id }}\",\"styles\":{\"width\":112,\"height\":16,\"selectedColor\":\"#ffed1c24\",\"unSelectedColor\":\"#ffbfbfbf\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#e5000000\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.hydration.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":124,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffed1c24\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_243\",\"path\":\"/\",\"value\":{\"hydration\":{\"title\":\"喝水打卡\",\"status\":\"危险提醒\",\"countText\":\"今日 2/8 杯\",\"buttonText\":\"打开提醒\"},\"reminder\":{\"tasks\":[{\"id\":\"water-check-243\",\"label\":\"喝水已打卡\",\"done\":false}]}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-026",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "四项用户诉求（耳机电量卡、主体是个图、点一下跳app、能读天气）全部落实：'已连接+86%' 体现电量，earphone_icon 资源来自 assetCandidates 并绑定 /asset/earphoneIcon，root 与 music_button 均挂载 eventCandidates 中原样的 clickToDeeplink（args 三字段完全一致），天气字段 '多云/28°' 通过 {{ $__dataModel.data.weather.current.* }} 正确读取。size=2x2、root 140x140、borderRadius 18、clip true、catalogId/version/updateDataModel.path='/' 全部合规。轻微扣分：'主体是个图' 中图标 50x50 仅占卡片约 36% 宽高，未能形成真正的主视觉中心。",
+    "aesthetic": "配色（淡青底 #FFEAF5F2 + 主色青绿 #FF007D6E + 蓝温 #FF0A59F7）色相统一且对比清晰，字号 12/14/20 阶梯合理。但 '同一卡片只保留一个最强字重' 被违反：battery_text、weather_temp、music_button 三个组件同时使用 fontWeight=700（最强字重出现 3 次），应仅保留主指标 86% 一处使用 700。weather_row 宽度 116 仅承载 82 视觉内容，居中后两侧各留 17vp 空白，密度略显空洞。",
+    "layout": "逐一核算：root Column 纵向占用 = 12+50+8+18+8+28+12 = 136 ≤ 140（可用 140），内层 = 50+8+18+8+28 = 112 ≤ 116，富余 4vp，紧贴下界但未溢出；hero_row 横向 = 50+8+58 = 116 ≤ 116 临界贴合；device_col 纵向 = 16+4+22 = 42 ≤ 42 临界贴合；weather_row 横向 = 42+6+36 = 84 ≤ 116 富余 32vp（密度偏低）；music_button 92x28 热区高度 28 ≥ 24vp 合格；按钮底到卡片底 = 12vp 落在 2x2 典型 8-12vp 区间。结论：无堆叠、无文字截断、无点击覆盖，但整体下边距仅 4vp 余量，过于紧绷。"
+  },
+  "issues": [
+    "最强字重 fontWeight=700 在 battery_text、weather_temp、music_button 三处同时出现，违反'同一卡片只保留一个最强字重'规则",
+    "root Column 内层仅 4vp 富余量（112 vs 116），底部布局偏紧，存在挤入风险",
+    "weather_row 宽度 116 中仅承载 84 内容，居中对齐后两侧各留 17vp 空白，密度不饱满",
+    "图标 50x50 作为'主体'视觉占比较小（≈36% 卡片宽高），未能凸显'主体是个图'的诉求"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_026\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_026\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"weather_row\",\"music_button\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFEAF5F2\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"earphone_icon\",\"device_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":52,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.earphoneIcon }}\",\"styles\":{\"width\":52,\"height\":52,\"objectFit\":\"contain\"}},{\"id\":\"device_col\",\"component\":\"Column\",\"children\":[\"device_status\",\"battery_text\"],\"itemMargin\":4,\"styles\":{\"width\":56,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"device_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.status }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.batteryText }}\",\"styles\":{\"width\":56,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FF007D6E\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_condition\",\"weather_temp\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":36,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":92,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF007D6E\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_026\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeBuds\",\"batteryText\":\"86%\",\"status\":\"已连接\"},\"music\":{\"actionText\":\"打开音乐\"},\"asset\":{\"earphoneIcon\":\"resources/base/media/icon_earphone.png\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\"},\"current\":{\"temperatureText\":\"28°\",\"condition\":\"多云\"},\"daily\":[],\"updatedAt\":\"2026-07-05 09:30\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

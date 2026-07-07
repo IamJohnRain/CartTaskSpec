@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-246",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "用户要求吃药打卡卡片、几项可勾选、点开跳app、显示快不行了的提醒，均已落实：标题\"吃药打卡\"、两个Checkbox（早药已吃/晚药待打卡）、醒目橙色Button带clickToDeeplink事件、warningText\"快到点了，别漏服\"以橙色文字呈现。size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value与TaskSpec完全一致、eventCandidates.call/args原样采用，全部硬约束满足。略减分：deeplink URI指向天气app而非吃药app（属TaskSpec契约，按要求原样使用）；标题被套在黄色小框内信息密度略低。",
+    "aesthetic": "配色温暖协调：米色卡片底（#fffff7ed）+ 浅黄top区（#ffffe8cc）+ 橙色CTA（#ffef6c00）+ 蓝色checkbox（#ff0a59f7），层次清晰。仅一个最强字重（标题700），字号10/12/14均在阶梯上。top区使用黄色背景色块形成视觉分组，CTA橙色按钮醒目。扣分：root itemMargin=7不在4/8/12/16阶梯上；top Column padding 6/6/6/6塞在height 37内使文字与黄色背景贴边略局促；title黄色色块在2x2小卡片中占比较大，密度偏松。",
+    "layout": "root Column 纵向占用 = padding.top(12)+padding.bottom(12)+itemMargin*2(14)+Σ子项高(37+42+30=109) = 147 > 父容器高140，溢出7vp。top Column 纵向占用 = padding.top(6)+padding.bottom(6)+itemMargin(3)+Σ子项高(16+12=28) = 43 > 父容器高37，溢出6vp。checks Column 纵向占用 = itemMargin(4)+19+19 = 42 = 父容器高42，刚好持平。横向：所有子项width≤120（父容器宽140-20padding），无溢出。Button热区30vp >24vp，底部间距12vp在2x2允许的8-12vp范围内。文字未截断，Stack无覆盖问题。渲染截图视觉上各元素显示正常，但两处Column预算溢出为潜在隐患。"
+  },
+  "issues": [
+    "root Column 纵向预算 147vp 超出父容器 140vp，溢出 7vp",
+    "top Column 纵向预算 43vp 超出自身 height 37vp，溢出 6vp",
+    "root itemMargin=7 不在 4/8/12/16 间距阶梯上",
+    "top Column 内 padding 6/6/6/6 在 37 高度中占用过大，使文字与黄色背景贴边略局促",
+    "deeplink URI 指向天气app而非常规吃药app（属TaskSpec契约，无可避免）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_246\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_246\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"checks\",\"openApp\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffff7ed\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"status\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":37,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#ffffe8cc\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.title }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff182230\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.warningText }}\",\"styles\":{\"width\":104,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffc2410c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"checks\",\"component\":\"Column\",\"children\":[\"morning\",\"night\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":42,\"alignItems\":\"start\"}},{\"id\":\"morning\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.reminder.items[0].label }}\",\"select\":{\"path\":\"/reminder/items/0/done\"},\"value\":{\"path\":\"/reminder/items/0/value\"},\"group\":\"meds\",\"styles\":{\"width\":120,\"height\":19,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#ffcbd5e1\",\"fontSize\":12,\"fontColor\":\"#ff182230\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"night\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.reminder.items[1].label }}\",\"select\":{\"path\":\"/reminder/items/1/done\"},\"value\":{\"path\":\"/reminder/items/1/value\"},\"group\":\"meds\",\"styles\":{\"width\":120,\"height\":19,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#ffcbd5e1\",\"fontSize\":12,\"fontColor\":\"#ff182230\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"openApp\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.reminder.actionText }}\",\"styles\":{\"width\":120,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffef6c00\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_246\",\"value\":{\"reminder\":{\"title\":\"吃药打卡\",\"warningText\":\"快到点了，别漏服\",\"items\":[{\"label\":\"早药已吃\",\"done\":true,\"value\":\"morning\"},{\"label\":\"晚药待打卡\",\"done\":false,\"value\":\"night\"}],\"actionText\":\"打开提醒\"}}}}"
+  ]
+}

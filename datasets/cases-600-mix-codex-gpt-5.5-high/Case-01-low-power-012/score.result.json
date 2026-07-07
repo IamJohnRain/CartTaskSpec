@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-01-low-power-012",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.0,
+  "reasons": {
+    "instruction": "用户明确要求左右分区（左边电量+环形、右边省电+勿扰开关）、横向并列多个快速操作按钮、深色蓝色渐变。当前实现全为垂直堆叠未实现左右分区；仅 1 个开启省电按钮，缺少勿扰开关和'几个'并列按钮；事件绑定、数据绑定、尺寸、catalogId/version、updateDataModel.path 均合规，标题/电量/状态/天气字段均体现。",
+    "aesthetic": "配色思路正确：深灰到蓝色渐变 + 白色主文字 + 橙色告警，配色与'深夜倒计时'主题吻合；字号 14/12/20 在阶梯内、字重 700 唯一最强。但布局严重溢出导致大量内容被裁剪，截图中深蓝渐变底色几乎不可见，按钮文字在截图中也有渲染异常，视觉呈现与设计意图严重脱节。",
+    "layout": "content Column 子项总高 18(top)+56(meter)+20(support)+28(action)=122 加上 3×6=18 的 itemMargin 共 140vp > 可用 116vp，垂直溢出 24vp；meter_row Stack 中 48x24 的 '12%' 文本垂直偏上未居中（Stack 56x56 中仅占顶部 24vp），support_row（雨天+随时关机）完全位于 clip 区外被裁，action_btn 底部到卡片底边约 22vp > 16vp 上限。"
+  },
+  "issues": [
+    "content Column 子项占高 140 > 可用 116，垂直溢出 24vp",
+    "未实现用户要求的左右分区布局（全部垂直堆叠）",
+    "缺少勿扰开关和'几个'横向并列的快速操作按钮（仅 1 个开启省电）",
+    "meter_row Stack 中 '12%' 文本（48x24）垂直偏上，未居中于 56x56 环内",
+    "support_row 天气与'随时关机'文本被 clip 裁剪不可见",
+    "深蓝渐变在截图中几乎不可见，'深夜倒计时'主题未呈现",
+    "action_btn 底部到卡片底边 22vp，超过 16vp 上限"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"low_power_012\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"low_power_012\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[[\"#ff0a1929\",0],[\"#ff1e3a6b\",0.6],[\"#ff4a90fe\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.title }}\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.status }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffdb6b42\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_col\",\"right_col\"],\"itemMargin\":10,\"styles\":{\"width\":116,\"height\":60,\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"meter\",\"meter_label\"],\"itemMargin\":4,\"styles\":{\"width\":50,\"height\":60,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"meter\",\"component\":\"Stack\",\"children\":[\"ring\",\"meter_text\"],\"styles\":{\"width\":44,\"height\":44}},{\"id\":\"ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.level }}\",\"total\":\"{{ $__dataModel.battery.total }}\",\"styles\":{\"type\":\"ring\",\"width\":44,\"height\":44,\"color\":\"#ffdb6b42\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"meter_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":44,\"height\":44,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_label\",\"component\":\"Text\",\"content\":\"当前电量\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"weather\",\"condition\",\"shutdown\"],\"itemMargin\":4,\"styles\":{\"width\":56,\"height\":60,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weatherLabel }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"shutdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.shutdownHint }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffdb6b42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"action_btn\",\"dnd_btn\",\"more_btn\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":26,\"alignItems\":\"center\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":56,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ff317af7\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}},{\"id\":\"dnd_btn\",\"component\":\"Button\",\"label\":\"勿扰\",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}},{\"id\":\"more_btn\",\"component\":\"Button\",\"label\":\"更多\",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"low_power_012\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"紧急低电\"},\"battery\":{\"level\":12,\"total\":100,\"levelText\":\"12%\",\"status\":\"告警\",\"shutdownHint\":\"随时关机\"},\"weatherLabel\":\"雨天\",\"action\":{\"label\":\"开启省电\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"小雨\",\"temperatureText\":\"\",\"airQuality\":\"\",\"humidityPercent\":0,\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

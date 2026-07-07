@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-05-003",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "userQuery 要求的字段（label/标题/时间/倒计时/专注模式按钮）均通过 DataModel 正确绑定，onClick.call=clickToDeeplink 与 args 三字段均原样来自 eventCandidates，size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value 原样回填等硬约束全部满足。扣分点：用户明确要求'月亮图标'，但 assetCandidates 为空，DSL 仅以 moonMark 文本 'MOON' 占位，缺失真实月亮图形；另 1 处字符串拼接表达式（focus.moonMark + ' ' + focus.buttonText）让 button.label 显得臃肿，与简洁高级感略有冲突。",
+    "aesthetic": "设计意图良好：咖啡色线性渐变 + 半透明白色玻璃面板（#26FFFFFF 背景 + #33FFFFFF 描边）形成 glassmorphic 观感，配色和谐，字重分层（700 标题/时间、500 标签）合理。但渲染截图显示卡片几乎不可见，渐变与所有结构元素都未正常呈现，仅 focus_button 的 'MOON 专注…' 文字（已截断）以棕色单独出现在画面中部，说明视觉执行完全失败。",
+    "layout": "按预算公式核算：(1) 根 Column 纵向占用 = padding.top(12) + padding.bottom(12) + itemMargin×(3-1)(16) + Σ子项高(38+38+36=112) = 152 > 卡高 140，溢出 12vp，是导致大面积内容被 clip 不可见的主因；(2) title_col 纵向占用 = 0+0 + itemMargin×1(2) + label_text.height(12) + meeting_text.height(18) = 32 > title_col.height 26，溢出 6vp，'下一个日程' 与 'Agent需求评审会' 在内部挤压重叠；(3) bottom_row 横向 118+150 在原 DSL 为 150+114+12=276 紧贴边界，但 focus_button 内边距+文本宽约 112+padding>114，导致 label 'MOON 专注模式' 被裁成 'MOON 专注…'，受保护的 CTA 文字被截断，热区也不足 24vp 上下安全。Stack 未使用故无层叠问题，但底部动作区无 anchor 隐患。整体多位置预算崩盘。"
+  },
+  "issues": [
+    "根 Column 纵向占 152 > 卡高 140，溢出 12，导致 time_text、top_row、bottom_row 全部被 clip，肉眼几乎不可见",
+    "title_col 纵向占 32 > 自身高 26，溢出 6，'下一个日程' 与 'Agent需求评审会' 在 title_col 内重叠",
+    "focus_button 宽 114 不足以容纳 'MOON 专注模式'（含内边距约 112+），label 被截断为 'MOON 专注…'，受保护 CTA 文字丢失",
+    "卡内只有 1 个最强字重 700 体现在 time_text/meeting_text/warm_mark，层级尚可，但 root 的渐变颜色搭配 #FF5A3F2B→#FFD7B889 第二段过浅，加上 clip 后视觉几乎消失",
+    "缺失真实月亮图标：assetCandidates 为空，moonMark 仅以 'MOON' 文本占位，与 userQuery '带月亮图标' 存在语义差距",
+    "padding 与 itemMargin 同时偏大（12+8×2=28）浪费纵向空间，未给主时间留出大字号空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_05_003_agenda_reminder\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_05_003_agenda_reminder\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"time_text\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottomRight\",\"colors\":[[\"#FF3E1F0F\",0],[\"#FFE6C9A0\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_col\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#26FFFFFF\",\"borderWidth\":1,\"borderColor\":\"#33FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"label_text\",\"meeting_text\"],\"itemMargin\":1,\"styles\":{\"width\":256,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"label_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.label }}\",\"styles\":{\"width\":256,\"height\":9,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meeting_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.title }}\",\"styles\":{\"width\":256,\"height\":12,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.time }}\",\"styles\":{\"width\":276,\"height\":36,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"countdown_text\",\"focus_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.countdownText }}\",\"styles\":{\"width\":118,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#26FFFFFF\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"focus_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.focus.moonMark + ' ' + $__dataModel.data.focus.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":150,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#E5FFFFFF\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FF5A3F2B\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_05_003_agenda_reminder\",\"path\":\"/\",\"value\":{\"data\":{\"agenda\":{\"label\":\"下一个日程\",\"title\":\"Agent需求评审会\",\"time\":\"14:00-15:30\",\"countdownText\":\"还有15分钟后开启\"},\"focus\":{\"moonMark\":\"MOON\",\"buttonText\":\"专注模式\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

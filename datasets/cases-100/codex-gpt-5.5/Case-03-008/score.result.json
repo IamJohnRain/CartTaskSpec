@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-03-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求防沉迷卡片‘到时间锁屏’，且不要纯计时器。卡片完整呈现 title「防沉迷管控」、status「到时锁屏」、lockTime「21:30 生效」、action「家长设置」四个字段；Button.onClick 绑定 clickToDeeplink，call/args 原样来自 eventCandidates（parent_control），落实了锁屏相关动作入口，避免了纯计时器形态。size=2x2 (140x140)、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 且 value 与 TaskSpec.dataModel.value 完全一致，全部硬约束满足。assetCandidates 为空故未使用素材合法。轻微扣分：Button 视觉上未铺满内容宽度，未充分利用 2x2 视觉空间。",
+    "aesthetic": "配色和谐：浅灰底 #FFF7F8FA、警示红 status #E84026、品牌蓝 button #0A59F7，文字层次清晰，红色 status 在浅底上对比可读。最强字重 700 落在 status 标题上，字重阶梯 500/700/400/500 合理。但 Button 宽度 88 居左排布，右侧留出约 28vp 空白，视觉重心明显偏左，密度略紧，整体偏实用风、缺少呼吸感与设计感。",
+    "layout": "root Column: width 140 / height 140 / padding 12 / itemMargin 6，子项 title(18) + status(28) + lock_time(18) + button(32)。纵向占用 = 12+12+6*3+(18+28+18+32) = 24+18+96 = 138 ≤ 140，恰好不溢出（余量仅 2vp）。横向：所有子项 width 116 ≤ 内容宽 116，满足。Button 88x32 右侧 28vp 留白造成视觉不对称；底部 button 底边到卡片底 12vp，处于 2x2 推荐 8-12vp 区间。整体预算成立，无文字截断，Stack/CTA 互不遮挡。扣分点：纵向 138/140 贴边冗余过小；Button 宽度未与 content 对齐。"
+  },
+  "issues": [
+    "Button 宽度 88vp 左对齐，content 宽 116，导致右侧 28vp 空白，视觉重心偏左、未铺满热区",
+    "root Column 纵向占用 138/140 几乎贴边，安全缓冲不足 2vp，再调小任意元素都会溢出",
+    "title 与 lock_time 均为 fontSize 14 / weight 500 与 400，与 status 20/700 的最强字重对比足够，但 Button text fontSize 14 与 title 同字号，CTA 视觉量级与 title 拉不开差距"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_03_008_anti_addiction_control\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_03_008_anti_addiction_control\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"lock_time_text\",\"setting_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.statusText }}\",\"styles\":{\"width\":116,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lock_time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.lockTimeText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_03_008_anti_addiction_control\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"防沉迷管控\",\"statusText\":\"到时锁屏\",\"lockTimeText\":\"21:30 生效\",\"actionText\":\"家长设置\"}}}}"
+  ]
+}

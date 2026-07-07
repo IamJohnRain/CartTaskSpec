@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-11-fitness-202",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "三大用户诉求基本落实：Checkbox.value 绑定 /fitness/planDone 完成『打勾』；progressRow 显式数字并附带 onClick clickToDeeplink 完成『点开跳 app』；status 字段读取 calendarStatus 完成『读日历看完成』。但 updateDataModel 行缺少 path:'/' 字段，违反硬约束；status 与 countText 使用 formatString 调用的方式实现拼接，未按推荐使用 {{ $__dataModel.xxx }} 直接表达式；glyph 资产本身在截图中呈现为浅色方块，未呈现为可识别的健身完成符号，资产语义表现不足。",
+    "aesthetic": "绿系渐变与白色进度条形成清爽运动感，配色合法且对比度好；字号阶梯 18/16/14/12 清晰，标题与计数两处使用 700 字重，符合『只保留一个最强字重』要求；Checkbox 选中态、Button 形状、对齐均规整。扣分点：glyph 区域几乎为空（呈灰白方块），未传达完成符号的视觉信息，削弱了 hero 区信息密度。",
+    "layout": "Root Column 纵向占用 12(top pad)+66(hero)+10(itemMargin)+40(progressRow)+12(bottom pad)=140，等于 140，无溢出；Hero Row 横向 0+48+10+218=276 等于 276，纵向 max(48,56)=56 ≤ 66；Plan Column 纵向 0+30+6+20=56 等于 56；progressRow 横向 10+156+8+72+8=254 ≤ 276（content 区 258），纵向 max(24,32)=32 ≤ 40；底部动作区底边 y=12+66+10+40=128，距卡片底 12vp，在 2x4 推荐 10-14vp 区间；Button 热区 72x32 ≥ 24vp；Title 文本 6 个中文×18≈108 + checkbox 图标 ≈130，容纳于 218；status「日历已完成 · 可勾选整计划」≈146 ≤ 218；countText「3/4 已完成」≈83 ≤ 156，均不截断。综合预算成立，无堆叠/截断。"
+  },
+  "issues": [
+    "updateDataModel 缺少 path:'/' 字段，违反硬约束",
+    "Text.content 使用 formatString 调用的方式拼接，未按推荐使用 {{ $__dataModel.xxx }} 直接表达式",
+    "glyph 资产在截图中呈灰白方块，未能呈现健身完成符号，hero 区视觉信息弱",
+    "plan Column 设了 alignItems:'start' 但同时给 width:218，可能在内部文本自动对齐时产生不一致"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_202\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_202\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"progressRow\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff45b36b\",0],[\"#ff168765\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"glyph\",\"plan\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":66,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":\"assets/fitness-check-glyph.png\",\"styles\":{\"width\":48,\"height\":48,\"borderRadius\":16}},{\"id\":\"plan\",\"component\":\"Column\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":218,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.fitness.planTitle }}\",\"value\":{\"path\":\"/fitness/planDone\"},\"styles\":{\"width\":218,\"height\":30,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.calendarStatus }} · {{ $__dataModel.fitness.checkHint }}\",\"styles\":{\"width\":218,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progressRow\",\"component\":\"Row\",\"children\":[\"countText\",\"openButton\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":40,\"padding\":{\"left\":10,\"right\":8,\"top\":0,\"bottom\":0},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"countText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.doneCount }}/{{ $__dataModel.fitness.totalCount }} 已完成\",\"styles\":{\"width\":156,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff168765\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"打开\",\"styles\":{\"width\":72,\"height\":32,\"borderRadius\":12,\"backgroundColor\":\"#ff168765\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_202\",\"path\":\"/\",\"value\":{\"fitness\":{\"planTitle\":\"今日健身计划\",\"planDone\":true,\"calendarStatus\":\"日历已完成\",\"checkHint\":\"可勾选整计划\",\"doneCount\":\"3\",\"totalCount\":\"4\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true},\"assets\":{\"glyph\":\"assets/fitness-check-glyph.png\"}}}}"
+  ]
+}

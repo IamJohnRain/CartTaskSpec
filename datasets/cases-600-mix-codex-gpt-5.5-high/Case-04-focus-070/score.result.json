@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-070",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户三类明确诉求（按钮、点开app、显示已完成）均已落实：4 个 dataModel 字段（glyph/statusText/hint/actionText）全部参与展示，onClick.call=clickToDeeplink 与 args（bundleName/abilityName/uri）原样来自 eventCandidates，根 shell 140x140/borderRadius 18/clip:true 正确，createSurface.catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value 与 TaskSpec.dataModel.value 逐字段一致。轻微扣分因 hint 受保护文本被裁，体感影响指令完整度。",
+    "aesthetic": "采用深色 stage 渐变（#101827→#1f3a5f→#134e4a）+ 绿色 #22c55e 表达完成语义，配米白 paper 面板，色系和谐、对比清晰。字号梯度 16/14/14/12，主字重 700 出现在 status 与按钮、glyph 三个位置，未严格收束到「唯一一个最强字重」。最大问题是 paper_panel 内部溢出 30vp 导致 hint 文本被裁，影响整体观感。",
+    "layout": "Root Column（140x140，padding 12/12/12/12）：垂直占用 = 12 + paper_panel(72) + itemMargin(8) + open_button(32) + 12 = 136 > 可用 116，溢出 20vp。paper_panel Column（116x72，padding 8/8/10/10）：内部可用高 56，垂直占用 = 8 + glyph_text(22) + 6 + status_text(20) + 6 + hint_text(16) + 8 = 86 > 56，溢出 30vp。提示文字「专注记录已保存」作为受保护文本被底部裁切。底部 button 距卡片底 12vp 在 2x2 规范内，宽度 116 与内容区一致，无左右溢出。"
+  },
+  "issues": [
+    "Root Column 垂直占用 136 > 116，溢出 20vp",
+    "paper_panel Column 内部垂直占用 86 > 56，溢出 30vp",
+    "受保护文本 hint_text「专注记录已保存」被 paper_panel 底部裁切",
+    "status_text、open_button、glyph_text 三处并用 fontWeight 700，未收束到单一最强字重"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_070\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_070\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"paper_panel\",\"hint_text\",\"open_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff101827\",0],[\"#ff1f3a5f\",0.58],[\"#ff134e4a\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"glyph_text\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":124,\"height\":48,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#f2ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.glyph }}\",\"styles\":{\"width\":36,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff14532d\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.hint }}\",\"styles\":{\"width\":124,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff94a3b8\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":124,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_070\",\"value\":{\"focus\":{\"glyph\":\"OK\",\"statusText\":\"已完成\",\"hint\":\"专注记录已保存\",\"actionText\":\"打开应用\"}}}}"
+  ]
+}

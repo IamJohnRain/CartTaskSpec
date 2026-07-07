@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-13-health-reminder-249",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户六项诉求（喝水打卡主题、可勾选完成、显示今日饮量、点跳app、读日历行程、红字提醒）均已落实：titleText 取 reminder.title、Checkbox 绑 /reminder/done 并 label 取 checkLabel、countText 用 formatString 拼装 drankCups/targetCups、根 Stack onClick.call=clickToDeeplink 且 args 与 eventCandidates 完全一致、scheduleText 取 /data/calendar/items/0/title、alertText 使用 #FFE84026 红字。扣分点：updateDataModel 缺少协议硬约束的显式 path:\"/\"。",
+    "aesthetic": "配色采用粉红外壳 #FFFFF3F3 + 白色内卡 + 红色告警 #FFE84026，主题鲜明且健康调性统一；字重层级 title 700 / count 800 / alert 700 / schedule 500，count 800 为唯一最强字重，层级清晰；字号 14/20/12/10 在阶梯内；2x2 信息密度偏高但可接受。扣分点：底部 scheduleText 字号 10 略小，红字告警与勾选区在视觉密度上可再优化留白。",
+    "layout": "content Column：父 height 116、padding 8/8，子项 height 16+24+16+28=84，itemMargin 6×3=18，纵向占用 8+8+18+84=118 > 父 116，溢出 2vp；可用内高 100，实际占用 102 > 100，溢出 2vp。countText：内容'今日 3/8 杯'@fontSize 20 估算宽 ≈ 20×2(今日)+0.4×20(空)+0.6×20×2(3,8)+0.4×20(/)+0.4×20(空)+20(杯)=108vp > 容器 100，溢出 8vp，'杯'字符存在被裁切风险（截图仅清晰显示'今日 3/8'，末位'杯'未明确可见）。bottomRow：doneCheck 50 + scheduleText 46 + itemMargin 4 = 100 恰好占满，横向无溢出。Stack 叠层 softPanel 在底、content 在上，无遮挡受保护文本；Checkbox 50×28 热区尚可。"
+  },
+  "issues": [
+    "updateDataModel 缺少协议要求的 path:\"/\" 字段",
+    "content Column 纵向占用 102vp > 可用 100vp，溢出 2vp",
+    "countText 内容'今日 3/8 杯'@fontSize 20 估算宽 108vp > 100vp，'杯'字符有溢出/裁切风险",
+    "Checkbox 宽度 50 在 28vp 高度内承载 box+label'完成' 偏紧，标签可见性存疑"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_249\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_249\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"softPanel\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF3F3\",\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"softPanel\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"titleText\",\"countText\",\"alertText\",\"bottomRow\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.title }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF1F1F1F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"今日 ${/reminder/drankCups}/${/reminder/targetCups} 杯\"}},\"styles\":{\"width\":100,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FF1F1F1F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alertText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.alertText }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"doneCheck\",\"scheduleText\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":100,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"doneCheck\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/reminder/checkLabel}\"}},\"select\":{\"path\":\"/reminder/done\"},\"styles\":{\"width\":50,\"height\":28,\"selectedColor\":\"#FFE84026\",\"unSelectedColor\":\"#FFFFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"scheduleText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/data/calendar/items/0/title}\"}},\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF666666\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_249\",\"path\":\"/\",\"value\":{\"reminder\":{\"title\":\"喝水打卡\",\"drankCups\":3,\"targetCups\":8,\"alertText\":\"红字提醒喝水\",\"checkLabel\":\"完成\",\"done\":false},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"\",\"title\":\"读日程中\",\"dtStart\":\"\",\"dtEnd\":\"\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

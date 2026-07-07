@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-13-health-reminder-258",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "四项任务、环形进度、天气信息、浅黄底色、橙红渐变均已在 DSL 中体现,onClick.call/args 原样来自 eventCandidates。但用户明确列出的药物名'降压药/二甲双胍/阿司匹林/钙片'在渲染中全部被截断为'降.../.../.../...'(仅 task1 残留一字'降'),对该使用场景(老人服药打卡)致命。onClick 挂在 Checkbox 而非整行,违背'点整行跳闹钟'的明确表述。图标用 Checkbox 的 circle + ✓ 近似 ○/✓ 但非用户原意的纯文本字符,部分偏离。",
+    "aesthetic": "配色和谐,暖橙渐变(135°)与浅黄底 #fffaf1d7 搭配有运动感;层级清晰,标题 10/500、药名 10/400。但同时出现 meterText(12/700) 与 weather(11/700) 两个最强字重实例,违反'同一卡片只保留一个最强字重'原则。药名列截断后视觉显得空洞,完成度受损。",
+    "layout": "1) weatherPanel Column 内容区高 = 38-4-4 = 30,而子项 title(高 14) + itemMargin(2) + weather(高 16) = 32,纵向溢出 2px,导致 weather 文字底部被裁。2) 4 行任务 Checkbox label 受保护文本全部被截断:Checkbox 内部 label 可用宽约 65-70vp,而'早8:00 降压药1片'需 10+6+4+6+6+4+10+10+10+6+10 = 82vp,溢出 12-17vp,textOverflow:'none' 无法阻止 Checkbox 内部省略号。3) Stack meter 用 alignContent(非标准属性),应改 alignItems/justifyContent。4) Checkbox 高度 16 接近但低于受保护可点击热区下限 24vp。5) 渲染图显示环形 Progress 仅左上 1/4 填充,与 value=75/total=100 应显示 3/4 不符(疑似引擎渲染问题,数据无误)。"
+  },
+  "issues": [
+    "4 个任务行的药物名(降压药/二甲双胍/阿司匹林/钙片)全部被 Checkbox 内部省略号截断,违反'受保护文本不得依赖 ellipsis/clip 隐藏'硬约束,对该使用场景不可接受",
+    "weatherPanel Column 子项占高 14+2+16=32 > 可用 30,溢出 2px,weather 文字底部被裁",
+    "onClick 挂在 Checkbox 而非整行 Row,不符合'点整行跳闹钟'的明确诉求,UX 上点击圆圈跳闹钟也不合理",
+    "Checkbox 高度 16 接近但低于受保护可点击热区下限 24vp(整行场景下被 Row 兜底尚可)",
+    "meter Stack 使用 alignContent(非标准属性),应改 alignItems/justifyContent 以确保 meterText 居中",
+    "同时出现 meterText(12/700) 与 weather(11/700) 两个最强字重,违反单一最强字重原则",
+    "'今日服药'标题被塞进 weatherPanel 渐变胶囊,语义上应是卡片标题,可考虑提升为独立头部",
+    "formatString 模板 ${/path/...} 虽可工作,但不如纯 {{ $__dataModel.* }} 表达式规范"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-05-agenda-084",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户全部明确诉求均落实：「20分钟后开始」展示 20 分钟倒计时；root 与 actionButton 均挂载 clickToIntent，args 用 /calendar/nextEvent/entityId 路径与 eventCandidates 严格一致，支持点击跳转；左上角「日历 10:10」明确标识日历来源；底部红色色块（#ffba1a1a）承载「迟到风险：请现在出发」实现红色迟到提示。size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 与 value 完整对账。轻微扣分：sourceText/timeText 使用 formatString.call+${path} 形式而非系统优先推荐的 {{ $__dataModel.path }} 表达式，来源表达略不统一。",
+    "aesthetic": "深色背景（#ff141414）搭配红色告警条（#ffba1a1a）与浅粉 CTA（#ffffdad6），色板冷暖对比强烈、告警语义清晰。字号阶梯 10/12/14/16 全在合法范围；权重仅保留 700 一档作最强字重，CTA 与告警用 700，普通文本 400，层级干净。轻微扣分：actionButton.fontWeight='medium' 为非数字字重（建议 500），以及 sourceText/timeText 用 formatString、其余用 {{ }} 风格不统一。",
+    "layout": "根 Column：容器高 140、padding 12/12，子项 50+1+38=89、itemMargin 8×2=16，合计 105，spaceBetween 兜底 11vp，bottomRow 距底 12vp（满足 10-14vp）✓；topRow Row：可用 276，子项 168+12+96=276 恰好相等 ✓；eventBlock Column：可用 50，子项高 14+20+16=50 + itemMargin 2×2=4，合计 54 > 50，溢出 4vp（timeText 底端被挤出容器，截图仍可见因无 clip 但属预算违例）；countdownBlock Column：16+6+28=50 ✓；bottomRow Row：单子项 ✓；底部距离 12vp 满足锚定规则。整体可用但 eventBlock 4vp 纵向溢出需修复。"
+  },
+  "issues": [
+    "eventBlock Column 子项总高 54（14+20+16+2×2）> 容器高 50，纵向溢出 4vp，timeText 底部超出父容器",
+    "actionButton.fontWeight='medium' 为非数字字重，应改为 500",
+    "sourceText/timeText 使用 formatString.call+${path} 表达式，与系统优先推荐的 {{ $__dataModel.path }} 不一致",
+    "root.onClick 与 actionButton.onClick 重复绑定同一 clickToIntent，CTA 热区冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_084\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_084\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"topRow\",\"divider\",\"bottomRow\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff141414\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/calendar/nextEvent/entityId\"}}}}]},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"eventBlock\",\"countdownBlock\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"eventBlock\",\"component\":\"Column\",\"children\":[\"sourceText\",\"titleText\",\"timeText\"],\"itemMargin\":0,\"styles\":{\"width\":168,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"sourceText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.source }}  {{ $__dataModel.calendar.nowText }}\",\"styles\":{\"width\":168,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.title }}\",\"styles\":{\"width\":168,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.timeRange }}  {{ $__dataModel.calendar.nextEvent.location }}\",\"styles\":{\"width\":168,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdownBlock\",\"component\":\"Column\",\"children\":[\"countdownText\",\"actionButton\"],\"itemMargin\":6,\"styles\":{\"width\":96,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"end\"}},{\"id\":\"countdownText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.countdownText }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffdad6\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"right\"}},{\"id\":\"actionButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.nextEvent.actionText }}\",\"styles\":{\"width\":88,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffdad6\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff410002\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/calendar/nextEvent/entityId\"}}}}]},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"alertText\"],\"styles\":{\"width\":276,\"height\":38,\"padding\":{\"left\":10,\"right\":10,\"top\":7,\"bottom\":7},\"borderRadius\":12,\"backgroundColor\":\"#ffba1a1a\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alertText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.lateAlert }}\",\"styles\":{\"width\":256,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_084\",\"value\":{\"calendar\":{\"source\":\"日历\",\"nowText\":\"10:10\",\"nextEvent\":{\"entityId\":\"cal-standup-20260705-1030\",\"title\":\"项目晨会\",\"timeRange\":\"10:30-11:00\",\"location\":\"3F 会议室 B\",\"countdownText\":\"20分钟后开始\",\"lateAlert\":\"迟到风险：请现在出发\",\"status\":\"alert\",\"actionText\":\"查看日程\"}}}}}"
+  ]
+}

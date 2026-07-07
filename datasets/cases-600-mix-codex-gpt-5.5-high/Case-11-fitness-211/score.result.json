@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-11-fitness-211",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "深绿主题色底、橙色渐变动作区、绿色完成态胶囊、右侧动作区带 clickToDeeplink 事件（call/args 原样来自 eventCandidates）、'今日已完成X项'横排展示、纯文字色块、updateDataModel.path='/'且 value 与 TaskSpec 一致——均按指令落实。但 plan_text 受表达式 '今天有'+planCount+'项运动计划' 与 fontSize=18 的组合，受保护主指标文本宽度 9×18=162 > info_zone 内容宽 150（154 减 4 内边距），实际渲染中末字'划'被截断，'今天有X项运动计划'语义不完整，属关键信息缺失，扣分。",
+    "aesthetic": "深绿 #063d2e 底与橙色渐变 (#ff8a1c→#ff4f00) 互补，绿胶囊 #21c36b 作为完成态点缀，配色和谐、信息层次清晰；间距 4/8/12 阶梯基本到位；标题 14pt + 状态 14pt 胶囊与主指标 18pt 形成弱-强-中三层；'进入详情'白底橙字小药丸与橙色渐变卡片呼应得体。扣分点：plan_text 末字'划'被裁切破坏整体观感；title、plan_text、complete_value、action_title、action_hint 五处同时使用 fontWeight=700，违反'同一卡片只保留一个最强字重'原则，主次不够克制。",
+    "layout": "逐项预算核算：root Row 横向 12+12+12+154+110=300 满足；info_zone Column 纵向 4+4+8×2+18+28+26=88 ≤ 116 满足；action_zone Column 纵向 12+12+8×2+22+18+24=92 ≤ 116 满足；complete_row Row 横向 6+72+52=130 ≤ 150 满足。关键溢出：plan_text 中文 9 字 × fontSize 18 = 162，info_zone 内容宽仅 150（154-2-2），溢出 12vp；截图证实'划'字被裁，受保护主指标被截断，严重扣分。其余次要：next_time 实际宽度 18:30 5×0.6×12+空格×0.4×12+4×12=88.8，逼近 90 上限，留白极薄。底部锚：action_zone 外框底到卡片底 = 12vp，在 10-14vp 区间内 OK。Stack 叠层未遮盖关键元素。"
+  },
+  "issues": [
+    "plan_text 受保护主指标溢出：内容宽 162 > 列宽 150，末字'划'被截断（截图可见）",
+    "标题 14pt/700 + 状态胶囊 14pt/700 + 主指标 18pt/700 + 动作标题 16pt/700 + 提示药丸 12pt/700 共五处并列最强字重，违反'同一卡片只保留一个最强字重'",
+    "next_time 文本宽 88.8 逼近容器宽 90，仅余 1.2vp 余量，对长 nextTime 字段存在再次溢出风险",
+    "info_zone 与 action_zone 视觉比例 154:110，主信息区与动作区宽度差异明显，'左边信息/右边动作'语义可读但偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_211\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_211\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"info_zone\",\"action_zone\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff063d2e\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"info_zone\",\"component\":\"Column\",\"children\":[\"title\",\"plan_text\",\"complete_row\"],\"itemMargin\":8,\"styles\":{\"width\":154,\"height\":116,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitnessSchedule.title }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_text\",\"component\":\"Text\",\"content\":\"{{ '今天有' + $__dataModel.fitnessSchedule.planCount + '项运动计划' }}\",\"styles\":{\"width\":150,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"complete_row\",\"component\":\"Row\",\"children\":[\"complete_label\",\"complete_value\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":150,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"complete_label\",\"component\":\"Text\",\"content\":\"今日已完成\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ddffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"complete_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitnessSchedule.completedText }}\",\"styles\":{\"width\":52,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#ff21c36b\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_zone\",\"component\":\"Column\",\"children\":[\"action_title\",\"next_time\",\"action_hint\"],\"itemMargin\":8,\"styles\":{\"width\":110,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffff8a1c\",0],[\"#ffff4f00\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"calendar://schedule/today?type=fitness\"}}]},{\"id\":\"action_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitnessSchedule.actionText }}\",\"styles\":{\"width\":90,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"next_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitnessSchedule.nextTime }}\",\"styles\":{\"width\":90,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#fff7ffe8\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitnessSchedule.actionHint }}\",\"styles\":{\"width\":86,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffff5f00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_211\",\"path\":\"/\",\"value\":{\"fitnessSchedule\":{\"title\":\"运动日程\",\"planCount\":3,\"completedText\":\"1项\",\"actionText\":\"查看日程\",\"nextTime\":\"18:30 力量训练\",\"actionHint\":\"进入详情\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

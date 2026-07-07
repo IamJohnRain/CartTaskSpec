@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-061",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "硬约束基本满足：2x4 尺寸、root shell (300x140/borderRadius 22/clip)、catalogId/version/updateDataModel 全部合规；事件 clickToDeeplink 的 call 与 args 与 eventCandidates 完全一致；assetCandidates 为空且未引入任何图片素材；6 个数据字段（title/statusText/sessionName/durationText/finishTime/actionText）均通过 {{ $__dataModel.focus.* }} 绑定并展示。扣分点：渲染截图中右侧 Button 文字 '打开应用' 被截断为 '打开...'，CTA 文本不完整，指令 '能看到已经完成' 的状态指示虽然存在但因按钮截断影响可读性。",
+    "aesthetic": "整体配色与纸面+渐变绿面板的材质感契合任务'柔和材质纸面面板'和'确认状态行动按钮'，层级总体清晰。但存在两处明显问题：(1) 多处文字使用 fontWeight 700（title_text、session_text、done_mark、open_button 共 4 处），违反'同一卡片只保留一个最强字重'的规则，主次竞争；(2) Button 文本 '打开应用' 被渲染成 '打开...'，视觉上显得不专业、不完整。",
+    "layout": "逐项核算：(1) root Row：12+12+10*1+176+90 = 300 = 父宽 300，刚好塞满无溢出（贴边风险）；(2) paper_panel Column 子项纵向占用 = 12+22+8+22+8+18+8+16+12 = 126 > 父高 116，溢出 10vp，虽然截图因行高压缩看似可见但按预算公式判定为溢出；(3) action_panel Column 纵向 16+10+16+32+32 = 106 < 116 配合 spaceBetween 正常；(4) Button 文字 '打开应用' ≈ 48px，按钮 width 70 减去默认内边距后可用约 46px，文本溢出 2-4px，导致渲染截断为 '打开...'。底部 action_panel 外框底边到卡片底边距离 = 12vp，在 10-14vp 范围内合格。"
+  },
+  "issues": [
+    "paper_panel Column 纵向预算 126 > 116，溢出 10vp（itemMargin 8 过大）",
+    "Button 文本 '打开应用' 在 width 70 容器中因内部 padding 被截断为 '打开...'",
+    "多处文字同时使用 fontWeight 700（title/session/done_mark/button），违反单一最强字重规则",
+    "root Row 横向预算 300 = 父宽 300，左右贴边无安全余量",
+    "action_panel 上下 padding 不对称（top 16 / bottom 10），可改为对称 12 更协调"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_061\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_061\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"paper_panel\",\"action_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff8fafc\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"session_text\",\"duration_text\",\"time_text\"],\"itemMargin\":4,\"styles\":{\"width\":162,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":138,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ff111827\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"session_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.sessionName }}\",\"styles\":{\"width\":138,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.durationText }}\",\"styles\":{\"width\":138,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff334155\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.finishTime }}\",\"styles\":{\"width\":138,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64748b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"done_mark\",\"open_button\"],\"itemMargin\":12,\"styles\":{\"width\":104,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff22c55e\",0],[\"#ff14b8a6\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"done_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff166534\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_061\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"statusText\":\"已完成\",\"sessionName\":\"深度专注\",\"durationText\":\"45分钟\",\"finishTime\":\"今日18:20\",\"actionText\":\"打开应用\",\"completed\":true}}}}"
+  ]
+}

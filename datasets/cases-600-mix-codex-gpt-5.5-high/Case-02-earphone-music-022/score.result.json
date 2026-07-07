@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-02-earphone-music-022",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户要求'整个图吧，日历读下今天的，点一下能跳进去'。DSL覆盖了封面图、标题、副标题、今日标签+时间、事件名、CTA按钮和点击事件，事件call/args原样来自eventCandidates，尺寸2x4、catalogId、version、updateDataModel等硬约束均满足。主要扣分：封面图Image.src使用{\"path\":\"/music/cover\"}绑定形式，渲染时未显示图片（截图显示为灰色占位框），用户明确要求'整个图吧'，封面缺失直接影响指令遵从。",
+    "aesthetic": "渐变色（深蓝→青灰）专业克制，文字层级清晰（标题18/700、副标题12/400、今日标签10/500、事件名12/500），按钮白色与深色背景对比强烈，受保护文本颜色均合规。扣分点：封面图占位为灰色，严重影响主视觉完整性与'音乐封面+日历联动'的语义表达。",
+    "layout": "root Row横向核算：padding 12+12=24 + itemMargin 12 + cover 104 + content 160 = 300 = 父宽300 ✓。content Column（height 104）子项纵向占用：padding 0 + itemMargin 8×2=16 + headline 44 + calendar 28 + action 32 = 120 > 父高104，溢出16vp；calendar Column（height 28）子项占用：padding 0 + itemMargin 2 + today 14 + event_title 16 = 32 > 28，溢出4vp。root底边到卡片底边：140 - 12 - 104 = 24vp，超过2x4的16vp上限。封面图渲染为空，Image.src绑定形式导致图片未加载。"
+  },
+  "issues": [
+    "封面图未渲染：截图显示为灰色占位框，Image.src的{\"path\":\"/music/cover\"}绑定形式可能不被支持，应改用assetCandidates直接路径",
+    "content Column高度104，子项纵向占用120，溢出16vp",
+    "calendar Column高度28，子项占用32，溢出4vp",
+    "底部外框到卡片底边24vp，超过2x4的16vp上限",
+    "建议content Column高度提升至116并收紧itemMargin至6，calendar Column去固定高或调整为30，底部留出12vp安全空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_022\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_022\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"cover\",\"content\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff1f1b24\",0],[\"#ff24445a\",0.62],[\"#ff4f6f7b\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}]},{\"id\":\"cover\",\"component\":\"Image\",\"src\":\"resources/base/media/earphone_music_cover.png\",\"styles\":{\"width\":104,\"height\":104,\"borderRadius\":18,\"objectFit\":\"cover\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"headline\",\"calendar\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"headline\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":160,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.title }}\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.subtitle }}\",\"styles\":{\"width\":160,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar\",\"component\":\"Column\",\"children\":[\"today\",\"event_title\"],\"itemMargin\":2,\"styles\":{\"width\":160,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"today\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.todayLabel + ' ' + $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":160,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffb6e3ff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":160,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.actionText }}\",\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff24445a\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_022\",\"value\":{\"music\":{\"title\":\"今日歌单\",\"subtitle\":\"戴上耳机出发\",\"cover\":\"resources/base/media/earphone_music_cover.png\",\"actionText\":\"查看日历\"},\"data\":{\"calendar\":{\"todayLabel\":\"今天\",\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"calendar-earphone-music-022-1\",\"title\":\"通勤歌单\",\"dtStart\":\"08:30\",\"dtEnd\":\"09:00\",\"eventLocation\":\"日历\",\"description\":\"按今天日程准备播放内容\",\"senderName\":\"calendar\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

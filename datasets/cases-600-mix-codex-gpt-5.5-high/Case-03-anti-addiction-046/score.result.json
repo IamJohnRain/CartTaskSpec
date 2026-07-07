@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-03-anti-addiction-046",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "用户四项诉求均落实：'用机时长'以 usedText '3小时35分' 大字号呈现；'点一下进app' 通过 root Column + Button 双层 onClick 调用 clickToDeeplink（call/args 原样来自 eventCandidates）；'天气' 以 '多云 29°C' 行展示；'快超时提醒' 用 status='快超时' + 暖橙渐变传达。但缺少进度条可视化 215/240=89% 的剩余量，无法用图形强化'快超时'紧迫感，因此扣分。尺寸 2x2=140x140、catalogId/version/updateDataModel.path='/' 均合规。",
+    "aesthetic": "配色：暖橙渐变与'快超时'语义高度契合，文字与背景对比清晰。字号阶梯 16/20/12/14 合理。但 status_text 与 used_text 同时使用 fontWeight=700，违反'同卡片只保留一个最强字重'原则，视觉焦点分散。'时'字圆形图标比较抽象，语义传达弱。留白偏紧，整体偏单薄。",
+    "layout": "root Column 140x140、padding 12+12=24，内容区 116x116；4 个子项高 24+30+16+30=100，间距 4×3=12，占高 24+12+100=136 < 140，留 4vp 余量，由 spaceBetween 均分，未溢出。top_row Row 116 宽：glyph 24 + itemMargin 6 + status_text 86 = 116，恰好填满。used_text '3小时35分' @20sp 估算 5 字符 ≈ 80vp < 116 安全。weather_line '多云 29°C' @12sp 估算 ≈ 48vp < 116 安全。Button 116x30，'回到App' 4 字符 @14sp ≈ 45vp < 116 安全，按钮下沿距卡底 ≈ 12vp 处于 8-12vp 规范内。Stack 未使用，无遮盖问题。唯一瑕疵是垂直余量仅 4vp，较紧。"
+  },
+  "issues": [
+    "缺少进度条组件可视化 215/240=89% 使用率，无法图形化强化'快超时'提醒",
+    "status_text 与 used_text 同时使用 fontWeight=700，违反'同卡片只保留一个最强字重'规则",
+    "root Column 与 action_button 同时绑定同 onClick，存在双触发风险与冗余",
+    "root padding 12/12 偏紧，建议使用 10/10 以腾出垂直空间放置进度条",
+    "glyph '时' 字符作为图标语义较弱，命名/含义不够直观"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_046\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_046\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"used_text\",\"progress\",\"weather_line\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fffff7ed\",0],[\"#ffffedd5\",0.58],[\"#ffff9500\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"status_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"时\",\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffff9500\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.screenTime.status }}\",\"styles\":{\"width\":86,\"height\":22,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff7a2e00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.screenTime.usedText }}\",\"styles\":{\"width\":116,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff2d1b12\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress\",\"component\":\"Progress\",\"styles\":{\"width\":116,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#33ff9500\",\"foregroundColor\":\"#ffff6b00\",\"value\":89}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }} · {{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff7a5139\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.screenTime.actionText }}\",\"styles\":{\"width\":104,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ffff9500\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_046\",\"path\":\"/\",\"value\":{\"screenTime\":{\"usedMinutes\":215,\"limitMinutes\":240,\"remainingMinutes\":25,\"usedText\":\"3小时35分\",\"status\":\"快超时\",\"actionText\":\"回到App\"},\"data\":{\"weather\":{\"location\":{\"cityCode\":\"101010100\",\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\",\"airQuality\":\"良\",\"humidityPercent\":58,\"windDirection\":\"东南风\",\"windLevel\":2,\"uvIndex\":\"中等\",\"coldLevel\":\"低\",\"alertLevel\":\"\"},\"daily\":[{\"date\":\"2026-07-05\",\"weekday\":\"周日\",\"condition\":\"多云\",\"temperatureRangeText\":\"24° / 32°\",\"rainProbabilityPercent\":\"20%\"}],\"updatedAt\":\"2026-07-05 09:20\"}},\"state\":{\"loading\":false,\"timeoutMock\":{\"limitMinutes\":240,\"usedMinutes\":215,\"remainingMinutes\":25,\"nearTimeout\":true}}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-222",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户四点诉求（显示花多少、点一下进app、读日历、提醒快没钱）均已覆盖：statusText='预算预警'+spentLabel='已花 286 元'表达花费，Button '进App' 通过 onClick[0].call='clickToDeeplink' 调用 eventCandidates 唯一候选，args.bundleName/abilityName/uri 原样一致，calendar_box 展示 '日历提醒/有消费提醒' 体现'读日历'，'余额偏紧'+'预算预警'提示快没钱。createSurface size=2x4 width=300 height=140 borderRadius=22 clip=true catalogId/version 均合规，updateDataModel.value 与 TaskSpec.dataModel.value 逐字段一致。扣分点：amount 文本使用非标准的 formatString 函数调用包裹 ${/finance/spentLabel}，未按协议'优先用 {{ ... }} 完整表达式'读取 DataModel，属轻微协议偏差。",
+    "aesthetic": "深色径向渐变（#202224→#2e3033→#db6b42）配合橙色 CTA 形成清晰视觉层级，主指标金额 32 号字与 14 号状态、12 号提示、10 号日历副信息形成四档字号阶梯，全卡只有状态/金额/日历标题三处使用 700 字重，整体克制。calendar_box 用 19% 透明白半透明胶囊区分次要信息块，处理得体。稍显不足：右下角橙色在 22 圆角边缘与暗色衔接处略生硬，calendar_box 高度 58 内部两行文字上下留白偏松，可更紧凑。",
+    "layout": "按公式逐项核算：root Row 横向 12+12+10+176+90=300 正好填满，高度 12+12+116=140 满足；main Column 纵向 20+8+36+8+18=90 ≤ 116，余 26 居中分布；side Column 纵向 58+10+36=104 ≤ 116 居底对齐；calendar_box 纵向 18+4+16=38 ≤ (58-16)=42 留 4vp 上下均分；按钮热区 36vp≥24vp，按钮底 y=128 到卡片底 140 距离 12vp 在 10-14vp 区间。关键溢出点：amount 文本 '已花 286 元' 在 fontSize=32 下估算宽度 = 32+32+12.8+19.2+19.2+19.2+12.8+32 = 179.2vp > main 列宽 176vp，超出 3.2vp，虽未越界侵入 side 列（side 起始 x=198），但在父 clip:true 下会贴边渲染，且主指标受保护文本不应依赖贴边，应加宽 main 至 184 或缩字。"
+  },
+  "issues": [
+    "amount 文本 '已花 286 元' 在 fontSize=32 估算宽度 179.2vp > main 列宽 176vp，超出 3.2vp，主指标贴边有截断风险",
+    "amount 使用非标准 formatString 函数调用，未按协议优先用 {{ $__dataModel.xxx }} 完整表达式",
+    "Button fontWeight 写为字符串 'medium'，建议统一为数字 700 与卡片最强字重对齐",
+    "side 列宽 90 与 calendar_box 宽度 90 齐平，calendar_box 内部有效宽仅 74，对 '有消费提醒'5 字 10 号仅 50 偏松，可压缩外距或减小内 padding"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_222\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_222\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main\",\"side\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff202224\",0],[\"#ff2e3033\",0.58],[\"#ffdb6b42\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"status\",\"amount\",\"detail\"],\"itemMargin\":8,\"styles\":{\"width\":184,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusText }}\",\"styles\":{\"width\":184,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.spentLabel }}\",\"styles\":{\"width\":184,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.hint }}\",\"styles\":{\"width\":184,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"calendar_box\",\"open_app\"],\"itemMargin\":10,\"styles\":{\"width\":82,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"calendar_box\",\"component\":\"Column\",\"children\":[\"calendar_title\",\"calendar_hint\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":54,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"calendar_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.title }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.summary }}\",\"styles\":{\"width\":66,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"styles\":{\"width\":82,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffdb6b42\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_222\",\"value\":{\"finance\":{\"statusText\":\"预算预警\",\"spentLabel\":\"已花 286 元\",\"hint\":\"今日日程已读取，余额偏紧\",\"actionText\":\"进App\"},\"calendar\":{\"title\":\"日历提醒\",\"summary\":\"有消费提醒\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

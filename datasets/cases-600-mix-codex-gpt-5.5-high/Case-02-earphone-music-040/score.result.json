@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-earphone-music-040",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户要求：左侧超大闪电告警图标、'右耳电量过低/已断连'红色状态、右侧横排几个勾选项用于'是否继续左耳记录'、点击跳转运动健康应用看数据、冲刺导航式紧迫感渐变。DSL 已落实：1) 左侧 Image 引用 assetCandidates 中的 alert_lightning_icon；2) statusMain='右耳低电'、statusSub='已断连' 用白色文字置于红色渐变上；3) Checkbox 绑定 continueLeftRecord；4) Button 调用 clickToDeeplink 跳转 huaweischeme://healthapp/home/sport?sportType=2；5) 渐变背景 angle=135 多色 stop。但扣分点：a) 用户说'几个勾选项'(复数)，dataModel 仅 1 个 continueLabel，DSL 只能呈现 1 个 Checkbox，未能落实'几个'；b) 用户要求'横着排开'，DSL 中 action_col 为 Column 纵向排列 Checkbox+Button，不符合'横排'语义；c) statusMain 仅'右耳低电'而非完整'右耳电量过低'，与用户原话有出入；d) 渐变末尾 #ff0a59f7 蓝色削弱'紧迫感'基调。主要诉求基本满足，'几个/横着排开'未落实，扣至 6.5。",
+    "aesthetic": "配色渐变从 #ffb00020 橙红 → #ffe84026 红 → #ff0a59f7 蓝，右下角的蓝色 stop 与'紧迫感/冲刺'红橙调不和谐，视觉上突兀。字号阶梯 status_main=12、status_sub=12、title=12、button=12，缺少最强字重对比，视觉层次扁平。Checkbox 标签'左耳记录'因 column 宽 54 不够被截断为'...'，严重破坏可读性与专业感。整体留白尚可，左右两列居中对齐统一，但底部 button 距卡底 26vp 视觉上'漂浮'，缺少稳定锚定。综合 5.0。",
+    "layout": "核心排版问题：1) Root Row 横向占用 = 12+12+8(itemMargin)+54+54 = 140 ≤ 140 ✓ 临界；alert_col 纵向占用 = 4×2+46+16+16 = 86 ≤ 116 ✓；action_col 纵向占用 = 8×2+18+30+24 = 88 ≤ 116 ✓。表面预算都成立，但渲染出现：a) Checkbox 宽 54、padding 4+4=8、mark 8 占用后，可用区不足以容纳'左耳记录' (3 字×10=30)，标签被截断为'...'，受保护文本被裁 (D3 重扣)；b) action_col center 对齐下，button 距卡底 = 140 - (12+14+18+8+30+8+24) = 26vp，超过 2x2 卡片 ≤16vp 的底边约束 (重扣)；c) Image 在截图中显示为灰色占位 (资源未加载或样式缺 objectFit 表现)。三处问题叠加，D3=4.0。"
+  },
+  "issues": [
+    "Checkbox 标签'左耳记录'在 col 宽 54、padding 4+4、mark 8 的限制下被截断为'...'，受保护文本不可读",
+    "action_col 用 center 对齐，health_button 距卡底 26vp，超过 2x2 卡片 ≤16vp 的底边约束",
+    "渐变末尾 #ff0a59f7 蓝色与'紧迫感/冲刺导航'红橙基调冲突",
+    "Image 渲染为灰色占位 (资源未加载或样式问题)",
+    "用户要求'几个勾选项'与'横着排开'，DSL 仅 1 个 Checkbox 且在 Column 中纵向排列，语义未充分体现",
+    "statusMain='右耳低电'略于用户原话'右耳电量过低'，语义弱化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_040\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_040\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"alert_col\",\"action_col\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffe53935\",0],[\"#ffff5252\",0.55],[\"#ffff6e40\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_col\",\"component\":\"Column\",\"children\":[\"alert_icon\",\"status_main\",\"status_sub\"],\"itemMargin\":4,\"styles\":{\"width\":56,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.card.icon }}\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"status_main\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.statusMain }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_sub\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.statusSub }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffe6e6\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"continue_check\",\"health_button\"],\"itemMargin\":6,\"styles\":{\"width\":56,\"height\":116,\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"}},{\"id\":\"continue_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.card.continueLabel }}\",\"select\":{\"path\":\"/card/continueLeftRecord\"},\"styles\":{\"width\":56,\"height\":30,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffe53935\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"health_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.card.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":56,\"height\":26,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_040\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"运动续记\",\"statusMain\":\"右耳低电\",\"statusSub\":\"已断连\",\"icon\":\"assets/earphone-alert-lightning.png\",\"continueLeftRecord\":true,\"continueLabel\":\"左耳记录\",\"actionText\":\"看数据\"}}}}"
+  ]
+}

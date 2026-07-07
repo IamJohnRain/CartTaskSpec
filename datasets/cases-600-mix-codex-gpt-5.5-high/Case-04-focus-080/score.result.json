@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-04-focus-080",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户全部硬性诉求均已落实：2x4 尺寸、左中右并排、纯展示（无 onClick）、静态 DataModel、浅色夜晚渐变背景、中间环形 Progress 显示 68% 入睡进度、'已连接' 绿色正向状态 chip、不使用任何 Image/网络图。eventCandidates 为空，模型未发明事件。catalogId/version/createSurface/updateDataModel 协议均正确。轻微扣分：dataModel.ambientText 字段未被任何组件展示，且三处受保护文本因布局裁切导致语义不完整。",
+    "aesthetic": "整体配色（米白-淡紫-淡蓝渐变 + 半透明白色面板 + 紫色环形 + 绿/蓝/紫色块 chip）和谐，符合'夜晚柔和'的语义，留白合理。字号阶梯 10/12/14/16/20 也基本合规。但同一卡片中并存 600/700/800 三种字重（'同卡只保留一个最强字重'原则被突破），右栏 chip 文字被裁削弱了精致感，左/右栏 chip 视觉密度略不均。",
+    "layout": "逐项核算：①Root Row：padding 12+12=24 + itemMargin 10*2=20 + (82+92+82)=256，合计 300=300，横向无溢出。②左栏 Column：height 116，padding 12+12=24，content 92；itemMargin 7*2=14；子项 22+18+24=64；总高 24+14+64=102 > 92，溢出 10vp。③右栏 Column：同样 24+14+(26+18+24)=106 > 92，溢出 14vp。④文字截断：ambient_chip '灯光已调暗' 5×12=60 > 66-12=54，被裁为'灯光已调'；status_detail '卧室设备在线' 6×12=72 > 66，截图显示为'卧室设备在'；right_note '白噪音低音量' 5×12=60 > 54，截图显示为'白噪音低'——三处受保护文本均被裁切。⑤Center Stack：sleep_ring 88x88 置于 92x116 内、meter_text_col 58x44 居中堆叠，未遮盖关键文本，符合规范。⑥底部 2x4 距底 8-12vp 范围内，无底部溢出。结论：纵向 Column 溢出 10/14vp，三处 chip 文字裁切为主要扣分项。"
+  },
+  "issues": [
+    "左栏 Column 纵向总高 102 > 可用 92，溢出 10vp",
+    "右栏 Column 纵向总高 106 > 可用 92，溢出 14vp",
+    "ambient_chip 文字'灯光已调暗' 60vp > chip 内宽 54vp，被裁为'灯光已调'",
+    "status_detail 文字'卧室设备在线' 72vp > 列宽 66vp，被裁为'卧室设备在'",
+    "right_note chip 文字'白噪音低音量' 60vp > chip 内宽 54vp，被裁为'白噪音低'",
+    "dataModel.ambientText 字段未在 UI 任何位置使用，存在数据冗余",
+    "同一卡片存在 fontWeight 600/700/800 三档，违反'同卡只保留一个最强字重'原则"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"focus_080_sleep_relax_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"focus_080_sleep_relax_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"center_meter\",\"right_panel\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F2FF\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFF8F1\",0],[\"#FFE8E4FF\",0.55],[\"#FFD9ECFF\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"phase_text\",\"ambient_chip\"],\"itemMargin\":5,\"styles\":{\"width\":84,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#8CFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":68,\"height\":22,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#FF433B6B\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"phase_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.phase }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF6E668C\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ambient_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.leftNote }}\",\"styles\":{\"width\":67,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#FFEFE8FF\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF5A4E88\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"center_meter\",\"component\":\"Stack\",\"children\":[\"sleep_ring\",\"meter_text_col\"],\"styles\":{\"width\":96,\"height\":116,\"alignContent\":\"center\"}},{\"id\":\"sleep_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.progressValue }}\",\"total\":\"{{ $__dataModel.sleep.progressTotal }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#FF8C79D8\",\"width\":92,\"height\":92}},{\"id\":\"meter_text_col\",\"component\":\"Column\",\"children\":[\"progress_value_text\",\"progress_label_text\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"progress_value_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.progressText }}\",\"styles\":{\"width\":60,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FF433B6B\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_label_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.progressLabel }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF7A7295\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_chip\",\"status_detail\",\"right_note\"],\"itemMargin\":5,\"styles\":{\"width\":84,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#80FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"status_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.statusText }}\",\"styles\":{\"width\":58,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#FFDDF6EA\",\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#FF1F7A57\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_detail\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.statusDetail }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF5E6D75\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_note\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.rightNote }}\",\"styles\":{\"width\":67,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#FFE4F4FF\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF426B82\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"focus_080_sleep_relax_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡前放松\",\"phase\":\"夜晚准备\",\"progressLabel\":\"入睡进度\",\"progressValue\":68,\"progressTotal\":100,\"progressText\":\"68%\",\"statusText\":\"已连接\",\"statusDetail\":\"卧室设备在线\",\"ambientText\":\"柔和夜晚渐变\",\"leftNote\":\"灯光已调暗\",\"rightNote\":\"白噪音低音量\"}}}}"
+  ]
+}

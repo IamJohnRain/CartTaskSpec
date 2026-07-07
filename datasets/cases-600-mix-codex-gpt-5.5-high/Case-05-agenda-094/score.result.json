@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-094",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "2x2 尺寸、root shell(catalogId/version/padding/borderRadius/clip)、updateDataModel.path='/'+value 与 TaskSpec 完全一致、eventCandidates 中 clickToDeeplink 与三参数原样落到 alarm_button.onClick 并保留 root.onClick(卡片整体可点)，主标题'每日打卡'来自 agenda.title 静态绑定，左侧 sand_top/sand_bottom 两个色块叠放 + steps_text 写死'8500步'，右侧 meeting_1/2/3 三个色块横向排列,均满足'不要图片'。但未消费 dataModel 中 meetings[].time(09:30/14:00/18:30),且协议禁用 emoji 限制下'闹钟'仅以纯文字呈现而非图形闹钟图标,属轻微信息损失。",
+    "aesthetic": "深底 #ff0f172a 配 cyan #ff22d3ee+teal #ff14b8a6 双色块,极客冷调统一,标题/按钮/中间高亮'评审'形成明确的青-白-青视觉节奏,字号阶梯 10/14/18 落在规范内且仅保留 700 单一最强字重。但会议方块底色 #ff1e293b 与卡片底色 #ff0f172a 三通道差仅 15/18/17,几乎同色,卡片层次偏平;沙漏用两个 32×26 圆角矩形互相 6vp 重叠,呈现为单一块状而非清晰'沙漏'轮廓,'叠在一起'的语义略弱;闹钟按钮仅文字'闹钟'无图形装饰。",
+    "layout": "root Column 纵向预算=padding-top 12+title 22+margin 8+body 50+margin 8+button 28+padding-bottom 12=140,等于父容器 140,无溢出。body_row 横向预算=hourglass 40+itemMargin 8+meeting_row 68=116,等于 116 ✓。meeting_row 横向预算=20+4+20+4+20=68 ✓。hourglass Stack 三层(sand_top y=2-28、sand_bottom y=22-48、steps_text y=17-33)按用户'叠在一起'意图设计,steps_text 文字前置不被遮挡,8500步/会议标题/闹钟标题/每日打卡均无截断,渲染截图佐证可读。Button 热区 28vp≥24vp,按钮底到卡片底=12vp 落在 8-12vp 区间。Stack 重叠为设计意图而非堆叠事故。"
+  },
+  "issues": [
+    "未展示 dataModel 中 meetings[].time 字段(09:30/14:00/18:30),信息密度低于数据供给",
+    "会议方块背景 #ff1e293b 与卡片背景 #ff0f172a 灰度差极小,方块边界几乎隐没",
+    "沙漏用两个 32×26 圆角矩形 6vp 重叠,呈现为单一矩形块,沙漏轮廓不具象",
+    "root 节点与 alarm_button 节点都挂相同 onClick,可能造成事件双触发疑虑(可保留其一)",
+    "闹钟仅文字'闹钟',无图形化图标(协议禁用 emoji 限制下可接受)"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_094\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_094\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_row\",\"body_row\",\"alarm_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0f172a\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_row\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#fff8fafc\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"hourglass_stack\",\"meeting_row\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hourglass_stack\",\"component\":\"Stack\",\"children\":[\"sand_top\",\"sand_bottom\",\"steps_text\"],\"styles\":{\"width\":40,\"height\":50,\"alignContent\":\"center\"}},{\"id\":\"sand_top\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":30,\"height\":20,\"margin\":{\"left\":5,\"top\":2},\"borderRadius\":10,\"backgroundColor\":\"#ff22d3ee\"}},{\"id\":\"sand_bottom\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":30,\"height\":20,\"margin\":{\"left\":5,\"top\":24},\"borderRadius\":10,\"backgroundColor\":\"#ff14b8a6\"}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.stepsText }}\",\"styles\":{\"width\":40,\"height\":14,\"margin\":{\"top\":18},\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff020617\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meeting_row\",\"component\":\"Row\",\"children\":[\"meeting_1\",\"meeting_2\",\"meeting_3\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":68,\"height\":50,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"meeting_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.meetings[0].title }}\",\"styles\":{\"width\":20,\"height\":44,\"padding\":{\"left\":0,\"right\":0,\"top\":10,\"bottom\":10},\"borderRadius\":6,\"backgroundColor\":\"#ff334155\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#fff8fafc\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"meeting_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.meetings[1].title }}\",\"styles\":{\"width\":20,\"height\":44,\"padding\":{\"left\":0,\"right\":0,\"top\":10,\"bottom\":10},\"borderRadius\":6,\"backgroundColor\":\"#ff334155\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff67e8f9\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"meeting_3\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.meetings[2].title }}\",\"styles\":{\"width\":20,\"height\":44,\"padding\":{\"left\":0,\"right\":0,\"top\":10,\"bottom\":10},\"borderRadius\":6,\"backgroundColor\":\"#ff334155\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#fff8fafc\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"alarm_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.agenda.clockLabel }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff22d3ee\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff020617\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_094\",\"value\":{\"agenda\":{\"title\":\"每日打卡\",\"stepsText\":\"8500步\",\"clockLabel\":\"闹钟\",\"meetings\":[{\"time\":\"09:30\",\"title\":\"晨会\"},{\"time\":\"14:00\",\"title\":\"评审\"},{\"time\":\"18:30\",\"title\":\"复盘\"}],\"calendarMock\":{\"date\":\"今日\",\"source\":\"calendar\",\"count\":3}}}}}"
+  ]
+}

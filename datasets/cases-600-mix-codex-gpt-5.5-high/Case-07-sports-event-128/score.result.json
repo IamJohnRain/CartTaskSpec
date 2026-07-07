@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-128",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户要求的赛事提醒各要素基本落实：标题 event.title 已展示、点击导航通过 nav_button 的 onClick 完整还原 eventCandidates 的 clickToIntent/StartNavigate 参数、天气 weather 与已出发 departStatus 都做了对应展示。但用户明确要求'显示一行比分'，原 DSL 在 score_card 内 78px 内容区硬塞 '猎鹰 2 - 1 海港'，受保护主指标被截断为 '猎鹰 2 - 1'，丢失'海港'。assetCandidates 中 stadium_icon 已通过 dataModel 绑定到 Image.src，但被 Stack 中的 score_card 完全遮挡，实际不可见，素材语义没落地。updateDataModel 缺失 path='/' 字段，轻微违反协议。尺寸 2x4、catalogId、version、root shell 等硬约束满足。",
+    "aesthetic": "配色：深青到翠绿的对角渐变 (#083344→#0f766e→#164e63) 与白色文字搭配和谐，'已出发'浅绿底+深绿字对比清晰，白色按钮+深青文字对比鲜明，色组合法可读。字号阶梯 12/14/16/18 落在规范内，层级清晰。字重 600/700/medium(500)/800，800 仅用于 score_line，最强字重唯一。留白与对齐整体合理。扣分点：score_line 文字被截断导致视觉不完整，Stack 中 icon 不可见造成左半区视觉空洞。",
+    "layout": "关键预算核算：① root Row 横向 12+12+12+122+142=300 ✓。② score_card Column(110x64) 子项纵向占用 = padding.top(8) + title.height(18) + itemMargin(8) + score.height(26) + padding.bottom(8) = 68 > 可用 64，溢出 4vp。③ score_line 文本宽 = 4×18(中文) + 3×0.4×18(空格) + 1×0.6×18(破折号) + 2×0.6×18(数字) = 126 > 内容区 78 (94-16)，受保护主指标被截断丢失'海港'。④ Stack 中 stadium_icon(58x58) 与 score_card(110x64) 均 alignContent center 居中叠放，icon 包围盒 x=[32,90] y=[29,87] 完全落在 score_card 包围盒 x=[6,116] y=[26,90] 之内，icon 被 100% 遮挡不可见。⑤ info_panel Column 纵向 0+0+8×2+26+22+34=98 ≤ 116 ✓；status_row 横向 0+0+8+58+76=142 ✓；nav_button 底边距卡底 12vp，落在 10-14vp 区间 ✓。综合：受保护文本被截断 + icon 被完全遮挡 + column 溢出，多处堆叠/截断问题，layout 重扣。"
+  },
+  "issues": [
+    "score_line 受保护主指标 '猎鹰 2 - 1 海港' 在 78px 内容区放不下，被截断为 '猎鹰 2 - 1' 丢失 '海港'",
+    "Stack 中 stadium_icon(58x58) 被 score_card(110x64) 完全覆盖，资产不可见",
+    "score_card Column 纵向占用 68 > 高度 64，溢出 4vp",
+    "updateDataModel 缺失 path='/' 字段，轻微违反协议硬约束",
+    "Button fontWeight 写成 'medium' 字符串，建议改为数字 500 以确保跨端一致"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_event_128\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_event_128\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"score_panel\",\"info_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff083344\",0],[\"#ff0f766e\",0.58],[\"#ff164e63\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"score_panel\",\"component\":\"Column\",\"children\":[\"stadium_icon\",\"event_title\",\"score_line\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"stadium_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.stadiumIcon }}\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.title }}\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#b3ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.scoreLine }}\",\"styles\":{\"width\":128,\"height\":26,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"status_row\",\"venue_text\",\"nav_button\"],\"itemMargin\":8,\"styles\":{\"width\":136,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"depart_badge\",\"weather_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":136,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"depart_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.departStatus }}\",\"styles\":{\"width\":58,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffdcfce7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.weather }}\",\"styles\":{\"width\":70,\"height\":22,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e6ffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"venue_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.venue }}\",\"styles\":{\"width\":136,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.event.actionText }}\",\"styles\":{\"width\":136,\"height\":34,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0f766e\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3027\",\"longitude\":\"114.1859\",\"name\":\"红磡体育场\"},\"trafficpe\":\"Drive\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_event_128\",\"path\":\"/\",\"value\":{\"event\":{\"title\":\"城市杯决赛\",\"scoreLine\":\"猎鹰 2 - 1 海港\",\"weather\":\"多云 24℃\",\"departStatus\":\"已出发\",\"venue\":\"红磡体育场\",\"actionText\":\"导航去球场\"},\"assets\":{\"stadiumIcon\":\"resources/base/media/icon_stadium.png\"}}}}"
+  ]
+}

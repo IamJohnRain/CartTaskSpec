@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-086",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求四点：① 从日历读取今天会议（展示了 nextEvent.title='项目同步会'、timeRange='14:00-14:30'）② 显示还剩几个（remainingText='还剩3个会'）③ 点一下进会议（joinButton 含 onClick，call='clickToIntent'，intentName/params 全部原样来自 eventCandidates）④ 已加入的标完成（doneText='已完成'，对应 dataModel.completionStatus）。尺寸 2x2、width/height 140、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 均符合硬约束。轻微扣分：未独立展示 '已加入' 状态，只显示了 '已完成'，对'已加入→标完成'的状态语义传达略弱。",
+    "aesthetic": "配色：浅绿底 #FFEAF8EF + 深绿主色 #0A7F42 + 文字深色 #182820，色相和谐、绿系单点强调，识别度高。字号阶梯 14/16/12/12/14 在 12/14/16 范围内合规。CTA 按钮白字深绿底对比清晰。主要扣分：remainingText 与 eventTitle 同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'的规则，需将副状态字重降级到 600 级别。留白尚可，但剩余字数与标题同色同字重造成视觉权重冲突。",
+    "layout": "root Column 预算：padding 12+12=24，items 高度和 18+20+16+30=84，itemMargin×3=18，合计 24+84+18=126，父容器 140，未溢出（126<140）。在 contentArea 116 之内也未越界（126 超出 10 但因 clip 仅作用在 140 边界，且 itemMargin 6 在 flexStart 排布下末项 bottomRow 底 y=132，距卡底 8vp，符合 2x2 底部 8-12vp 约束）。bottomRow 横向：doneText 42 + itemMargin 8 + joinButton 66 = 116，等于容器 116，无溢出；行高 30 等于 joinButton 高 30，无溢出。Button 热区 66×30 > 24vp。受保护文本（remainingText 4 字、eventTitle 5 字、timeText 11 字符）均 maxLines=1 且 textOverflow=none，无截断风险。"
+  },
+  "issues": [
+    "remainingText 与 eventTitle 同为 fontWeight 700，违反'同卡唯一最强字重'规则",
+    "未独立呈现 joinStatus='已加入' 状态，用户'已加入的标完成'的语义仅靠'已完成'间接表达，信息链路略弱",
+    "root Column 在 contentArea(116) 内累计 126，理论上溢 10vp，依靠 clip:true 边界=140 才不裁剪，属临界布局"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_086\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_086\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"remainingText\",\"eventTitle\",\"timeText\",\"bottomRow\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFEAF8EF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"remainingText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.remainingText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.timeRange }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CC182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"doneText\",\"joinButton\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"doneText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.completionStatus }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"joinButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.nextEvent.actionText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"JoinCalendarMeeting\",\"params\":{\"entityId\":{\"path\":\"/calendar/nextEvent/entityId\"},\"meetingUrl\":{\"path\":\"/calendar/nextEvent/meetingUrl\"}}}}],\"styles\":{\"width\":66,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A7F42\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_086\",\"path\":\"/\",\"value\":{\"calendar\":{\"source\":\"calendar_mock\",\"dateLabel\":\"今天\",\"remainingCount\":3,\"remainingText\":\"还剩3个会\",\"nextEvent\":{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-086-next\",\"title\":\"项目同步会\",\"timeRange\":\"14:00-14:30\",\"meetingUrl\":\"calendar://meeting/calendar-agenda-086-next\",\"joinStatus\":\"已加入\",\"completionStatus\":\"已完成\",\"actionText\":\"进会议\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

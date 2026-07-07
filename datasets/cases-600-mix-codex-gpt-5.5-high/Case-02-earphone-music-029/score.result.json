@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-02-earphone-music-029",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "歌词卡关键字段（playlist/lyric/trackCountText/meter/calendar）均已绑定，onClick call/args 原样来自 eventCandidates，size=2x4、catalogId、version、updateDataModel.path=/ 等协议约束均满足，两个 assetCandidates（earphone_icon、music_icon）也都被引用。但 userQuery '文字叠在图上' 视觉上只是把文字放进白色 panel，并未真正实现文字浮在背景图上的叠层效果；root 节点额外绑定了一份与 button 重复的 onClick，属于事件冗余。",
+    "aesthetic": "浅蓝绿渐变 + 白色封面 + 蓝色按钮的配色和谐、字色对比清晰，14/16/12 字号在阶梯内。但 ambient_band 与 cover_panel 在左侧出现 80x80 的层叠（两者都是白底），视觉上等同于重复白块；多处 Stack 元素叠加导致右侧文字与绿色进度条、绿色 count_text 互相穿插成条纹，文字层级被破坏。整体观感可读但略显凌乱。",
+    "layout": "按预算公式核算：(1) bluetooth_button margin left=216,top=96,width=72,height=32：右沿 216+72=288 > 内宽 276 溢出 12vp，下沿 96+32=128 > 内高 116 溢出 12vp，被 root clip 切掉一截，违反底部动作区距底 ≤16vp 的硬约束。(2) lyrics_col 位于 (124,14,132,82) 底部到 y=96，calendar_chip 位于 (124,92,132,20) 顶部 y=92，二者纵向重叠 4vp，calendar_chip 把 meter_bar 末端压住。(3) calendar_chip (124,92)–(256,112) 与 bluetooth_button (216,96)–(288,128) 形成 40x16vp 的覆盖区，按钮 Stack 在 calendar_chip 之后渲染，把 '声乐练习' 四个字完全遮住（截图可见 '日程 19:30 声' 后被按钮截断）。(4) count_text 内容 '29首 歌词' 在 width=64 内估算 4 字+空格 ≈ 70vp 超出 6vp，可能被裁切。(5) ambient_band 104x116 与 cover_panel 88x92 共享左上 80x80 区域，无视觉收益反而增加混乱。综合存在 1 处严重越界 + 2 处分层覆盖 + 1 处文字截断风险，D3 仅 3.5。"
+  },
+  "issues": [
+    "bluetooth_button 定位 (216,96) 导致右沿 288>276 溢出 12vp、下沿 128>116 溢出 12vp，违反 2x4 卡片底部动作区距底 ≤16vp 约束并被 root clip 切掉",
+    "calendar_chip (124,92) 与 lyrics_col (124,14,82) 底部 4vp 重叠，绿色 count 文本/进度条与 calendar_chip 文字在视觉上互相穿插（截图可见 29首歌词文字横穿进度条）",
+    "bluetooth_button (216,96) 与 calendar_chip (124,92) 在 40x16vp 区域重叠，按钮渲染在后，把 '声乐练习' 等受保护文字完全遮住（截图证实 '声' 字后被切）",
+    "count_text 容器 width=64，但内容 '29首 歌词' 估算宽度 ≈70vp，存在被裁切风险",
+    "ambient_band (104x116) 与 cover_panel (88x92) 在左侧 80x80 区域双层白底叠加，视觉冗余",
+    "root 与 bluetooth_button 同时绑定同一份 clickToDeeplink 事件，事件冗余，且 root 全卡可点会与 button 抢热区",
+    "封面区与右侧歌词区没有共享左右边界对齐规则：cover_panel margin.left=8, lyrics_col margin.left=124，x 起点不一致显得错位"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_029\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_029\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF7FBFF\",0],[\"#FFE8F7F1\",1]]}}},{\"id\":\"cover_panel\",\"component\":\"Column\",\"children\":[\"earphone_icon\",\"count_text\"],\"itemMargin\":10,\"styles\":{\"width\":84,\"height\":116,\"padding\":12,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackCountText }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF006C5B\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"playlist_row\",\"lyric_text\",\"meter_bar\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":180,\"height\":116,\"margin\":{\"left\":96},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"playlist_row\",\"component\":\"Row\",\"children\":[\"music_icon\",\"playlist_text\"],\"itemMargin\":6,\"styles\":{\"width\":180,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlist }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lyric_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.lyric }}\",\"styles\":{\"width\":180,\"height\":18,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FF3B4A5A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.music.meter }}\",\"total\":100,\"styles\":{\"width\":180,\"height\":6,\"type\":\"linear\",\"color\":\"#FF00A87E\",\"backgroundColor\":\"#2200A87E\",\"borderRadius\":3}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"calendar_chip\",\"bluetooth_button\"],\"itemMargin\":8,\"styles\":{\"width\":180,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"calendar_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items.0.title }}\",\"styles\":{\"width\":100,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF3B4A5A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bluetooth_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.device.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"bluetooth_entry\"}}],\"styles\":{\"width\":72,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_029\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeBuds Pro 3\",\"actionText\":\"开蓝牙\"},\"music\":{\"playlist\":\"今日歌词卡\",\"lyric\":\"风吹过第29拍\",\"trackCount\":29,\"trackCountText\":\"29首\",\"meter\":72},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-music-029\",\"title\":\"19:30 声乐练习\",\"dtStart\":\"19:30\",\"dtEnd\":\"20:00\"}]}}}}"
+  ]
+}

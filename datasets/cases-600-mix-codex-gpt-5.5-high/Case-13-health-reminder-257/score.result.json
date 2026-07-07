@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-13-health-reminder-257",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "尺寸2x4、createSurface、catalogId、version、updateDataModel.path='/'与value原样回填均合规。深蓝到紫的夜晚渐变#0b1026→#564af7→#ac49f5正确落实。药丸主视觉存在（两色色块分药）、Checkbox实现[ ]勾选且selectedColor绿色#64bb5c、onClick clickToDeeplink的args原样取自eventCandidates，主要诉求大部分满足。但关键问题：①用户明确要求'右边纵向列今天的几次药'，medicine_list因右侧Column溢出被完全挤出可见区，等同核心交互不可用；②last_time用formatString call结构绑定Text.content，不符合'展示值优先用完整表达式{{...}}读取DataModel'的协议；③用户原意'顶部读上次吃药时间'，实际位于hero_panel底部而非卡片顶部；④Button fontWeight写'medium'非标准字重（应为400/500/700等数值）。",
+    "aesthetic": "渐变色和谐、夜晚氛围到位；字号阶梯10/12/14合规、字重以700最强满足单一最强字重原则；色块分区对比（#26ffffff vs #33ffffff）有体现。扣分点：①hero_panel Stack导致pill_shape与hero_title在视觉上叠压在同一区域（截图中'吃药提醒'白字直接压在彩色药丸上），丑且破坏可读性；②medicine_list完全不可见，右侧面板出现大块空洞，密度严重失衡；③clock_button被裁切，圆角胶囊按钮的视觉完整性被破坏。",
+    "layout": "逐项预算核算：①root Row 横向占用=padding左12+padding右12+hero_panel(100)+itemMargin 12+right_panel(164)=300，等于容器宽度300，无溢出；纵向=padding上下24+子高116=140，等于容器高度140，无溢出。②right_panel Column 纵向占用=padding上8+panel_header(18)+itemMargin 8+medicine_list(62)+itemMargin 8+clock_button(22)+padding下8=134>可用116，溢出18vp；导致medicine_list（52-62范围）被推至可见区外，clock_button下边被裁。③hero_panel Stack 理论位置pill_shape(y24-66)与hero_texts(y68-112)纵向不重叠，但Stack的alignContent:center在渲染时把两个子项一并居中，实际呈现pill与title在同一区域叠压，构成视觉堆叠/重叠。④底部clock_button外框底边距卡片底边仅约4vp（12+22+8-...），违反2x4底部动作区10-14vp的规范，热区被裁切。综合判定：右侧Column纵向溢出18vp+Stack叠压+底部动作区裁切，多处严重违规。"
+  },
+  "issues": [
+    "right_panel Column 纵向占用134vp > 可用116vp，溢出18vp，导致medicine_list完全不可见",
+    "clock_button被裁切，热区不完整（底边距卡片底边过近）",
+    "hero_panel Stack alignContent:center 导致 pill_shape 与 hero_texts 视觉重叠，'吃药提醒'白字压在彩色药丸上",
+    "last_time 使用 {call:formatString,args:...} 结构作为 Text.content，违反'展示值优先用 {{...}} 表达式读取 DataModel'的协议",
+    "用户要求'顶部能读出上次吃药时间'，实际位于 hero_panel 底部，位置不符",
+    "Button.fontWeight 写为 'medium'，非标准字重值（应为 400/500/700 等数值）",
+    "medicine_list 不可见导致 Checkbox 模板循环与勾选交互完全无法使用"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_257\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_257\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"right_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0b1026\",0],[\"#564af7\",0.58],[\"#ac49f5\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"last_time\",\"pill_shape\",\"hero_title\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":{\"left\":6,\"right\":6,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#26ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"last_time\",\"component\":\"Text\",\"content\":\"上次吃药 {{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"pill_shape\",\"component\":\"Row\",\"children\":[\"pill_left\",\"pill_right\"],\"itemMargin\":0,\"styles\":{\"width\":64,\"height\":30,\"borderRadius\":15,\"clip\":true,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"pill_left\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":32,\"height\":30,\"backgroundColor\":\"#92d6cc\"}},{\"id\":\"pill_right\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":32,\"height\":30,\"backgroundColor\":\"#c386f0\"}},{\"id\":\"hero_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.title }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"panel_header\",\"medicine_list\",\"clock_button\"],\"itemMargin\":4,\"styles\":{\"width\":164,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#44ffffff\",\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"panel_header\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.todayLabel }}\",\"styles\":{\"width\":148,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"medicine_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"medicine_row_tpl\",\"path\":\"/medicines\"},\"itemMargin\":2,\"styles\":{\"width\":148,\"height\":52,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"medicine_row_tpl\",\"component\":\"Row\",\"children\":[\"med_check\",\"med_name\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":148,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"med_check\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":{\"path\":\"taken\"},\"styles\":{\"width\":16,\"height\":16,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"med_name\",\"component\":\"Text\",\"content\":{\"path\":\"label\"},\"styles\":{\"width\":126,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"clock_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.reminder.actionText }}\",\"styles\":{\"width\":148,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0b1026\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_257\",\"path\":\"/\",\"value\":{\"reminder\":{\"title\":\"吃药提醒\",\"todayLabel\":\"今日用药\",\"lastTakenText\":\"上次吃药 08:00\",\"actionText\":\"设置提醒\"},\"medicines\":[{\"label\":\"[ ] 早药 08:00\",\"taken\":true},{\"label\":\"[ ] 午药 13:00\",\"taken\":false},{\"label\":\"[ ] 晚药 21:00\",\"taken\":false}],\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"med-last-0800\",\"title\":\"吃药\",\"dtStart\":\"08:00\",\"dtEnd\":\"08:05\",\"description\":\"上次吃药时间\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-13-health-reminder-245",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "用户主要诉求基本满足：1) 吃药打卡用 title='吃药打卡' 体现；2) 勾选用 Checkbox 组件 select.path=/checked 双向绑定；3) 一行带数字用 dose_text='2粒已备' 体现，doseCount 来自 /doseCount；4) 跳 app 用 onClick.clickToDeeplink 且 args 原样来自 eventCandidates（uri 完整保留）；5) 天气用 formatString 拼接 /data/weather/current/temperatureText 与 condition；6) 提醒文字 '我快不行了' 绑定 warningText；7) 用了 assetCandidates 中的 reminder_glyph 图标；8) size 2x2、root width/height=140、borderRadius=18、clip=true、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 与 value 全部合规。扣分点：checkbox 标签 '已吃药' 在渲染中几乎不可见（属字段表达缺失）；底部按钮 '进App' 文字底端被裁，间接反映受保护 CTA 截断。",
+    "aesthetic": "配色方案戏剧化：黑到红的纵向线性渐变配合 '我快不行了' 的情绪化语义，但有明显问题：1) warning_text 颜色 #ffd94838 与 linearGradient 终点色 #ffd94838 完全相同，红字落在红渐变区时几乎不可读，对比度严重不足；2) 卡片同时存在两处 700 字重（title 与 dose_text），违反'同一卡片只保留一个最强字重'原则，层级混乱；3) 字号阶梯 10/12/14 分布基本合规但层次感一般，title=12 与 warning=12 同字号又同位堆叠；4) 按钮使用 14+medium，但因底部被裁而呈现残缺感，破坏视觉完整性。整体可用但有明显土气与可读性问题。",
+    "layout": "核心溢出：content Column 父容器 116x116、itemMargin=8，子项高度合计 top_row(30)+check_row(24)+weather_line(16)+open_app(28)=98，3 个 itemMargin 合计 24，total=122 > 116，溢出 6vp，证据：open_app 底边到达 116+6=122 被 root.clip=true 切掉，渲染截图 '进App' 文字底端明显被裁。次级核查：1) top_row 宽 24+6+86=116 ✓，title_col 高 14+2+14=30 ✓；2) check_row 宽 58+6+52=116 ✓，medicine_check 高 24 ✓；3) content Column 父 padding.top+bottom=24，98+24=122，溢出 6vp。受保护文本 '进App' 被裁，属严重布局违规。底部动作区：open_app 底到 root 底距离 = 12vp（合规 8-12），但因整体溢出导致被裁，并非真正合规。checkbox 标签 '已吃药' 在 58 宽内未清晰渲染（label 宽度需求 ~36-40+box ~16+gap 4 ≈ 56-60），疑被压缩或不可见。"
+  },
+  "issues": [
+    "content Column 子项总高 98 + itemMargin 24 = 122 > 父高 116，溢出 6vp",
+    "open_app 按钮底部 6vp 被 root clip:true 裁剪，按钮文字 '进App' 底端缺失",
+    "warning_text 颜色 #ffd94838 与 linearGradient 终点色完全一致，红字在红区不可读",
+    "checkbox label '已吃药' 在渲染中未清晰显示，信息缺失",
+    "title 与 dose_text 同时使用 700 字重，违反单一最强字重原则",
+    "title_col 高度 30 偏大，与 itemMargin 8 共同导致 content Column 整体溢出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_245\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_245\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"warning_stage\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"alignContent\":\"center\"}},{\"id\":\"warning_stage\",\"component\":\"Row\",\"children\":[],\"styles\":{\"width\":140,\"height\":140,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ff191a1c\",0],[\"#ff2e3033\",0.55],[\"#ff6a2018\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"check_row\",\"weather_line\",\"open_app\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"title_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_remind.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"warning_text\"],\"itemMargin\":1,\"styles\":{\"width\":88,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":88,\"height\":13,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.warningText }}\",\"styles\":{\"width\":88,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffff9080\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"medicine_check\",\"dose_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"medicine_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.checkLabel }}\",\"select\":{\"path\":\"/checked\"},\"styles\":{\"width\":60,\"height\":22,\"selectedColor\":\"#ffd94838\",\"unSelectedColor\":\"#80ffffff\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#ffffffff\"}},{\"id\":\"dose_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/doseCount}粒已备\"}},\"styles\":{\"width\":50,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"天气 ${/data/weather/current/temperatureText} ${/data/weather/current/condition}\"}},\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionText }}\",\"styles\":{\"width\":116,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ffd94838\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_245\",\"path\":\"/\",\"value\":{\"title\":\"吃药打卡\",\"warningText\":\"我快不行了\",\"checkLabel\":\"已吃药\",\"checked\":false,\"doseCount\":2,\"actionText\":\"进App\",\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"读取中\"},\"daily\":[],\"updatedAt\":\"\"}}}}}"
+  ]
+}

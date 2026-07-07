@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-12-finance-239",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.3,
+  "reasons": {
+    "instruction": "DSL结构上覆盖了用户全部诉求：2x4尺寸、'!'告警图标、左侧hero、右侧勾选列表、点击进日历事件、'到期日 X月X日'文本、白色无渐变背景。但有三项扣分：(1)告警主色使用橙色#ed6f21而非红色，与'红色告警主视觉'明显不符；(2)Text.content和Checkbox.label使用formatString函数调用而非规范的{{ }}表达式，违反'展示值优先用完整表达式'的规则；(3)右侧bill_list在截图中未渲染，3个账单项完全不可见，关键内容缺失。事件绑定onClick的call/args原样来自eventCandidates，事件落实正确。",
+    "aesthetic": "背景纯白无渐变符合'素净'要求。但存在明显问题：(1)告警色#ed6f21是橙色不是红色，与'红色告警'语义不符；(2)hero背景#0ced6f21使用非标准的'0c'透明度(12%)，渲染为不协调的浅橙；(3)alert_badge和overdue_amount同时使用fontWeight 700，违反'同一卡片只保留一个最强字重'规则；(4)右侧列表完全不可见，布局崩溃导致整体视觉残缺，可读性严重受损。",
+    "layout": "布局预算核算结果如下：Root Row 12+112+10+154+12=300 ✓；Hero Column padding 16 + 子项 24+4+18+4+34+4+18=106 = 122 > 116，纵向溢出6vp，导致'逾期'与'¥328'文字重叠；bill_list Column 32×3+6×2=108 ≤ 116 ✓；bill_item Row padding 16+子项 74+6+58=138 = 154 ✓；bill_due Text内容'到期日 8月3日'估算宽79.2vp > 58vp，横向溢出21.2vp；'到期日 8月18日'估算宽86.4vp > 58vp，溢出28.4vp。截图中右侧bill_list Column整体未渲染，3个账单项完全不可见，属关键布局失败。"
+  },
+  "issues": [
+    "hero Column 纵向溢出 6vp（122 > 116），导致'逾期'与'¥328'文字重叠",
+    "bill_due Text 横向溢出 21-28vp（79.2-86.4 > 58），'到期日 X月X日'被截断",
+    "右侧 bill_list Column 整个未渲染，3个账单项在截图中完全不可见",
+    "告警主色使用橙色 #ed6f21，与用户要求的'红色告警主视觉'不符",
+    "hero 背景色 #0ced6f21 使用非标准的 '0c' 透明度（12%），视觉不协调",
+    "alert_badge 和 overdue_amount 同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'",
+    "Text.content 和 Checkbox.label 使用 formatString 函数调用而非规范的 {{ }} 表达式"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_239\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_239\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"bill_list\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"hero_label\",\"overdue_amount\",\"hero_hint\"],\"itemMargin\":2,\"styles\":{\"width\":124,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#fffdecea\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.alertIcon }}\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe53935\",\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"overdue_amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.overdueText }}\",\"styles\":{\"width\":108,\"height\":30,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.hint }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bill_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"bill_item\",\"path\":\"/data/calendar/items\"},\"itemMargin\":6,\"styles\":{\"width\":144,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"bill_item\",\"component\":\"Row\",\"children\":[\"bill_check\",\"bill_info\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":144,\"height\":34,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":10,\"backgroundColor\":\"#fff5f7fa\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"bill_check\",\"component\":\"Checkbox\",\"select\":{\"path\":\"paid\"},\"value\":{\"path\":\"entityId\"},\"group\":\"repayment\",\"styles\":{\"width\":24,\"height\":24,\"selectedColor\":\"#ffe53935\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"bill_info\",\"component\":\"Column\",\"children\":[\"bill_title\",\"bill_due\"],\"itemMargin\":2,\"styles\":{\"width\":96,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"bill_title\",\"component\":\"Text\",\"content\":\"{{ title }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bill_due\",\"component\":\"Text\",\"content\":\"到期日 {{ dueDate }}\",\"styles\":{\"width\":96,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_239\",\"path\":\"/\",\"value\":{\"finance\":{\"alertIcon\":\"!\",\"title\":\"还款日清单\",\"overdueText\":\"逾期 ¥328\",\"hint\":\"点账单进日历\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"repay-card-239-001\",\"title\":\"信用卡\",\"dtStart\":\"08-03\",\"dtEnd\":\"08-03\",\"dueDate\":\"8月3日\",\"paid\":false},{\"entityName\":\"calendar\",\"entityId\":\"repay-loan-239-002\",\"title\":\"车贷\",\"dtStart\":\"08-10\",\"dtEnd\":\"08-10\",\"dueDate\":\"8月10日\",\"paid\":false},{\"entityName\":\"calendar\",\"entityId\":\"repay-rent-239-003\",\"title\":\"房租\",\"dtStart\":\"08-18\",\"dtEnd\":\"08-18\",\"dueDate\":\"8月18日\",\"paid\":true}]}}}}"
+  ]
+}

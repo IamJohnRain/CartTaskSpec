@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-237",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.3,
+  "reasons": {
+    "instruction": "用户提出的核心诉求基本全部落实：主题色绿色背景、环形 Progress 作为视觉焦点、纯文字字符 ¥ 图标、固定文字+动态数值（信用分 720分、可用额度 ¥8,600）、点中心跳天气（onClick 含 clickToDeeplink + 完整 uri）、天气晴对应正向状态文案'晴 正向'、纵向指标、无渐变。两处扣分：1) credit_text / quota_text 用了 formatString 模板函数拼接静态+动态，违反'展示值优先用完整表达式 {{ ... }} 读取 DataModel'的协议建议；2) center_glyph 与 health_ring 重复绑定完全相同的 onClick，存在冗余事件。",
+    "aesthetic": "绿色 #64BB5C 主题色与白色文字对比清晰，环形白色描边在绿底上视觉突出，¥ 大字符居中作为主视觉十分切题。字号阶梯 14/10/12/12/32 在合法阶梯上，字重以 700(标题) 为最强项，其余 500 统一，层级合理。底部半透明白色胶囊包裹双指标，提升信息层次。整体克制专业，无渐变符合用户要求。无明显可扣分点，给 7.5。",
+    "layout": "预算核算：root Column(可用 116) 子项纵向 18(top_row) + 4 + 58(meter_stack) + 4 + 32(metric_col) = 116，刚好填满无溢出。top_row 子项 66(title) + 4 + 46(weather) = 116，标题'财务健康'4 字×14=56 装入 66，'晴 正向'约 34 装入 46，无截断。meter_stack 116×58 内 Stack 叠放 health_ring(56×56) + center_glyph(44×32)，中心字符 ¥(32pt) 不被遮挡。关键问题在 metric_col：内高 = 32 - padding.top 4 - padding.bottom 4 = 24，但子项纵向占用 = 12(credit_text) + 4(itemMargin) + 12(quota_text) = 28，溢出可用高度 4vp（28 > 24），导致底部行略微贴边或被 root clip 截掉少量底部。底部 action 锚定正常，距底 12vp 合规。"
+  },
+  "issues": [
+    "metric_col 内部子项总高 28 > 可用 24，溢出 4vp（padding 4/4 + itemMargin 4 + 12+12），需将 padding 改为 2/2 或减少 itemMargin 至 2",
+    "credit_text / quota_text 使用 {call:formatString} 模板，应改为 {{ $__dataModel.finance.xxx }} 表达式以符合'展示值优先用 {{}}'的协议",
+    "center_glyph 与 health_ring 绑定完全相同的 onClick，事件冗余，合并到一个元素即可",
+    "meter_stack 中 health_ring 与 center_glyph 缺少明确 Stack 定位（依赖 alignContent:center 推断居中），建议显式定位以避免不同引擎渲染差异"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_237\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_237\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"meter_stack\",\"metric_col\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF64BB5C\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_status\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.weatherStatus }}\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"health_ring\",\"center_glyph\"],\"styles\":{\"width\":116,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"health_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.finance.healthScore }}\",\"total\":\"{{ $__dataModel.finance.healthTotal }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":56,\"height\":56,\"type\":\"ring\",\"color\":\"#FFFFFFFF\",\"backgroundColor\":\"#33FFFFFF\"}},{\"id\":\"center_glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.glyph }}\",\"styles\":{\"width\":44,\"height\":32,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_col\",\"component\":\"Column\",\"children\":[\"credit_text\",\"quota_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#19FFFFFF\",\"borderRadius\":12,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2}}},{\"id\":\"credit_text\",\"component\":\"Text\",\"content\":\"信用分 {{ $__dataModel.finance.creditScore }}分\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"quota_text\",\"component\":\"Text\",\"content\":\"可用额度 ¥{{ $__dataModel.finance.availableQuota }}\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_237\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"财务健康\",\"glyph\":\"¥\",\"healthScore\":82,\"healthTotal\":100,\"creditScore\":720,\"availableQuota\":\"8,600\",\"weatherStatus\":\"晴 正向\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"晴\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

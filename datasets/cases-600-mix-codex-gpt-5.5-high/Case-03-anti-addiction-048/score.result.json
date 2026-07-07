@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-anti-addiction-048",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户5项诉求均已映射:背景渐变承载文字、显示'0分钟'主指标、Button触发clickToDeeplink导航去公园、显示'晴 31°C'天气、红色警告+已超时。但action_button宽度仅88,'导航去公园'5字×14px=70px > 88-24内边距=64,被截断为'导航去...',关键CTA文案不可完整阅读,直接削弱'点一下导航去公园'的指示性,扣分。",
+    "aesthetic": "红色对角渐变与'红色警告'主题契合,主指标0分钟用20px/700突出,层级基本清晰。但Button文字截断严重影响可读性;bg_band渐变在rounded corner处红色外溢;Button的fontWeight使用'medium'字符串,与其他Text的数值字重(700/500)风格不一致;Button置于middle而非底部,'底部动作区'不达最佳。",
+    "layout": "1) content Column纵向占用=padding.top(10)+padding.bottom(10)+itemMargin*2(16)+Σ子项高(22+46+18=86)=122 > 容器高116,溢出6vp,bottom_row可能被挤压;2) main_row中action_button宽88,内宽≈64,'导航去公园'70px>64,文字被截断为'导航去...';3) top_row横向=88+8+160=256=容器256✓,bottom_row横向=104+8+136=248≤256✓,remain_group纵向=16+2+28=46=46✓;4) bg_band未设clip,渐变在root borderRadius=22的圆角处可能让红色渗出圆角;5) Button热区88x32≥24vp可接受,但作为CTA宽度严重不足。"
+  },
+  "issues": [
+    "content Column纵向占用122 > 容器高116,溢出6vp",
+    "action_button宽度88不足,'导航去公园'5字×14=70px > 内宽64px,被截断为'导航去...'",
+    "Button fontWeight使用'medium'字符串,与Text的数值字重格式不一致",
+    "bg_band Column未设置clip:true,渐变在rounded corner处可能溢出",
+    "Button位于middle行而非底部,'底部动作区'到卡底距离过大,UX欠佳",
+    "remain_group宽度156与action_button宽度88之和244+itemMargin 12=256,挤压了CTA显示空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_048\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_048\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_band\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fffff7f7\"}},{\"id\":\"bg_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"clip\":true,\"borderRadius\":22,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffffebe6\",0],[\"#fffff7f7\",0.58],[\"#ffe84026\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"weather_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":256,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.warningText }}\",\"styles\":{\"width\":88,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffb3261e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff6b3b32\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"remain_group\",\"action_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":256,\"height\":46,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"remain_group\",\"component\":\"Column\",\"children\":[\"remain_label\",\"remain_value\"],\"itemMargin\":2,\"styles\":{\"width\":136,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"remain_label\",\"component\":\"Text\",\"content\":\"剩余时间\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff7a3a34\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remain_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.remainingText }}\",\"styles\":{\"width\":136,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"styles\":{\"width\":108,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffe84026\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.maps\",\"abilityName\":\"com.huawei.hmos.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=park\"}}]},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_detail\",\"place_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":256,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_detail\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.status }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffb3261e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_text\",\"component\":\"Text\",\"content\":\"{{ '目的地 ' + $__dataModel.antiAddiction.destination }}\",\"styles\":{\"width\":136,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff6b3b32\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_048\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"remainingMinutes\":0,\"remainingText\":\"0分钟\",\"limitMinutes\":120,\"usedMinutes\":126,\"status\":\"已超时\",\"warningText\":\"红色警告\",\"destination\":\"公园\",\"actionText\":\"导航去公园\"},\"data\":{\"weather\":{\"location\":{\"cityCode\":\"101010100\",\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\"},\"current\":{\"temperatureText\":\"31°C\",\"condition\":\"晴\",\"airQuality\":\"良\",\"humidityPercent\":42,\"windDirection\":\"南风\",\"windLevel\":2,\"uvIndex\":\"强\",\"alertLevel\":\"\"},\"daily\":[{\"date\":\"2026-07-05\",\"weekday\":\"周日\",\"condition\":\"晴\",\"temperatureRangeText\":\"25° / 33°\",\"rainProbabilityPercent\":\"10%\"}],\"updatedAt\":\"2026-07-05 10:10\"}},\"state\":{\"loading\":false,\"timeoutMock\":{\"limitMinutes\":120,\"usedMinutes\":126,\"remainingMinutes\":0,\"isExceeded\":true}}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户明确诉求：每日可玩时长（已显示 limitText '每日 60 分钟'）、到时间提示（已显示 statusText '今日时长已用完'）、倒计时（已显示 countdownText '00:00'）、设置入口（已显示 setting_button '设置管控'）。事件 clickToDeeplink 完整绑定，uri 原样等于 eventCandidates。2x4 尺寸 300x140、root borderRadius 22、clip true、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path='/'、value 与 TaskSpec.dataModel.value 完全一致。所有受要求字段全部体现，事件正确落实，无多余信息。扣分因 info_col 存在溢出，但属布局问题不归指令。",
+    "aesthetic": "配色整体协调：浅蓝底色 #F2F6FF 配白色内部面板，主色蓝 #FF2451D6 用于倒计时与按钮，警示色红 #FFD93025 用于状态文字，可读性良好。字号阶梯基本合规（12/16/32）。但存在 3 处 fontWeight 700（title_text/status_text/countdown_text），违反'同一卡片只保留一个最强字重'原则，层级显得'处处强调'，状态文字用红色已足够吸引注意，再叠 700 加粗属重复强调。信息列密度偏高，留白控制欠精细。",
+    "layout": "预算核算结果：(1) Root Row 横向占用 = 12+12 (padding) + 12 (itemMargin) + 116 (countdown_panel width) + 148 (info_col width) = 300，等于父容器 300，无溢出。(2) countdown_panel Column 纵向占用 = 10+10 (padding) + 8*2 (itemMargin) + 18+40+8 (子项 height) = 102 ≤ 可用 116，留白 14vp 无溢出。(3) info_col Column 纵向占用 = 0+0 (无 padding) + 6*4 (itemMargin) + 20+20+18+18+32 (title+status+limit+used+button height) = 132 > 可用 116，溢出 16vp。info_col 中 5 个子项 (itemMargin 6 × 4 = 24) 加 5 个子项固定高 108，合计 132，在 116 高度容器内必被裁切或挤出：justifyContent:center 会让内容上移 8vp，导致标题顶端触及 root 内边距、按钮底端突破卡片 140 高度 4vp（按钮 bottom y≈144），触发 root clip:true 裁切风险。底部动作区锚定也不达标：setting_button 底边理论 y=144，距卡片底边 -4vp（已越界）。"
+  },
+  "issues": [
+    "info_col Column 子项纵向占用 132vp > 可用 116vp，溢出 16vp，是本卡片最严重的布局问题",
+    "setting_button 受溢出影响，理论 bottom 落在 y≈144，超出卡片 140 高度，存在 4vp 裁切风险",
+    "同时存在 3 处 fontWeight 700（title_text/status_text/countdown_text），违反'同一卡片只保留一个最强字重'规则",
+    "info_col 内 4 个 itemMargin=6 + 4 段文本 + 按钮导致密度偏高，建议缩 itemMargin 至 3 并调整文本 height 阶"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"game_time_control_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"game_time_control_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"countdown_panel\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F2F6FF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdown_panel\",\"component\":\"Column\",\"children\":[\"countdown_label\",\"countdown_text\",\"time_progress\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"countdown_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.countdownLabel }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.countdownText }}\",\"styles\":{\"width\":96,\"height\":40,\"fontSize\":32,\"fontWeight\":600,\"fontColor\":\"#FF2451D6\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.gameControl.progress }}\",\"total\":100,\"styles\":{\"width\":96,\"height\":8,\"type\":\"linear\",\"color\":\"#FF2451D6\",\"backgroundColor\":\"#220A59F7\",\"borderRadius\":4}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"limit_text\",\"used_text\",\"setting_button\"],\"itemMargin\":3,\"styles\":{\"width\":148,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.title }}\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.statusText }}\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFD93025\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"limit_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.limitText }}\",\"styles\":{\"width\":148,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.usedText }}\",\"styles\":{\"width\":148,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.gameControl.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"parent_control://screen_time/game_limit\"}}],\"styles\":{\"width\":92,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF2451D6\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"game_time_control_card\",\"path\":\"/\",\"value\":{\"gameControl\":{\"title\":\"游戏时长管控\",\"statusText\":\"今日时长已用完\",\"countdownLabel\":\"剩余倒计时\",\"countdownText\":\"00:00\",\"limitText\":\"每日 60 分钟\",\"usedText\":\"已用 60 分钟\",\"progress\":100,\"actionText\":\"设置管控\"}}}}"
+  ]
+}

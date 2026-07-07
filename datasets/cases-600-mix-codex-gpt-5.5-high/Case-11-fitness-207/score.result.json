@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-207",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "完整满足用户诉求：title/destination/status/actionText 四个 dataModel 字段均渲染到位；root onClick 原样引用 clickToDeeplink 与 huaweischeme://maps/navi URI；size 2x2、catalogId 'ohos.a2ui.extended.catalog'、version v0.9、updateDataModel.value 与 TaskSpec 一致、path='/' 等硬约束均满足。轻微扣分点：渲染中新增了硬编码文案'状态'作为 status 字段的标签前缀（status_label 文本'状态'），既不在 dataModel 中，也未被 userQuery 显式要求（用户仅说'显示已连接'），属于过度诠释。",
+    "aesthetic": "深墨绿→翡翠绿的对角渐变（#ff101820 → #ff0a7d5a）与白色主文字对比清晰、阅读舒适；'附近健身房' 18pt 白色加粗作为主指标突出；'导航前往' 白色实心胶囊与绿底形成强对比、CTA 突出；'已连接' 半透明白胶囊与底色融合自然，整体克制专业。扣分点：违反'同一卡片只保留一个最强字重'规则——title(700)、destination(700)、action(700)、status_text(700) 四处均使用 fontWeight 700，缺乏层级区分；title 字号 14 略小，与下方 18 字号主指标形成轻微断层。",
+    "layout": "逐项预算核算：① root Column 纵向占用 = 12(padding top) + 18(title) + 8(itemMargin) + 58(hero) + 8(itemMargin) + 20(bottom_row) + 12(padding bottom) = 136 ≤ 140，可用于布局高 116，实占 96，余量 4，无溢出；② hero Column 占用 = 6(itemMargin) + 24(destination) + 24(action) = 54 ≤ 58，无溢出；③ bottom_row 横向占用 = 28(status_label) + 4(itemMargin) + 48(status_text) = 80 ≤ 116，无溢出；④ status_text 内 text-area = 48-12(padding) = 36，'已连接' 3 字 × 12 = 36 几乎贴边、无富余；⑤ 受保护文本 title/destination/action/status_text 均设置 maxLines:1 + textOverflow:none，未依赖 ellipsis 截断；⑥ 底部 bottom_row 底边到卡片底 = 12vp，处于 2x2 的 8-12 区间下沿、可接受。"
+  },
+  "issues": [
+    "新增硬编码文案'状态'（status_label）作为 status 字段标签前缀，未在 dataModel 与 userQuery 中出现",
+    "title、destination、action、status_text 四处均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'规则，层级扁平",
+    "root Column 纵向总高 136/140，使用率 97%，余量仅 4vp",
+    "status_text 内 text-area 36vp 与 3 字×12vp 完全相等，无任何排版容差",
+    "action 胶囊文本用 Text+padding 模拟按钮热区，未使用 Button 组件（虽不违规，但热区与可访问性弱于标准 Button）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_207\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_207\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"hero\",\"status_row\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff101820\",0],[\"#ff0a7d5a\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://maps/navi?query=%E9%99%84%E8%BF%91%E5%81%A5%E8%BA%AB%E6%88%BF\"}}]},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"destination\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"destination\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.destination }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":72,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff0a7d5a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"status_pill\"],\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.status }}\",\"styles\":{\"width\":56,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_207\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"运动卡片\",\"destination\":\"附近健身房\",\"status\":\"已连接\",\"actionText\":\"导航前往\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

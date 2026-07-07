@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-05-agenda-100",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户要求基本全部落实：浅色底面（#fffffbf2 米色）、纵向 Column 排列、'日/址' 语义图标、agenda.next 同步了 title/dtStart/eventLocation、环形 Progress（type:ring）显示 18% 电量、battery.levelPercent=18 < 20 触发 risk.tip='先开省电' 黄色提示、底部 Button 标签 '电池设置'，onClick 调 clickToDeeplink 且 args 与 eventCandidates 完全一致；尺寸 2x2、catalogId/version/updateDataModel.path 都合规。微小瑕疵：未给按钮 'medium' 字重并非标准值（应为 400/500/700），meter 用了非标准 alignContent。",
+    "aesthetic": "配色（米白底 / 黄色 risk 胶囊 / 深蓝按钮 / 灰信息）和谐，层次清晰，'日'/'址' 圆角徽章有设计感；信息密度偏大但没有明显空洞。扣分点：底部按钮受溢出影响文字底部被切，整张卡片底部几乎没有留白，违反 '底部动作区底边到卡片底边 8-12vp' 规则，视觉完整性受损。",
+    "layout": "按预算公式核算：root Column 内可用高度 = 140 - 10 - 10 = 120vp；子项占高 = top 42 + meeting 36 + risk 18 + action 28 = 124vp，外加 itemMargin 4×3 = 12vp，总计 136vp > 120vp，溢出 16vp。子级 Row/Column 各自宽度都过关：top Row 66+8+42=116✓、titleBlock Column 20+2+18=40✓、timeRow 16+4+46=66✓、meeting Column 16+2+14=32≤36（4vp padding 吃掉了 4vp 内部空间）、placeRow 14+4+82=100✓。最大问题在 root Column 整体溢出，导致 action 按钮底部被卡片 clip 裁切，'电池设置' 文字底部在截图中可见被压到卡片下边缘、字符底部被切。同时底部动作区底边到卡片底边 ≈ 0vp，远小于 8-12vp 锚定要求。"
+  },
+  "issues": [
+    "root Column 子项总高 42+36+18+28+12(itemMargin)=136vp，超出可用 120vp 共 16vp",
+    "底部 action 按钮被 root.clip 切掉，'电池设置' 文字底部被裁",
+    "底部动作区底边到卡片底边几乎为 0vp，不满足 2x2 应有 8-12vp 锚定",
+    "meeting Column 内层 padding 4+4=8 加上 16+2+14=32 子项，超出 36vp 高度本身有 4vp 内层溢出风险",
+    "Button fontWeight 写成 'medium' 字符串，非标准字重值",
+    "Stack 用了 'alignContent:center' 不是标准 Stack 属性，可能被忽略导致 meterText 对齐依赖默认行为"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_100\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\"}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_100\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"meeting\",\"risk\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffffbf2\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"titleBlock\",\"meter\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"titleBlock\",\"component\":\"Column\",\"children\":[\"title\",\"timeRow\"],\"itemMargin\":2,\"styles\":{\"width\":66,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.title }}\",\"styles\":{\"width\":66,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeRow\",\"component\":\"Row\",\"children\":[\"dateIcon\",\"timeText\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":66,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"dateIcon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.dateIcon }}\",\"styles\":{\"width\":16,\"height\":16,\"borderRadius\":5,\"backgroundColor\":\"#ffffd36a\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff7a4b00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.next.dtStart }}\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff4e5969\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter\",\"component\":\"Stack\",\"children\":[\"meterTrack\",\"meterValue\",\"meterText\"],\"styles\":{\"width\":36,\"height\":36}},{\"id\":\"meterTrack\",\"component\":\"Progress\",\"value\":100,\"styles\":{\"width\":36,\"height\":36,\"type\":\"ring\",\"strokeWidth\":4,\"color\":\"#22a8b1bd\"}},{\"id\":\"meterValue\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.levelPercent }}\",\"styles\":{\"width\":36,\"height\":36,\"type\":\"ring\",\"strokeWidth\":4,\"color\":\"#ffffb020\"}},{\"id\":\"meterText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":36,\"height\":16,\"margin\":{\"top\":10},\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meeting\",\"component\":\"Column\",\"children\":[\"meetingTitle\",\"placeRow\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"meetingTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.next.title }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"placeRow\",\"component\":\"Row\",\"children\":[\"placeIcon\",\"placeText\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"placeIcon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.placeIcon }}\",\"styles\":{\"width\":14,\"height\":14,\"borderRadius\":4,\"backgroundColor\":\"#ffe8edf3\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff5f6b7a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"placeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.next.eventLocation }}\",\"styles\":{\"width\":98,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff5f6b7a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.risk.tip }}\",\"styles\":{\"width\":116,\"height\":16,\"borderRadius\":8,\"backgroundColor\":\"#ffffe7a3\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff7a4b00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.battery.actionText }}\",\"styles\":{\"width\":116,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff182431\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_100\",\"path\":\"/\",\"value\":{\"agenda\":{\"title\":\"待开会\",\"dateIcon\":\"日\",\"placeIcon\":\"址\",\"next\":{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-100-next\",\"title\":\"项目例会\",\"dtStart\":\"14:30\",\"dtEnd\":\"15:00\",\"eventLocation\":\"会议室A\",\"minutesToStart\":8},\"calendarMock\":{\"source\":\"calendar_mock\",\"syncedAt\":\"2026-07-05 14:22\",\"remainingCount\":2}},\"battery\":{\"levelPercent\":18,\"levelText\":\"18%\",\"actionText\":\"电池设置\"},\"risk\":{\"show\":true,\"reason\":\"8分钟后开会，电量18%\",\"tip\":\"先开省电\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

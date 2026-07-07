@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-12-finance-223",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户四点诉求：①支出汇总(标题+分类)→标题已渲染但 spend_list 列表模板未渲染出『餐饮/交通』两项，分类明细缺失；②一行带数字→顶部『本月支出 ¥4,286』落实；③点一下跳 app→Button.onClick 原样引用 clickToDeeplink 事件落实；④提醒预算快没了→status_pill『预算快没了』+budget_text『预算剩余 8%』双重提示落实。headline 使用 formatString + ${/path} 拼接，与协议偏好的 {{ $__dataModel.path }} 完整表达式不一致，但渲染正确。spend_list 使用 List+模板(path:/items)未渲染，致『整个支出汇总』中分类项不完整，是主要扣分点。",
+    "aesthetic": "配色专业：白底+红警 pill(低饱和高对比) + 蓝色渐变 CTA 按钮，语义清晰。字号阶梯 20/13/12/14 一致，单一最强字重 700 在标题。问题：左侧 spend_list 区域完全空白，与右侧密集的 budget_text+Button 视觉权重严重失衡，整张卡片显得残缺、信息不完整；状态 pill 宽度 84 略紧、『预算快没了』5 字勉强容纳。",
+    "layout": "预算核算：①Root Column：padding 12+12 + itemMargin 6×2 + (30+1+73) = 24+12+104 = 140 ≤ 140 严格相等无缓冲；②top_row：10 + 178+84 = 272 ≤ 276 通过；③body_row：10 + 178+88 = 276 = 276 严格相等无缓冲；④action_col：8 + 20+34 = 62 ≤ 70 通过；⑤item_tpl：8 + 92+70 = 170 ≤ 178 通过。所有 Row/Column 预算均不溢出，但截图显示 spend_list(178×70)整片空白，分类项未渲染→视觉上半区只剩右侧 88px 内容，左半区 178×70 闲置，是严重的内容缺失型布局失败。Button 热区 88×34 ≥ 24 达标；底部动作区底边到卡片底边距离 ≈ 26.5vp，超过 2x4 推荐 10–14vp 区间，需收紧。"
+  },
+  "issues": [
+    "spend_list 使用 List + 模板 {componentId:'item_tpl', path:'/items'} 渲染失败，截图显示整片空白，分类项『餐饮 ¥1,280 / 交通 ¥436』未呈现",
+    "headline 使用 formatString + ${/path} 拼接，建议改用 {{ $__dataModel.summary.period }} 直接拼接或显式 formatString 文本",
+    "action_col 高度 70、justifyContent:end，导致 Button 底边到卡片底边 ≈ 26.5vp，超过 2x4 推荐 10–14vp 上限",
+    "body_row 宽 276 = 内容 178+88+10 = 276，无横向缓冲，spend_list 与 action_col 紧贴",
+    "Root Column 总高 140 恰好等于容器高，无任何误差缓冲",
+    "status_pill 宽度 84 内边距 8+8=16，文本区仅 68，『预算快没了』5 字(12pt×5≈60)临界，建议加宽到 90+"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"finance_spend_223\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"finance_spend_223\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"divider\",\"body_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"headline\",\"status_pill\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"headline\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/summary/period}支出 ${/summary/amountText}\"}},\"styles\":{\"width\":168,\"height\":30,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.statusText }}\",\"styles\":{\"width\":96,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#19E84026\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"items_col\",\"action_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":73,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"items_col\",\"component\":\"Column\",\"children\":[\"item1\",\"item2\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":70,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"item1\",\"component\":\"Row\",\"children\":[\"item1_label\",\"item1_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":172,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"item1_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.items[0].label }}\",\"styles\":{\"width\":90,\"height\":22,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item1_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.items[0].value }}\",\"styles\":{\"width\":74,\"height\":22,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item2\",\"component\":\"Row\",\"children\":[\"item2_label\",\"item2_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":172,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"item2_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.items[1].label }}\",\"styles\":{\"width\":90,\"height\":22,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item2_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.items[1].value }}\",\"styles\":{\"width\":74,\"height\":22,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"budget_text\",\"open_button\"],\"itemMargin\":6,\"styles\":{\"width\":96,\"height\":60,\"alignItems\":\"center\",\"justifyContent\":\"end\"}},{\"id\":\"budget_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.budgetText }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.cta }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":96,\"height\":34,\"borderRadius\":17,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"linearGradient\":{\"angle\":90,\"colors\":[[\"#FF0A59F7\",0],[\"#FF317AF7\",1]]}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"finance_spend_223\",\"path\":\"/\",\"value\":{\"summary\":{\"period\":\"本月\",\"amountText\":\"¥4,286\",\"statusText\":\"预算快没了\",\"budgetText\":\"预算剩余 8%\",\"cta\":\"打开应用\"},\"items\":[{\"label\":\"餐饮\",\"value\":\"¥1,280\"},{\"label\":\"交通\",\"value\":\"¥436\"}]}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-009",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户三条诉求基本全部落实：①「文字压在图上」通过 Stack(Image + Column) 实现，bg_icon 在底层、文字 copy 列在上层；②「点一下能跳出去」由 root.onClick 触发 clickToDeeplink，call/args 与 eventCandidates 原样一致；③「从日历读今天的事」用 {{ $__dataModel.data.calendar.items[0].title }} 和 dtStart 展示「项目同步 10:00」。save_power_icon 资产按「深色舞台背景视觉锚点」语义正确使用。扣分点：updateDataModel 缺少 path:'/' 字段（按协议 path 必须为 '/'），属轻微协议违规；dataModel 中 dtEnd/eventLocation 未体现，但用户未点名要求这些字段。",
+    "aesthetic": "深色底 #ff111827 与白/黄/蓝文字形成清晰对比，夜间低电主题氛围契合。字号阶梯 18/14/14/12、字重 700/700/500/700，标题最强、次级时间强调黄色「10:00」、弱化事件名（500 字重）、CTA「电池设置」蓝色 end 对齐，主次清晰。问题：① bg_icon 与中间两行文字（10:00、项目同步）直接重叠，文字与图标轮廓交叠处对比度下降，专业感打折；② 卡片下方有大片留白（action 到底约 12vp + 卡片实际渲染顶部还有约 12vp 边距，视觉重心偏左上），密度略不均。",
+    "layout": "根 Stack 140×140、padding 12、内可用 116×116。Column「copy」4 个子项：title h24 + event_time h18 + event_title h20 + action h18 = 80，itemMargin 6×3 = 18，纵向占用 0+0+18+80 = 98 ≤ 116，余 18 由 justifyContent:spaceBetween 分配，无溢出。文字宽度核算：title「低电模式」≈4×18=72px、event_time「10:00」≈5×0.6×14=42px、event_title「项目同步」≈4×14=56px、action「电池设置」≈4×12=48px，均 ≤116 不截断。底部 action 底边 y=12+116=128，距卡片底 140-128=12vp，符合 2x2 的 8-12vp 区间。bg_icon 64×64 objectFit contain 在 Stack 中居中，与 copy 列在中间两行有 116-64=52px 的纵向交集，需依赖 Stack 绘制顺序保证文字在上层（children 顺序 [bg_icon, copy] 满足），但图标轮廓与文字笔画交叠处仍存在视觉拥挤。整体无溢出，文字不被截断。"
+  },
+  "issues": [
+    "updateDataModel 缺少 path:'/' 字段，违反协议硬约束（path 必须为 '/'）",
+    "bg_icon 图标（64×64）与中间两行文字直接重叠，文字与图标轮廓交叉处对比度下降，影响可读性与精致度",
+    "卡片下方（action 下方至底边）有约 12vp 纯留白区，视觉重心略偏左上，密度不均",
+    "事件字段仅用 title + dtStart，dtEnd/eventLocation 字段未被使用（用户未点名但可考虑显示 '10:00-10:30' 更完整）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_009\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_009\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"copy\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff111827\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_save_power.png\",\"styles\":{\"width\":80,\"height\":80,\"objectFit\":\"contain\"}},{\"id\":\"copy\",\"component\":\"Column\",\"children\":[\"title\",\"event_time\",\"event_title\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }} - {{ $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#fffbbf24\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffeeeeee\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff93c5fd\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_009\",\"path\":\"/\",\"value\":{\"power\":{\"title\":\"低电模式\",\"actionText\":\"电池设置\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"mock-today-001\",\"title\":\"项目同步\",\"dtStart\":\"10:00\",\"dtEnd\":\"10:30\",\"eventLocation\":\"线上会议\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

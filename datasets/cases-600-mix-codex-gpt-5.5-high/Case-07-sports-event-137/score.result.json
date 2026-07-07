@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-137",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "createSurface 尺寸 140x140、catalogId、version、onClick 事件 call/args 与 TaskSpec 完全一致，结构上环形进度叠加数字、Checklist 勾选、黄色风险徽章、点击 deeplink 都有体现。但用户明确要求『整体用夜晚蓝紫渐变』，DSL 实际使用的是 #FFF1F6FF→#FFEFF2FF→#FFD9D8FF 三色，几乎是白底带极淡蓝紫，违背『夜晚蓝紫』色调诉求，扣重分。数据绑定全部使用 `{{ $__dataModel.event.X }}` 非标语法，从渲染截图可见所有文本（含标题『城市马拉松』、徽章『待处理』、中央数字『24』及『天』、checklist 标签）均未渲染成功，仅有背景、环、徽章底色可见，属严重指令落实失败。updateDataModel 缺少 protocol 要求的 `path:'/'` 字段。",
+    "aesthetic": "配色过淡，三色 stop 几乎全是 F1/EFF/D9 高亮度的极浅蓝紫，缺少夜晚应有的深色饱和度与对比，视觉上偏『灰白卡纸』而非『夜晚蓝紫』。所有文字（标题、主指标、checklist 文本）均缺失，画面只剩一个浅色面板+细环+黄色徽章底，信息密度极低。字号阶梯本身在 10/12/14/20 范围内、最强字重 800 唯一，但缺少有效文本后层级无从体现。",
+    "layout": "逐项核算：root Column 140x140 减 padding 12×2 后内容区 116x116；子项纵向占用 = top_row 22 + ring_stack 58 + check_row 24 + 2×itemMargin 6 = 116，等于可用高度 116，无溢出。top_row 横向 = title 72 + risk_badge 38 + itemMargin 6 = 116，等于 116，无溢出。check_row 横向 = 56 + 56 + itemMargin 4 = 116，等于 116，无溢出。center_col 纵向 = days_value 22 + days_label 12 + itemMargin 0 = 34，等于 34，无溢出。ring_stack 78x58 内含 ring_track 58x58、ring_value 50x50、center_col 44x34，Stack 居中堆叠无遮挡。预算全部成立、无真实几何溢出与文字截断问题，故 D3 接近合格。但因绑定语法错误导致受保护文本在画面上完全消失，受保护字段（标题、主指标『24』、checklist 文案）实际不可读，视觉等价于『内容丢失』，仍需在评分中体现。"
+  },
+  "issues": [
+    "Text 绑定语法使用 `{{ $__dataModel.event.title }}` 等非标准形式，导致标题、中央数字、风险徽章文字、checklist 标签全部未渲染（截图中只剩底色）",
+    "updateDataModel 缺失协议要求的 `path:'/'` 字段",
+    "linearGradient 渐变色 #FFF1F6FF/#FFEFF2FF/#FFD9D8FF 全部为极高亮度浅色，未满足用户『夜晚蓝紫渐变』诉求",
+    "title 宽度 72 配 fontSize 14 紧贴 5 个汉字的估算宽度（70px），缺少容错；后续若改用 fontSize 12 更安全",
+    "risk_badge 内容区 30px 与『待处理』3 字×10px 几乎等宽，存在边界风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_event_137\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"styles\":{\"width\":140,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_event_137\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"ring_stack\",\"check_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFEFEAFF\",0],[\"#FFD8D2FF\",0.5],[\"#FFB5AEFF\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"huaweischeme://healthapp/home/trainingPlan\"}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"risk_badge\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ event.title }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"risk_badge\",\"component\":\"Text\",\"content\":\"{{ event.riskText }}\",\"styles\":{\"width\":38,\"height\":20,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#FFFFC766\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF6B3A00\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"ring_track\",\"ring_value\",\"center_col\"],\"styles\":{\"width\":78,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"ring_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":58,\"height\":58,\"color\":\"#33FFFFFF\"}},{\"id\":\"ring_value\",\"component\":\"Progress\",\"value\":\"{{ event.progress }}\",\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":50,\"height\":50,\"color\":\"#FF7B61FF\"}},{\"id\":\"center_col\",\"component\":\"Column\",\"children\":[\"days_value\",\"days_label\"],\"itemMargin\":0,\"styles\":{\"width\":44,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"days_value\",\"component\":\"Text\",\"content\":\"{{ event.daysLeftText }}\",\"styles\":{\"width\":44,\"height\":22,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FF4D3FB8\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"days_label\",\"component\":\"Text\",\"content\":\"{{ event.daysUnit }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"check_item\",\"path\":\"/checklist\"},\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"check_item\",\"component\":\"Checkbox\",\"label\":{\"path\":\"label\"},\"checked\":{\"path\":\"checked\"},\"styles\":{\"width\":56,\"height\":24,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"backgroundColor\":\"#66FFFFFF\",\"borderRadius\":8}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"value\":{\"event\":{\"title\":\"城市马拉松\",\"daysLeft\":24,\"daysLeftText\":\"24\",\"daysUnit\":\"天\",\"progress\":62,\"riskText\":\"待处理\",\"trainingPlanUri\":\"huaweischeme://healthapp/home/trainingPlan\"},\"checklist\":[{\"label\":\"装备已备\",\"checked\":true},{\"label\":\"补给已买\",\"checked\":false}]}}}"
+  ]
+}

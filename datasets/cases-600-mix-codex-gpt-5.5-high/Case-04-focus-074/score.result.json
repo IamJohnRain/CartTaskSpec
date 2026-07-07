@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-04-focus-074",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "硬约束全部满足：size 2x2、createSurface 140x140、borderRadius 18、clip true、catalogId/version/updateDataModel.path=/value 完全匹配。8 项用户诉求中浅色底、渐变标题、环形进度条、滞后提示、横线分隔、任务勾选、勿扰联动事件均已实现，且 onClick[0].call/args 原样取自 eventCandidates。扣分点：用户明确点名的'距离考试还有30天'实际渲染时被截断为'距离考试还有'（缺'30天'），'关勿扰'按钮被截断为'...'(完全不可读)，用户原话中的关键字面信息被破坏。'勾完联动关勿扰'被解读为独立的关勿扰按钮(协议不支持 checkbox 触发事件)，属合理妥协但偏离'勾完自动联动'的语义。",
+    "aesthetic": "配色合理：蓝-青渐变标题带、橙色环形进度、浅灰卡片底、蓝色 CTA 按钮，整体色相协调，对比清晰。字重主体为 700 一个最强字重，分级合理。扣分点：① 标题文字被截断成'距离考试还有'，专业感严重受损；② CTA 按钮变成'...'，可读性归零，视觉完整性破坏；③ 状态文字'进度滞后'直接叠在环形进度上，橙色对橙色环底可读性偏弱。",
+    "layout": "逐项核算：\n1) Root Column 140x140，padding 12/12/12/12，可用内容高 116。子项 top_band 30 + meter_stack 54 + divider 1 + bottom_row 26 = 111，itemMargin 4×3 = 12，合计 123 > 116，纵向溢出 7vp。\n2) top_band 横向：padding 8+8=16，内宽 100；glyph 24 + itemMargin 6 + title 70 = 100 刚好不溢，但 title 70 远小于'距离考试还有30天'@fontSize10 所需的 82vp，受保护标题被截断。\n3) bottom_row 横向：task_one 35 + itemMargin 4 + task_two 35 + itemMargin 4 + dnd_btn 38 = 116 刚好不溢，但 dnd_btn 38 远小于'关勿扰'@fontSize10 的 30vp + 按钮内边距，按钮文字被截为'...'。\n4) meter_stack Stack 54x54 内 ring 与 status 叠加，status 44x18 居中叠在进度环上，状态值与环体在视觉上互相干扰。\n受保护文本（标题、CTA）被截断，按钮热区 38vp 虽≥24vp 但文字不可读，底部动作区底边到卡片底约 12vp 在允许范围。整体存在纵向溢出 + 两处严重文字截断，判 3.0。"
+  },
+  "issues": [
+    "Root Column 子项总高 123vp > 可用 116vp，纵向溢出 7vp",
+    "top_band 标题 width:70 不足以容纳'距离考试还有30天'@fontSize10 (需 82vp)，渲染截断为'距离考试还有'",
+    "dnd_btn width:38 不足以容纳'关勿扰'@fontSize10 (需 30vp + 内边距)，渲染为'...'完全不可读",
+    "status 文字直接叠在橙色环形进度之上，可读性偏弱",
+    "glyph '30' 与 title '距离考试还有30天' 信息冗余",
+    "top_band 高度 30 + meter_stack 54 占用过多纵向空间，挤压底部动作区"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_074\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_074\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_band\",\"meter_stack\",\"divider\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff8fafc\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_band\",\"component\":\"Row\",\"children\":[\"glyph\",\"title\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":13,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ff2563eb\",0],[\"#ff14b8a6\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.review.glyph }}\",\"styles\":{\"width\":18,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff2563eb\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.review.title }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"ring\",\"status\"],\"styles\":{\"width\":48,\"height\":48,\"alignContent\":\"center\"}},{\"id\":\"ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.review.progress }}\",\"total\":\"{{ $__dataModel.review.total }}\",\"styles\":{\"type\":\"ring\",\"width\":48,\"height\":48,\"color\":\"#fff59e0b\",\"backgroundColor\":\"#ffe5e7eb\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.review.statusText }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffb45309\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#ffdbe4ef\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"task_one\",\"task_two\",\"dnd_btn\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"task_one\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.review.tasks[0].label }}\",\"select\":{\"path\":\"/review/tasks/0/done\"},\"styles\":{\"width\":30,\"height\":24,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff334155\",\"shape\":\"rounded_square\",\"selectedColor\":\"#ff14b8a6\",\"unSelectedColor\":\"#ff94a3b8\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"task_two\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.review.tasks[1].label }}\",\"select\":{\"path\":\"/review/tasks/1/done\"},\"styles\":{\"width\":30,\"height\":24,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff334155\",\"shape\":\"rounded_square\",\"selectedColor\":\"#ff14b8a6\",\"unSelectedColor\":\"#ff94a3b8\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"dnd_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.review.actionText }}\",\"styles\":{\"width\":44,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff2563eb\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"do_not_disturb\",\"switchFlag\":0}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_074\",\"path\":\"/\",\"value\":{\"review\":{\"mock\":true,\"glyph\":\"30\",\"title\":\"距离考试还有30天\",\"progress\":58,\"total\":100,\"statusText\":\"进度滞后\",\"actionText\":\"关勿扰\",\"tasks\":[{\"label\":\"背词\",\"done\":true},{\"label\":\"刷题\",\"done\":false}]}}}}"
+  ]
+}

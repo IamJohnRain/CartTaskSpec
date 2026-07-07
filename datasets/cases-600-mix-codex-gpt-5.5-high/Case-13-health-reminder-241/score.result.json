@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-241",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "用户原始诉求（服药打卡标题、打勾、吃了多少次、跳应用、读天气、已连上）基本都映射到了对应组件：标题'服药打卡'用 Text 绑定 reminder.title，Checkbox 绑定 checked 状态，doseText '今日 2/3 次'用 formatString 绑定 takenCount/targetCount，weatherText 绑定 weather.current.condition，connectText 绑定 connectedText，root.onClick 用 eventCandidates 的 clickToDeeplink。但有两点不足：(1) Checkbox 的 label 字段使用了 formatString 调用，渲染时'已服药'未显示，相当于打勾后无标签说明；(2) updateDataModel 缺少 path:'/' 字段，违反协议硬约束。",
+    "aesthetic": "整体配色（薄荷绿渐变 + 白色半透明胶囊底）柔和专业，标题/计数/连接状态三层字重梯度（700/800/500）合理，alarm 闹钟图标与标题对齐良好，'今日 2/3 次' 作为主指标字号突出。但 (1) 天气文本被截断为'天气读'，与原意'天气读取中'不符，信息丢失且视觉上不完整；(2) '已服药' 标签缺失，checkbox 视觉孤立、信息表达不完整；(3) 多处使用 textOverflow:'none' 硬截断，缺乏 ellipsis 降级策略。",
+    "layout": "逐项核算（2x2，root 140x140，padding 12，内容区 116x116）：(1) content Column 子项高度合计 32+30+30=92，加 itemMargin 16，共 108 < 116 ✓；(2) topRow 子项 24+86=110，加 itemMargin 6 = 116 = 116 ✓（贴边无溢出空间）；(3) statusCol 子项 16+12=28，加 itemMargin 2 = 30 < 32 ✓；(4) bottomRow 子项 64+46=110，加 itemMargin 6 = 116 = 116 ✓；(5) weatherText 宽 46 实际需要 60（'天气读取中' 5 中文字 × fontSize 12 = 60），溢出 14px，截图显示末尾'取中'被裁；(6) softBand 位于 root y=92-128，content 的 bottomRow 位于 root y≈94-124，Stack 中 content 在 softBand 之上，视觉上 bottomRow 浮于白胶囊上正常，但 softBand 上沿与 doseText 底端在 y=92-94 有 2px 视觉重叠区（依赖叠层次序，不算严重）。主要扣分项：weatherText 溢出 14px 且用 textOverflow:'none' 直接裁切。"
+  },
+  "issues": [
+    "weatherText width=46 < 实际文本宽度 60（5 个中文字 × fontSize 12 = 60），溢出 14px，'取中' 被硬截断为 '天气读'",
+    "Checkbox label '已服药' 在渲染截图中不可见，label 字段使用了 formatString 函数调用，该调用在 Checkbox label 字段可能不被支持",
+    "updateDataModel 缺少 path:'/' 字段，违反协议硬约束（应原样等于 TaskSpec.dataModel.value）",
+    "softBand 高度 36 比 bottomRow 高度 30 多出 6px，胶囊上沿与 doseText 底端有 2px 视觉重叠（Stack 叠层掩盖，不算严重）",
+    "topRow 子项宽度 24+86+6=116 贴满父容器，无溢出缓冲；bottomRow 同理 64+46+6=116 也贴满，两边都无容错空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_241\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_241\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"softBand\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#FFEAF7F0\",0],[\"#FFD9F0E2\",0.58],[\"#FFC5E4D2\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"softBand\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":30,\"margin\":{\"left\":0,\"top\":80},\"borderRadius\":14,\"backgroundColor\":\"#66FFFFFF\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"topRow\",\"doseText\",\"bottomRow\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"alarmIcon\",\"statusCol\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alarmIcon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"statusCol\",\"component\":\"Column\",\"children\":[\"titleText\",\"connectText\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.title }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"connectText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.connectedText }}\",\"styles\":{\"width\":86,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF2E7D4F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"doseText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"今日 ${/reminder/takenCount}/${/reminder/targetCount} 次\"}},\"styles\":{\"width\":116,\"height\":30,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FF153C2A\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"doneCheck\",\"weatherText\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"doneCheck\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.reminder.checkLabel }}\",\"select\":{\"path\":\"/reminder/checked\"},\"styles\":{\"width\":56,\"height\":30,\"selectedColor\":\"#FF36B36A\",\"unSelectedColor\":\"#FFFFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"weatherText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF345C45\",\"maxLines\":1,\"textOverflow\":\"ellipsis\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_241\",\"path\":\"/\",\"value\":{\"reminder\":{\"title\":\"服药打卡\",\"connectedText\":\"设备已连上\",\"takenCount\":2,\"targetCount\":3,\"checked\":true,\"checkLabel\":\"已服药\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"天气读取中\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

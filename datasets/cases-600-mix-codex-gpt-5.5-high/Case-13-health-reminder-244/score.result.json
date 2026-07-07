@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-244",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "用户五大诉求（服药打卡标题、几项打勾、点跳app、读天气、显示已完成）字段与事件均已落实：title/statusText/items[0..1]/actionText/weather.current.condition 全部通过表达式绑定；Button.onClick 引用 eventCandidates 唯一候选 clickToDeeplink 且 args 原样一致；Image.src 使用 assetCandidates 中的 icon_remind.png；size=2x2、root 140x140、borderRadius 18、clip、catalogId、version、updateDataModel.path='/' 等硬约束均满足。扣分点：底部 Button label '进App' 被截断为 '进…'，weather '天气读取中' 被截断为 '天气读取'，导致受保护 CTA 与天气字段语义不完整，指令呈现度受损。",
+    "aesthetic": "整体配色克制：白底 + 绿（#64bb5c）强调已完成 + 淡青渐变带，视觉清爽；字号阶梯 14/12/10 合理，标题 700 加粗为最强字重，其余 medium/500 收敛；对齐统一，留白适中。主要扣分：底部 Button 出现省略号 '进…' 严重破坏 CTA 完整性，weather 截断 '天气读取' 也显得不完整，整体精致度下降。",
+    "layout": "逐项核算：(1) content Column 高=116，子项 28+46+28=102 + itemMargin×2=12 = 114 ≤ 116 ✓；(2) top_row 宽 116：glyph 24 + itemMargin 6 + title_col 86 = 116 ✓；(3) title_col 高 28：title 16 + itemMargin 2 + status 12 = 30 > 28，溢出 2vp；(4) check_col 高 46：20+4+20=44 ≤ 46 ✓；(5) bottom_row 宽 116：weather_text 52 + itemMargin 8 + open_app 56 = 116 ✓ 但子项内容均超宽——weather '天气读取中' 5×12=60 > 52 截断为 '天气读取'；open_app '进App' 在 fontSize 14、宽 56 下文本宽 ≈ 39.2 + Button 内边距超过 56，渲染为 '进…'。两处受保护文本（CTA 标签、主指标 weather）被截断，title_col 也有 2vp 溢出，Stack 底层 ambient_band 与上层 bottom_row 在 y=96~128 区域有 32vp 重叠但内容在上层尚可。综合判定布局存在多处截断与微溢出，问题较严重。"
+  },
+  "issues": [
+    "Button 标签 '进App' 在宽 56 / fontSize 14 下被截断为 '进…'，CTA 信息不完整",
+    "weather_text 宽 52 不足以容纳 '天气读取中'（需 60），被截断为 '天气读取'",
+    "title_col 分配高 28 但 title(16) + itemMargin(2) + status(12) = 30，溢出 2vp",
+    "bottom_row itemMargin=8 偏大，挤压两侧子项可用宽度",
+    "Stack 内 ambient_band 与 content 在底部 32vp 区域重叠，渐变带视觉上压住 weather_text 左缘"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_244\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_244\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_band\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"ambient_band\",\"component\":\"Row\",\"children\":[],\"styles\":{\"width\":140,\"height\":40,\"margin\":{\"top\":100},\"linearGradient\":{\"angle\":0,\"colors\":[[\"#ff92d6cc\",0],[\"#ffffffff\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"check_col\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"title_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_remind.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"status\"],\"itemMargin\":0,\"styles\":{\"width\":86,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.statusText }}\",\"styles\":{\"width\":86,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_col\",\"component\":\"Column\",\"children\":[\"med_morning\",\"med_evening\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"med_morning\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[0].label }}\",\"select\":\"{{ $__dataModel.items[0].done }}\",\"styles\":{\"width\":116,\"height\":20,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#e5000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"med_evening\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[1].label }}\",\"select\":\"{{ $__dataModel.items[1].done }}\",\"styles\":{\"width\":116,\"height\":20,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#e5000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_text\",\"open_app\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionText }}\",\"styles\":{\"width\":54,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_244\",\"path\":\"/\",\"value\":{\"title\":\"服药打卡\",\"statusText\":\"已完成\",\"items\":[{\"label\":\"早药\",\"done\":true},{\"label\":\"晚药\",\"done\":true}],\"actionText\":\"进App\",\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"天气读取中\"},\"daily\":[],\"updatedAt\":\"\"}}}}}"
+  ]
+}

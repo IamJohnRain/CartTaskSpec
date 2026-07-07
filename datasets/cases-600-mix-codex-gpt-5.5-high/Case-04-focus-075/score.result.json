@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-04-focus-075",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.6,
+  "reasons": {
+    "instruction": "原 DSL 存在 3 项关键指令违反：1) 背景为纯色 #ff111827，未实现用户要求的'纯黑舞台+夜晚紫色渐变'；2) 三段提醒文字用 Row 横向并排为胶囊，与'纵向列出三段固定提醒文字'直接矛盾；3) onClick 仅挂在 Button 上，但用户要求'点击卡片能直接跳到时钟应用'，应整体可点击。次要问题：TIME UP! 字号 20 偏小，未达'巨大'视觉；statusGlyph 来自 dataModel 为'停'，未用'⛔'文字字符当图标（协议也禁 emoji）。onClick.call/args 与 eventCandidates 完全一致，size/root shell/catalogId/version/updateDataModel 硬约束均满足。",
+    "aesthetic": "黑+紫主色调方向正确，但 '改闹钟' 按钮在渲染截图中被截断为 '改...'，是肉眼可见的视觉缺陷；status_badge/title_text/cta_pill/target_text 共 4 个元素同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'的排版原则；背景缺少任何渐变层次，舞台氛围感缺失。",
+    "layout": "root Column 子项占高 44+22+34=100，padding 24+itemMargin 16=40，总计 140，恰好等于父容器 140，未溢出。hero_row 横向：badge 36+hero_texts 164+cta 60+margins 16=276，恰好等于父 276，未溢出。reminder_row 横向：3×88+margins 12=276，恰好等于父 276，未溢出。但 Button 宽度 60 不足以容纳'改闹钟'3 个中文字符（fontSize 14 约需 42vp+按钮内边距），导致渲染截图中实际显示为'改...'，受保护 CTA 文字被截断。"
+  },
+  "issues": [
+    "背景为纯色 #ff111827，缺少用户要求的'夜晚紫色渐变'舞台效果",
+    "三段提醒文字用 Row 横向排布，违反'纵向列出三段固定提醒文字'的明确诉求",
+    "onClick 仅挂在 Button 上，用户要求'点击卡片'整体可点击",
+    "TIME UP! 字号 20 偏小，未达'巨大'的视觉要求",
+    "statusGlyph 显示为'停'，未使用'⛔'文字字符作为图标（受协议禁 emoji 约束）",
+    "'改闹钟'按钮宽度 60 不足，文字被截断为'改...'，受保护 CTA 受损",
+    "4 个元素共用 fontWeight 700，违反单一最强字重原则"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_075\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_075\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_base\",\"bg_glow\",\"content_col\"],\"styles\":{\"width\":300,\"height\":140,\"borderRadius\":22,\"clip\":true},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://alarm/create\"}}]},{\"id\":\"bg_base\",\"component\":\"Column\",\"styles\":{\"width\":300,\"height\":140,\"backgroundColor\":\"#ff050314\"}},{\"id\":\"bg_glow\",\"component\":\"Column\",\"styles\":{\"width\":300,\"height\":72,\"backgroundColor\":\"#ff3b0764\"}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"hero_row\",\"target_text\",\"reminder_list\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12}}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"status_badge\",\"hero_texts\",\"cta_pill\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":46,\"alignItems\":\"center\",\"justifyContent\":\"flexStart\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusGlyph }}\",\"styles\":{\"width\":28,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff7c3aed\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_texts\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":180,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"flexStart\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":180,\"height\":30,\"fontSize\":26,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText + ' · ' + $__dataModel.focus.tomato.timeLeft }}\",\"styles\":{\"width\":180,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#ffc4b5fd\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cta_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":56,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff6d28d9\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"target_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.targetState }}\",\"styles\":{\"width\":276,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#fff9fafb\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_list\",\"component\":\"Column\",\"children\":[\"reminder_one\",\"reminder_two\",\"reminder_three\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":44,\"alignItems\":\"stretch\",\"justifyContent\":\"flexStart\"}},{\"id\":\"reminder_one\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.reminders[0] }}\",\"styles\":{\"width\":276,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe9d5ff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_two\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.reminders[1] }}\",\"styles\":{\"width\":276,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe0e7ff\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_three\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.reminders[2] }}\",\"styles\":{\"width\":276,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#fff5d0fe\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_075\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"TIME UP!\",\"statusGlyph\":\"停\",\"statusText\":\"超时未完成\",\"targetState\":\"今日专注目标已取消\",\"tomato\":{\"timeLeft\":\"00:00\",\"phase\":\"已超时\"},\"reminders\":[\"保存当前进度\",\"关闭分心页面\",\"重设下一组闹钟\"],\"actionText\":\"改闹钟\"}}}}"
+  ]
+}

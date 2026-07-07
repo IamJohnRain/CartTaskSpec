@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-184",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.7,
+  "reasons": {
+    "instruction": "用户要求下雨打车卡、数字会变、点一下能导航、能看天气，DSL 中均已结构化体现：title 雨天打车、etaValue 6 体现数字、nav_button 绑定 clickToDeeplink 事件、weatherText 体现天气。assetCandidates 的 rainy_taxi_icon 已通过 {{ $__dataModel.rainTaxi.icon }} 绑定到 rain_icon。size=2x2、root shell（140x140、borderRadius 18、clip true）、catalogId、version 均正确。onClick.call 与 args 与 eventCandidates 完全一致。但 updateDataModel 缺少 path: '/' 字段，违反硬约束，扣分。",
+    "aesthetic": "渐变色 #fff3f7fb→#ffdbe8f1→#ffb8d6ea 克制和谐，蓝色 CTA #ff007dba 与灰蓝文字 #ff182a33/#ff506674 对比清晰，字体阶梯 10/12/14/32 在合法范围内，层级设计意图良好。但渲染截图显示卡片几乎为空白：仅左上 rain_icon 灰色圆角块和右下角蓝色按钮可见，title、weather、eta_value、eta_unit、queue_text、hint_text 全部不可见，视觉传达完全失败。fontWeight 800 出现在 title、eta_value、eta_unit 三个元素上，未保持单一最强字重，扣分。",
+    "layout": "root Column 子项占高 30+38+1+35=104，加 padding.top/bottom 12+12=24，加 itemMargin 3×6=18，合计 146 > 父容器高度 140，溢出 6vp。水平方向：top_row 28+6+82=116 OK，main_row 42+4+58=104 OK，action_row 56+8+52=116 OK。垂直溢出导致 main_row 与 top_row 内的文字被 clip 裁切，截图佐证 title/weather/eta_value/eta_unit/queue_text 全部丢失。底部动作区下沿到卡片底边 = 140-(12+30+6+38+6+1+6+35)=6vp，略低于 2x2 建议下限 8vp。Button 热区 52×32 OK，≥24vp。"
+  },
+  "issues": [
+    "updateDataModel 缺少 path: '/' 字段，违反协议硬约束",
+    "root Column 纵向总占用 146 > 140，溢出 6vp，导致 main_row 与 top_row 文字被裁切",
+    "渲染截图显示 title、weather、eta_value、eta_unit、queue_text、hint_text 全部不可见，卡片信息严重缺失",
+    "底部动作区下沿到卡片底边 6vp，略低于 2x2 建议下限 8vp",
+    "fontWeight 800 出现在 title、eta_value、eta_unit 三个元素上，未保持单一最强字重"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_184\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_184\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"divider\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff3f7fb\",0],[\"#ffdbe8f1\",0.62],[\"#ffb8d6ea\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"rain_icon\",\"title_col\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"rain_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.rainTaxi.icon }}\",\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":8,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"weather\"],\"itemMargin\":0,\"styles\":{\"width\":90,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.title }}\",\"styles\":{\"width\":90,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff182a33\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.weatherText }}\",\"styles\":{\"width\":90,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff506674\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"eta_value\",\"eta_unit_col\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"eta_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.etaValue }}\",\"styles\":{\"width\":40,\"height\":38,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ff006c9c\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eta_unit_col\",\"component\":\"Column\",\"children\":[\"eta_unit\",\"queue_text\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"eta_unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.etaUnit }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff182a33\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"queue_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.queueText }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff506674\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#6686a9ba\",\"vertical\":false}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"hint_text\",\"nav_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":35,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.routeHint }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff365260\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.rainTaxi.actionText }}\",\"styles\":{\"width\":52,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff007dba\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.maps\",\"abilityName\":\"com.huawei.hmos.maps.MainAbility\",\"uri\":\"maps://navigation?destination=Office\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"value\":{\"rainTaxi\":{\"title\":\"雨天打车\",\"weatherText\":\"小雨 22°C\",\"etaValue\":6,\"etaUnit\":\"分钟\",\"queueText\":\"前方 3 人\",\"routeHint\":\"雨中出发\",\"actionText\":\"导航\",\"icon\":\"assets/rainy-taxi-icon.png\"}}}}"
+  ]
+}

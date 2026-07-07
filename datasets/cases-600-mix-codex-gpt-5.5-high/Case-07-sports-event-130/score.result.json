@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-07-sports-event-130",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户要求'能点开进app的卡片'已落实：root 与 Button 双重 onClick 都绑定了 clickToIntent/ViewCalendarEvent，args 与 eventCandidates 完全一致；'从日历读比赛日程'已通过 {{ $__dataModel.data.calendar.items[0].* }} 全字段绑定展示；'红色的紧急提示'已用 #fff23030 红色 hero 块+红色 CTA+红色 dtEnd 文字三处呼应。尺寸 2x4（300x140）、catalogId/version/updateDataModel 均符合协议；未引入禁用组件/事件/网络图。扣分点：start_time 与 desc 出现明显截断（详见 layout 维度），属于执行缺陷而非诉求缺失。",
+    "aesthetic": "配色思路正确：淡粉 #fff7f7f7 卡片底、#ffebebeb 内层红晕、#fff23030 主红，形成层次化紧急色阶，CTA 复用主红保持一致。文字层级用 32(时间)/18(标题)/14(徽章/按钮)/12(元信息)/11(描述)区分信息优先级。但执行上：hero 块内 32px 时间 '20:0' 被切，描述尾字 '醒' 缺失，破坏视觉完整性；info 列 4 行 12vp 行距让区块略显拥挤；按钮 28 高接近下限，红色面积虽大却因截断削弱高级感。",
+    "layout": "逐项核算：(1) main Row 横向 88+12+176=276 ✓，纵向 116。(2) hero Column 88 宽、内 padding 10+10=20，子项高 18+34+16=68，itemMargin 8+8=16，列内总占高 20+68+16=104 > 列高 92，溢出 12vp；start_time 字号 32 渲染 '20:00' 需约 90 宽度，分配 68 严重不足，截图实证截为 '20:0'。(3) info Column 176 宽，4 子项高 22+18+18+28=86，itemMargin 6×3=18，列内总占高 86+18=104 > 列高 100，溢出 4vp；desc 字号 12 下 '开赛前30分钟入场，关键红色提醒' 约需 173 宽，分配 176 加上 padding/margin 后实际不可用，末字 '醒' 被裁。(4) CTA 底边到卡片底边：main alignItems:center，info 高 100 在 116 行内居中，CTA 底 = 12+(116-100)/2+100=120，距卡底 20vp > 16vp 规范上限。多处溢出+关键文本截断+底部锚定违规，布局严重不达标。"
+  },
+  "issues": [
+    "start_time '20:00' 在 fontSize 32 下需 ~90 宽度，仅分配 68，被截断为 '20:0'",
+    "desc '开赛前30分钟入场，关键红色提醒' 末字 '醒' 被截断（info 宽 176 不足以容纳 12px 完整文本）",
+    "hero Column 子项总占高 104 > 列高 92，纵向溢出 12vp",
+    "info Column 子项总占高 104 > 列高 100，纵向溢出 4vp",
+    "CTA 按钮底边到卡片底边距离 20vp，超过 2x4 规范的 16vp 上限",
+    "hero 块与 info 列纵向均使用 alignItems:center，但 info 内容高度已接近行高，造成两列视觉错位与底部留白过大"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_130\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_130\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"alert_bg\",\"main\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f7f7\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]},{\"id\":\"alert_bg\",\"component\":\"Row\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#ffebebeb\"}},{\"id\":\"main\",\"component\":\"Row\",\"children\":[\"hero\",\"info\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"flex-end\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"start_time\",\"source_text\"],\"itemMargin\":6,\"styles\":{\"width\":112,\"height\":100,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#fff23030\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.alertText }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"start_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":96,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.sourceText }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"title\",\"meta_row\",\"desc\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":152,\"height\":96,\"justifyContent\":\"flex-start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":152,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff1f1f1f\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meta_row\",\"component\":\"Row\",\"children\":[\"end_time\",\"location\"],\"itemMargin\":8,\"styles\":{\"width\":152,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"end_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#fff23030\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].eventLocation }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"desc\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].description }}\",\"styles\":{\"width\":152,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff990000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"remind\",\"cta\"],\"itemMargin\":12,\"styles\":{\"width\":152,\"height\":28,\"alignItems\":\"center\"}},{\"id\":\"remind\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].remindTime[0] }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.ui.actionText }}\",\"styles\":{\"width\":72,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#fff23030\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_130\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"mock-sports-event-130\",\"title\":\"城市杯半决赛\",\"eventLocation\":\"南城体育中心\",\"description\":\"开赛前30分钟入场，关键红色提醒\",\"dtStart\":\"20:00\",\"dtEnd\":\"21:45\",\"importantEventType\":2,\"remindTime\":[\"提前30分钟\"]}]}},\"state\":{\"loading\":false},\"ui\":{\"alertText\":\"紧急\",\"sourceText\":\"日历赛程\",\"actionText\":\"进App\"}}}}"
+  ]
+}

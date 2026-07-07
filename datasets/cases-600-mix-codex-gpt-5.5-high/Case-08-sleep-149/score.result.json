@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-08-sleep-149",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.9,
+  "reasons": {
+    "instruction": "DSL 在协议层面完整落实了用户诉求：2x4 尺寸、Stack 文字叠在渐变背景上、DataModel 全字段绑定（title/score/scoreText/duration/status/hint/actionText）、onClick 正确引用 clickToDeeplink 事件并跳转到 huaweischeme://healthapp/router/sleepDetail、status='快不行了' 实现预警语义。硬约束全部满足：catalogId/version/updateDataModel.path 正确。assetCandidates 为空故未使用图片素材，符合规则。扣分点在于渲染层面大量受保护文本未可见，等同于功能未落地。",
+    "aesthetic": "设计意图较好：深色蓝→红渐变营造睡眠/危险氛围，环形进度表达得分，红色徽章表达警告。但渲染截图显示除'睡眠分'外几乎所有文本（31、睡眠监测、快不行了、4小时06分、连续低睡眠、去看看）均不可见，卡片沦为半成品装饰。同一卡片并存 500/600/700/800/medium 多重字重，违反'同一卡片只保留一个最强字重'的阶梯规则。",
+    "layout": "关键溢出与渲染问题：(1) info_panel Column 子项 24+24+18+32 + 3×8(itemMargin) = 122 > 可用 104，溢出 18px，导致 action_row 被挤出可视区；(2) score_panel Stack 内 score_value(74x40) 与 score_unit(margin.top:38, 56x18) 在 Stack 同一坐标系中重叠，alignContent:center 无法可靠地让 40px 字号文本正确居中且不被 18px 高的 unit 文本遮挡，渲染中 31 完全不可见；(3) top_row width=154 中 title(72) + itemMargin(8) + status(74) = 154 恰好贴边，status 内边距 6+6+'快不行了' 4×12=48 合计 60 可容纳 74 勉强，但标题 4×16=64 紧贴 72 边距几乎无缓冲；(4) score_value fontSize=40 配 height=40，行高被裁切概率高；(5) action_row(154x32) 内 Button(82x32) 左侧留 72px 空，未对齐也无填充理由。综合看，info_panel 溢出 18px 是致命问题。",
+    "issues": [
+      "info_panel Column 纵向总占用 122px > 容器 104px，溢出 18px，底部 action_row 被挤出",
+      "score_value '31' 渲染不可见：fontSize 40 与 height 40 行高冲突，且与 score_unit(margin.top:38) 在 Stack 中位置重叠",
+      "title '睡眠监测' / duration '4小时06分' / hint '连续低睡眠' / status '快行了' / button '去看看' 在渲染截图中均不可见，信息完全无法传达",
+      "action_row 内 Button 左侧 72px 空白无对齐，浪费热区",
+      "同一卡片使用 500/600/700/800/medium 五种字重，违反单一最强字重规则",
+      "danger_band 红色圆形与 score_panel 圆环在 Stack 中重叠位置未做透明度分层，红圆部分遮挡环内可读区",
+      "top_row 中 status 宽度 74 与内容 '快不行了'(48+12 padding=60) 留 14px 富余偏紧，title 宽度 72 与 '睡眠监测'(64) 仅 8px 富余"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_149\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_149\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_layer\",\"danger_band\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF101417\",0],[\"#FF182535\",0.55],[\"#FF3A1518\",1]]}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]},{\"id\":\"bg_layer\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1AFFFFFF\",\"linearGradient\":{\"angle\":160,\"colors\":[[\"#331A8CFF\",0],[\"#1AFFFFFF\",0.5],[\"#33FF3B30\",1]]}}},{\"id\":\"danger_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":96,\"height\":96,\"margin\":{\"left\":10,\"top\":8},\"borderRadius\":48,\"backgroundColor\":\"#22FF3B30\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"score_panel\",\"info_panel\"],\"itemMargin\":14,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"score_panel\",\"component\":\"Stack\",\"children\":[\"score_track\",\"score_ring\",\"score_text\"],\"styles\":{\"width\":108,\"height\":108,\"alignContent\":\"center\"}},{\"id\":\"score_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":108,\"height\":108,\"strokeWidth\":8,\"color\":\"#33FFFFFF\"}},{\"id\":\"score_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.score }}\",\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":92,\"height\":92,\"strokeWidth\":8,\"color\":\"#FFFF3B30\"}},{\"id\":\"score_text\",\"component\":\"Column\",\"children\":[\"score_value\",\"score_unit\"],\"styles\":{\"width\":74,\"height\":58,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"score_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.scoreText }}\",\"styles\":{\"width\":74,\"height\":40,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_unit\",\"component\":\"Text\",\"content\":\"睡眠分\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"top_row\",\"duration_text\",\"hint_text\",\"action_btn\"],\"itemMargin\":4,\"styles\":{\"width\":154,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":8,\"styles\":{\"width\":154,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.status }}\",\"styles\":{\"width\":72,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#FFFF3B30\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.duration }}\",\"styles\":{\"width\":154,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.hint }}\",\"styles\":{\"width\":154,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":90,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFF3B30\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"sleep\":{\"title\":\"睡眠监测\",\"score\":31,\"scoreText\":\"31\",\"duration\":\"4小时06分\",\"status\":\"快不行了\",\"hint\":\"连续低睡眠\",\"actionText\":\"去看看\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-weather-care-167",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求'做张图为主，点开就能跳到应用里看天气'，原 DSL 在 2x2 中呈现了 hero 图标块（44x44 居于顶部淡蓝色面板）+ 三行文字，信息完整（title/city/temperature/condition/careText 全部展示），且 onClick 完整沿用 TaskSpec 的 clickToDeeplink（bundleName/abilityName/uri 与 eventCandidates 一字不差），Image.src 通过 {{/weather/icon}} 绑定到 assetCandidates 的 icon_weather1.png。轻微扣分：用户要求'图为主'，但当前图像约占 116x72 块（垂直 51%），三行文字仍然较密，'图为主'的视觉主导可以更突出。",
+    "aesthetic": "配色为浅粉白底 #fff7fbff + 淡蓝图标块 #ffe8f4ff + 主文蓝 #ff006cde + 标题深灰 + 副文半透黑，色调和谐统一；字号阶梯 16/14/12 清晰，蓝色主指标与标题之间有节奏；圆角 18/16 协调；唯一瑕疵：title(14pt 700) 与 main_weather(16pt 700) 同为 700 字重，按'同卡片只保留一个最强字重'原则有轻微违和。",
+    "layout": "预算核算：根 Column 高度 = 12(top padding) + 72(hero) + 6(itemMargin) + 38(summary) + 12(bottom padding) = 140 = 父高度 140，恰好填满且无溢出；底部到卡片底边 12vp 在 8-12vp 标准区间。hero Column 子项 = 44(icon) + 4(margin) + 16(title) = 64 ≤ 72，OK；summary Column 子项 = 18(main_weather) + 2(margin) + 16(care) = 36 ≤ 38，OK。受保护文本 main_weather '深圳 29°C 多云' 在 16pt 700 / width=116 下估算宽 ≈ 2*16+0.4*16+2*0.6*16+2*0.6*16+0.4*16+2*16 ≈ 115.2vp，逼近 116 边界，存在极轻微的触边风险（截图未截断，但容差很低）。care '出门带伞，注意补水' 在 12pt / 116 下宽 ≈ 100.8vp，OK。点击区 = 整卡 140x140，热区充裕。无 Stack 遮盖。"
+  },
+  "issues": [
+    "main_weather '深圳 29°C 多云' 在 16pt 700 / 116 宽下宽度估算约 115.2vp，逼近边界，存在轻微触边/被裁风险",
+    "title (14pt 700) 与 main_weather (16pt 700) 同为 700 字重，违反'同卡片只保留一个最强字重'原则",
+    "用户要求'做张图为主'，但图标块 44x44 在 116x72 容器中视觉占比偏小，可再放大以体现'图为主'"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_167\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_167\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"summary\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7fbff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"title\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":72,\"borderRadius\":16,\"backgroundColor\":\"#ffe8f4ff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/weather/icon\"},\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Column\",\"children\":[\"main_weather\",\"care\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.city + ' ' + $__dataModel.weather.temperatureText + ' ' + $__dataModel.weather.condition }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ff006cde\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.careText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_167\",\"path\":\"/\",\"value\":{\"weather\":{\"title\":\"今日天气\",\"city\":\"深圳\",\"condition\":\"多云\",\"temperatureText\":\"29°C\",\"careText\":\"出门带伞，注意补水\",\"icon\":\"resources/base/media/icon_weather1.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

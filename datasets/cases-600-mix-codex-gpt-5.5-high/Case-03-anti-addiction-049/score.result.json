@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-03-anti-addiction-049",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户四点诉求均落实：防沉迷主题✓，一行带数字的话（lineText 含 14）✓，点一下跳到 app（root 与 button 都正确绑定 clickToDeeplink，call/args 原样来自 eventCandidates）✓，快不行时提醒（reminderText 加上 warning 状态语义）✓；image 素材使用 timingIcon 且路径来自 assetCandidates 正确；createSurface size 2x4、catalogId/version/width/height/root borderRadius/clip/padding 全部满足硬约束；updateDataModel path='/' value 与 TaskSpec.dataModel.value 完全一致。扣分点：line_text 用了非标准属性 textOverflow='none'（不在 ellipsis/clip/marquee 集合），action_button 用了非数字字重 fontWeight='medium'（字重阶梯只接受 100-900 数字或 bold/normal 关键字）。",
+    "aesthetic": "暖米色背景 #fffff7ed 与橙色 #ffff9500 主按钮形成和谐警示配色，文本/按钮对比度均合格；层级清晰，仅 line_text 用 700 作为最强字重，配 14/14 次级字重，字号阶梯 18/14/14 落在合法档位；间距 10/6/12 整齐。扣分点：受保护主信息行在视觉上被截断（截图显示'还剩14分钟，快到使用上'缺'限'字），影响整体完成感。",
+    "layout": "逐项预算核算：(1) root Column 内高 140-padding 24=116，子项占用 main_row 70 + itemMargin 10 + action_button 34 = 114 ≤ 116，OK；(2) main_row 宽 276，timing_icon 48 + itemMargin 10 + copy_group 218 = 276，OK；(3) copy_group 宽 218，高 58，line_text 高 24 + itemMargin 6 + reminder_text 高 20 = 50 ≤ 58，OK；(4) **关键溢出**：line_text 容器宽 218、fontSize 18，文本'还剩14分钟，快到使用上限'=11 中文×18 + 2 数字×10.8 + 1 标点×7.2 = 226.8vp，**占用 226.8 > 容器 218，溢出 8.8vp**，受保护主指标末字'限'被裁（截图实证）。(5) reminder_text 9 中文×14=126 ≤ 218 OK。(6) action_button 宽 276、高 34，热区满足 ≥24vp；底边距卡片底 12vp 在 10-14vp 区间。(7) 行 70 高仅比图标 48 多 22，与 copy_group 58 居中对齐留白稍大但无溢出。"
+  },
+  "issues": [
+    "line_text '还剩14分钟，快到使用上限' 在 fontSize 18 时文本宽 ~226.8vp，超过 copy_group 容器宽 218vp，溢出 8.8vp，导致末字'限'被裁切（受保护主指标禁止依赖 overflow 隐藏）",
+    "line_text 的 textOverflow='none' 为非标准属性值，应使用 ellipsis/clip，或保证文本真正放得下",
+    "action_button 的 fontWeight='medium' 为非标准字重，应改为数字字重如 500 或 600",
+    "root Column 与 action_button 同时绑定相同 onClick，整卡与按钮均响应，存在事件冗余（不影响协议但属 UX 噪音）",
+    "copy_group 高度 58 与 line_text 24+reminder_text 20+itemMargin 6=50 之间存在 8vp 垂直留白未被 justifyContent 吸收，整体略松"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_049\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_049\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fffff7ed\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"timing_icon\",\"copy_group\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":64,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"timing_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.timingIcon }}\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"copy_group\",\"component\":\"Column\",\"children\":[\"line_text\",\"reminder_text\"],\"itemMargin\":4,\"styles\":{\"width\":218,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"line_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.screenTime.lineText }}\",\"styles\":{\"width\":218,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff2d1b12\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.screenTime.reminderText }}\",\"styles\":{\"width\":218,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff7a2e00\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.screenTime.actionText }}\",\"styles\":{\"width\":276,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffff9500\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_049\",\"path\":\"/\",\"value\":{\"screenTime\":{\"usedMinutes\":226,\"limitMinutes\":240,\"remainingMinutes\":14,\"lineText\":\"还剩14分钟，快到使用上限\",\"reminderText\":\"快不行了，先休息一下\",\"actionText\":\"去App设置\",\"status\":\"warning\"},\"state\":{\"staticMock\":true,\"timeoutMock\":{\"limitMinutes\":240,\"usedMinutes\":226,\"remainingMinutes\":14,\"nearTimeout\":true}},\"asset\":{\"timingIcon\":\"resources/base/media/icon_timing.png\"}}}}"
+  ]
+}

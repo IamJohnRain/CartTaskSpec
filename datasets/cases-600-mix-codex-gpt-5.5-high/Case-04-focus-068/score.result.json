@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-068",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求'有按钮+显示一行数字+点一下跳到app'，DSL 中已包含 Button、显示 numberText+unitText 合并值'25分钟'、onClick 使用 eventCandidates 原样的 clickToDeeplink（bundleName/abilityName/uri 一致），createSurface 尺寸 2x2/140x140、catalogId 'ohos.a2ui.extended.catalog'、version v0.9、updateDataModel.value 与 TaskSpec.dataModel.value 一致，均满足硬约束。扣分点：number_text.content 用了 {call:formatString, args:{value:'${/focus/numberText}${/focus/unitText}'}} 的函数调用方式，协议要求展示值'优先用完整表达式 {{ ... }} 读取 DataModel'，且路径必须能直接从 dataModel 推导，formatString 写法既非标准 {{}} 也不是 TaskSpec 暴露的合法函数，存在协议合规风险，扣 1.5 分。",
+    "aesthetic": "整体配色和谐：浅蓝灰底 #fff8fafc + 蓝色主按钮 #2563eb + 深色文本 #0f172a，对比清晰可读。字号阶梯 14/32/14 合理，label 与 button 居中或左对齐一致。扣分点：number_text 与 open_button 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'原则，主指标 25 分钟 应独占 700 强字重，按钮降至 600/500 更克制；justifyContent:spaceBetween 配合三项内容导致中部留白不均，视觉略松散。",
+    "layout": "布局预算核算：root Column width=140、height=140、padding 12/12/12/12、itemMargin=8，子项 label_text(h=18) + number_text(h=42) + open_button(h=32)。纵向占用 = 12+12+8*(3-1)+(18+42+32) = 24+16+92 = 132 ≤ 140，余 8vp，未溢出。底部锚定：button 底边到卡片底边 = padding.bottom = 12vp，处于 8-12vp 理想区间，受保护文本 label_text/number_text 均无截断（label 4 中文×14≈56 < width 116；number '25分钟' ≈38.4+64≈102 < width 116）。按钮热区 116×32 ≥ 24vp 达标。无 Stack 遮盖，水平方向三子项均 stretch 宽度 116 ≤ 内容区 116，对齐齐整。"
+  },
+  "issues": [
+    "number_text.content 使用 {call:formatString, args:{...}} 函数调用而非协议推荐的 {{ $__dataModel.focus.numberText }}{{ $__dataModel.focus.unitText }} 表达式，存在协议合规与渲染不确定性",
+    "open_button 与 number_text 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'规则",
+    "Column justifyContent:spaceBetween 让中部空白分布不均，label 与 number 之间视觉上偏松"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_068\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_068\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"label_text\",\"number_text\",\"open_button\"],\"itemMargin\":10,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff8fafc\",\"justifyContent\":\"center\",\"alignItems\":\"stretch\"}},{\"id\":\"label_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.label }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff475569\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"number_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.numberText }}{{ $__dataModel.focus.unitText }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff2563eb\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_068\",\"value\":{\"focus\":{\"label\":\"专注计时\",\"numberText\":\"25\",\"unitText\":\"分钟\",\"actionText\":\"打开\"}}}}"
+  ]
+}

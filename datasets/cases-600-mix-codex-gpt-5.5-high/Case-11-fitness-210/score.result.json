@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-210",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户四项诉求全部落实：'运动卡'展示为 title '运动卡'、'开始按钮'用 Button 呈现且 label=开始、'点跳app'通过 onClick[0].call=clickToDeeplink + 原样 args 实现 uri 跳转、'显示已连接'用 status_badge 展示 connectionText。size=2x4、根宽高 300x140、borderRadius 22、clip true、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value 原样匹配 TaskSpec，资产绑定 /fitness/asset/runIcon 正确。轻微扣分：score 9.5 而非 10，因底部动作区外边距略超规范（见 layout）。",
+    "aesthetic": "整体配色为绿色对角渐变 #0a7f42→#21a366，符合运动健身语义，视觉清爽专业。白色半透明胶囊 badge 和白色主按钮在深绿底上对比清晰，标题白色 20/700 层级最强，metric 与 hint 用半透明白 14/12 区分层次；字号阶梯 12/14/20 落在规范内，字重仅 700 一个最强项。留白和密度合理，对齐统一。扣 1.5：badge 与按钮若加入微阴影/内描边会更精致；目前略偏平面化。",
+    "layout": "根 Row 宽 300、高 140、padding 12+12：横向预算 12+12+12(itemMargin)+172+92=300 恰等，无溢出；纵向 116（子项）≤ 116（可用），无溢出。info_col 纵向预算 0+0+6×3+(24+24+18+16)=100 ≤ 116，余 16 由 justifyContent:center 平均分配为上下各 8。status_badge 文本 '已连接' ≈ 36 < 48（内部宽），title '运动卡' ≈ 60 < 172，metric ≈ 112 < 172，hint ≈ 108 < 172，均未截断。action_col 宽 92：run_icon 56x56 与 start_button 84x34 均 ≤ 92 宽，纵向预算 0+0+10+(56+34)=100 ≤ 116，无溢出。Button 热区 84x34 满足 ≥24vp。问题：action_col 使用 justifyContent:center，使 start_button 距 action_col 底边 8vp，再加 root 底 padding 12vp，按钮外底边到卡片底边 ≈20vp，超过 2x4 规范 '不得 >16vp' 的硬约束；改进后改为 space-between 可压至 12vp。"
+  },
+  "issues": [
+    "action_col 底部动作区（start_button 外底）到卡片底边约 20vp，超过 2x4 卡片 '不得 >16vp' 的硬约束，建议调整为 10-14vp。",
+    "原 DSL 未在任何受保护文本上使用 ellipsis/clip，截断安全，但若 metric/hint 字符再长 4-5 个汉字即可能溢出，可考虑预留 maxLines+ellipsis 兜底。",
+    "start_button 高 34vp 略低于推荐的 ~40vp 理想热区，虽仍满足 ≥24vp 硬下限，但点击舒适度可进一步提升。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_210\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_210\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"info_col\",\"action_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a7f42\",0],[\"#ff21a366\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"status_badge\",\"title_text\",\"metric_text\",\"hint_text\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.connectionText }}\",\"styles\":{\"width\":64,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":172,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.metricText }}\",\"styles\":{\"width\":172,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.hintText }}\",\"styles\":{\"width\":172,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"run_icon\",\"start_button\"],\"itemMargin\":10,\"styles\":{\"width\":92,\"height\":116,\"justifyContent\":\"space-between\",\"alignItems\":\"center\"}},{\"id\":\"run_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.fitness.asset.runIcon }}\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\"}},{\"id\":\"start_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":84,\"height\":38,\"borderRadius\":19,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff0a7f42\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_210\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"运动卡\",\"connectionText\":\"已连接\",\"metricText\":\"今日运动准备好了\",\"hintText\":\"点击开始进入运动健康\",\"actionText\":\"开始\",\"asset\":{\"runIcon\":\"resources/base/media/icon_run.png\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

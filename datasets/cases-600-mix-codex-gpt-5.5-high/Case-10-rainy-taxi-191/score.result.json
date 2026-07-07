@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-10-rainy-taxi-191",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "信息字段齐全：天气、雨量、排队、告警、两个勾选项+动态值均体现；onClick 正确使用 eventCandidates 中的 clickToDeeplink 与原始 uri/bundleName/abilityName。存在两处协议硬伤：① updateDataModel 缺少 path:'/' 字段（系统硬约束）；② summary 使用非标准 formatString 调用的 ${/weather/...} 占位符，未使用规范内联绑定 {{ $__dataModel.weather.rainfallMm }}。渐变 #FFEAF3FF→#FFFFFFFF 几乎不可见，未能传达用户要求的'雨天氛围渐变'。图标仅用文本'雨'代替，并非真正的语义图标。综合扣 1 分协议违规、0.5 分渐变、0.5 分图标表达。",
+    "aesthetic": "整体配色克制（蓝白主调+红色告警+蓝色勾选态）较为和谐，字体层级清晰（标题 16+主指标 14+次要 12），只有一个最强字重 700。问题是：① 渐变对比度太低，'雨天氛围'几乎读不出；② optionLocation 文本被截断（'开启定位共''15'）在视觉上明显残缺，影响整体完成度；③ 图标'雨'过于朴素，未做方/圆底修饰，难以称作'图标'。",
+    "layout": "按预算公式逐项核算：root 内容区 276x116；main Row 132+8+136=276 横向成立；left Column 内部 28+8+40=76 < content 96 ✓；right Column 28+8+34+8+34=112 < 116 ✓。严重问题在 optionLocation Row 横向：24+6+78+6+22=136 数值成立，但 locationLabel 文本'开启定位共享'约 6×14=84 > 78（溢出 6），locationValue 文本'15分钟'约 14.4+24=38.4 > 22（溢出 16.4）。截图证实'开启定位共'和'15'被截断、'享'与'分钟'丢失——这属于受保护文本（用户明确要求字段）依赖 clip 隐藏，严重违反排版规则。底部外框底边到卡片底边为 12vp（10-14 区间内）✓。"
+  },
+  "issues": [
+    "updateDataModel 缺失 path:'/' 字段，违反硬约束",
+    "summary 使用非标准 formatString + ${/weather/...} 占位符，应改为内联 {{ $__dataModel.weather.rainfallMm }} 绑定",
+    "optionLocation 中 locationLabel 宽 78 < 文本'开启定位共享'所需 84，导致'享'字被裁切（截图可见）",
+    "optionLocation 中 locationValue 宽 22 < 文本'15分钟'所需 38.4，导致'分钟'被裁切（截图可见）",
+    "背景渐变 stop #FFEAF3FF→#FFFFFFFF 几乎无对比，未体现'雨天氛围'",
+    "图标仅用纯文本'雨'且无方/圆底/装饰，未达'语义图标'要求",
+    "right Column 整体过窄（136），与 optionLocation 文本长度不匹配，缺少规划"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"rainyTaxi191\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"rainyTaxi191\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"main\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFCDDDFF\",0],[\"#FFF2F7FF\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"main\",\"component\":\"Row\",\"children\":[\"left\",\"right\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left\",\"component\":\"Column\",\"children\":[\"weatherRow\",\"summary\"],\"itemMargin\":8,\"styles\":{\"width\":104,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"weatherRow\",\"component\":\"Row\",\"children\":[\"rainIcon\",\"condition\"],\"itemMargin\":6,\"styles\":{\"width\":84,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"rainIcon\",\"component\":\"Text\",\"content\":\"雨\",\"styles\":{\"width\":24,\"height\":24,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }}\",\"styles\":{\"width\":54,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"当前雨量{{ $__dataModel.weather.rainfallMm }}毫米·排队{{ $__dataModel.weather.queueAhead }}位\",\"styles\":{\"width\":84,\"height\":60,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":3,\"textOverflow\":\"none\"}},{\"id\":\"right\",\"component\":\"Column\",\"children\":[\"alert\",\"optionSilent\",\"optionLocation\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.taxi.alertText }}\",\"styles\":{\"width\":164,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFD93025\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"optionSilent\",\"component\":\"Row\",\"children\":[\"silentCheck\",\"silentLabel\",\"silentValue\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"silentCheck\",\"component\":\"Checkbox\",\"select\":\"{{ $__dataModel.weather.options[0].checked }}\",\"styles\":{\"width\":24,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#FF0A59F7\"}},{\"id\":\"silentLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.options[0].label }}\",\"styles\":{\"width\":60,\"height\":22,\"fontSize\":14,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"silentValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.options[0].valueText }}\",\"styles\":{\"width\":68,\"height\":20,\"fontSize\":12,\"fontColor\":\"#99182431\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"right\"}},{\"id\":\"optionLocation\",\"component\":\"Row\",\"children\":[\"locationCheck\",\"locationLabel\",\"locationValue\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"locationCheck\",\"component\":\"Checkbox\",\"select\":\"{{ $__dataModel.weather.options[1].checked }}\",\"styles\":{\"width\":24,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#FF0A59F7\"}},{\"id\":\"locationLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.options[1].label }}\",\"styles\":{\"width\":86,\"height\":22,\"fontSize\":14,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"locationValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.options[1].valueText }}\",\"styles\":{\"width\":42,\"height\":20,\"fontSize\":12,\"fontColor\":\"#99182431\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"right\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"rainyTaxi191\",\"path\":\"/\",\"value\":{\"weather\":{\"condition\":\"雨天\",\"rainfallMm\":18,\"queueAhead\":12,\"cityCode\":\"\",\"detailsUri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\",\"taxi\":{\"status\":\"叫车失败\",\"alertText\":\"叫车失败\"},\"options\":[{\"label\":\"静音模式\",\"checked\":true,\"valueText\":\"已开\"},{\"label\":\"开启定位共享\",\"checked\":true,\"valueText\":\"15分钟\"}]}}}}"
+  ]
+}

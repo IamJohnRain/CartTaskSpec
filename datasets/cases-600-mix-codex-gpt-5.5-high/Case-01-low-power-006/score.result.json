@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-01-low-power-006",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户明确要求'整个充电站列表'与'一串的'，但渲染截图中 station_list 区域完全空白（仅显示底部风险文案与按钮之间的大段空隙），核心诉求未呈现——根本原因是模板内 station_line 的 content 用了 `{\"path\":\"line\"}` 而非合法表达式（如 `{{ $item.line }}`），导致 List 模板未渲染。'点一下跳地图'只能落到 eventCandidates 提供的电池设置 deeplink，无法跳地图，属契约限制，可酌情处理。'读天气'只显示了 riskText，未呈现 city/summary，信息不完整。'红色危险提示'通过 #ffed6f21 红色背景落实。整体看关键列表缺失是硬伤，扣重分。",
+    "aesthetic": "整体配色为橙红 (#ffed6f21) 背景配白色文字，符合低电危险语境；标题/副标题/风险文案/按钮层级清晰；按钮使用白底橙字点缀，CTA 突出。但因 station_list 未渲染，hero 与 button 之间出现大段视觉空白，破坏密度感与节奏感；且 hero 区域 charge_icon 28vp + hero_text 86vp 略显拥挤，title 16/700 与 level 10/500 字阶合理但与下方 riskText 10/500 颜色 (本卡为 #ffffffff) 区分度有限（原本 level 用了 #99ffffff 做层级，weather 又用 #ffffffff，色阶在风险行未拉开）。",
+    "layout": "逐项核算：① root Column 140×140 padding 10，可用高 120，itemMargin=4×3=12，子项 30+14+36+26=106，合计 118 ≤ 120，刚好塞下，无溢出。② hero Row 120×30：charge_icon 28 + margin 6 + hero_text 86 = 120，无溢出。③ hero_text Column 86×30：title 高 18 + level 高 12 = 30，无溢出。④ weather Text 120×14：「雨天低电，先找近站」7 中文字 ×10=70 < 120，无截断。⑤ station_list 120×36 + 模板 station_row 16×2 + space 2 = 34 ≤ 36，预算成立，但渲染未出。⑥ action Button 120×26 距底 10vp（≤16 合规）。综上所有 Row/Column 数值预算均成立、无溢出/截断，但因模板绑定写法错误导致 station_list 渲染为空，造成约 36vp 高度的实际内容空洞（hero 底 30+10padding=40，到 action 顶约 104，中间 64vp 中应有 36vp 列表但实际空白 36vp）。"
+  },
+  "issues": [
+    "station_line 的 content 用了 `{\"path\":\"line\"}` 非合法表达式，应为 `\"{{ $item.line }}\"`，导致模板循环渲染失败，station_list 在截图中完全不可见",
+    "用户明确要求'整个充电站列表/一串的'，核心内容缺失是硬伤",
+    "eventCandidates 仅提供电池设置 deeplink，无法满足'点一下跳地图'，属契约约束，但应在文案上更明确动作语义",
+    "weather 只绑定 riskText，未展示 city / summary，天气信息不完整",
+    "hero_text Column 中 level 使用 #99ffffff，但兄弟 weather 用了 #ffffffff，色阶差异小、层级不清晰",
+    "因列表缺失，hero 与 action 之间出现约 36vp 视觉空洞，密度失衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_006\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_006\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"weather\",\"station_list\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffed6f21\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"charge_icon\",\"hero_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"charge_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.power.icon }}\",\"styles\":{\"width\":26,\"height\":26,\"objectFit\":\"contain\"}},{\"id\":\"hero_text\",\"component\":\"Column\",\"children\":[\"title\",\"level\"],\"itemMargin\":0,\"styles\":{\"width\":92,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"level\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.levelText }}\",\"styles\":{\"width\":92,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.city }} · {{ $__dataModel.weather.summary }}\",\"styles\":{\"width\":124,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"station_list\",\"component\":\"List\",\"children\":{\"componentId\":\"station_row\",\"path\":\"/stations\"},\"space\":2,\"styles\":{\"width\":124,\"height\":34,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"station_row\",\"component\":\"Row\",\"children\":[\"station_line\"],\"styles\":{\"width\":124,\"height\":15,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"station_line\",\"component\":\"Text\",\"content\":\"{{ $item.line }}\",\"styles\":{\"width\":124,\"height\":15,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":124,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_006\",\"path\":\"/\",\"value\":{\"power\":{\"title\":\"低电危险\",\"levelText\":\"剩余 9%\",\"actionText\":\"电池设置\",\"icon\":\"resources/base/media/icon_charge.png\"},\"weather\":{\"city\":\"深圳\",\"summary\":\"雷阵雨 28°C\",\"riskText\":\"雨天低电，先找近站\"},\"stations\":[{\"name\":\"银泰快充站\",\"distance\":\"0.8km\",\"line\":\"银泰快充站 0.8km\"},{\"name\":\"河西充电站\",\"distance\":\"1.4km\",\"line\":\"河西充电站 1.4km\"}]}}}"
+  ]
+}

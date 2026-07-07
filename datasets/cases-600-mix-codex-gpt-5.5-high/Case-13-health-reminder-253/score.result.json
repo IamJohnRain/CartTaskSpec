@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-253",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "尺寸 2x2、catalogId、version、updateDataModel 路径/值等硬约束均满足；hero 文本与底部 button onClick clickToDeeplink 也都按契约正确落地；dataModel 字段都被引用。扣分点：1) 用户明确要求'早上 ✓ / 中午 ✓ / 晚上 ⏳' 用「文字图标」表示，但原 DSL 使用了 Checkbox 组件（带方形勾选框 UI），既不是纯文字也不是纯色块，与用户'纯文字和色块不要任何图片'及'用文字图标表示'两条诉求都不符；2) 三个状态项因布局溢出在渲染中完全不可见，用户在 query 中点名要展示的'横排三状态项'实际未呈现。",
+    "aesthetic": "配色干净（#fff1f3f5 背景 + #e5000000 主文字 + 浅灰按钮），符合用户'卡片底色素净'和'状态色别搞什么特殊'的要求；hero 用 18pt/700 加粗层级清晰，可见区域留白与对齐整齐。但因状态行整行缺失，视觉信息不完整，'干净'变成了'残缺'，故给 6.5。",
+    "layout": "root Column 高度预算：父 padding 12+12=24，可用 116；子项 hero 高 44 + status_row 高 28 + alarm_button 高 36 = 108；itemMargin=8，间隙 2×8=16；纵向占用 = 24 + 108 + 16 = 148 > 父高 140，溢出 8vp（更严格按内容区比较：108+16=124 > 116，溢出 8vp）。justifyContent: spaceBetween 把 hero 顶到顶部、button 锚到底部，status_row 被挤出可视区，对应截图中部三状态行完全不可见，是关键内容缺失。status_row 横向预算本身成立（3×36 + 2×4 = 116，恰好填满），但因 root 溢出整个状态行被裁掉。底边距：alarm_button 底到卡片底 = 12（padding）= 12vp，落在 2x2 标准 8-12vp 区间内。受保护文本（时间、CTA）未截断，但三状态项作为用户明确点名要显示的字段被裁，属于核心内容丢失，扣重分。"
+  },
+  "issues": [
+    "root Column 纵向溢出 8vp：padding 24 + hero 44 + status_row 28 + button 36 + 间隙 16 = 148 > 140，导致 status_row 被挤出可视区，渲染截图中三状态项完全不可见",
+    "用户要求'用文字图标表示（早上 ✓ / 中午 ✓ / 晚上 ⏳）'，但原 DSL 使用 Checkbox 组件，既不是纯文字也不是色块，与'纯文字和色块不要任何图片'冲突，且无法呈现用户指定的 ⏳ 文字图标",
+    "hero 文本使用 formatString.call（${}）而 alarm_button 使用 {{ }} 模板，两种绑定风格在同一卡片内不一致",
+    "Checkbox 的 'value' 字段绑到 {path: 'value'}（数据值 morning/noon/evening），与 select 字段语义重复且易产生歧义",
+    "省略号/截断风险：hero 在 116 宽 + 18pt 下，'下次服药 14:30' 估算宽度 ≈ 133 > 116，必然换行；当前依赖 maxLines=2 才容下，对受保护文本不应依赖换行"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_253\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_253\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"status_row\",\"alarm_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Text\",\"content\":\"下次服药 {{ /medication/nextTime }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"lineHeight\":20}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"s_morning\",\"s_noon\",\"s_evening\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"s_morning\",\"component\":\"Text\",\"content\":\"早上 ✓\",\"styles\":{\"fontSize\":10,\"fontColor\":\"#e5000000\"}},{\"id\":\"s_noon\",\"component\":\"Text\",\"content\":\"中午 ✓\",\"styles\":{\"fontSize\":10,\"fontColor\":\"#e5000000\"}},{\"id\":\"s_evening\",\"component\":\"Text\",\"content\":\"晚上 ⏳\",\"styles\":{\"fontSize\":10,\"fontColor\":\"#99000000\"}},{\"id\":\"alarm_button\",\"component\":\"Button\",\"label\":\"{{ /medication/actionText }}\",\"styles\":{\"width\":116,\"height\":36,\"borderRadius\":12,\"backgroundColor\":\"#19000000\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_253\",\"path\":\"/\",\"value\":{\"medication\":{\"nextTime\":\"14:30\",\"actionText\":\"打开闹钟\",\"statuses\":[{\"label\":\"早上\",\"value\":\"morning\",\"done\":true},{\"label\":\"中午\",\"value\":\"noon\",\"done\":true},{\"label\":\"晚上\",\"value\":\"evening\",\"done\":false}]}}}}"
+  ]
+}
