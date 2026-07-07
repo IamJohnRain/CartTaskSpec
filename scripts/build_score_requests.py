@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""为每个数据集 case 目录生成一个 VLM 评分请求体 (requestbody.json)。
+"""为每个数据集 case 目录生成 VLM 评分请求体 (score.request.json)，
+默认并并发调用 MiniMax chat/completions 评分 API（凭据从 .env 读取）。
 
 评分维度（加权总分 0-10）：
   - 指令遵从 InstructionAdherence   权重 0.4
@@ -7,16 +8,22 @@
   - 排版布局 Layout（堆叠/文字截断） 权重 0.4
 
 请求体顶层为 {"messages":[system, user(多模态)], "response_format": json_object}。
-不写 model/temperature 等模型参数，由调用方自行追加。
+不写 model/temperature 等模型参数，调用 API 时由脚本注入 .env 中的 MINIMAX_MODEL。
 
-用法：
-  # 仅生成请求体（默认）
-  python scripts/build_score_requests.py --dataset datasets/cases-600-mix
-  python scripts/build_score_requests.py --dataset datasets/cases-600-mix --case Case-007-01-low-power-007
-  python scripts/build_score_requests.py --dataset datasets/cases-600-mix --limit 5
+示例：
+  # 默认：生成请求体 + 调用 API 评分 + 提取改进 DSL 到 -vN 目录
+  python scripts/build_score_requests.py -d datasets/cases-600-mix
+  python scripts/build_score_requests.py -d datasets/cases-600-mix -c Case-007-01-low-power-007
+  python scripts/build_score_requests.py -d datasets/cases-600-mix -n 5 -j 5
 
-  # 生成请求体并并发调用 MiniMax 评分 API（凭据从 .env 读取）
-  python scripts/build_score_requests.py --dataset datasets/cases-600-mix --call-api --concurrency 5
+  # 只生成请求体，不调用 API
+  python scripts/build_score_requests.py -d datasets/cases-600-mix --disable-call-api
+
+  # 全量评分，并发 10，覆盖已有结果
+  python scripts/build_score_requests.py -d datasets/cases-600-mix -j 10 --overwrite
+
+  # 调试单个 case（单线程，便于看清日志）
+  python scripts/build_score_requests.py -d datasets/cases-600-mix -c Case-007-01-low-power-007 -j 1
 """
 from __future__ import annotations
 
@@ -46,7 +53,7 @@ QUERY_NAME = "query.txt"
 TASKSPEC_NAME = "task.taskSpec.json"
 DSL_NAME = "card.dsl.jsonl"
 PNG_NAME = "card.dsl.png"
-OUTPUT_NAME = "requestbody.json"
+OUTPUT_NAME = "score.request.json"
 SCORE_RESULT_NAME = "score.result.json"
 CARDSPEC_NAME = "card.cardspec.json"
 
@@ -493,7 +500,7 @@ def process_case_call_api(case_dir: Path, dataset_root: Path, cfg: dict,
 
 
 def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
-    cfg = load_minimax_config()
+    cfg = load_minimax_config(args.env)
     log.info(
         f"API: {cfg['url']} | model={cfg['model']} "
         f"| concurrency={args.concurrency} | retries={args.retries} "
@@ -537,33 +544,54 @@ def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="为每个 case 目录生成 VLM 评分请求体 requestbody.json。"
+        description="为每个 case 目录生成 VLM 评分请求体 score.request.json。"
     )
-    parser.add_argument("--dataset", type=Path, default=Path("datasets/cases-600-mix"),
+    parser.add_argument("-d", "--dataset", type=Path, default=Path("datasets/cases-600-mix"),
                         help="数据集根目录（其下每个子目录为一个 case）。")
-    parser.add_argument("--case", type=str, default=None,
-                        help="只处理名称匹配的 case（支持子串匹配）。")
-    parser.add_argument("--limit", type=int, default=None,
+    parser.add_argument("-c", "--case", type=str, default=None,
+                        help="只处理名称匹配的 case（子串匹配）。")
+    parser.add_argument("-n", "--limit", type=int, default=None,
                         help="最多处理的 case 数量（调试用）。")
-    parser.add_argument("--output-name", type=str, default=OUTPUT_NAME,
-                        help=f"输出文件名，默认 {OUTPUT_NAME}。")
+    parser.add_argument("-o", "--output-name", type=str, default=OUTPUT_NAME,
+                        help=f"请求体输出文件名，默认 {OUTPUT_NAME}。")
     parser.add_argument("--no-image", action="store_true",
                         help="不编码 PNG，生成纯文本请求体。")
     parser.add_argument("--overwrite", action="store_true",
-                        help="覆盖已存在的输出文件。")
-    parser.add_argument("--call-api", action="store_true",
-                        help="生成请求体后并发调用 MiniMax 评分 API，落盘评分"
-                             "结果并提取改进 DSL 到 -vN 版本目录。")
-    parser.add_argument("--concurrency", type=int, default=5,
+                        help="覆盖已存在的输出/评分结果。")
+    parser.add_argument("--disable-call-api", action="store_true",
+                        help="只生成请求体，不调用 MiniMax 评分 API（默认会调用）。")
+    parser.add_argument("-j", "--concurrency", type=int, default=5,
                         help="调用 API 时的并发 case 数，默认 5。")
-    parser.add_argument("--retries", type=int, default=3,
+    parser.add_argument("-r", "--retries", type=int, default=3,
                         help="单 case API 调用失败的重试次数，默认 3。")
-    parser.add_argument("--timeout", type=int, default=300,
+    parser.add_argument("-t", "--timeout", type=int, default=300,
                         help="单次 API 请求超时秒数（流式模式下为块间最大"
                              "间隔），默认 300（5 分钟）。")
+    parser.add_argument("-e", "--env", type=Path, default=None,
+                        help=".env 文件路径，默认仓库根目录下的 .env。")
+    parser.epilog = (
+        "示例:\n"
+        "  # 默认:生成请求体 + 调用 API 评分 + 提取改进 DSL 到 -vN 目录\n"
+        "  python scripts/build_score_requests.py -d datasets/cases-600-mix\n"
+        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "-c Case-007-01-low-power-007\n"
+        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "-n 5 -j 5\n\n"
+        "  # 只生成请求体,不调用 API\n"
+        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "--disable-call-api\n\n"
+        "  # 全量评分,并发 10,覆盖已有结果\n"
+        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "-j 10 --overwrite\n\n"
+        "  # 调试单 case(单线程)\n"
+        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "-c Case-007-01-low-power-007 -j 1"
+    )
+    parser.formatter_class = argparse.RawDescriptionHelpFormatter
     args = parser.parse_args()
 
-    if args.call_api:
+    call_api = not args.disable_call_api
+    if call_api:
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s | %(levelname)-7s | %(message)s",
@@ -584,7 +612,7 @@ def main() -> int:
         print("未找到任何符合条件的 case 目录。", file=sys.stderr)
         return 1
 
-    if args.call_api:
+    if call_api:
         return run_api_batch(case_dirs, args)
 
     ok = 0
