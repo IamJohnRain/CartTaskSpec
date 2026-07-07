@@ -2,7 +2,7 @@
   "case_id": "Case-10-rainy-taxi-182",
   "scores": {
     "instruction": {
-      "score": 9.0,
+      "score": 8.0,
       "weight": 0.4
     },
     "aesthetic": {
@@ -10,24 +10,27 @@
       "weight": 0.2
     },
     "layout": {
-      "score": 7.5,
+      "score": 5.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 8.1,
+  "weighted_total": 6.9,
   "reasons": {
-    "instruction": "用户要求雨天打车卡片、按钮、点击打开app、显示天气、显示数字、提醒'快不行了'。DSL 全部体现：title=雨天打车、weather=大雨 18度、remainingMinutes=3、warning=快不行了、actionText=打开打车；onClick.call=clickToDeeplink 且 args 原样来自 eventCandidates；size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value 与 TaskSpec 一致。扣 1 分：dataModel 表达式使用 $__dataModel 前缀（双重下划线），属于非常规可读路径写法；且表达式 '$__dataModel.taxi.remainingMinutes + 字符串' 略偏离纯读取。",
-    "aesthetic": "蓝底 #ff0a59f7 + 白字 + 黄色倒计时 + 白色胶囊按钮，色彩对比强、信息层级清楚。卡片整体留白合理、无视觉空洞。问题：title(16px fontWeight 700) 与 countdown(20px fontWeight 700) 同时为最强字重 700，违反'同一卡片只保留一个最强字重'约束；countdown 用黄色已自然突出，title 应降为 600 让 700 仅留给数字。间距阶梯 4/6/8 基本合规，6 为微调尚可。",
-    "layout": "root Column 预算：padding.top+bottom=24，itemMargin*2=16，Σ子高=42(weather)+24(waitInfo)+34(action)=100，合计 24+16+100=140=可用 140，刚好填满 spaceBetween 无溢出。weather Column：0+4+(22+16)=42=42 ✓。waitInfo Row：0+6+(48+62)=116=116 ✓。action Button 116x34 单子项 ✓。底部动作区底边到卡片底边=12vp，处于 8-12vp 范围。隐患：countdown 文本'3分钟' 估算宽=0.6*20+20+20=52 > 宽度 48，maxLines=1+textOverflow:none 时存在挤压/裁切风险（渲染图中勉强可见但偏紧）。"
+    "instruction": "用户原始指令要求雨天打车卡片，需含天气显示、按钮、动态数字。截图中标题'雨天打车'、天气'大雨 18度'、按钮'打开打车'均按要求呈现，onClick 正确绑定 clickToDeeplink 事件至 com.example.taxi。但截图中主指标文本被截断为'3分'，'3分钟'中'钟'字缺失，关键数据未完整呈现给用户；updateDataModel 缺少协议要求的 path 字段（仅有 value）。",
+    "aesthetic": "截图整体配色（蓝底 + 白色文字 + 黄色重点数字）对比度良好，文字清晰可读；标题/副标题/主指标/按钮的字号字重层级清晰分明，黄色'3'在蓝底上跳出感强；留白与对齐基本合理。不足：视觉风格偏简单基础、缺少主题氛围（雨天意象），'快不行了'用普通白色未通过颜色/形态强化警示语义。",
+    "layout": "截图中最严重的问题是 Row 中 countdown 文本被裁切：countdown 宽度仅 48、字号 20sp，文本'3分钟'实际需约 52px，导致'钟'字被右侧裁掉，截图中只能看到'3分'，受保护的主指标文本被裁切属于严重布局错误。其余元素（标题'雨天打车'、天气'大雨 18度'、按钮'打开打车'）均完整在卡片内、未越界；Button 热区（116×34）足够，底部锚定距卡片底边约 12vp，符合规范。Row 中 countdown(48) + itemMargin(6) + status(62) = 116 紧贴边界无弹性空间。",
+    "improved_dsl": "见 improved_dsl 数组"
   },
   "issues": [
-    "title(700) 与 countdown(700) 同时为最强字重，违反单一最强字重规则",
-    "countdown 宽度 48 略小于 '3分钟' 估算宽度 52，存在裁切风险",
-    "数据绑定使用 $__dataModel 双重下划线写法，路径可读性欠佳"
+    "中间主指标文本'3分钟'被截断为'3分'，countdown 宽度 48 + 字号 20sp 不够容纳'3分钟'三个字形",
+    "updateDataModel 缺少协议要求的 path: '/' 字段",
+    "'快不行了' 警示文本用普通白色显示，未通过颜色或字重强化警示语义",
+    "整体视觉风格偏简单基础，缺少主题氛围元素",
+    "Row 中 countdown 与 status 宽度分配过紧，缺少弹性空间"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_182\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_182\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather\",\"waitInfo\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0a59f7\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather\",\"component\":\"Column\",\"children\":[\"title\",\"condition\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.weather }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"waitInfo\",\"component\":\"Row\",\"children\":[\"countdown\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.remainingMinutes + '分钟' }}\",\"styles\":{\"width\":56,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffdf3d\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.warning }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.actionText }}\",\"styles\":{\"width\":116,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.taxi\",\"abilityName\":\"com.example.taxi.MainAbility\",\"uri\":\"taxi://home/rainy\"}}]}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_182\",\"value\":{\"taxi\":{\"title\":\"雨天打车\",\"weather\":\"大雨 18度\",\"remainingMinutes\":3,\"warning\":\"快不行了\",\"actionText\":\"打开打车\"}}}}"
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_182\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather\",\"waitInfo\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0a59f7\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather\",\"component\":\"Column\",\"children\":[\"title\",\"condition\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.weather }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"waitInfo\",\"component\":\"Row\",\"children\":[\"countdown\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.remainingMinutes + '分钟' }}\",\"styles\":{\"width\":56,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffdf3d\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.warning }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.actionText }}\",\"styles\":{\"width\":116,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.taxi\",\"abilityName\":\"com.example.taxi.MainAbility\",\"uri\":\"taxi://home/rainy\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_182\",\"path\":\"/\",\"value\":{\"taxi\":{\"title\":\"雨天打车\",\"weather\":\"大雨 18度\",\"remainingMinutes\":3,\"warning\":\"快不行了\",\"actionText\":\"打开打车\"}}}}"
   ]
 }

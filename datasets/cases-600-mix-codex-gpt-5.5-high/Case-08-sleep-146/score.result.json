@@ -2,36 +2,35 @@
   "case_id": "Case-08-sleep-146",
   "scores": {
     "instruction": {
-      "score": 4.5,
+      "score": 2.0,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 2.5,
+      "score": 3.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 2.0,
+      "score": 5.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 3.1,
+  "weighted_total": 3.6,
   "reasons": {
-    "instruction": "数据绑定（{{ $__dataModel.sleep.* }}）与 onClick 事件（call/args 原样来自 eventCandidates）写法正确，catalogId/version/size/root shell 硬约束基本满足。但存在明显扣分项：(1) updateDataModel 缺少协议要求的 path 字段（须为 \"/\"）；(2) 用户明确要求「文字叠背景图上」，assetCandidates 提供了 sleep-moon.png，但 DSL 使用了 linearGradient 渐变，资产未被任何 Image.src/backgroundImage 引用，违背用户显式诉求；(3) title/weather/risk/status 四个文本组件在渲染截图中均不可见，文字信息实际未传达给用户。",
-    "aesthetic": "渐变配色（深蓝到暗红）与警示主题契合，红点 + 白胶囊按钮对比清晰，圆角 18 与分割合理。但因 title/weather/risk/status 文字全部未渲染，整张卡片在视觉上仅剩「一个红点 + 一只白胶囊」，信息密度几乎为零，层级关系无从体现，不符合 sleep 预警卡片应有的呈现。",
-    "layout": "按预算公式核算：(1) content Column 高 116、padding 10，子项 top(18) + main(42) + footer(28) = 88，加 itemMargin 16 与 padding 20 得 124 > 可用 116，溢出 8vp；(2) top Row 宽 96：title 52 + weather 40 + itemMargin 4 = 96 通过，但 title 文本「睡眠预警」fontSize 14 估算宽度 4×14=56 > 52，超 4vp，weather「夜间阴 24°C」估算 3×10+4+12+4+6=56 > 40，超 16vp 严重裁切；(3) main/footer Row 横向均过 (96)，但 footer Button 高度 28 + 父底边到底部 10vp 在 2x2 内尚可；(4) 渲染截图证实四段文字组件全部缺位，应是 maxLines:1 + textOverflow:\"none\" + 显式 width 不足导致零像素输出，属严重可读性塌方。"
+    "instruction": "用户明确要求显示：睡眠预警标题、主警示文案'快休息'、状态描述、天气读数、点击跳转手环app的CTA。从截图看，卡片内除一个红点（alert_dot）和一个白色胶囊形按钮底板外，'睡眠预警'标题、'快休息'主警示、'疲劳风险高'状态、'夜间阴 24°C'天气、按钮上的'手环详情'文字全部没有渲染呈现。DSL 中虽定义正确并绑定了 DataModel，但渲染结果完全缺失关键信息，指令遵从严重不足。onClick 事件在 DSL 中配置正确，但因按钮文字不可见，无法从截图判断用户能否理解可点击语义。TaskSpec 提供的 sleep_icon 资产也未使用。",
+    "aesthetic": "截图中所见：暗色渐变背景（深蓝到暗红）尚算和谐，红点与白色按钮底板在视觉上不冲突。但因所有文字缺失，整张卡片显得空洞、未完成、像半成品；白色胶囊形按钮在没有文字的情况下孤零零漂浮，红色圆点没有文字说明其含义，视觉重心缺失，留白比例严重失调（上方大片空白），整体观感非常差。",
+    "layout": "从截图看，root 容器 140x140 圆角正确，无元素溢出卡片边界；红点与按钮位于卡片下半部，间距合理，未观察到组件堆叠/遮挡/裁切问题；无文字截断现象（因为根本没有文字可截断）。布局结构本身没有崩溃，但内容空缺使空间利用率极低。底部按钮底边距卡片底边尚在合理范围。"
   },
   "issues": [
-    "updateDataModel 缺少 path 字段（协议要求 \"/\"，且 value 须原样等于 TaskSpec.dataModel.value）",
-    "用户明确要求「文字叠背景图上」，但 DSL 改用 linearGradient 渐变，assetCandidates 提供的 sleep-moon.png 资产完全未被使用",
-    "content Column 纵向 88(子项)+16(itemMargin)+20(padding)=124 > 可用 116，整体溢出 8vp",
-    "title Text 显式 width:52 <「睡眠预警」估算宽度 56(4×14)，文字被裁切",
-    "weather Text 显式 width:40 <<「夜间阴 24°C」估算宽度 56，文字严重裁切（约丢 16vp）",
-    "渲染截图中 title/weather/risk/status 四段文字均不可见，疑似 textOverflow:\"none\"+maxLines:1+宽度不足导致零像素渲染",
-    "stage Column 仅有 #22F44336(α=0.13) 弱红覆盖，几乎无视觉贡献，结构上属冗余层"
+    "截图渲染结果中所有 Text 组件的 content 字段（标题'睡眠预警'、风险'快休息'、状态'疲劳风险高'、天气'夜间阴 24°C'、按钮'手环详情'）完全不可见，关键信息全部缺失",
+    "未使用 TaskSpec 提供的 assetCandidates 中的 sleep_icon 资源（assets/sleep-moon.png），用户要求'文字叠背景图上'，背景图未落实",
+    "content Column 的 width:116、padding 10，实际内宽 96，与 title(52)+weather(40)+itemMargin 4=96 刚好填满，但 weather 文字'夜间阴 24°C'（约 6 字符含数字）在 10pt、width:40 的容器内宽度可能不足，存在渲染后溢出/换行隐患",
+    "红点 alert_dot 单独出现无文字注解，语义不明；缺少与睡眠/夜间氛围相关的视觉符号",
+    "卡片上方 2/3 区域除背景渐变外完全空白，视觉重心严重偏下",
+    "DSL 中 updateDataModel 行缺少 path:'/' 字段，不符合协议"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_146\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"styles\":{\"width\":140,\"height\":140}}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_146\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"overlay\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundImage\":\"assets/sleep-moon.png\"}},{\"id\":\"overlay\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"backgroundColor\":\"#A60E1320\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"main\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"title\",\"weather\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":104,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.weather }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"risk\",\"status\"],\"itemMargin\":0,\"styles\":{\"width\":104,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"risk\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.riskText }}\",\"styles\":{\"width\":104,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFFFDAD6\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.status }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFF2B8B5\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"alert_dot\",\"action\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":104,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"alert_dot\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":16,\"height\":16,\"borderRadius\":8,\"backgroundColor\":\"#FFF44336\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.hint }}\",\"styles\":{\"width\":80,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#FFB71D1D\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepRisk\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_146\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"moon\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":150,\"colors\":[[\"#FF101417\",0],[\"#FF223149\",0.7],[\"#FF4A1F2A\",1]]}}},{\"id\":\"bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#1AFFFFFF\"}},{\"id\":\"moon\",\"component\":\"Image\",\"src\":\"assets/sleep-moon.png\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"opacity\":0.22,\"objectFit\":\"cover\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"main\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"title\",\"weather\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":104,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.weather }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"risk\",\"status\"],\"itemMargin\":2,\"styles\":{\"width\":104,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"risk\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.riskText }}\",\"styles\":{\"width\":104,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FFFFE0DC\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.status }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFF2B8B5\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"action\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":104,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.hint }}\",\"styles\":{\"width\":104,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#FF4A1F2A\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepRisk\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠预警\",\"riskText\":\"快休息\",\"status\":\"疲劳风险高\",\"weather\":\"夜间阴 24°C\",\"hint\":\"手环详情\"}}}}"
   ]
 }

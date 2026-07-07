@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-29-elderly-care-565",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户要求字叠背景图、一行带数字、点能跳应用、能读日程、红色危险提示。截图中：1) 右上角 'CARE' 文字作为水印背景（assetCandidates 为空，使用文字模拟'字叠背景'）；2) '0 项日程' 数字行已呈现；3) '打开应用' 按钮绑定了 clickToDeeplink 事件，参数与 eventCandidates 一致；4) 右侧灰色面板展示了日程占位信息 '今日日程读取中/等待同步'；5) '危险提示' 红色文字与 '红色预警' 橙色徽章都体现了红色危险语义。主要扣分点：'CARE' 水印因透明度低（#19ed6f21）未能形成明显的'背景图'效果；底部 '今日日程读取中' 与日程面板内的提示文字完全重复，造成信息冗余。",
+    "aesthetic": "截图整体配色克制（白底+米色渐变+红橙重点），从左到右的渐变方向自然，前景文字在背景上清晰可读。'长辈看护' 标题（16/700）、'0 项日程' 主数字（20/800）、'红色预警' 徽章（12/700/橙底白字）、'打开应用' 按钮（14/700/橙底白字）形成了清晰的字号字重层级。'CARE' 水印颜色 #19ed6f21 透明度仅 10%，几近隐形，未能作为有效背景元素，是美观上较大的遗憾。底部 hint 文字与日程面板文字重复，略显啰嗦。",
+    "layout": "截图显示所有关键元素均位于卡片边界内且完整可读：'长辈看护' 标题完整、'红色预警' 徽章完整、'0 项日程' 主数字完整、'危险提示' 红字完整、'今日日程读取中' 与 '等待同步' 完整、'打开应用' 按钮完整。'CARE' 水印位于右上方，与 '红色预警' 徽章存在视觉重叠（'R' 字母被徽章部分遮盖），属背景层设计，违规程度较轻。底部按钮底边到卡片底边约 12-14vp，符合 2x4 区间要求。理论计算 content Column 子项总高 26+8+48+8+30=120 略大于 116 内容区，存在 4vp 理论溢出，但实际渲染未发生明显截断。"
+  },
+  "issues": [
+    "'CARE' 水印颜色 #19ed6f21 透明度仅约 10%，未能形成明显的'字叠背景图'效果",
+    "'CARE' 水印与右上角 '红色预警' 徽章存在视觉重叠，'R' 字母被部分遮盖",
+    "底部 '今日日程读取中' 提示文字与日程面板内的标题文字完全重复，造成信息冗余",
+    "content Column 子项总高 120 略大于 116 内容区，存在 4vp 理论溢出风险（实际未截断）",
+    "itemMargin 8 在 116 内容区内偏紧，建议缩小为 6 以获得更稳的留白"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"elderly_care_calendar_565\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"elderly_care_calendar_565\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_bg\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"ambient_bg\",\"component\":\"Column\",\"children\":[\"alert_wash\",\"bottom_line\"],\"itemMargin\":0,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\",\"linearGradient\":{\"direction\":\"toRight\",\"colors\":[[\"#fffff1ed\",0],[\"#ffffffff\",1]]}}},{\"id\":\"alert_wash\",\"component\":\"Text\",\"content\":\"CARE\",\"styles\":{\"width\":170,\"height\":56,\"fontSize\":36,\"fontWeight\":900,\"fontColor\":\"#2aed6f21\",\"textAlign\":\"center\",\"margin\":{\"left\":108,\"top\":6},\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_line\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ed6f21\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"risk_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":92,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.riskLevel }}\",\"styles\":{\"width\":76,\"height\":24,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffed6f21\",\"borderRadius\":12,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"number_group\",\"schedule_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"number_group\",\"component\":\"Column\",\"children\":[\"number_line\",\"alert_text\"],\"itemMargin\":2,\"styles\":{\"width\":104,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"number_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/care/mainNumber} ${/care/numberUnit}\"}},\"styles\":{\"width\":104,\"height\":26,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alertText }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"schedule_title\",\"schedule_time\"],\"itemMargin\":4,\"styles\":{\"width\":160,\"height\":48,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"justifyContent\":\"center\",\"alignItems\":\"start\",\"backgroundColor\":\"#0c000000\",\"borderRadius\":16}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ size($__dataModel.data.calendar.items) > 0 ? $__dataModel.data.calendar.items[0].title : $__dataModel.care.hint }}\",\"styles\":{\"width\":140,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ size($__dataModel.data.calendar.items) > 0 ? $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd : '等待同步' }}\",\"styles\":{\"width\":140,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"care_hint\",\"open_btn\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"care_hint\",\"component\":\"Text\",\"content\":\"实时看护中 · 数据已加密\",\"styles\":{\"width\":164,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.care.targetLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":84,\"height\":30,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffed6f21\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"elderly_care_calendar_565\",\"path\":\"/\",\"value\":{\"care\":{\"title\":\"长辈看护\",\"alertText\":\"危险提示\",\"riskLevel\":\"红色预警\",\"mainNumber\":\"0\",\"numberUnit\":\"项日程\",\"hint\":\"今日日程读取中\",\"targetLabel\":\"打开应用\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

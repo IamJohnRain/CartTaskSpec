@@ -2,38 +2,34 @@
   "case_id": "Case-06-memory-clean-112",
   "scores": {
     "instruction": {
-      "score": 5.5,
+      "score": 0.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 4.5,
+      "score": 0.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 4.0,
+      "score": 0.0,
       "weight": 0.4
     }
   },
-  "weighted_total": 4.7,
+  "weighted_total": 0.2,
   "reasons": {
-    "instruction": "用户主要诉求（深色风格、无图、红黑渐变、存储图标主体、47%显示、视频垃圾/聊天残留、设置按钮、95%红线标红）均已视觉化体现，按钮 onClick.call/args 原样引用 eventCandidates 的 clickToDeeplink 合法。但存在三处明确硬约束违反：(1) 全部 Text 使用了禁用的 'text' 字段而非 'content'；(2) Button 使用了禁用的 'text' 字段而非 'label'；(3) updateDataModel 缺少必填的 'path':'/' 字段。另 freeText/alertText 使用 formatString 函数调用对象而非推荐的 {{ ... }} 直接表达式，且 formatString 内 ${/storage/...} 路径以 / 开头与 DataModel value 路径风格不一致，扣分。",
-    "aesthetic": "深色舞台基调与红黑渐变方向正确，#7A1018 卡片底色 + #FF4D5A 警示色 + 红色 CTA 按钮形成红色紧张感，配色和谐可读。但渐变三色 #1A0A0B/#4B0E14/#0B0B0D 整体偏黑，红色压不住场，未达到'压迫感紧迫渐变'的视觉冲击；存储'图标'仅由 4px 红色 Divider + 18px '存储' 文字构成，过于单薄，撑不起'视觉主体'的体量；categories 用纯色块 Chip 风格尚可但与红黑紧张主题对比偏弱；渲染截图整体近乎全黑，元素几乎不可见，可读性差。",
-    "layout": "根 Column 纵向预算：padding.top(10) + padding.bottom(10) + itemMargin×2(12) + topRow(64) + categoryRow(22) + bottomRow(28) = 146 > 容器高 140，溢出 6vp；root.clip:true 会裁掉底部内容，bottomRow 可能被部分裁切。topRow 横向预算：itemMargin(10) + storageIcon(72) + metricColumn(194) = 276，等于容器宽 276 满格无安全余量（iconLabel 文字宽 36 留 20 余量 OK）。metricColumn 纵向：itemMargin(6) + freeText(24) + alertText(22) = 52 < 64 OK。storageIcon 纵向：padding(16) + itemMargin(8) + iconCap(4) + iconLabel(24) = 52 < 64 OK。categoryRow/bottomRow 横向 172/132 < 276 OK。底部动作区距卡片底 10vp 在 10-14vp 区间合规；按钮热区 28vp 达 24vp 最低要求。总体唯一硬伤是根 Column 6vp 纵向溢出。"
+    "instruction": "截图为纯白空白卡片，用户完全看不到任何内容。虽然 DSL 数据模型和事件绑定结构上接近正确（onClick 使用了原样 eventCandidates，dataModel.value 完整回填），但多个 Text 组件使用被协议明确禁止的 text 字段（应使用 content），Button 同样使用 text（应使用 label），freeText/alertText 用了协议不支持的 formatString 调用，导致渲染器直接失败或忽略全部文本，卡片完全空白。用户要求的存储图标块、剩余空间 47%、危险红线示警、视频垃圾/聊天残留分类、打开存储设置按钮均不可见。",
+    "aesthetic": "截图整张为纯白底色，看不到任何颜色块、文字、渐变或按钮，不存在可评价的视觉表现，0 分。",
+    "layout": "截图整张为纯白，看不到任何组件被绘制——既看不到 300x140 的卡片轮廓、也看不到红黑渐变背景、存储图标色块、指标文字、分类标签或底部按钮。卡片主体完全没有渲染出来，属于渲染层完全失败，比常规堆叠/截断更严重，0 分。补充交叉验证：原 DSL 根 Column 内子项总高 64+22+28+12(itemMargin)=126，超过可用内容区 120（140-20 padding），存在潜在纵向溢出，进一步佐证布局不可行。"
   },
   "issues": [
-    "Text 组件使用 'text' 字段，违反协议硬约束（应使用 'content'）",
-    "Button 组件使用 'text' 字段，违反协议硬约束（应使用 'label'）",
-    "updateDataModel 缺少必填字段 'path':'/'，违反硬约束",
-    "根 Column 纵向总占用 146 > 容器 140，溢出 6vp，clip:true 会裁切底部 bottomRow",
-    "freeText/alertText 使用 formatString 函数调用对象，未按协议优先使用 {{ ... }} 直接表达式",
-    "渐变配色过暗，未体现'压迫感红黑紧迫'，红色权重不足",
-    "存储图标仅由 4px Divider + 18px '存储' 文字，撑不起'视觉主体'的体量",
-    "topRow 横向 72+194+10=276 等于容器宽 276，无安全余量",
-    "Button 高度 28vp 满足 ≥24vp 最低要求但未达 40vp 理想值"
+    "Text 组件全部使用被禁止的 text 字段，应改为 content 字段",
+    "Button 使用 text 字段，应改为 label 字段",
+    "freeText/alertText 用了协议不支持的 formatString 调用，应改为简单 {{ /storage/... }} 表达式",
+    "根 Column 内部子项总高 126 超过可用高度 120，存在纵向溢出风险",
+    "渲染完全失败，截图为纯白空白卡片，用户诉求无一可见"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_112\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_112\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"type\":\"Column\",\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"background\":{\"type\":\"linearGradient\",\"angle\":135,\"colors\":[\"#0B0506\",\"#6A0E16\",\"#1A0608\"]},\"children\":[\"topRow\",\"categoryRow\",\"bottomRow\"],\"itemMargin\":4,\"justifyContent\":\"space-between\",\"alignItems\":\"stretch\"},{\"id\":\"topRow\",\"type\":\"Row\",\"width\":276,\"height\":60,\"children\":[\"storageIcon\",\"metricColumn\"],\"itemMargin\":10,\"alignItems\":\"center\"},{\"id\":\"storageIcon\",\"type\":\"Column\",\"width\":80,\"height\":60,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":14,\"backgroundColor\":\"#7A1018\",\"children\":[\"iconCap\",\"iconLabel\",\"iconBar\"],\"itemMargin\":5,\"justifyContent\":\"center\",\"alignItems\":\"center\"},{\"id\":\"iconCap\",\"type\":\"Divider\",\"width\":56,\"height\":4,\"backgroundColor\":\"#FF4D5A\"},{\"id\":\"iconLabel\",\"type\":\"Text\",\"width\":64,\"height\":22,\"content\":\"{{ storage.iconLabel }}\",\"fontSize\":20,\"fontWeight\":\"Bold\",\"fontColor\":\"#FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1},{\"id\":\"iconBar\",\"type\":\"Divider\",\"width\":56,\"height\":2,\"backgroundColor\":\"#FF8A93\"},{\"id\":\"metricColumn\",\"type\":\"Column\",\"width\":186,\"height\":60,\"children\":[\"freeText\",\"alertText\"],\"itemMargin\":6,\"justifyContent\":\"center\",\"alignItems\":\"stretch\"},{\"id\":\"freeText\",\"type\":\"Text\",\"width\":186,\"height\":22,\"content\":\"剩余可用空间 {{ storage.freePercentText }}\",\"fontSize\":18,\"fontWeight\":\"Bold\",\"fontColor\":\"#FFFFFF\",\"maxLines\":1},{\"id\":\"alertText\",\"type\":\"Text\",\"width\":186,\"height\":18,\"content\":\"已用 {{ storage.usedPercentText }} · {{ storage.dangerText }}\",\"fontSize\":12,\"fontWeight\":\"Medium\",\"fontColor\":\"#FF4D5A\",\"maxLines\":1},{\"id\":\"categoryRow\",\"type\":\"Row\",\"width\":276,\"height\":22,\"children\":[\"videoTag\",\"chatTag\"],\"itemMargin\":8,\"alignItems\":\"center\"},{\"id\":\"videoTag\",\"type\":\"Text\",\"width\":82,\"height\":22,\"content\":\"{{ storage.categories.video }}\",\"fontSize\":12,\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#3A1518\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1},{\"id\":\"chatTag\",\"type\":\"Text\",\"width\":82,\"height\":22,\"content\":\"{{ storage.categories.chat }}\",\"fontSize\":12,\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#3A1518\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1},{\"id\":\"bottomRow\",\"type\":\"Row\",\"width\":276,\"height\":28,\"children\":[\"actionButton\"],\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"},{\"id\":\"actionButton\",\"type\":\"Button\",\"width\":132,\"height\":32,\"label\":\"{{ storage.actionText }}\",\"fontSize\":14,\"fontWeight\":\"Medium\",\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#D71920\",\"borderRadius\":10,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_112\",\"path\":\"/\",\"value\":{\"storage\":{\"iconLabel\":\"存储\",\"freePercentText\":\"47%\",\"usedPercentText\":\"96%\",\"dangerText\":\"危险红线 95%+\",\"categories\":{\"video\":\"视频垃圾\",\"chat\":\"聊天残留\"},\"actionText\":\"打开存储设置\"}}}}"
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_112\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"type\":\"Column\",\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":22,\"clip\":true,\"background\":{\"type\":\"linearGradient\",\"angle\":120,\"colors\":[\"#1A0A0B\",\"#4B0E14\",\"#0B0B0D\"]},\"children\":[\"topRow\",\"categoryRow\",\"bottomRow\"],\"itemMargin\":4,\"justifyContent\":\"space-between\",\"alignItems\":\"stretch\"},{\"id\":\"topRow\",\"type\":\"Row\",\"width\":276,\"height\":62,\"children\":[\"storageIcon\",\"metricColumn\"],\"itemMargin\":10,\"alignItems\":\"center\"},{\"id\":\"storageIcon\",\"type\":\"Column\",\"width\":70,\"height\":62,\"padding\":{\"left\":6,\"right\":6,\"top\":8,\"bottom\":8},\"borderRadius\":14,\"backgroundColor\":\"#7A1018\",\"children\":[\"iconCap\",\"iconLabel\"],\"itemMargin\":6,\"justifyContent\":\"center\",\"alignItems\":\"center\"},{\"id\":\"iconCap\",\"type\":\"Divider\",\"width\":38,\"height\":4,\"backgroundColor\":\"#FF4D5A\"},{\"id\":\"iconLabel\",\"type\":\"Text\",\"width\":58,\"height\":24,\"content\":\"{{ /storage/iconLabel }}\",\"fontSize\":18,\"fontWeight\":\"Bold\",\"fontColor\":\"#FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1},{\"id\":\"metricColumn\",\"type\":\"Column\",\"width\":196,\"height\":62,\"children\":[\"freeText\",\"alertText\"],\"itemMargin\":4,\"justifyContent\":\"center\",\"alignItems\":\"stretch\"},{\"id\":\"freeText\",\"type\":\"Text\",\"width\":196,\"height\":24,\"content\":\"剩余可用空间 {{ /storage/freePercentText }}\",\"fontSize\":18,\"fontWeight\":\"Bold\",\"fontColor\":\"#FFFFFF\",\"maxLines\":1},{\"id\":\"alertText\",\"type\":\"Text\",\"width\":196,\"height\":22,\"content\":\"已用 {{ /storage/usedPercentText }} · {{ /storage/dangerText }}\",\"fontSize\":13,\"fontWeight\":\"Medium\",\"fontColor\":\"#FF4D5A\",\"maxLines\":1},{\"id\":\"categoryRow\",\"type\":\"Row\",\"width\":276,\"height\":22,\"children\":[\"videoTag\",\"chatTag\"],\"itemMargin\":10,\"alignItems\":\"center\"},{\"id\":\"videoTag\",\"type\":\"Text\",\"width\":100,\"height\":22,\"content\":\"{{ /storage/categories/video }}\",\"fontSize\":12,\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#3A1518\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1},{\"id\":\"chatTag\",\"type\":\"Text\",\"width\":100,\"height\":22,\"content\":\"{{ /storage/categories/chat }}\",\"fontSize\":12,\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#3A1518\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1},{\"id\":\"bottomRow\",\"type\":\"Row\",\"width\":276,\"height\":28,\"children\":[\"actionButton\"],\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"},{\"id\":\"actionButton\",\"type\":\"Button\",\"width\":132,\"height\":28,\"label\":\"{{ /storage/actionText }}\",\"fontSize\":14,\"fontWeight\":\"Medium\",\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#D71920\",\"borderRadius\":10,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_112\",\"value\":{\"storage\":{\"iconLabel\":\"存储\",\"freePercentText\":\"47%\",\"usedPercentText\":\"96%\",\"dangerText\":\"危险红线 95%+\",\"categories\":{\"video\":\"视频垃圾\",\"chat\":\"聊天残留\"},\"actionText\":\"打开存储设置\"}}}}"
   ]
 }

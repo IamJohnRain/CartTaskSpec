@@ -2,34 +2,34 @@
   "case_id": "Case-01-low-power-005",
   "scores": {
     "instruction": {
-      "score": 7.5,
+      "score": 6.0,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 5.0,
+      "score": 6.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 3.5,
+      "score": 3.0,
       "weight": 0.4
     }
   },
-  "weighted_total": 5.4,
+  "weighted_total": 4.8,
   "reasons": {
-    "instruction": "数据绑定全部到位：title/value/alert/actionText 均使用 {{ $__dataModel.power.* }} 表达式，数字可随 dataModel 变化。事件 clickToDeeplink 在 root 和 action 按钮上原样引用 eventCandidates，参数完全一致。红色危险主题贯穿全卡（背景 #ff1a1012、文本 #ffff453a、按钮 #ffff453a）。但用户明确要求的'红色危险提示'中的 alert 文字 '电量危险' 被 action 按钮覆盖遮挡（详见 layout 段），可视性受损，扣 2.5 分。'整个字叠背景图上' 因 assetCandidates 为空，只能用深色面替代图片，算基本满足。",
-    "aesthetic": "红黑危险主题统一，仅 700 一种字重（最强字重唯一），字号阶梯 12/16/40 合理，标题-数值-操作层级清晰，扣分项：alert_band（亮红 #ffd92d20）与 action 按钮（亮红 #ffff453a）色相几乎一致，叠加后 alert 文字直接被按钮吞掉，画面像只剩'电'字悬空，专业感与克制感被破坏，扣 5 分。",
-    "layout": "根 Stack 140x140 padding 12，内容区 116x116。\n1) stage Column（116x116，justifyContent:end）子项 alert_band 116x26，y=stage 内 90→116，即根坐标 y=102→128，无溢出。\n2) content Column（116x76，padding top 4）子项 title(h22)+itemMargin4+value(h46)=72，恰好等于内容高 72，无溢出。\n3) action 按钮（72x28，margin top 88、left 44）位置为根坐标 (56,100)→(128,128)；alert_band 处于根坐标 (12,102)→(128,128)。两元素在 x∈[56,128]、y∈[102,128] 完全重叠，Stack 渲染顺序使按钮覆盖在 alert_band 之上。alert 文字 '电量危险' 居中（center），估算宽 4×12=48，水平居中于 [12,128] 即 x≈46→94，被按钮 x∈[56,128] 覆盖 → 文字右半 '量危险' 被遮，仅剩 '电'。属典型的 Stack 层覆盖受保护文本/CTA，扣 6.5 分。\n4) 底部 action 下边 128，卡片底 140，间距 12vp，符合 2x2 区间；按钮热区 72x28≥24vp，无问题。"
+    "instruction": "用户明确要求'红色危险提示'和'点一下跳app'。截图能看到标题'低电模式'、大号红色数字'12%'、底部红色高危色带，整体意图存在；root 与 Button 都正确绑定了 clickToDeeplink 事件，args 与 eventCandidates 一致；size=2x2、catalogId、version、updateDataModel 协议项均合规。扣分核心：底部红色色带上的'电量危险'四个大字被右侧的'去设置'按钮大面积覆盖，截图中仅能勉强看到'电'一个字符残留，关键的危险提示信息在视觉上几乎丢失，属于指令呈现不完整。",
+    "aesthetic": "红黑配色契合'危险/低电'主题，'12%'用 40pt 红色、'低电模式'用白色加粗，层级与对比度都不错，背景色 #ff1a1012 与色带 #ffd92d20、按钮 #ffff453a 的红色家族统一可读。但底部色带与按钮完全重叠，按钮白字'去设置'压在红底文字上形成视觉脏块，破坏了整体的克制感与专业度。",
+    "layout": "截图中可清晰看到 Stack 内 alert_band（红底白字'电量危险'，116×26 位于 stage 底部 y≈102–128）与 action 按钮（margin top:88 起始 y≈100，height 28 结束 y≈128）发生严重 z 轴重叠，导致'电量危险'四个字符中只有最左侧的'电'从按钮左侧挤出可见，'量危险'三个字几乎全部被'去设置'按钮覆盖，核心危险文案不可读；按钮右端也基本贴合卡片右内边缘，缺少呼吸空间；内容 Column（title 22 + value 46 + padding 4）纵向占用 72 处于 76 高度内，单独看可接受，但与底部色带累计高度已逼近 116 上限，使整个 Stack 空间紧张。属于典型的 Stack 子元素遮挡受保护文本的严重排版事故。"
   },
   "issues": [
-    "action 按钮 (x=56-128, y=100-128) 与 alert_band (x=12-128, y=102-128) 在 Stack 中层叠，按钮覆盖在 alert_band 之上，导致 alert 文字 '电量危险' 的 '量危险' 三个字被遮挡，仅剩 '电'",
-    "alert_band 亮红 #ffd92d20 与 action 按钮亮红 #ffff453a 几乎同色，叠加后视觉融合，文字与按钮失去区分度",
-    "action 按钮的 onClick 与 root 的 onClick 完全重复，整个卡片任意区域点击都会触发 deeplink，按钮的 CTA 标识弱化",
-    "content Column 高 76 仅使用 72（4vp 浪费），且因 stage 与 content 共享同一顶部 y 坐标，stage 的 alert_band 与 content 区域在 z 序上无明确归属",
-    "Stack 子项 stage 作为'背景'承载了 alert_band，但背景元素承担内容会与上层 content 互相挤压纵向空间，不符合'背景在底层、信息在上层'的布局原则"
+    "截图中'电量危险'危险提示文案被'去设置'按钮大面积遮挡，仅'电'一字可见，违反'受保护文本不得被遮挡/截断'原则",
+    "Stack 中 action 按钮 margin.top:88 与 stage 内 justifyContent:end 的 alert_band 几何位置冲突，未做避让",
+    "底部红色色带 + 红色按钮视觉重叠，造成同一红色色块叠层，层次不清且丑陋",
+    "按钮热区右端贴齐 116 内容区右边缘，缺少右内边距，视觉紧绷",
+    "content Column 与 alert_band 纵向总高（含 padding/margin）已逼近 116 上限，扩展性差"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_005\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_005\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"main\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff1a1012\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#ff2b1518\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"value\",\"footer\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":6,\"bottom\":6},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":108,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.value }}\",\"styles\":{\"width\":108,\"height\":46,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffff453a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"alert\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":108,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.alert }}\",\"styles\":{\"width\":50,\"height\":22,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffd92d20\",\"borderRadius\":4,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":50,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffff453a\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_005\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"value\",\"alert_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff1a1012\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.value }}\",\"styles\":{\"width\":116,\"height\":42,\"fontSize\":34,\"fontWeight\":700,\"fontColor\":\"#ffff453a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_text\",\"action_btn\"],\"styles\":{\"width\":116,\"height\":28,\"padding\":{\"left\":10,\"right\":4,\"top\":3,\"bottom\":3},\"borderRadius\":14,\"backgroundColor\":\"#ffd92d20\",\"justifyContent\":\"space-between\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.alert }}\",\"styles\":{\"height\":22,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"height\":22,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":11,\"backgroundColor\":\"#ffff453a\",\"fontSize\":10,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_005\",\"value\":{\"power\":{\"title\":\"低电模式\",\"value\":\"12%\",\"alert\":\"电量危险\",\"actionText\":\"去设置\"}}}}"
   ]
 }

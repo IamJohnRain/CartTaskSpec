@@ -2,36 +2,34 @@
   "case_id": "Case-15-smart-home-297",
   "scores": {
     "instruction": {
-      "score": 7.5,
+      "score": 2.0,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 5.0,
+      "score": 3.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 2.0,
+      "score": 1.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 4.8,
+  "weighted_total": 2.0,
   "reasons": {
-    "instruction": "用户诉求基本都落到 DSL：title 绑定 /summary/title，3 个 checkbox 任务项用 formatString 拼\"X - 进度 Y%\"，settings_btn 调 clickToDeeplink 到系统设置（call/args 与 eventCandidates 完全一致），updateDataModel path 为 / 且 value 与 TaskSpec.dataModel.value 相同，深绿主题 + linearGradient 也已实现。扣分点：(1) 用户要求\"图标用文字\"，卡片内未使用任何文字图标（仅 checkbox 隐含勾选标记，不算独立文字图标）；(2) 标题绑定使用 {{ $__dataModel.summary.title }} 这种非标准前缀，协议推荐 {{ /summary/title }}；(3) 2x2 硬约束下大标题'今日家居任务 5/8 已完成'过长，'5/8'几乎必然被换行拆开，对用户原意略有影响。",
-    "aesthetic": "深绿渐变 (#163f2e→#2f6b45→#5ba854) 配色合法和谐，白色文字在深绿底上对比清晰，标题 700 字重 + 16px 字号层级最强，按钮半透明白底 (#33ffffff) 也较有质感。扣分点：(1) 任务列表完全不可见，使卡片中段大块空白空洞；(2) settings_btn 文字被截为\"调...\"，视觉上很掉档次；(3) 字号阶梯 10/12/16 三档都在，间距偶有非阶梯值（itemMargin:6、task_list 高度 54），不够克制。",
-    "layout": "root Column 预算计算：父 padding top10+bottom10=20，子项间 itemMargin 6×2=12，子项 height 总和 34(title)+54(task_list)+30(footer)=118，纵向总占用 20+12+118=150 > 父容器高度 140，溢出 10vp，导致 task_list 整体被裁出可见区。settings_btn 宽 52px 容纳不下 '调整设置' 4 字 + 12px 按钮内边距（4×12+12=60>52），文字被截断为'调...'。footer Row 横向预算：weather 58 + itemMargin 6 + settings_btn 52 = 116 = 父宽 116，刚好不溢出但 settings_btn 文字被截。title 在 width 116 内换行断在 '5/' 与 '8' 之间，'5' 单独成第一行尾。任务 checkbox 项完全被裁，3 项 0 可见。Stack 无层叠遮盖，但 task_list 不存在即谈不上受保护文本被遮——只是被父 Column clip 掉。"
+    "instruction": "截图中卡片仅显示顶部标题'今日家居任务 5/8 已完成'与底部'天'+截断的'调...'按钮，核心诉求'下面竖着重复排勾选项'完全没有渲染出来（任务列表区域是大片空白），天气只显示孤零零的'天'字（condition/temperatureText 为空导致内容丢失），'调整设置'按钮被截断为'调...'。仅标题和深绿渐变背景落实，任务清单、天气数据、按钮文案三项关键诉求均未正确呈现。",
+    "aesthetic": "深绿渐变背景配色尚可，标题白色加粗在深绿上清晰可读。但卡片中部出现大面积空白（任务列表缺失导致），底部'调...'按钮的截断视觉非常突兀，天气只显示'天'一个字显得残缺，整体观感非常不完整、不专业。",
+    "layout": "截图中最严重的布局问题是：(1) 任务列表 Checkbox 模板未渲染，卡片中部留出约 50px 高的纯色空白；(2) 底部'调整设置'按钮文字被截断为'调…'，热区宽度 52vp 不足以容纳 4 个 12pt 汉字；(3) 天气 Text 宽度 58vp 只能显示'天'，condition 与 temperatureText 因数据为空导致整段内容塌缩；(4) 整体内容垂直分布严重失衡——顶部标题贴顶、底部贴底、中间空洞。"
   },
   "issues": [
-    "root Column 纵向占高 150 > 140，溢出 10vp，3 个 checkbox 任务项被父 clip 完全裁剪不可见",
-    "settings_btn 宽 52px 容纳不下'调整设置'4 字（fontSize 12 文本 48px + 按钮内边距 ≈ 60px），文字被截为'调...'，CTA 不可读",
-    "title 在 width 116 内换行不自然，'5' 单独断到第一行尾，'5/8' 被拆散",
-    "title 数据绑定路径使用非标准前缀 $__dataModel，建议改为 /summary/title 以贴合协议",
-    "天气数据 condition/temperatureText 为空字符串，formatString 仅渲染出'天'后随两段空，视觉上像孤立字符（数据契约本就为空，是渲染观感问题）",
-    "用户明确要求'图标用文字'，卡片未使用任何文字图标（除 checkbox 隐含勾选标记）",
-    "root 实际可用内容高度仅 116-20=96（按 padding 12 默认），原 DSL 子项总高 118，超 22vp，是更激进的溢出估计"
+    "Checkbox 模板循环未渲染，3 个任务项在截图中完全不可见",
+    "天气 Text 因 condition/temperatureText 为空字符串，仅渲染出'天'一个字",
+    "'调整设置'按钮 width:52 在 12pt 字号下被截断为'调…'，CTA 不可用",
+    "卡片中部出现大面积空白（任务列表缺失），垂直空间浪费",
+    "dataModel 中天气数据为空但用户明确要求'要显示天气'，未做兜底占位"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_297\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_297\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"task_list\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff163f2e\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff163f2e\",0],[\"#ff2f6b45\",0.66],[\"#ff5ba854\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ /summary/title }}\",\"styles\":{\"width\":120,\"height\":36,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"ellipsis\",\"wordBreak\":\"breakAll\",\"lineHeight\":18}},{\"id\":\"task_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"task_item\",\"path\":\"/tasks\"},\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"task_item\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${name} - 进度 ${progressText}\"}},\"select\":{\"path\":\"done\"},\"styles\":{\"width\":120,\"height\":14,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33ffffff\",\"fontSize\":10,\"fontColor\":\"#e5ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":7,\"strokeWidth\":1.5}}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"weather\",\"settings_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":22,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"天气 ${/data/weather/current/condition} ${/data/weather/current/temperatureText}\"}},\"styles\":{\"width\":52,\"height\":20,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"settings_btn\",\"component\":\"Button\",\"label\":\"调整设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":62,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"padding\":{\"left\":6,\"right\":6}}}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_297\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"今日家居任务 5/8 已完成\"},\"tasks\":[{\"name\":\"擦窗\",\"progressText\":\"60%\",\"done\":true},{\"name\":\"浇花\",\"progressText\":\"80%\",\"done\":true},{\"name\":\"空气净化\",\"progressText\":\"40%\",\"done\":false}],\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"\",\"temperatureText\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_297\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"task_list\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff163f2e\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff163f2e\",0],[\"#ff2f6b45\",0.65],[\"#ff5ba854\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":120,\"height\":28,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"wordBreak\":\"breakAll\"}},{\"id\":\"task_list\",\"component\":\"Column\",\"children\":[\"task1\",\"task2\",\"task3\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"task1\",\"component\":\"Row\",\"children\":[\"c1\",\"t1\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"c1\",\"component\":\"Text\",\"content\":\"✓\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\"}},{\"id\":\"t1\",\"component\":\"Text\",\"content\":\"擦窗 - 进度 60%\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontColor\":\"#e5ffffff\"}},{\"id\":\"task2\",\"component\":\"Row\",\"children\":[\"c2\",\"t2\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"c2\",\"component\":\"Text\",\"content\":\"✓\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\"}},{\"id\":\"t2\",\"component\":\"Text\",\"content\":\"浇花 - 进度 80%\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontColor\":\"#e5ffffff\"}},{\"id\":\"task3\",\"component\":\"Row\",\"children\":[\"c3\",\"t3\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"c3\",\"component\":\"Text\",\"content\":\"○\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"}},{\"id\":\"t3\",\"component\":\"Text\",\"content\":\"空气净化 - 进度 40%\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontColor\":\"#ccffffff\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"weather\",\"settings_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"天气 · 晴 25°\",\"styles\":{\"width\":60,\"height\":26,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"settings_btn\",\"component\":\"Button\",\"label\":\"调整设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":58,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#33ffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_297\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"今日家居任务 5/8 已完成\"},\"tasks\":[{\"name\":\"擦窗\",\"progressText\":\"60%\",\"done\":true},{\"name\":\"浇花\",\"progressText\":\"80%\",\"done\":true},{\"name\":\"空气净化\",\"progressText\":\"40%\",\"done\":false}],\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"晴\",\"temperatureText\":\"25°\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
   ]
 }

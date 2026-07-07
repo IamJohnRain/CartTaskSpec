@@ -2,7 +2,7 @@
   "case_id": "Case-01-low-power-001",
   "scores": {
     "instruction": {
-      "score": 9.0,
+      "score": 9.5,
       "weight": 0.4
     },
     "aesthetic": {
@@ -14,22 +14,21 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 8.9,
+  "weighted_total": 9.1,
   "reasons": {
-    "instruction": "用户要求做一个可点击跳转到设置应用的2x2卡片。DSL正确设置了2x2尺寸、catalogId为'ohos.a2ui.extended.catalog'、version v0.9、root shell（width:140/height:140/borderRadius:18/clip:true/padding:12）。dataModel的title、hint、actionText三个字段都通过{{ $__dataModel.power.xxx }}表达式正确绑定展示。onClick事件使用clickToDeeplink并附带正确的bundleName/abilityName/uri，与eventCandidates完全一致，且同时挂在root和action上，实现'整个卡片'都可点击跳转到电池设置的诉求。唯一瑕疵是updateDataModel缺少显式path:'/'字段，违反协议硬约束。",
-    "aesthetic": "绿色线性渐变（#ff64bb5c→#ff92c48d）背景与白色文字搭配和谐，对比度良好。标题使用18px/700字重作为最强字重，提示文字12px/400次级，按钮14px/medium，构成清晰的字号/字重阶梯。白色药丸按钮在绿色背景上突出，CTA醒目。Divider提供微妙的分隔。整体风格克制专业，配色来自合法token。但卡片中部（divider与action之间）留白略多，可考虑增加电池图标或进度条等视觉元素以增强'低电'主题表达；提示文字#99ffffff（60%白）在绿色背景上略显暗淡。",
-    "layout": "Root Column纵向占用 = 12(padding.top) + 12(padding.bottom) + 8(itemMargin)×2(gaps) + (50+1+40)(子项高) = 131，卡片高度140，无溢出。Hero Column纵向占用 = 4(itemMargin)×1 + (24+18) = 46，hero高度50，无溢出。各文本宽度核算：标题'低电模式'4字×18=72≤116；提示'前往电池设置'6字×12=72≤116；按钮文字'打开设置'4字×14=56≤116，均无截断。按钮高度40vp≥24vp，热区充足。按钮底边到卡片底边约12vp，在2x2标准的8-12vp范围内。整体布局预算全部成立，无堆叠/截断/溢出。"
+    "instruction": "截图中可见标题'低电模式'、副标题'前往电池设置'与白色按钮'打开设置'三项数据字段均完整呈现；卡片整体（root）与按钮均绑定了 clickToDeeplink 事件，call/args 原样来自 eventCandidates；尺寸 2x2（140x140）、catalogId、version、updateDataModel 路径与值均合规。唯一轻微不足是没有任何电池/低电主题的视觉点缀（assetCandidates 为空，未利用），信息呈现略偏朴素。",
+    "aesthetic": "截图中绿色对角渐变（#64bb5c→#92c48d）自然柔和，绿色背景上白色主标题对比清晰、层次明显，副标题 60% 透明白亦可读；白色胶囊按钮配绿色字形成高对比 CTA；整体字重层级合理（18pt/700 标题、12pt/400 提示、14pt/500 按钮），留白疏密得当、对齐统一。略嫌平淡：无图标、无阴影、无装饰元素，视觉冲击与品牌感稍弱。",
+    "layout": "截图实测三段纵列（hero 50 + divider 1 + action 40，配合 itemMargin 8×2 与 padding 12）总高 107/116，无溢出；标题与副标题文本完整、未被裁切，divider 居中贯穿，'打开设置'按钮完整显示在卡片内且热区约 116×40，接近 40vp 理想值；按钮底边距卡片底约 12vp，处于 2x2 安全范围 8-12vp 内。未观察到任何堆叠、遮挡或截断。hero 容器高度 50 比实际占用 46 多 4vp，造成微小底部留白不均，可进一步收紧。"
   },
   "issues": [
-    "updateDataModel缺少显式path:'/'字段，违反协议硬约束",
-    "卡片中部（divider与action之间）留白较多，可增加电池图标或进度条等视觉元素填充",
-    "提示文字fontColor #99ffffff（60%白）在绿色背景上略显暗淡，建议提升至#ccffffff",
-    "Divider颜色#33ffffff过于微弱，几乎不可见，可适当提升至#55ffffff",
-    "Button fontWeight使用字符串'medium'，建议改为数字500以与其他字重表达保持一致"
+    "卡片整体视觉略平，缺少电池/省电主题图标或装饰元素（受 assetCandidates 限制未能添加）",
+    "hero Column 高度 50 略大于子项实际占用 46，hero 与 divider 之间存在 4vp 冗余空白",
+    "按钮虽为白底胶囊但无阴影/微立体感，CTA 视觉权重可进一步强化",
+    "主标题与按钮文字均使用 fontWeight 700/medium 两个较强字重，字重层级可更克制（建议仅标题 700）"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_001\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_001\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"divider\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff64bb5c\",0],[\"#ff92c48d\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.hint }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#55ffffff\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":116,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_001\",\"path\":\"/\",\"value\":{\"power\":{\"title\":\"低电模式\",\"hint\":\"前往电池设置\",\"actionText\":\"打开设置\"}}}}"
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_001\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"divider\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff4ea24a\",0],[\"#ffa3cf90\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.hint }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#4dffffff\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":116,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff4ea24a\",\"shadow\":{\"color\":\"#33000000\",\"radius\":8,\"offsetY\":2}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_001\",\"value\":{\"power\":{\"title\":\"低电模式\",\"hint\":\"前往电池设置\",\"actionText\":\"打开设置\"}}}}"
   ]
 }

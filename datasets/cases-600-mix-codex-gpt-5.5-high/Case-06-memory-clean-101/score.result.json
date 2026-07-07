@@ -2,7 +2,7 @@
   "case_id": "Case-06-memory-clean-101",
   "scores": {
     "instruction": {
-      "score": 9.0,
+      "score": 8.5,
       "weight": 0.4
     },
     "aesthetic": {
@@ -10,26 +10,26 @@
       "weight": 0.2
     },
     "layout": {
-      "score": 6.0,
+      "score": 8.0,
       "weight": 0.4
     }
   },
-  "weighted_total": 7.5,
+  "weighted_total": 8.1,
   "reasons": {
-    "instruction": "完整满足用户原始诉求：'点一下能跳进去'由 root Column 的 onClick.clickToDeeplink 承接，args（bundleName/abilityName/uri）与 eventCandidates 原样一致；'还能看日程'由 scheduleBox 展示 calendar.next.timeLabel（下一日程 今天）与 calendar.next.title（10:30 项目同步）。TaskSpec.dataModel 中 memory 与 calendar 两个对象的全部字段都以 {{ ... }} 表达式绑定展示；updateDataModel 路径 '/'、value 与 TaskSpec.dataModel.value 原样一致；size 2x2、catalogId 'ohos.a2ui.extended.catalog'、每行 version 'v0.9'、root 140x140/borderRadius 18/clip true 等硬约束全部满足。轻微扣分点是 actionHint 字号 12 偏小，CTA 视觉强度可再加强 0.5 分。",
-    "aesthetic": "整体配色和谐：浅蓝线性渐变（#FFF7FBFF→#FFE6F2FF）配合半透明白色玻璃卡 + 深蓝主指标（#FF005EAA），视觉专业克制。间距使用 6/8 阶梯，对齐统一。扣分点：原 DSL 中 titleText（14px/700）、memoryText（16px/700）、scheduleTitle（14px/700）三处共用最强字重 700，违反'同一卡片只保留一个最强字重'的层级规则，视觉重点被稀释；actionHint 与 memoryText 同属蓝色系，CTA 识别度略显不足。",
-    "layout": "存在两处 Column 纵向溢出。①根 Column：padding 上下 24 + itemMargin 6×3=18 + 子项高 18+20+46+18=102，合计 144vp > 父容器高度 140vp，溢出 4vp，底部 actionText 紧贴卡片下沿仅 8vp，处于临界；②scheduleBox Column：padding 上下 16 + itemMargin 3 + 子项高 14+17=31，合计 50vp > scheduleBox.height 46vp，溢出 4vp，scheduleTitle 有被父级 Column 裁切的风险。横向方面：根 Column 内容宽 116 ≤ 可用 116，无水平溢出；scheduleBox 内部子项宽 100 ≤ 可用 100，无水平溢出。截图虽视觉可读，但预算层面判定为不稳健，扣 4 分。"
+    "instruction": "用户要求'点一下能跳进去'和'还能看日程'。截图中可见标题'内存清理'、主指标'可释放 1.8GB'、日程框内的'下一日程 今天'与'10:30 项目同步'、以及右下角操作提示'点卡片进入清理'。onClick 绑定在 root 上，参数原样来自 eventCandidates 的 clickToDeeplink。2x2 尺寸、catalogId、version、updateDataModel.path/value 均合规。信息齐全、事件落实、协议合规。微扣分在于 scheduleBox 与外层 Column 纵向占用已逼近极限，存在潜在溢出的隐患。",
+    "aesthetic": "浅蓝渐变背景柔和，主体信息层级清晰：标题（深色 14pt）→ 主指标（蓝色 16pt 粗体）→ 日程框（半透明白色 12/14pt）→ 操作提示（蓝色 12pt 右对齐）。颜色和谐、对比度好、读起来清爽。扣分点：整体偏单调的蓝色调，缺少点缀色或图标辅助；日程框与卡片背景区分度可以再强一些；底部 actionText 仅是文字，缺乏明显 CTA 视觉强调。",
+    "layout": "截图观察：所有文字与组件均在卡片边界内，未见文字被裁切或截断；标题、主指标、日程框、操作提示四块自上而下排列，无堆叠遮挡；'10:30 项目同步'完整显示在框内。扣分点：从公式核算，根 Column 纵向占用 18+6+20+6+46+6+18=120vp，超出内容区 116vp 约 4vp；scheduleBox 内部 8+14+3+17+8=50vp 也超出自身声明 46vp 约 4vp。虽然截图未出现明显裁切，但布局已处于临界，建议下调 itemMargin 与 box 内部 padding 以留出安全余量。"
   },
   "issues": [
-    "根 Column 纵向占用 144vp > 容器 140vp，溢出 4vp",
-    "scheduleBox Column 纵向占用 50vp > 容器 46vp，溢出 4vp",
-    "titleText、memoryText、scheduleTitle 三处共用 fontWeight 700，违反单一最强字重规则",
-    "actionHint 字号 12 与 memoryText 主指标同色系，CTA 视觉层级偏弱",
-    "底部 actionText 距卡片底边仅 8vp，处于规则下沿"
+    "根 Column 子项总高 120vp 超出内容区 116vp，存在潜在纵向溢出风险",
+    "scheduleBox 内部内容 50vp 超出声明 height 46vp，需收紧内边距或减小行高",
+    "actionText 仅是右对齐文字，缺乏按钮或下划线等 CTA 视觉强化",
+    "卡片整体配色偏单调蓝色调，缺少图标或对比色块提升信息密度辨识度",
+    "scheduleBox 与卡片底色区分度偏弱，半透明白色在浅蓝底上视觉边界不够清晰"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_101\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_101\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"titleText\",\"memoryText\",\"scheduleBox\",\"actionText\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF7FBFF\",0],[\"#FFE6F2FF\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memoryText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.summary }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF005EAA\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scheduleBox\",\"component\":\"Column\",\"children\":[\"scheduleTime\",\"scheduleTitle\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":40,\"padding\":6,\"borderRadius\":10,\"backgroundColor\":\"#66FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"scheduleTime\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.next.timeLabel }}\",\"styles\":{\"width\":104,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF38607A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scheduleTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.next.title }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF172B3A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.actionHint }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF007DCC\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_101\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"titleText\",\"memoryText\",\"scheduleBox\",\"actionText\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF7FBFF\",0],[\"#FFE6F2FF\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memoryText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.summary }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF005EAA\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scheduleBox\",\"component\":\"Column\",\"children\":[\"scheduleTime\",\"scheduleTitle\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":42,\"padding\":6,\"borderRadius\":10,\"backgroundColor\":\"#B3FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"scheduleTime\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.next.timeLabel }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF38607A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scheduleTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.next.title }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FF172B3A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.actionHint }} ▶\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF007DCC\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_101\",\"path\":\"/\",\"value\":{\"memory\":{\"title\":\"内存清理\",\"summary\":\"可释放 1.8GB\",\"actionHint\":\"点卡片进入清理\"},\"calendar\":{\"next\":{\"title\":\"10:30 项目同步\",\"timeLabel\":\"下一日程 今天\"}}}}}"
   ]
 }

@@ -2,38 +2,34 @@
   "case_id": "Case-17-queue-321",
   "scores": {
     "instruction": {
-      "score": 7.5,
+      "score": 7.0,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 4.0,
+      "score": 4.5,
       "weight": 0.2
     },
     "layout": {
-      "score": 5.0,
+      "score": 4.0,
       "weight": 0.4
     }
   },
-  "weighted_total": 5.9,
+  "weighted_total": 5.3,
   "reasons": {
-    "instruction": "用户要求餐厅排队卡片：背景图上放字（assetCandidates 为空故用色块模拟可接受）、前面人数变化（peopleAheadText 已体现）、点电话能打（Button onClick 绑定 clickToCallPhone，args 原样来自 eventCandidates）、接通显示已连接（connectionStatus 已绑定）。尺寸 2x2、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel path '/' 与 value 均符合契约，5 个 dataModel 字段全部用上。扣分点：'背景图'被替换为纯色色块，与用户'图'的语义有偏差。",
-    "aesthetic": "配色使用 #92d6cc 浅青 + #64bb5c 绿两种相近色，缺乏层次且与白色搭配显得土气。'松亭小馆' 用 #99ffffff (60% 白) 在 #fff1f3f5 浅灰背景上几乎不可见。'排队叫号' 白色文字在 #92d6cc 浅青背景上对比度严重不足（截图中文本几乎读不出），属于受保护标题被弱化。queue_title 与 people_text 同时使用 fontWeight 700，最强字重不唯一。Stack 拼接 bg_top+bg_bottom 的方式生硬。整体视觉不专业，字体粗细和颜色搭配均不到位。",
-    "layout": "1) content_col Column: 子项高度 14+18+30+26=88，itemMargin 4*3=12，padding 6*2=12，合计 112 ≤ 116 ✓。2) bottom_row Row: 44+56+4=104 ≤ 104 ✓。3) 但 bg_top 结束于 y=12+54=66，bg_bottom margin top 16、h=54 结束于 y=66+16+54=136，超出内容区 116 (实际为 root padding 后的 12~128) 8vp，被 root clip:true 裁切。4) 底部动作区 bottom_row 结束于 y=12+6+(14+4+18+4+30+4+26)=118，卡片底边 140，间距 22vp > 16vp 上限。5) Stack 层叠导致 '排队叫号' (y=36~54) 落在 bg_top 浅青区，因对比度过低视觉上像被裁切。6) people_text 白底卡片与下方 bg_bottom 灰白底几乎无缝，缺乏视觉区分。"
+    "instruction": "用户要求的五项要素（餐厅名、排队标题、前面人数、电话按钮、已连接状态）均在 DSL 中定义并在截图中可识别：'松亭小馆'/'排队叫号'/'前面 6 人'/'已连接'/'电话' 按钮俱全，电话按钮绑定的 onClick 事件 call 与 args 与 eventCandidates 原样一致，updateDataModel 路径与 value 与 TaskSpec.dataModel.value 完全一致，尺寸 2x2、catalogId、version 等硬约束均满足。但截图中 '排队叫号' 标题被白色 '前面 6 人' 卡片部分遮挡，导致用户实际只能看到不完整的关键信息，扣分。",
+    "aesthetic": "截图中上部使用 #92d6cc 浅青绿色作背景，前景 '松亭小馆' 与 '排队叫号' 都是白色字，白色与浅青绿对比度过低，'松亭小馆' 几乎隐没在背景中、'排队叫号' 也显得很淡。绿色 '已连接' 文字出现在白色卡片与底部之间，缺乏视觉层次。底部绿色按钮与背景的搭配尚可，但整体配色偏冷淡、对比度不足，文字可读性差。",
+    "layout": "截图中 '前面 6 人' 的白色卡片明显向上压住了 '排队叫号' 标题的下半部笔画，标题文字被部分裁切，这是 Stack 内 content_col 与 background 层没有为标题预留足够垂直空间所致；'松亭小馆' 字号 10 放在 14 高度里、又使用半透明白，几乎贴在卡片上沿、视觉上不够舒展；'排队叫号'（18 高）与 '前面 6 人'（30 高）之间 itemMargin 只有 4vp，加之人 text 自带 padding 后实际占位更大，导致视觉上紧贴甚至重叠；底部 '已连接' 与 '电话' 按钮整体偏低，按钮底边距卡片底边约 10vp 可以接受，但因上半部分堆叠问题显得整张卡重心不稳。"
   },
   "issues": [
-    "bg_top 结束 y=66 + bg_bottom margin top 16 + bg_bottom 高度 54 = 136，超出内容区 116，溢出 8vp 被 root clip 裁切",
-    "底部动作区到卡片底边间距 22vp，超过 2x2 允许的 16vp 上限（理想 8~12vp）",
-    "松亭小馆 文字 #99ffffff (60%白) 在 #fff1f3f5 浅灰背景上几乎不可见，对比度严重不足",
-    "排队叫号 白色文字在 #92d6cc 浅青背景上对比度差，截图显示几乎无法辨认",
-    "受保护标题 排队叫号 视觉上像被 bg_top 圆角/边缘裁切",
-    "两种相近绿色 (#92d6cc、#64bb5c) 配色不统一，层次不清",
-    "queue_title 与 people_text 同时使用 fontWeight 700，最强字重不唯一",
-    "Stack 中 bg_top/bg_bottom 拼接生硬，bg_bottom 灰白与 people_text 纯白卡片无明显分层",
-    "已连接 状态缺乏视觉强调（仅靠绿色文字与按钮同色）"
+    "白色 '前面 6 人' 卡片顶部覆盖了 '排队叫号' 标题下半部分，标题笔画被裁切",
+    "'松亭小馆' 使用白色 #99ffffff 在浅青绿 #92d6cc 背景上对比度过低，几乎不可读",
+    "'排队叫号' 白色字与浅青绿背景对比度不足，字重 700 仍显暗淡",
+    "上半部分内容垂直密度过高（14+4+18+4+30），与背景层 bg_top 高度 54 不匹配，导致文字与背景层错位",
+    "底部 '已连接' 状态为绿色 #ff64bb5c，与背景缺乏层次感"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_321\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_321\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"restaurant_text\",\"queue_title\",\"people_text\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff3aafa9\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"restaurant_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.restaurantName }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#d8ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"queue_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"people_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.peopleAheadText }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff3aafa9\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":12,\"padding\":{\"left\":4,\"right\":4,\"top\":8,\"bottom\":8},\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"call_button\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.connectionStatus }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff5ed6a0\",\"borderRadius\":10,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.phoneText }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"075512345678\"}}],\"styles\":{\"width\":60,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff3aafa9\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_321\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"center\"}},{\"id\":\"bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#2d8f7f\"}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"header_block\",\"people_card\",\"bottom_row\"],\"itemMargin\":5,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_block\",\"component\":\"Column\",\"children\":[\"restaurant_text\",\"queue_title\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"restaurant_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.restaurantName }}\",\"styles\":{\"width\":100,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"queue_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"people_card\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.peopleAheadText }}\",\"styles\":{\"width\":100,\"height\":30,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":10,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"call_button\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":100,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.connectionStatus }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.phoneText }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"075512345678\"}}],\"styles\":{\"width\":46,\"height\":22,\"margin\":{\"top\":0},\"borderRadius\":12,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_321\",\"path\":\"/\",\"value\":{\"queue\":{\"restaurantName\":\"松亭小馆\",\"title\":\"排队叫号\",\"peopleAheadText\":\"前面 6 人\",\"connectionStatus\":\"已连接\",\"phoneText\":\"电话\"}}}}"
   ]
 }

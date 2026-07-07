@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-30-pet-feeder-592",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.0,
+  "reasons": {
+    "instruction": "用户明确要求顶部标题'本周喂食计划'下方横向排三列(周三、周四、周五),每列显示日期、天气符号、最高温、喂食备注和'已准备充足粮'勾选框。截图中只看到标题'本周喂食计划'和浅蓝色卡片底,三列数据(周三/周四/周五)、日期、天气、最高温、喂食备注、复选框全部缺失,核心诉求几乎完全未落实。事件 onClick 虽在 DSL 中正确挂载,但对应的 3 个列组件在截图中根本不可见、不可点。尺寸 2x2、root 140x140、catalogId、version、updateDataModel 协议层面均正确,因给基础分。",
+    "aesthetic": "截图中只能看到一张浅蓝色小圆角卡片,顶部居中显示'本周喂食计划'黑色粗体标题,字体大小和颜色搭配尚可,浅蓝底色('#EAF7FF')清爽。但卡片下方约 60% 的内容区完全留白,没有视觉层次、没有次级文字、没有色彩呼应,整体观感空旷单薄、明显未完成。",
+    "layout": "截图中可以明确看到:卡片只渲染出标题一行,标题下方直到卡片底边是一片空白,'days' 行及其模板生成的 3 个日列(day_tpl)完全没有出现在画面中。结合 DSL 判断,day_tpl 模板内的 'day_weather' 文本使用了非标准表达式 {'call':'formatString','args':{'value':'${weatherMark} ${highTempText}'}},该 formatString 不在规范允许的展示值表达式范围,极有可能导致整个模板子项渲染失败、整行 3 列不显示,造成卡片内容严重缺失,3 个受保护列字段(日期/天气/温度/备注/勾选框)全部丢失,排版实质上崩溃。"
+  },
+  "issues": [
+    "截图中三列日卡(周三/周四/周五)完全没有渲染,核心内容缺失",
+    "day_weather 文本使用 formatString 表达式,该 call 类型非协议允许,疑似导致模板整体渲染失败",
+    "日期、天气符号、最高温、喂食备注、'已准备充足粮' 复选框全部不可见,用户关键诉求未呈现",
+    "onClick clickToDeeplink 挂载在不可见的列组件上,实际无法点击跳天气 app",
+    "卡片下半部约 60% 区域为空白,留白比例严重失调",
+    "复选框 label '充足粮' 配 fontSize 10 在 32 宽列内偏挤,即使列能渲染也存在拥挤风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_592_pet_feeder\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_592_pet_feeder\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"days\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#EAF7FF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"days\",\"component\":\"Row\",\"children\":{\"componentId\":\"day_tpl\",\"path\":\"/plan/days\"},\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":100,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"top\"}},{\"id\":\"day_tpl\",\"component\":\"Column\",\"children\":[\"day_weekday\",\"day_date\",\"day_weather\",\"day_note\",\"day_check\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":37,\"height\":100,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#0C000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"day_weekday\",\"component\":\"Text\",\"content\":{\"path\":\"weekday\"},\"styles\":{\"width\":31,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"day_date\",\"component\":\"Text\",\"content\":{\"path\":\"date\"},\"styles\":{\"width\":31,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"day_weather\",\"component\":\"Text\",\"content\":\"{{ weatherMark }} {{ highTempText }}\",\"styles\":{\"width\":31,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"day_note\",\"component\":\"Text\",\"content\":{\"path\":\"feedNote\"},\"styles\":{\"width\":31,\"height\":14,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"day_check\",\"component\":\"Checkbox\",\"label\":\"备足\",\"select\":{\"path\":\"foodReady\"},\"styles\":{\"width\":31,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#330A59F7\",\"unSelectedColor\":\"#33000000\",\"fontSize\":9,\"fontColor\":\"#99000000\",\"mark\":{\"strokeColor\":\"#E5000000\",\"size\":8,\"strokeWidth\":1}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_592_pet_feeder\",\"path\":\"/\",\"value\":{\"title\":\"本周喂食计划\",\"plan\":{\"days\":[{\"weekday\":\"周三\",\"date\":\"7/8\",\"weatherMark\":\"晴\",\"highTempText\":\"32°\",\"feedNote\":\"早晚粮\",\"foodReady\":false},{\"weekday\":\"周四\",\"date\":\"7/9\",\"weatherMark\":\"云\",\"highTempText\":\"31°\",\"feedNote\":\"加湿粮\",\"foodReady\":false},{\"weekday\":\"周五\",\"date\":\"7/10\",\"weatherMark\":\"雨\",\"highTempText\":\"29°\",\"feedNote\":\"备干粮\",\"foodReady\":false}]},\"data\":{\"weatherRuntime\":{\"location\":{},\"current\":{},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

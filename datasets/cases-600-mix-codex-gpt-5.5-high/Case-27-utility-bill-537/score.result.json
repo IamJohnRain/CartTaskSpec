@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-27-utility-bill-537",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "用户明确要求'纵向重复排几项缴费记录，每项有固定文字加金额'，但截图中账单信息区在标题'本月缴费'+副标题'逾期前请完成'和'合计¥234.70'之间留有大片空白，电费/水费/燃气三笔记录（合计含金额）完全未渲染呈现，属于关键诉求缺失。左/右分区、分隔线、警示红色徽章'3天后截止'、橙黄渐变背景、右下角'去听歌'按钮及音乐图标均按要求落实，事件 clickToDeeplink 与音乐 deeplink 参数原样来自 eventCandidates，size 2x4、catalogId、updateDataModel.path 等协议层无违规。综合看核心信息展示严重不全。",
+    "aesthetic": "截图整体配色和谐：橙→琥珀→黄的 135° 渐变能传达'紧迫感'，与用户意图一致；红色徽章与白色合计胶囊形成高对比警示；右侧白色'去听歌'按钮在黄底上清晰有力；字体层级合理（标题 14/状态 12/小字 10），字重克制。扣分点：账单区中央因记录缺失出现明显'空洞'，破坏了视觉完整度，让本该密布信息的卡片看起来像未加载完的骨架。",
+    "layout": "截图中账单面板在'逾期前请完成'与'合计¥234.70'之间出现约 40+ 像素高的纯色空白区，对应 record_list Column 实际未生成任何 record_item 子节点；同时 record_list 容器 height=42 而 3 行 × 12 + 2 × 4 = 44，本身就差 2vp，存在裁切风险。状态徽章 '3天后截止' 容器 width=62 而 4 个中文 12 号字约占 48vp + 16vp 内边距 = 64vp，徽章右侧文字疑似顶到边缘。其余元素（分割线、动作区、底部按钮）未观察到截断或溢出。"
+  },
+  "issues": [
+    "截图中央 record_list 区域未渲染任何 record_item，三条缴费记录（电费/水费/燃气 + 金额）完全缺失",
+    "record_list 容器 height=42 不足以容纳 3×12 + 2×4 = 44 的内容，存在 2vp 裁切缺口",
+    "status_badge width=62 偏窄，'3天后截止' 文字 + 左右 8vp 内边距接近边界",
+    "账单面板中部因记录缺失出现明显视觉空洞，破坏卡片完整度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"utility_bill_537\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"utility_bill_537\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"bill_panel\",\"split_line\",\"action_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ED6F21\",0],[\"#F9A01E\",0.62],[\"#F7CE00\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"bill_panel\",\"component\":\"Column\",\"children\":[\"bill_header\",\"record_list\",\"total_row\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"bill_header\",\"component\":\"Row\",\"children\":[\"title_group\",\"status_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":162,\"height\":24,\"padding\":0,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"bill_title\",\"bill_notice\"],\"itemMargin\":0,\"styles\":{\"width\":90,\"height\":24,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"bill_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.title }}\",\"styles\":{\"width\":90,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"bill_notice\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.notice }}\",\"styles\":{\"width\":90,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.status }}\",\"styles\":{\"width\":68,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"record_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"record_item\",\"path\":\"/bill/records\"},\"itemMargin\":4,\"styles\":{\"width\":162,\"height\":48,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"record_item\",\"component\":\"Row\",\"children\":[\"record_name\",\"record_amount\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":162,\"height\":12,\"padding\":0,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"record_name\",\"component\":\"Text\",\"content\":\"{{name}}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"record_amount\",\"component\":\"Text\",\"content\":\"{{amount}}\",\"styles\":{\"width\":90,\"height\":12,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"total_row\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.totalLabel }}\",\"styles\":{\"width\":162,\"height\":20,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"split_line\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"color\":\"#66FFFFFF\",\"height\":96}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"music_icon\",\"action_hint\",\"action_btn\"],\"itemMargin\":8,\"styles\":{\"width\":68,\"height\":116,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.action.hint }}\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":68,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"utility_bill_537\",\"path\":\"/\",\"value\":{\"bill\":{\"title\":\"本月缴费\",\"status\":\"3天后截止\",\"notice\":\"逾期前请完成\",\"records\":[{\"name\":\"电费\",\"amount\":\"¥128.60\"},{\"name\":\"水费\",\"amount\":\"¥42.30\"},{\"name\":\"燃气\",\"amount\":\"¥63.80\"}],\"totalLabel\":\"合计 ¥234.70\"},\"action\":{\"label\":\"去听歌\",\"hint\":\"每日30首\"},\"assets\":{\"musicIcon\":\"resources/base/media/icon_music.png\"}}}}"
+  ]
+}

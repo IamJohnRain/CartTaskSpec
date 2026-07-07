@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-30-pet-feeder-597",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.4,
+  "reasons": {
+    "instruction": "截图中能看到的元素极少：左侧信息区（标题\"宠物喂食\"、剩余\"今日剩余2餐\"、两份喂食时段及勾选状态）完全不可见，仅右上角显示被截断的橙色\"喂食器离\"、灰色药丸里的\"夜晚倒计\"以及几乎消失的蓝色\"天气\"按钮残影。整卡要求的紫蓝主题色渐变背景在截图中未呈现（整张卡呈白底），导致全部白字信息消失；\"喂食器离线 x\"应红色告警但被显示为橙色且被截断；\"夜晚倒计时 1h20m\"应深蓝渐变但只显示浅灰半透明药丸。事件 onClick(clickToDeeplink) 在 DSL 中存在但按钮文字不可见，深链可达性在视觉上无法验证。\"字拼数字\"和\"纵向重复多个喂食时段\"均未呈现。",
+    "aesthetic": "截图中整卡完全失去渐变主题色，整片白底显得空白破碎；唯一可见的橙色文本与蓝色碎点孤立在右上方，无任何视觉层级和留白节奏可言。白色文字在白底上消失、灰色药丸质感廉价、按钮文字缩成几个蓝点，构图严重失衡，毫无设计感。",
+    "layout": "截图中左侧信息列（info_col，约 x=12~84 区域）整列不可见——推断为白字在未渲染的渐变背景上完全消失。右侧动作列宽度仅 36vp，导致告警\"喂食器离线 x\"被裁为\"喂食器离\"、夜晚倒计时被裁为\"夜晚倒计\"；天气按钮宽 36、字号 14 配中文字\"天气\"严重溢出，最终仅剩几个蓝色像素点。底部 2x2 卡片下边距合规，但因内容挤压到上半区，下半区完全留白。整体布局严重崩溃，核心问题为：背景渐变未生效 → 白字消失 → 左侧整列空白 + 右侧三段文字全部被裁。"
+  },
+  "issues": [
+    "整卡 linearGradient 渐变背景未渲染，导致白色文字（标题、剩余、餐次时间、勾选文本）在白底上完全不可见，左侧信息区整列消失",
+    "action_col 宽度仅 36vp，三段动作文本全部被截断：告警\"喂食器离线 x\"→\"喂食器离\"、倒计时→\"夜晚倒计\"、天气\"天气\"→仅剩几个蓝点",
+    "deviceAlert 文字颜色 #FFED6F21 为橙色而非用户要求的\"红色告警\"",
+    "夜晚倒计时面板背景 #19000000 呈半透明灰色，未实现\"深蓝渐变\"要求",
+    "餐次列表（meal_list）模板循环区域完全不可见，无法确认两份喂食时段是否正确渲染",
+    "告警文字\"喂食器离线 x\"使用英文小写 x，未替换为用户要求的\"✕\"符号（数据源问题，但视觉上未达预期）",
+    "颜色格式使用 6 位 hex 未带 alpha，可能被部分渲染器误判为透明"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"pet_feeder_597\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"pet_feeder_597\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"info_col\",\"action_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF4A5DAB\",\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[\"#FF5F58C7\",\"#FF467794\"]},\"alignItems\":\"top\",\"justifyContent\":\"start\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"remain_text\",\"meal_list\"],\"itemMargin\":5,\"styles\":{\"width\":68,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.title }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remain_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.remainingLabel }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meal_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"meal_item\",\"path\":\"/data/feeder/meals\"},\"itemMargin\":4,\"styles\":{\"width\":68,\"height\":70,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"meal_item\",\"component\":\"Row\",\"children\":[\"meal_time\",\"meal_check\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":68,\"height\":20,\"padding\":{\"left\":5,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":8,\"backgroundColor\":\"#33FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"meal_time\",\"component\":\"Text\",\"content\":{\"path\":\"time\"},\"styles\":{\"width\":28,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meal_check\",\"component\":\"Checkbox\",\"label\":{\"path\":\"stateLabel\"},\"select\":{\"path\":\"fed\"},\"styles\":{\"width\":30,\"height\":16,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#CCFFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":7,\"strokeWidth\":2}}}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"alert_panel\",\"night_panel\",\"weather_btn\"],\"itemMargin\":5,\"styles\":{\"width\":40,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_panel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.deviceAlert }}\",\"styles\":{\"width\":40,\"height\":34,\"padding\":{\"left\":3,\"right\":3,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#FFE53935\",\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"night_panel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.nightCountdown }}\",\"styles\":{\"width\":40,\"height\":34,\"padding\":{\"left\":3,\"right\":3,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#FF0A1F4A\",\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[\"#FF0A1F4A\",\"#FF1E3A7A\"]},\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"weather_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.feeder.weatherAction }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":40,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#FF0A59F7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"pet_feeder_597\",\"path\":\"/\",\"value\":{\"data\":{\"feeder\":{\"title\":\"宠物喂食\",\"remainingLabel\":\"今日剩余2餐\",\"deviceAlert\":\"喂食器离线 x\",\"nightCountdown\":\"夜晚倒计时 1h20m\",\"weatherAction\":\"天气\",\"meals\":[{\"time\":\"18:30\",\"stateLabel\":\"未喂\",\"fed\":false},{\"time\":\"22:00\",\"stateLabel\":\"未喂\",\"fed\":false}]}}}}"
+  ]
+}

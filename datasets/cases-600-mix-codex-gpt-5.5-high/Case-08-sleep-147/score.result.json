@@ -2,7 +2,7 @@
   "case_id": "Case-08-sleep-147",
   "scores": {
     "instruction": {
-      "score": 5.5,
+      "score": 1.0,
       "weight": 0.4
     },
     "aesthetic": {
@@ -10,28 +10,27 @@
       "weight": 0.2
     },
     "layout": {
-      "score": 1.5,
+      "score": 2.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 3.3,
+  "weighted_total": 1.9,
   "reasons": {
-    "instruction": "DSL 结构上覆盖了用户全部诉求：title、scoreText、weatherSummary、bandStatus、actionText 五个字段均通过 {{ $__dataModel.sleep.* }} 正确绑定；onClick 的 call 与 args 原样来自 eventCandidates；size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、root shell 140x140/borderRadius 18/clip/padding 12 等硬约束均满足；updateDataModel.value 与 TaskSpec.dataModel.value 完全一致。但渲染截图中 title、score 86、weather、按钮文字'查看报告'均未显示（仅 score_unit '睡眠分' 与两个无字色块可见），用户实际感知到的信息严重缺失，扣至 5.5。",
-    "aesthetic": "渐变 #101417→#1B2840→#123326 配色克制专业，深色底配白色字对比度足够，band status 胶囊（绿）和按钮白底在深色上识别度尚可。但实际渲染几乎呈空白态：score 86、title、weather、'查看报告'全部被布局吞掉，整张卡片只剩'睡眠分'小字和两个无字色块，视觉上几近不可用，扣至 2.5。",
-    "layout": "content Column 纵向占用 = 父 padding(0) + itemMargin*(4-1)=24 + Σ子项 height=20+36+20+28=104 → 128vp > 父容器 height 116vp，溢出 12vp，是渲染塌方的根因；top_row 横向 weather '晨间多云 22°C' 在 fontSize 10 下需要 10+10+10+10+4+6+6+4+6=66vp > 分配 width 54，溢出 12vp；score_row 高度 36 与 fontSize 32 的 86 叠加 + Column 总溢出，使得 score 数字被推到视口外；title 在 14px×58 容器中同样受 Column 溢出影响被压出可见区；action_btn 文字 '查看报告' 在渲染截图中不可见。Stack 中 glow Column 116×116 子节点为空，等同于无意义占位。受保护文本 title/score/weather/button label 全部被裁，扣至 1.5。"
+    "instruction": "截图中用户要求的全部核心信息基本都未呈现:标题'睡眠报告'不可见、主指标'86'大号数字完全缺失、'晨间多云 22°C'天气文字不可见、'手环已连'状态文字不可见(只剩绿色胶囊底)、'查看报告'按钮文字不可见(只剩白色按钮底),仅静态文本'睡眠分'悬浮在卡片右上方。根因极可能是 updateDataModel 缺少协议规定的 'path' 字段('/'),导致数据未真正写入 DataModel,模板表达式 {{ $__dataModel.* }} 全部解析为空,onClick 事件虽然在 DSL 中配置正确但 UI 端看不出可点击意图。",
+    "aesthetic": "深色径向渐变(深蓝→深绿)与绿色手环状态胶囊、白色 CTA 按钮的配色思路本身是干净专业的,但因全部动态文本丢失,卡片呈现出明显的'残片'观感:右上角孤零零一个'睡眠分'小字、中部一个无字绿色胶囊、下部一个无字白色胶囊,主体信息几乎为空白,留白严重失衡,整体看上去像渲染失败或被截断的页面。",
+    "layout": "截图观察:可见元素'睡眠分'、绿色状态底、白色按钮底的位置大致落在其设计坐标上,但 32pt 的主指标'86'在应该出现的位置(中上部)完全不见,标题、天气、状态文字、按钮文字也整体缺失;同时按 DSL 核算 content Column 累计高度 20+36+20+28+3×8=128,已超出 116 可用内容区约 12vp,存在纵向溢出风险,与截图中关键文本大面积不见的视觉结果相吻合。"
   },
   "issues": [
-    "content Column 纵向总占 128vp > 父容器 116vp，溢出 12vp，是渲染塌方的根本原因",
-    "top_row 中 weather '晨间多云 22°C' 在 fontSize 10 下需约 66vp 宽度，超过分配 width 54，溢出 12vp",
-    "title '睡眠报告' 在 14px×58 容器中因 Column 溢出被压出可见区",
-    "score '86' 在 32px 字号下与 score_unit '睡眠分' 一同受 Column 溢出影响，渲染截图中 86 完全不可见",
-    "action_btn label '查看报告' 在渲染截图中不可见，仅剩白色胶囊",
-    "Stack 中 glow Column（116×116）无任何子节点，纯属无意义占位，应移除",
-    "action_btn 宽 88 + Column 溢出 + justifyContent spaceBetween 共同作用，使按钮被挤压/移位"
+    "截图中最关键的 32pt 主指标'86'完全不可见,是用户最关心的'数字会变'信息",
+    "标题'睡眠报告'、天气'晨间多云 22°C'、状态'手环已连'、按钮文字'查看报告'全部在截图中缺失",
+    "content Column 实际累计高度 128vp 超出 116vp 内容区,存在纵向溢出",
+    "updateDataModel 缺少协议规定的 'path' 字段,推断这是模板未解析、数据未注入的根因",
+    "多余的 'glow' 空 Column(116×116 蓝色叠加)与 content 同尺寸重叠,可能加剧背景视觉混乱",
+    "受保护文本(标题、主指标、CTA)在原始 DSL 中均未约束为可省略/截断,但实际渲染被完全吞掉,信息传达彻底失败"
   ],
   "improved_dsl": [
-    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_147\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"styles\":{\"width\":140,\"height\":140,\"borderRadius\":18,\"clip\":true}}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_147\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":145,\"colors\":[[\"#FF101417\",0],[\"#FF1B2840\",0.55],[\"#FF123326\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"score_row\",\"weather_row\",\"action_btn\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"band_status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"band_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.bandStatus }}\",\"styles\":{\"width\":56,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#331AC85B\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF7DFFB2\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_row\",\"component\":\"Row\",\"children\":[\"score\",\"score_unit\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"baseline\"}},{\"id\":\"score\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.scoreText }}\",\"styles\":{\"width\":40,\"height\":30,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_unit\",\"component\":\"Text\",\"content\":\"睡眠分\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather\"],\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.weatherSummary }}\",\"styles\":{\"width\":110,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#FF123326\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"sleep\":{\"title\":\"睡眠报告\",\"score\":86,\"scoreText\":\"86\",\"weatherSummary\":\"晨间多云 22°C\",\"bandStatus\":\"手环已连\",\"actionText\":\"查看报告\"}}}}"
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_147\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"styles\":{\"width\":140,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_147\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF0E1620\",\"linearGradient\":{\"angle\":145,\"colors\":[[\"#FF0E1620\",0],[\"#FF1B2840\",0.55],[\"#FF123326\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_section\",\"score_row\",\"status_row\",\"action_btn\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_section\",\"component\":\"Column\",\"children\":[\"title\",\"weather\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":28,\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":116,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.weatherSummary }}\",\"styles\":{\"width\":116,\"height\":13,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_row\",\"component\":\"Row\",\"children\":[\"score\",\"score_unit\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"baseline\"}},{\"id\":\"score\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.scoreText }}\",\"styles\":{\"width\":50,\"height\":32,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score_unit\",\"component\":\"Text\",\"content\":\"睡眠分\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"band_status\"],\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"band_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.bandStatus }}\",\"styles\":{\"width\":60,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":9,\"backgroundColor\":\"#331AC85B\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF7DFFB2\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":80,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#FF123326\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠报告\",\"score\":86,\"scoreText\":\"86\",\"weatherSummary\":\"晨间多云 22°C\",\"bandStatus\":\"手环已连\",\"actionText\":\"查看报告\"}}}}"
   ]
 }

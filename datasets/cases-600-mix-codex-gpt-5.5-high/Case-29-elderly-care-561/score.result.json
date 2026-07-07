@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-29-elderly-care-561",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.4,
+  "reasons": {
+    "instruction": "用户要求'点一下跳到应用/读一下天气/显示出已连接那种'，DSL 中 onClick 事件参数原样来自 eventCandidates、DataModel 字段全部正确读取，事件和素材协议合规。但截图里核心诉求视觉传达失败：①'已连接'状态被 '在线' 角标遮盖，左侧只露出一个像 'E' 的残缺字，'已 连接' 含义完全丢失；②主操作按钮 '打开健康' 被截断成 '打开...'，用户连点开什么应用都看不清；③'整个图当主体' 诉求在无 assetCandidates 的前提下未用其他视觉手段补偿主图感。",
+    "aesthetic": "截图整体配色（白底+绿色 CTA+灰色文字）原本合理，但因 Stack 层堆叠出现严重视觉污染：顶部左上角 '天气' 白色胶囊与 '长辈看护' 标题叠在一起，标题笔画被白色块截断；右上 '已连接' 胶囊又被 '在线' 圆角徽标覆盖，形成 'E 在线' 这种疑似乱码的视觉；底部还有一条 Divider 横向切过 '打开' 按钮下方，将卡片下沿横切，整体观感凌乱、不专业。",
+    "layout": "截图中可明确观察到 3 处致命布局问题：① Stack 中 ambient 装饰层（weather_shape/status_shape 胶囊）与 content 业务层在相同 y 坐标上绘制，形成 '天气' 胶囊压住 '长辈看护'、'已连接' 胶囊压住 '在线' 角标的可见重叠；② 打开健康 Button 宽度 74 不足以容纳 4 个 14 号中文，实际渲染为 '打开...'，主 CTA 文字被裁切；③ 装饰层 glow_bottom 中的 Divider 位于 content 的 action_row 同高度，水平线穿过按钮下方割裂卡片。底部 '打开...' 按钮文字截断属于受保护 CTA 不可被裁的硬性违规。"
+  },
+  "issues": [
+    "Stack ambient 层 weather_shape/status_shape 胶囊与 content 层标题/状态角标在顶部发生可见重叠，导致 '长辈看护' 标题被白色块截断、'已连接' 状态被压成 'E 在线' 残缺形态",
+    "打开健康按钮宽度 74 不足，实际渲染为 '打开...'，主 CTA 文字被截断（受保护文本违规）",
+    "装饰层 Divider 与 action_row 同高度，水平线穿过按钮下方，视觉上把卡片底部分割破坏",
+    "'天气' 装饰胶囊本身是冗余元素，没有信息增益却占用了关键空间",
+    "温度文本 '--°' 中 '°' 度符号独立悬浮在 '--' 右上，视觉上像漂浮的圆点，可读性差",
+    "整个卡片缺少主图/主视觉，未能响应用户'整个图当主体'的诉求（无素材前提下可考虑加大温度字号或加图形占位）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"elderly_care_weather_561\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"elderly_care_weather_561\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"content\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff5f6f7\"}},{\"id\":\"bg\",\"component\":\"Column\",\"styles\":{\"width\":276,\"height\":116,\"linearGradient\":{\"direction\":\"toRight\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffffffff\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"divider\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status_pill\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.title }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.statusText }}\",\"styles\":{\"width\":64,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":11,\"padding\":{\"left\":10,\"right\":10,\"top\":2,\"bottom\":2},\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"temp_text\",\"info_col\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":86,\"height\":46,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"condition_text\",\"location_text\"],\"itemMargin\":2,\"styles\":{\"width\":170,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":170,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.districtName }}\",\"styles\":{\"width\":170,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#22000000\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"care_hint\",\"open_btn\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"care_hint\",\"component\":\"Text\",\"content\":\"天气已接入看护提醒\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.device.targetLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":96,\"height\":28,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"elderly_care_weather_561\",\"path\":\"/\",\"value\":{\"device\":{\"title\":\"长辈看护\",\"statusText\":\"已连接\",\"targetLabel\":\"打开健康\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\",\"prefectureName\":\"\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"读取天气中\",\"airQuality\":\"\",\"humidityPercent\":0,\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

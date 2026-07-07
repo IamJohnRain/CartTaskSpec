@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-27-utility-bill-528",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图清晰呈现了用户要求的全部要素：左卡显示'本月电费'分类、'待缴费'状态、突出显示的'128块'金额、'目的地 附近营业厅'；右卡有'点一下带你过去'提示和蓝色'导航'按钮。onClick 中 call=clickToIntent、intentName=StartNavigate 及经纬度/出行方式参数与 eventCandidates 完全一致。尺寸 2x4 (300x140) 正确，root.borderRadius=22、clip=true 满足约束。轻微瑕疵：amount 用了 formatString 调用而非简洁的 {{ }} 表达式（虽渲染正确但非首选写法），以及 '目的地' 标签为硬编码而非读 dataModel，扣 1 分。",
+    "aesthetic": "截图整体观感干净专业：白色左卡 + 浅蓝紫底右卡 与卡片整体浅灰渐变形成层次；128块主数值用 32pt 加粗蓝色 (#0a59f7) 形成强字重锚点，其余 12-14pt 灰黑字形成阶梯；左右两个圆角子卡 (borderRadius=18) 视觉一致。文字在背景上对比度足够、可读性良好。轻微扣分：左卡 padding(8) 配合 justifyContent:spaceBetween 使得'128块'与底部'目的地'行距偏紧，右卡 hint 文案换行居中略显拥挤；缺少一个明显的信息图标或状态点，视觉丰富度略低。",
+    "layout": "截图中所有元素均位于卡片边界内，无溢出、无文字截断。'本月电费'/'待缴费'顶部贴左对齐正常；'128块' 32pt 在 156 宽容器内完整显示未截断；'目的地 附近营业厅' 同行排列无换行问题；右侧 '点一下带你过去' 自然换行成 2 行 (点一下带你/过去) 居中显示完整；'导航' 按钮 76x40 居中，蓝色填充清晰，热区充足。左右两子卡间距 12vp，左右留白对称。底部动作区 (导航按钮) 距卡片底边约 12vp 在 2x4 推荐范围内。整体排版干净，无堆叠/遮挡问题。"
+  },
+  "issues": [
+    "amount 组件使用 formatString 表达式（call/args 嵌套），应改为简洁的 {{ $__dataModel.bill.amountText }} 绑定，与协议'展示值优先用完整表达式 {{ ... }}'更一致",
+    "hall_label 使用硬编码文字'目的地'，未从 dataModel 读取 destinationName，弱化了数据驱动",
+    "nav_hint '点一下带你过去' 在 76 宽内被强制换行成 2 行，可适当增加 action_panel 宽度或缩小 fontSize 到 12 让其单行显示，提升信息密度",
+    "左卡 '128块' 与底部 '目的地 附近营业厅' 之间的间距由 spaceBetween 控制后略显局促，可考虑给 amount 显式 marginTop 让主数值呼吸感更好"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_utility_bill_528\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_utility_bill_528\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content\"],\"itemMargin\":0,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",0.58],[\"#ffe5e5ea\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"main_panel\",\"action_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"top_group\",\"amount\",\"hall_row\"],\"itemMargin\":4,\"styles\":{\"width\":172,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_group\",\"component\":\"Row\",\"children\":[\"category\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":152,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"category\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.category }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.payStatus }}\",\"styles\":{\"width\":66,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"backgroundColor\":\"#1a0a59f7\",\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":8,\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.amountText }}\",\"styles\":{\"width\":152,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"marginTop\":4,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hall_row\",\"component\":\"Row\",\"children\":[\"hall_label\",\"hall_name\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":152,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hall_label\",\"component\":\"Text\",\"content\":\"目的地\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hall_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.navigation.destinationName }}\",\"styles\":{\"width\":110,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"nav_hint\",\"nav_button\"],\"itemMargin\":10,\"styles\":{\"width\":92,\"height\":116,\"padding\":{\"left\":6,\"right\":6,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#330a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"nav_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.navigation.hint }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.bill.actionText }}\",\"styles\":{\"width\":80,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ $__dataModel.navigation.dstLocation.latitude }}\",\"longitude\":\"{{ $__dataModel.navigation.dstLocation.longitude }}\"},\"trafficpe\":\"{{ $__dataModel.navigation.trafficpe }}\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_utility_bill_528\",\"path\":\"/\",\"value\":{\"bill\":{\"category\":\"本月电费\",\"amountText\":\"128块\",\"payStatus\":\"待缴费\",\"serviceHall\":\"附近营业厅\",\"actionText\":\"导航\"},\"navigation\":{\"hint\":\"点一下带你过去\",\"destinationName\":\"附近营业厅\",\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Drive\"}}}}"
+  ]
+}

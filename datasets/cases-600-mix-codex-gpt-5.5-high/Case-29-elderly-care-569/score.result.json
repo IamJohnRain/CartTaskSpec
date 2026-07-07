@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-29-elderly-care-569",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户原始指令的五项诉求基本落实：文字叠在背景图上（Stack 包含 bg_glyph 背景图和 content 列）✓；数字会动（countText 绑定 DataModel，加载态显示 --，加载完成后会更新数值）✓；点一下进app（onClick 调用 clickToIntent + ViewCalendarEvent）✓；能看日历（日历图标 + 查看日历按钮）✓；紧急红色提示（紧急关注红底白字徽章）✓。扣分点：next_block 内的时间文本 --:----:-- 在截图中几乎不可见，导致'数字会动'中的时间数字传达不完整。",
+    "aesthetic": "粉红渐变背景与红色徽章、白色 CTA 按钮的配色协调，暖色基调适合老人关怀场景；白色文字在粉色渐变上清晰可读。但截图中 next_block 内的白色时间文字在白色日历图标上几乎消失，对比度严重不足，破坏了该区域的可读性；日历图标过于居中且与右侧信息卡重叠，视觉重心略偏。",
+    "layout": "截图中可观察到的布局问题：1）bg_glyph（104x104）从 x:16 延伸至 x:120，与 next_block（x:110 起）存在 10px 横向重叠，加上日历图标在容器内居中显示，icon 视觉范围覆盖了 next_block 的大部分区域；2）next_block 内顶部的时间行 --:----:-- 恰好位于日历图标白色形状覆盖区，白底白字几乎不可见，next_title'读取日程中'虽然能勉强辨认但也明显被图标线条切割；3）日历图标的勾选标记与 next_block 边框在视觉上相互干扰。受保护的时间信息被背景图标遮挡，是核心排版缺陷。"
+  },
+  "issues": [
+    "next_block 内 next_time 文本（--:----:--）因与白色日历图标重叠导致白底白字，几乎不可见",
+    "日历图标 bg_glyph 尺寸 104x104 过大，横向延伸至 x:120，与 next_block 起始位置 x:110 产生 10px 重叠",
+    "next_block 半透明背景 #19ffffff（10%白）无法有效遮挡背后的白色图标，文字对比度不足",
+    "日历图标的勾选标记和网格线与 next_block 边框在视觉上产生干扰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_elderly_care_569\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_elderly_care_569\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_glyph\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#e64566\",0],[\"#e67c92\",1]]},\"alignContent\":\"center\"}},{\"id\":\"bg_glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\",\"margin\":{\"left\":196,\"top\":10}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"alert_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alertText }}\",\"styles\":{\"width\":82,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"count_block\",\"next_block\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"count_block\",\"component\":\"Column\",\"children\":[\"count_value\",\"count_label\"],\"itemMargin\":0,\"styles\":{\"width\":86,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"count_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.countText }}\",\"styles\":{\"width\":86,\"height\":32,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.countLabel }}\",\"styles\":{\"width\":86,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"next_block\",\"component\":\"Column\",\"children\":[\"next_time\",\"next_title\"],\"itemMargin\":2,\"styles\":{\"width\":178,\"height\":46,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":16,\"backgroundColor\":\"#40ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"next_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":158,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"next_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"action\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":34,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.loading ? '正在读取日历' : '已更新日程' }}\",\"styles\":{\"width\":176,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.care.actionText }}\",\"styles\":{\"width\":88,\"height\":34,\"margin\":{\"top\":0},\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":6},\"borderRadius\":17,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#e64566\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_elderly_care_569\",\"value\":{\"care\":{\"title\":\"看护日历\",\"alertText\":\"紧急关注\",\"countLabel\":\"今日事项\",\"countText\":\"--\",\"nextTitle\":\"读取日程中\",\"nextTime\":\"--:--\",\"actionText\":\"查看日历\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"\",\"title\":\"读取日程中\",\"dtStart\":\"--:--\",\"dtEnd\":\"--:--\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

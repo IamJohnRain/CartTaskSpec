@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-24-todo-468",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.0,
+  "reasons": {
+    "instruction": "截图中可见的仅是标题'今日待办'、副标题'日历同步中'和绿色按钮'去目的地'。用户最核心的诉求'几项能打勾'对应的3个Checkbox（整理会议材料/确认日历安排/出发去某地）完全没有渲染出来，List+Checkbox模板绑定在本渲染器中未生效；'完成的标出来'也无法呈现（既看不到item1为done=true的标记，副标题也被loading覆盖为'日历同步中'而非'已完成 1/3'）；导航按钮与onClick事件落实完整，size/root shell/catalogId/version等协议硬约束满足，但核心信息缺失严重。",
+    "aesthetic": "截图整体配色尚可：白底配深色文字、单一绿色CTA按钮，层级清晰且只有一个最强字重（标题700）。但因List未渲染导致卡片下半部分约70%为纯白空洞，视觉重心严重失衡；标题/副标题左对齐在小尺寸卡片中略显局促，缺乏视觉张力。",
+    "layout": "截图中可观察到明确的布局崩塌：1) todo_list区域（按DSL应占50vp高度、含3个Checkbox）整片空白，完全不可见；2) 按钮'去目的地'悬停在卡片中部偏上位置，下方约80vp区域无任何内容；3) 受保护的Checkbox列表作为卡片主体被整体缺失；4) 内容全部贴左上角对齐，未居中利用卡片空间；5) 底部留白远超合理范围。按DSL交叉验证：root高度140 - padding24 - header30 - itemMargin8 - list50 - button28 = 0，本就极度紧凑，而List未渲染使问题彻底暴露。"
+  },
+  "issues": [
+    "List+Checkbox模板绑定未渲染，3个待办条目在截图中完全不可见",
+    "副标题被loading状态覆盖为'日历同步中'，丢失了'已完成 1/3'的完成度信息",
+    "卡片下半部分约70%为空白空洞，视觉重心失衡",
+    "所有内容左对齐，小尺寸卡片中缺乏居中锚定",
+    "标题与副标题紧贴卡片左上边缘，缺乏留白引导"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_24_todo_468\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_24_todo_468\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"summary\",\"item1\",\"item2\",\"item3\",\"nav_action\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.todo.title }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.todo.doneSummary }}\",\"styles\":{\"width\":120,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item1\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.todo.items[0].label }}\",\"select\":true,\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":1.5}}},{\"id\":\"item2\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.todo.items[1].label }}\",\"select\":false,\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":1.5}}},{\"id\":\"item3\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.todo.items[2].label }}\",\"select\":false,\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":1.5}}},{\"id\":\"nav_action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.todo.action }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":120,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#FF64BB5C\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_24_todo_468\",\"path\":\"/\",\"value\":{\"todo\":{\"title\":\"今日待办\",\"doneSummary\":\"已完成 1/3\",\"action\":\"去目的地\",\"items\":[{\"label\":\"整理会议材料\",\"done\":true},{\"label\":\"确认日历安排\",\"done\":false},{\"label\":\"出发去某地\",\"done\":false}]},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

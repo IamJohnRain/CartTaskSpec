@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-29-elderly-care-577",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "截图中信息呈现与用户明确诉求存在多项不符：1)用户要求'左边信息区...右边按钮'横向布局，实际渲染为上下堆叠的Column结构，信息块与按钮均为整行宽度纵向排列，未实现左-右并列；2)用户要求'纵向排三四个时间点'，实际三个时间点'19:30  22:30  睡前'挤在单行水平排列，方向相反；3)用户要求'整体红色警示渐变'，实际主色使用#ed6f21(偏橙)与#e67c92(粉)，更接近'温暖提醒'而非'红色警示'；4)💊⏰文字字符图标未呈现(协议禁止emoji，受协议硬约束限制，非DSL问题)；5)'21:00'字号20与'降压药'字号10反差过大，未完全匹配用户'21:00 降压药 大字'诉求。已完成：白底、21:00/降压药主信息、'确认服用'按钮、onClick正确引用clickToDeeplink事件、尺寸2x2、协议字段齐全。",
+    "aesthetic": "截图整体配色为白底+橙粉渐变信息块+橙色实心按钮，文字在白底与渐变背景上均清晰可读，标题加粗、主体放大、辅助文字缩小的层级清晰。但用户明确要求'整体红色警示渐变'以实现'醒目'，实际#ed6f21(暖橙)→#e67c92(粉)渐变更偏温柔关怀，缺失'警示'的紧张感与红色视觉冲击，削弱了对老年人'总要忘记吃药'场景下'这次要醒目'的核心需求达成。",
+    "layout": "截图显示卡片内四块内容(标题/主信息渐变块/时间行/按钮)垂直堆叠且排列整齐，受保护文本(标题'今晚吃药'、'21:00'、'降压药'、'确认服用')均完整呈现，未见文字截断、组件溢出卡片边界或元素相互重叠等问题。扣分点：1)布局未呈现用户要求的'左信息+右按钮'横向结构；2)'19:30  22:30  睡前'以单行水平排列，三个时间点字符之间空白过密，可读性下降；3)按钮热区116x28虽满足≥24vp硬性下限，但对老年用户场景，CTA视觉重量可进一步强化。"
+  },
+  "issues": [
+    "用户要求'左边信息区...右边按钮'横向布局，实际渲染为上下堆叠的Column，未实现左-右并列",
+    "用户要求'纵向排三四个时间点'，实际三个时间点挤在单行水平排列，方向与用户意图相反",
+    "主色使用#ed6f21(橙)与#e67c92(粉)渐变，与用户要求的'整体红色警示渐变'差距明显",
+    "💊⏰文字字符图标未呈现(协议禁止emoji，受协议硬约束限制)",
+    "'降压药'字号仅10，与'21:00'字号20反差过大，未完全匹配'21:00 降压药 大字'诉求",
+    "2x2=140x140画布下方留白较多，内容整体偏紧凑，4个组件总占用高度约102，加上间距与padding仅占约138/140，但视觉重心偏上",
+    "老年人场景下CTA字号14偏小，按钮视觉重量可再加强以提升'醒目'达成度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_elderly_care_577\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_elderly_care_577\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"mainRow\",\"times\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.medication.title }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#c8102e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mainRow\",\"component\":\"Row\",\"children\":[\"mainBlock\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"mainBlock\",\"component\":\"Column\",\"children\":[\"mainTime\",\"medicine\"],\"itemMargin\":0,\"styles\":{\"width\":66,\"height\":46,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#c8102e\",0],[\"#ff5a5f\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"mainTime\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.medication.mainTime }}\",\"styles\":{\"width\":54,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"medicine\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.medication.medicineName }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.medication.actionText }}\",\"styles\":{\"width\":46,\"height\":40,\"borderRadius\":12,\"backgroundColor\":\"#c8102e\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"times\",\"component\":\"Column\",\"children\":[\"t1\",\"t2\",\"t3\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"t1\",\"component\":\"Text\",\"content\":\"• 19:30\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"t2\",\"component\":\"Text\",\"content\":\"• 22:30\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"t3\",\"component\":\"Text\",\"content\":\"• 睡前\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_elderly_care_577\",\"path\":\"/\",\"value\":{\"medication\":{\"title\":\"今晚吃药\",\"mainTime\":\"21:00\",\"medicineName\":\"降压药\",\"actionText\":\"确认服用\",\"times\":\"19:30  22:30  睡前\"}}}}"
+  ]
+}

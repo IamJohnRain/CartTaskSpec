@@ -2,7 +2,7 @@
   "case_id": "Case-10-rainy-taxi-193",
   "scores": {
     "instruction": {
-      "score": 5.5,
+      "score": 4.0,
       "weight": 0.4
     },
     "aesthetic": {
@@ -10,25 +10,26 @@
       "weight": 0.2
     },
     "layout": {
-      "score": 5.0,
+      "score": 2.0,
       "weight": 0.4
     }
   },
-  "weighted_total": 5.2,
+  "weighted_total": 3.4,
   "reasons": {
-    "instruction": "尺寸 2x4、root shell、catalogId、version、updateDataModel 均满足协议；伞字符图标、标题/副标题、三个目的地(公司/家/学校)在 dataModel 中齐备，设置提醒 onClick 的 call/args 原样来自 eventCandidates。但 Button 组件使用了 'content' 字段而非协议规定的 'label' 字段（违反硬约束 '用 Text.content / Image.src / Button.label'），导致按钮文字在渲染中不显示；横排三个目的地色块在截图中完全缺失（模板循环未渲染或被吞），属于关键诉求缺失，扣重分。",
-    "aesthetic": "蓝紫 135° 渐变（#2f6df6→#7b61ff）方向与配色与指令契合，伞字圆形徽章+白字标题层级清晰、留白合理。问题在于底部按钮文字因 Button.content 协议违规未渲染、三个目的地色块整行未出现，导致卡片下半部分留有大片空白，视觉重心偏上，密度失衡、看起来未完成。",
-    "layout": "预算核算：root Column 内容区 276x116，子项 itemMargin=8，三子项高度 40+30+30=100，加上 padding 12+12 与 itemMargin 16 共 140，等于容器高度 140，无溢出。top_row Row：40(umbrella)+10(margin)+226(title_block)=276，恰好等于父宽 276，无溢出。title_block Column：20+2+16=38=容器高 38，无溢出。dest_row Row：86*3+8*2=274 ≤ 276，水平方向不溢出（剩余 2vp）。但渲染截图显示 dest_row 三个目的地色块整行未出现、remind_btn 文字因协议字段错误丢失，下半部分大面积空白；Button 热区 30 高度≥24vp 满足，但 CTA 文字不可见属于严重可读性问题。"
+    "instruction": "用户明确要求横排三个目的地（公司/家/学校）以及'设置提醒'按钮跳转闹钟。从截图中看，伞形主图标、标题'雨天打车'、副标题'常用目的地一键准备'、蓝紫渐变背景均正常呈现，但横排三个目的地色块在截图中完全不可见（中部整片空白），底部白色胶囊按钮的'设置提醒'文字也未渲染出来（仅有一个空白白色 pill）。这两个都是用户明确点名的核心信息，缺失造成关键诉求未落实；Button 字段名错用为 content（应为 label）属协议违规，进一步导致事件关联文字未呈现。",
+    "aesthetic": "蓝紫渐变方向自然、伞形圆形徽标和主副标题的字重层级清晰、留白在顶部段表现克制。但卡片中部大片空白，底部按钮呈现为无字白色胶囊，整体观感严重不完整、半成品感明显，配色与排版潜力未能体现。",
+    "layout": "截图中最显著的问题是：(1) 中部 dest_row 区域完全空白，三个目的地色块（公司/家/学校）未渲染，整段高度 30vp 为空洞；(2) 底部 remind_btn 呈现为空白白色 pill，文字'设置提醒'未显示，等同于该 CTA 不可读、不可用；(3) 卡片下半部分视觉上几乎是空的，与上半部分信息密度严重失衡，属于严重的渲染/布局失败。问题根源包括 Button 字段错用 content 而非 label，以及模板循环子项在渲染时未正确展开。"
   },
   "issues": [
-    "Button 组件使用 'content' 字段，违反硬约束 'Button.label'，导致 '设置提醒' 文字在渲染中不显示",
-    "横排三个目的地色块（公司/家/学校）在渲染截图中完全缺失，dest_row 区域为空白",
-    "卡片下半部因上述问题出现大片空白，密度与重心失衡",
-    "title 字体 fontWeight=800 与其他元素 700/500 共存时层级尚可，但 title 16 + subtitle 12 的字号差偏小，subtitle 视觉权重不足"
+    "Button 字段名违规：使用 content，应改为 label，导致按钮文字'设置提醒'未渲染",
+    "横排三个目的地（公司/家/学校）在截图中完全缺失，dest_row 渲染为空",
+    "dest_item 背景透明度 #33ffffff 偏低，白色文字在蓝紫渐变上对比度不足",
+    "dest_row 高度 30 较小，dest_item 内部 padding 6 占用较多可视空间",
+    "remind_btn 缺少文字渲染等同于核心 CTA 不可用"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"dest_row\",\"remind_btn\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff2f6df6\",0],[\"#ff7b61ff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"umbrella_badge\",\"title_block\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":40,\"alignItems\":\"center\"}},{\"id\":\"umbrella_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.iconText }}\",\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#26ffffff\",\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_block\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":4,\"styles\":{\"width\":226,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":226,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.subtitle }}\",\"styles\":{\"width\":226,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dest_row\",\"component\":\"Row\",\"children\":[{\"componentId\":\"dest_item\",\"path\":\"/taxi/destinations\"}],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":30,\"alignItems\":\"center\"}},{\"id\":\"dest_item\",\"component\":\"Text\",\"content\":\"{{ $item.name }}\",\"styles\":{\"width\":86,\"height\":30,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":15,\"backgroundColor\":\"#33ffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remind_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.reminderText }}\",\"styles\":{\"width\":104,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff2f6df6\",\"textAlign\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.deskclock\",\"abilityName\":\"com.huawei.deskclock.MainAbility\",\"uri\":\"clock://alarm\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"dest_row\",\"remind_btn\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff2f6df6\",0],[\"#ff7b61ff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"umbrella_badge\",\"title_block\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":36,\"alignItems\":\"center\"}},{\"id\":\"umbrella_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.iconText }}\",\"styles\":{\"width\":36,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#4dffffff\",\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_block\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":230,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":230,\"height\":18,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.subtitle }}\",\"styles\":{\"width\":230,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dest_row\",\"component\":\"Row\",\"children\":[{\"componentId\":\"dest_item\",\"path\":\"/taxi/destinations\"}],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"dest_item\",\"component\":\"Text\",\"content\":\"{{ $item.name }}\",\"styles\":{\"width\":86,\"height\":32,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#66ffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remind_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.reminderText }}\",\"styles\":{\"width\":276,\"height\":32,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff2f6df6\",\"textAlign\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.deskclock\",\"abilityName\":\"com.huawei.deskclock.MainAbility\",\"uri\":\"clock://alarm\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_193\",\"value\":{\"taxi\":{\"iconText\":\"伞\",\"title\":\"雨天打车\",\"subtitle\":\"常用目的地一键准备\",\"destinations\":[{\"name\":\"公司\"},{\"name\":\"家\"},{\"name\":\"学校\"}],\"reminderText\":\"设置提醒\"}}}}"
   ]
 }

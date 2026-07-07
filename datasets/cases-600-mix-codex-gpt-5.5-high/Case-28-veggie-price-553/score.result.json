@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-28-veggie-price-553",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "截图中可见：标题'雨天菜价'、警告色红色状态'雨天菜价上浮'、灰色'已到警戒线'、倒计时'夜市前/2小时'、蓝色CTA按钮均已布局；但用户明确要求呈现的'12%'涨幅在红色文案中完全看不到（仅显示'雨天菜价上浮'），同时CTA按钮文本'看天气'被截断为'看...'，关键信息缺失。事件绑定使用了正确的clickToDeeplink地址，符合eventCandidates。资产为rainy-market照片（assetCandidates为空）无法提供，用渐变背景替代，可接受。",
+    "aesthetic": "截图整体配色尚可：顶部蓝色、中部浅灰到底部深黑渐变模拟'雨→夜'过渡，绿色'菜'字徽章与红色警告文字对比清晰，'夜市前/2小时'灰色玻璃药丸质感不错。但'看天气'按钮文字被截断成'看...'严重破坏专业感；'12%'缺失使警告信息力度不足；'雨天菜价上浮'文案被挤到仅显示部分，视觉重心不完整。",
+    "layout": "截图中可观察到两处严重截断/溢出问题：①底部蓝色按钮宽度58、字号14、内部无padding预留，'看天气'三字渲染超出按钮文本区被系统截为'看...'，CTA不可用；②status_group中'rise'行使用formatString拼接'雨天菜价上浮 12%'共约8字符、字号14，在容器宽度116下渲染时'12%'被切掉，仅显示'雨天菜价上浮'。其余分组（header/divider/status/divider/footer）结构、左右边界、底部锚定基本正常。"
+  },
+  "issues": [
+    "CTA按钮'看天气'在截图中被截断为'看...'，按钮热区/文本区不匹配（width:58、fontSize:14、无内padding）",
+    "状态行'雨天菜价上浮 12%'中的'12%'在截图中不可见，formatString结果被容器右侧裁切",
+    "倒计时列与按钮行高41、字号梯度（label=10、value=14、btn=14）层次略拥挤",
+    "缺少'读日历'的可视化呈现（data.calendar.items为空时建议隐藏而非缺失）",
+    "用户要求'纵向列三组用分隔线分开'已满足，但中间组只显示'涨幅'信息、'夜晚倒计时渐变'主要由背景渐变承担、未在文本/分隔区明显表达"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_veggie_price_553\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_veggie_price_553\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"divider_top\",\"status_group\",\"divider_bottom\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#86c5e3\",0],[\"#fff1f3f5\",0.55],[\"#ff202224\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"icon_badge\",\"title\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.iconText }}\",\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":8,\"backgroundColor\":\"#92c48d\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.title }}\",\"styles\":{\"width\":86,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"status_group\",\"component\":\"Column\",\"children\":[\"rise\",\"warning\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"rise\",\"component\":\"Text\",\"content\":\"雨天菜价上浮 {{ $__dataModel.market.riseText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.status }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_bottom\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"countdown\",\"weather_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdown\",\"component\":\"Column\",\"children\":[\"countdown_label\",\"countdown_value\"],\"itemMargin\":2,\"styles\":{\"width\":50,\"height\":34,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"countdown_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.countdownLabel }}\",\"styles\":{\"width\":38,\"height\":11,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.countdownText }}\",\"styles\":{\"width\":38,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.market.actionText }}\",\"styles\":{\"width\":60,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"padding\":{\"left\":4,\"right\":4}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_veggie_price_553\",\"value\":{\"market\":{\"iconText\":\"菜\",\"title\":\"雨天菜价\",\"weatherLabel\":\"雨天\",\"riseText\":\"12%\",\"status\":\"已到警戒线\",\"countdownLabel\":\"夜市前\",\"countdownText\":\"2小时\",\"actionText\":\"看天气\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

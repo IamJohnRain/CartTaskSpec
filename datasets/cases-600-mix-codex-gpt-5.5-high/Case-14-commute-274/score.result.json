@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-14-commute-274",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户要求主题色铺满(✓橙红渐变已铺满卡片)、信息分两组用横线分开(✓Divider 横线存在)、左边显示今天日程(✓)、右边动作按钮跳天气(✓已绑定 clickToDeeplink)、顶部红字'事故+拥堵'危险告警(✓)、紧迫感橙红渐变(✓)、纯文字色块不掺图(✓)。但关键信息被截断:左侧日程时间'08:30-09:00'实际只显示'08:30-'(末段'09:00'被裁掉),右侧'看天气'按钮文字完全被引擎缩为'...',导致 end time 字段与 CTA 文字均无法被用户读到,严重削弱了信息传达完整性,扣分明显。",
+    "aesthetic": "橙红渐变(从金黄到橙再到粉红)角度自然,色彩能传达用户要求的'紧迫感'。白色半透明胶囊里放红色'事故+拥堵'主视觉强烈。半透明白色日程底块 + 白色 CTA 按钮在橙红底色上层次清晰,主次字重(800/700)也分得出。唯一观感瑕疵是按钮区被渲染成三个橙点,视觉上像 loading 状态而非设计意图,显得粗糙,扣分。",
+    "layout": "截图中可观察到两处严重溢出/截断:1) 左侧 schedule_group 内容宽 58px(70 宽减 6+6 padding),在 fontSize 16 下渲染'08:30-09:00'明显放不下,屏幕里只看到'08:30-'就被裁掉,end time 不可读;2) 右侧 Button 宽仅 44px,label'看天气'在 fontSize 14 下被引擎省略为'...'三个点,CTA 文字完全无法识别;3) Row 整体高度 82px 加上 alert 24 + divider 2 + 两次 itemMargin 6 + root padding 10*2 = 140,虽未越界,但 schedule_group 内部 Column 4 行文字在 82px 高度中过密(行间距仅 3px,看到'08:30-'与'通勤提醒'贴得很近)。两处受保护文本(主时间值、CTA 文字)被截断,布局扣重分。"
+  },
+  "issues": [
+    "左侧 schedule_time 文本'08:30-09:00'在 58px 内容宽度下被截断,屏幕仅显示'08:30-'",
+    "右侧 Button label'看天气'在 44px 宽按钮内被引擎省略号为'...',CTA 不可读",
+    "schedule_group 内部 4 行文字在 82px 高度中过密,行间距仅 3px,显得拥挤",
+    "row 中 schedule_group 70px 与 weather_btn 44px 配比失衡,按钮区被严重压窄"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_274\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_274\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"alert_band\",\"split_line\",\"body_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff9a01e\",0],[\"#ffed6f21\",0.58],[\"#ffe64566\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_band\",\"component\":\"Text\",\"content\":\"事故+拥堵\",\"styles\":{\"width\":124,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#e5ffffff\",\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#ffe84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"split_line\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1.5,\"strokeWidth\":1.5,\"color\":\"#99ffffff\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"schedule_group\",\"weather_btn\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":90,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"schedule_group\",\"component\":\"Column\",\"children\":[\"schedule_label\",\"schedule_time\",\"schedule_title\",\"schedule_place\"],\"itemMargin\":2,\"styles\":{\"width\":72,\"height\":90,\"padding\":{\"left\":4,\"right\":4,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"今天日程\",\"styles\":{\"width\":64,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }} 起\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":64,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_place\",\"component\":\"Text\",\"content\":\"@{{ $__dataModel.data.calendar.items[0].eventLocation }}\",\"styles\":{\"width\":64,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_btn\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":48,\"height\":90,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_274\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"today-placeholder\",\"title\":\"通勤提醒\",\"dtStart\":\"08:30\",\"dtEnd\":\"09:00\",\"eventLocation\":\"公司\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

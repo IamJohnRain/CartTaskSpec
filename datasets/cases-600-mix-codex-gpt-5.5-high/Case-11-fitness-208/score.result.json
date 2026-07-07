@@ -10,26 +10,24 @@
       "weight": 0.2
     },
     "layout": {
-      "score": 5.5,
+      "score": 8.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 7.0,
+  "weighted_total": 8.2,
   "reasons": {
-    "instruction": "用户要求跑步卡片，主体有图、点击能跳进去、提醒'快不行了'，三项诉求均落实：1) heroImage 使用 assetCandidates 提供的 run_icon 资源；2) root 上挂 onClick 调 clickToDeeplink，args 与 eventCandidates 完全一致；3) warningText 展示'快不了了'。dataModel 字段(title/warning/actionText/asset.runIcon)全部使用完整表达式绑定。size 2x2、root 140x140、borderRadius:18、clip:true、catalogId/version/updateDataModel.path='/value 全部满足协议。轻微扣分：title 与 warning 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'。",
-    "aesthetic": "配色为暖色系（米色底 + 焦糖橙警示 + 棕色标题/动作）协调可读，标题/警告/动作三级字号 16/12/10 阶梯合理，背景纯色无渐变留白合适。但存在两点明显瑕疵：1) 跑步图标资源本身颜色过淡，呈现近乎灰白，主体视觉感不足；2) 标题与警告同时使用 fontWeight:700，违反'一个最强字重'原则，警告应降至 600/500 以拉开层级。",
-    "layout": "逐项预算核算：root Column 纵向 = padding.top(12) + padding.bottom(12) + itemMargin*(2-1)=8 + heroImage.h(56) + infoGroup.h(52) = 140，恰好等于 root 高度 140，余量 0；infoGroup Column 纵向 = 0+0 + itemMargin*(3-1)=8 + titleText.h(18) + warningText.h(16) + actionText.h(14) = 56 > infoGroup 声明高度 52，溢出 4vp；进而 root 实际占用 = 12+12+8+56+56 = 144 > 140，root 整体溢出 4vp，受 root clip:true 影响底部 4vp 区域可能被裁。底部动作区到卡片底边 12vp，处于 8-12vp 区间上沿。横向：各文本宽度均在 116 容器内，无水平溢出。判定：D3 存在明确的 infoGroup/root 双重纵向溢出 4vp，扣重分。"
+    "instruction": "用户明确诉求为'跑步卡片+主体图+点按跳转+快不行了提醒'，截图中均已落地：跑步图标作为主体、'跑步'标题、橙色'快不行了'警告、'点按进入运动健康'动作文案都在卡片内可见；root 上 onClick 正确绑定 clickToDeeplink 且 uri 原样来自 eventCandidates；尺寸 2x2、catalogId、version、updateDataModel 路径与值均符合协议。扣 1 分在于'主体图'视觉权重太弱（详见 D2），但信息层面已完整落实。",
+    "aesthetic": "截图中整体配色（米色背景 + 暖橙警告 + 深咖标题）协调统一，文字层级清晰，仅一个最强字重（标题加粗），圆角与居中布局也较克制。但最关键的视觉问题：跑步图标呈极浅灰色，几乎与米色背景融为一体，作为用户明确要求的'主体图'几乎沦为隐形水印，主体感严重不足；且图标与整体暖色调脱节显得冷淡。这是对核心诉求最直接的观感折扣，因此 D2 给 6.0。",
+    "layout": "截图显示卡片 140x140 边界内所有元素均居中且无截断：跑步图标在顶部 56x56 居中，'跑步'标题、'快不行了'警告、'点按进入运动健康'动作文字三行在 116 宽度的信息组内整齐排列，未出现堆叠/遮挡/溢出；底部动作文字距卡片底边约 12vp 处于安全区间，root.onClick 覆盖整张卡片热区充足。唯一可扣之处是图片区与文字区之间留白偏大、构图略有松散，但未造成实际布局问题。"
   },
   "issues": [
-    "infoGroup Column 子项实际纵向占用 56 > 声明高度 52，溢出 4vp",
-    "root Column 实际占用 144 > 高度 140，溢出 4vp，clip:true 将裁切底部",
-    "titleText 与 warningText 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'",
-    "infoGroup 固定 height:52 与内容自然高度不匹配，应取消固定高度由内容驱动",
-    "icon_run.png 资源本身颜色过淡，导致主体视觉不突出"
+    "跑步图标颜色过浅（接近浅灰），与米色背景对比度极低，作为用户明确要求的'主体图'几乎不可见，主体感严重缺失",
+    "图标冷灰色调与卡片整体暖色调（米色+橙+咖）不协调，视觉风格割裂",
+    "主图标区尺寸 56x56 在 2x2 卡片中偏小，未能充分体现'主体图'地位"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_208\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_208\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"heroImage\",\"infoGroup\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffff4e5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"heroImage\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.fitness.asset.runIcon }}\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\"}},{\"id\":\"infoGroup\",\"component\":\"Column\",\"children\":[\"titleText\",\"warningText\",\"actionText\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff241a0a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warningText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.warning }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffb25500\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff6d4c15\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_208\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"iconWrap\",\"infoGroup\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffff4e5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"iconWrap\",\"component\":\"Stack\",\"children\":[\"iconBg\",\"iconImg\"],\"styles\":{\"width\":64,\"height\":64}},{\"id\":\"iconBg\",\"component\":\"Column\",\"styles\":{\"width\":64,\"height\":64,\"borderRadius\":32,\"backgroundColor\":\"#ffeed4a3\"}},{\"id\":\"iconImg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.fitness.asset.runIcon }}\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\",\"margin\":{\"top\":8,\"left\":8}}},{\"id\":\"infoGroup\",\"component\":\"Column\",\"children\":[\"titleText\",\"warningText\",\"actionText\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff241a0a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warningText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.warning }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffb25500\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff6d4c15\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_208\",\"value\":{\"fitness\":{\"title\":\"跑步\",\"warning\":\"快不行了\",\"actionText\":\"点按进入运动健康\",\"asset\":{\"runIcon\":\"resources/base/media/icon_run.png\"}}}}}"
   ]
 }

@@ -2,34 +2,33 @@
   "case_id": "Case-19-photo-album-367",
   "scores": {
     "instruction": {
-      "score": 5.5,
+      "score": 6.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 7.0,
+      "score": 5.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 5.0,
+      "score": 3.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 5.6,
+  "weighted_total": 5.0,
   "reasons": {
-    "instruction": "用户四项诉求中，'几项能打勾选'用 Checkbox 体现已选 3 项（仅单一勾选态，未表达多项可勾的交互），'显示数字'用 12 项可勾选体现，'点一下跳应用'用 Button 配 clickToDeeplink 实现。但用户明确要求'红色危险提示'，实际 alertText 字体色为 #ffed6f21（橙色），与'红色'指令直接冲突，扣 3 分；且 root Row 整体也挂载 onClick，会与 Button 重复触发，存在轻微事件冗余。",
-    "aesthetic": "白底+橙（#ffed6f21）主色，标题/数字/危险三色阶清晰，字号 16/32/14 梯度合理，字重主用 700。但危险文字使用与主品牌同色系的橙色，导致'危险'语义被弱化、警示感丢失；橙色与红色在用户心智中区分度大，违反色彩语义。整体仍属克制专业，扣分主要在危险色错用。",
-    "layout": "1) root Row 横向：12+144+12+120+12=300 ✓；纵向 12+116+12=140 ✓。2) hero Column 纵向：title 20 + itemMargin 6 + count 38 + itemMargin 6 + danger 20 = 90 ≤ 116 ✓。3) side Column 纵向：check_row 40 + itemMargin 16 + open_app 40 = 96 ≤ 116 ✓。4) hero 内 count Text 在 width=144、fontSize=32 下渲染'12 项可勾选'，字符宽度估算 0.6×32×2 + 0.4×32 + 1.0×32×4 = 179.2，溢出 144 约 35vp，截图证实末字'选'被裁，主指标受保护文本截断，严重扣分。5) danger Text 宽 103.6 ≤ 144 ✓。6) open_app 底边到卡片底 12vp ✓ 在 10-14 区间。"
+    "instruction": "截图中可确认：1) Checkbox 勾选框已呈现（橙色已勾选状态+已选 3 项）满足'能打勾选'；2) 数字 12 与 3 均已显示满足'显示数字'；3) 打开应用按钮绑定 clickToDeeplink 满足'点一下跳应用'。但用户明确要求'加红色危险提示'，截图中'危险：将清理原图'却与主数字同为橙色 #ffed6f21，未使用红色，指令关键诉求未满足，扣分。size/catalogId/version/updateDataModel 协议合规。",
+    "aesthetic": "截图中白底配橙色主色整体观感干净，但存在两个明显问题：1) '危险：将清理原图'与主数字同为橙色，危险语义被淹没，缺乏警示感，应使用红色；2) 卡片下半部分大面积留白，视觉重心严重偏上，构图不均衡，留白密度不合理，影响整体美观。",
+    "layout": "截图中观察到两处明显布局问题：1) 主数字'12 项可勾选'在 hero Column(宽 144) 中以 fontSize 32 渲染，估算宽度约 179px 超过 144px 容器宽度，导致最右侧'选'字被截断/不可见，实际只看到'12 项可勾'；2) 卡片下半部约一半区域完全为空白，hero Column 中 spaceBetween 未把三段文字撑开，内容整体压缩在顶部，底部空白过大。这些都是截图里肉眼可辨的溢出与留白问题。"
   },
   "issues": [
-    "count Text 字号 32 在 144 宽 hero 中渲染 7 个中英混合字符总宽 ~179vp，溢出约 35vp，'选'字被裁（主指标受保护文本截断）",
-    "danger 文字使用 #ffed6f21 橙色，与用户'红色危险提示'指令不符",
-    "root Row 整体挂载 onClick 与 Button onClick 重复，会触发两次 deeplink",
-    "hero/side Column 未设 padding 但用 spaceBetween，导致纵向留白偏大（hero 26vp、side 24vp），可收紧 itemMargin 或去掉 spaceBetween",
-    "Checkbox label 使用 formatString 对象写法虽可工作，但协议更标准的是直接绑定字符串以减少渲染不确定性"
+    "主数字'12 项可勾选'在 144px 宽的 hero Column 中以 fontSize 32 渲染，文本宽度超过容器，最右侧'选'字在截图中不可见/被截断",
+    "用户明确要求'红色危险提示'，但截图中'危险：将清理原图'使用与主数字相同的橙色 #ffed6f21，未使用红色",
+    "卡片下半部大面积留白，hero Column 的 spaceBetween 未将三段文字合理撑开，内容集中在顶部",
+    "右侧 Checkbox 区域内容垂直分布与左侧不对齐（左侧文字偏上，右侧勾选框偏上、按钮居中），整体视觉不均衡"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_367\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_367\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"count\",\"danger\"],\"itemMargin\":6,\"styles\":{\"width\":144,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":144,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/album/selectableCount} 项可勾选\"}},\"styles\":{\"width\":144,\"height\":26,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"danger\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.alertText }}\",\"styles\":{\"width\":144,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"check_row\",\"open_app\"],\"itemMargin\":12,\"styles\":{\"width\":120,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"end\"}},{\"id\":\"check_row\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"已选 ${/album/checkedCount} 项\"}},\"select\":\"{{ $__dataModel.album.checked }}\",\"value\":\"{{ $__dataModel.album.checkValue }}\",\"styles\":{\"width\":120,\"height\":40,\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":16,\"strokeWidth\":2}}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":120,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_367\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"count\",\"danger\"],\"itemMargin\":6,\"styles\":{\"width\":144,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":144,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/album/selectableCount} 项可勾选\"}},\"styles\":{\"width\":160,\"height\":34,\"fontSize\":24,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"danger\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.alertText }}\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"check_row\",\"open_app\"],\"itemMargin\":12,\"styles\":{\"width\":120,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"check_row\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"已选 ${/album/checkedCount} 项\"}},\"select\":\"{{ $__dataModel.album.checked }}\",\"value\":{\"path\":\"/album/checkValue\"},\"styles\":{\"width\":120,\"height\":40,\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":16,\"strokeWidth\":2}}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":120,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_367\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"相册整理\",\"selectableCount\":12,\"checkedCount\":3,\"checked\":true,\"checkValue\":\"selected_album_items\",\"alertText\":\"危险：将清理原图\",\"actionText\":\"打开应用\"}}}}"
   ]
 }

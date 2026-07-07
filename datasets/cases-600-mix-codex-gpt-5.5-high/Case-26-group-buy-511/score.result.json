@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-26-group-buy-511",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.9,
+  "reasons": {
+    "instruction": "截图可见第一块'还差2杯'进度、第二块日历+取餐时间、第三块'看设置'深链按钮均落地，事件 call/args 也与 eventCandidates 一致。但用户明确要求的'最下面横向排了几个口味选项'（拿铁/乌龙/桃桃）完全未在截图中渲染出来；用户要求'已取消'标红色告警，实际渲染为橙色 #ffed6f21；用户要求'清晨蓝绿'渐变环境感，截图中看不到任何蓝色或绿色背景，卡片区呈纯白。三处明示要求均未落实。",
+    "aesthetic": "截图中卡片整体观感扁平、苍白，看不到 DSL 中声明的 #86c5e3→#92d6cc 蓝绿渐变，圆角边框也未呈现。'已取消'徽标用橙色与用户期望的红色告警不符，且橙白对比偏弱，不够紧迫感。'还差2杯'用纯黑字在白底上孤立出现，没有环境色调和，文字与背景的层次感几乎为零。",
+    "layout": "截图中底半部分（约 70vp 高度）完全留白，'看设置'按钮下方再无任何内容，口味行（flavor_row）虽然 DSL 中存在 Checkbox 模板但渲染图中没有出现，构成大面积空缺。'已取消'徽标右侧的'消'字尾端紧贴右边界，疑似被裁切或即将溢出 116vp 内容宽。顶部三块之间的分隔线尚可分辨，但整体 140vp 高度未填满也无留白节奏，呈现明显的内容缺失与空间浪费。"
+  },
+  "issues": [
+    "口味选项区块（拿铁/乌龙/桃桃 Checkbox 横向排列）整块未在截图中渲染，用户明示的'最下面横向排了几个口味选项'诉求缺失",
+    "'已取消'告警使用橙色 #ffed6f21，与用户要求的'红色已取消告警'不符",
+    "清晨蓝绿渐变（#86c5e3→#92d6cc）在截图中完全不可见，背景呈纯白",
+    "卡片下半部分大面积留白，'看设置'按钮与卡底之间无任何元素",
+    "'已取消'徽标右端紧贴内容边界，'消'字疑似被裁切",
+    "卡片圆角 borderRadius:18 与 clip:true 在截图中未体现，视觉上看不到卡片外壳"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"group_buy_card_511\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"group_buy_card_511\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"divider_one\",\"pickup_row\",\"divider_two\",\"action_button\",\"flavor_row\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"to bottom\",\"colors\":[[\"#7ec4dc\",0],[\"#a8dccc\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"progress_text\",\"status_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"progress_text\",\"component\":\"Text\",\"content\":\"{{ '还差' + $__dataModel.groupBuy.remainingCups + '杯' }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.status }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffe02020\",\"borderRadius\":8,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_one\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1,\"strokeWidth\":1,\"color\":\"#55000000\"}},{\"id\":\"pickup_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"pickup_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/groupBuy/asset\"},\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"pickup_text\",\"component\":\"Text\",\"content\":\"{{ size($__dataModel.data.calendar.items) > 0 ? $__dataModel.data.calendar.items[0].dtStart : '读取取餐时间' }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_two\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1,\"strokeWidth\":1,\"color\":\"#55000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.groupBuy.settingsLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":124,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}},{\"id\":\"flavor_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"flavor_item\",\"path\":\"/groupBuy/flavors\"},\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"flavor_item\",\"component\":\"Checkbox\",\"label\":{\"path\":\"name\"},\"value\":{\"path\":\"id\"},\"select\":{\"path\":\"selected\"},\"group\":\"group_buy_flavors\",\"styles\":{\"width\":40,\"height\":20,\"fontSize\":11,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#ffffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"group_buy_card_511\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"title\":\"拼单团购\",\"status\":\"已取消\",\"remainingCups\":2,\"targetCups\":8,\"settingsLabel\":\"看设置\",\"flavors\":[{\"id\":\"latte\",\"name\":\"拿铁\",\"selected\":true},{\"id\":\"oolong\",\"name\":\"乌龙\",\"selected\":false},{\"id\":\"peach\",\"name\":\"桃桃\",\"selected\":true}],\"asset\":\"resources/base/media/icon_schedule.png\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"\",\"title\":\"取餐时间\",\"dtStart\":\"读取取餐时间\",\"dtEnd\":\"\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

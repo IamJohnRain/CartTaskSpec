@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-29-elderly-care-564",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可清晰看到'紧急提醒'状态、'我不行了'主标题、'导航去最近医院'目的地信息以及'立即导航'CTA按钮，完整呈现了用户'整个图片的+点一下导航+看到我不行了的提醒'三项诉求。root Column 与 Button 同时挂载 clickToIntent 事件，call/args 与 eventCandidates 完全一致。size=2x2、root 140x140、borderRadius 18、clip true、catalogId/version/updateDataModel 等硬约束全部满足。唯一轻微瑕疵是 root 与 Button 重复挂同一 onClick，在'整个图片'语义下可接受但略有冗余。",
+    "aesthetic": "截图配色克制专业：浅灰底 #fff1f3f5 与橙色 #ffed6f21 形成克制的警示感，黑体主标题与灰色副文本层级清晰，字号阶梯 20/12/12/14 合理。橙色按钮与状态文字同色形成呼应，CTA 白色文字对比度足、清晰可读。留白密度舒适，无过密或空洞。整体观感良好、可略加视觉提示强度（如背景轻微渐变）但当前已属合格偏上。",
+    "layout": "截图显示卡片内 4 个子项（status 18 + message 24 + destination 18 + action 38 = 98）加上 padding 24 与 itemMargin×3=18，合计 140，与容器高度 140 完全吻合，无溢出无截断。文字均水平居中、未出现裁切或省略号，'立即导航'按钮底边距卡片底边约 8-10vp、在 8-12vp 合理区间。Button 热区高度 38vp 满足 ≥24vp 要求。未见任何元素堆叠重叠或 Stack 遮挡。Column 整体视觉干净。"
+  },
+  "issues": [
+    "root Column 与 action Button 同时挂载完全相同的 onClick，存在轻微冗余（虽然满足'整个图片可点'语义）",
+    "橙色 #ffed6f21 作为紧急场景略显温和，对'我不行了'这种强紧急语义的视觉强度可再加强（如加左侧色条或更深的警示色）",
+    "2x2 空间较紧，destination 文案'导航去最近医院'靠 maxLines:1 才放下，若文案再长一两个字就有截断风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_elderly_care_564\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_elderly_care_564\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status\",\"message\",\"destination\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff5f6f7\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3080\",\"longitude\":\"114.1770\"},\"trafficpe\":\"Drive\"}}}]},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"紧急提醒 · SOS\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":11,\"fontWeight\":\"bold\",\"fontColor\":\"#ffe60012\",\"letterSpacing\":1,\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"message\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":22,\"fontWeight\":900,\"fontColor\":\"#dd000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"destination\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.destination }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#88000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.care.actionText }}\",\"styles\":{\"width\":116,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ffe60012\",\"fontSize\":14,\"fontWeight\":\"bold\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3080\",\"longitude\":\"114.1770\"},\"trafficpe\":\"Drive\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_elderly_care_564\",\"value\":{\"care\":{\"title\":\"我不行了\",\"status\":\"紧急提醒\",\"destination\":\"导航去最近医院\",\"actionText\":\"立即导航\"}}}}"
+  ]
+}

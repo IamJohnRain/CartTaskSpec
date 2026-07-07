@@ -2,11 +2,11 @@
   "case_id": "Case-05-agenda-086",
   "scores": {
     "instruction": {
-      "score": 9.0,
+      "score": 9.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 7.5,
+      "score": 8.5,
       "weight": 0.2
     },
     "layout": {
@@ -14,20 +14,19 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 8.7,
+  "weighted_total": 9.1,
   "reasons": {
-    "instruction": "用户要求四点：① 从日历读取今天会议（展示了 nextEvent.title='项目同步会'、timeRange='14:00-14:30'）② 显示还剩几个（remainingText='还剩3个会'）③ 点一下进会议（joinButton 含 onClick，call='clickToIntent'，intentName/params 全部原样来自 eventCandidates）④ 已加入的标完成（doneText='已完成'，对应 dataModel.completionStatus）。尺寸 2x2、width/height 140、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 均符合硬约束。轻微扣分：未独立展示 '已加入' 状态，只显示了 '已完成'，对'已加入→标完成'的状态语义传达略弱。",
-    "aesthetic": "配色：浅绿底 #FFEAF8EF + 深绿主色 #0A7F42 + 文字深色 #182820，色相和谐、绿系单点强调，识别度高。字号阶梯 14/16/12/12/14 在 12/14/16 范围内合规。CTA 按钮白字深绿底对比清晰。主要扣分：remainingText 与 eventTitle 同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'的规则，需将副状态字重降级到 600 级别。留白尚可，但剩余字数与标题同色同字重造成视觉权重冲突。",
-    "layout": "root Column 预算：padding 12+12=24，items 高度和 18+20+16+30=84，itemMargin×3=18，合计 24+84+18=126，父容器 140，未溢出（126<140）。在 contentArea 116 之内也未越界（126 超出 10 但因 clip 仅作用在 140 边界，且 itemMargin 6 在 flexStart 排布下末项 bottomRow 底 y=132，距卡底 8vp，符合 2x2 底部 8-12vp 约束）。bottomRow 横向：doneText 42 + itemMargin 8 + joinButton 66 = 116，等于容器 116，无溢出；行高 30 等于 joinButton 高 30，无溢出。Button 热区 66×30 > 24vp。受保护文本（remainingText 4 字、eventTitle 5 字、timeText 11 字符）均 maxLines=1 且 textOverflow=none，无截断风险。"
+    "instruction": "截图中清晰呈现了用户要求的所有关键信息：顶部'还剩3个会'对应'显示还剩几个'，'项目同步会+14:00-14:30'对应'从日历读今天的会'，'进会议'按钮配置了 clickToIntent（JoinCalendarMeeting）事件对应'点一下进会议'，'已完成'状态对应'已加入的标完成'。dataModel 字段全部以表达式绑定，无遗漏；onClick 的 call 与 args 与 eventCandidates 完全一致；createSurface 的 catalogId=ohos.a2ui.extended.catalog、version=v0.9、size=2x2、width/height=140/140、borderRadius=18、clip:true 全部合规；updateDataModel.path='/' 与 value 原样回填。仅有极轻微瑕疵是 joinStatus('已加入')未在视图中单独展示，仅以 completionStatus('已完成')作为状态标签，但已满足用户语义诉求，不扣分。",
+    "aesthetic": "截图整体观感良好：浅薄荷绿底色与深绿主色按钮形成统一绿色调，色彩和谐；标题'项目同步会'为最强字重（fontSize:16、fontWeight:700），次级文本'还剩3个会'为次强字重（14/700），时间与状态字重更弱，层级清晰且只有一个最强字重；'进会议'白字绿底按钮与'已完成'绿色文字对比度好，可读性佳。轻微不足：卡片中部'14:00-14:30'与底部行之间留白偏大（Column spaceBetween 导致），2x2 卡片略有空旷感；底部'已完成'与'进会议'之间的间距显得略紧。",
+    "layout": "截图显示所有元素均完整可见、无任何截断或裁切：'还剩3个会'顶部完整、'项目同步会'主标题完整、'14:00-14:30'时间完整、'已完成'标签完整、'进会议'按钮文字完整且无溢出卡片边界。元素之间纵向无堆叠重叠：剩余文本高18、主标题高20、时间高16、底部行高30，加 padding(12+12) 与 itemMargin(6*3) 共 12+18+6+20+6+16+6+30+12=126 < 140，未发生溢出。底部按钮距卡片底边约 12vp，符合 2x2 的 8-12vp 规范。按键热区 66x30vp 接近 40vp 理想值，受保护文本均无 ellipsis/clip 风险。整体布局干净、无视觉冲突。"
   },
   "issues": [
-    "remainingText 与 eventTitle 同为 fontWeight 700，违反'同卡唯一最强字重'规则",
-    "未独立呈现 joinStatus='已加入' 状态，用户'已加入的标完成'的语义仅靠'已完成'间接表达，信息链路略弱",
-    "root Column 在 contentArea(116) 内累计 126，理论上溢 10vp，依靠 clip:true 边界=140 才不裁剪，属临界布局"
+    "卡片中部'14:00-14:30'与底部'已完成/进会议'行之间留白偏大（Column spaceBetween 拉伸造成），2x2 整体观感略空旷",
+    "底部'已完成'(width:42)与'进会议'按钮(width:66)之间间距 8vp 偏紧，与上方松散留白形成节奏不一致"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_086\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_086\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"remainingText\",\"eventTitle\",\"timeText\",\"bottomRow\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFEAF8EF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"remainingText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.remainingText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.timeRange }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CC182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"doneText\",\"joinButton\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"doneText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.completionStatus }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"joinButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.nextEvent.actionText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"JoinCalendarMeeting\",\"params\":{\"entityId\":{\"path\":\"/calendar/nextEvent/entityId\"},\"meetingUrl\":{\"path\":\"/calendar/nextEvent/meetingUrl\"}}}}],\"styles\":{\"width\":66,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A7F42\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_086\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"remainingText\",\"eventTitle\",\"timeText\",\"bottomRow\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFEAF8EF\",\"alignItems\":\"start\"}},{\"id\":\"remainingText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.remainingText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\",\"marginTop\":4}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FF182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.timeRange }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CC182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"doneText\",\"joinButton\"],\"itemMargin\":12,\"styles\":{\"width\":116,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"marginTop\":2}},{\"id\":\"doneText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.nextEvent.completionStatus }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"joinButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.nextEvent.actionText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"JoinCalendarMeeting\",\"params\":{\"entityId\":{\"path\":\"/calendar/nextEvent/entityId\"},\"meetingUrl\":{\"path\":\"/calendar/nextEvent/meetingUrl\"}}}}],\"styles\":{\"width\":62,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A7F42\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_086\",\"path\":\"/\",\"value\":{\"calendar\":{\"source\":\"calendar_mock\",\"dateLabel\":\"今天\",\"remainingCount\":3,\"remainingText\":\"还剩3个会\",\"nextEvent\":{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-086-next\",\"title\":\"项目同步会\",\"timeRange\":\"14:00-14:30\",\"meetingUrl\":\"calendar://meeting/calendar-agenda-086-next\",\"joinStatus\":\"已加入\",\"completionStatus\":\"已完成\",\"actionText\":\"进会议\"}},\"state\":{\"loading\":false}}}}"
   ]
 }

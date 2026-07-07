@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-28-veggie-price-548",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "截图中可见'今日菜价'标题、青色'已连接'状态、'青菜 3.8元/斤'主价行、'天气'提示、'读天气'文案与蓝色打开按钮，onClick 使用了原样的 clickToDeeplink 事件。但用户原话'菜价文字盖在图上'要求文字叠在图片背景上，assetCandidates 为空也未做色块/渐变模拟图面，扣 1.5 分；CTA 文字'打开天气'被截断为'打...'导致主要点击意图不可读，扣 1 分；weather_line 拼接了空 condition/temperatureText，最终只显示孤零零'天气'两字，表达模糊，再扣 0.5 分。",
+    "aesthetic": "整体配色（浅灰底 + 白卡 + 半透明蓝 + 蓝主按钮 + 绿色状态）克制统一，主价行加粗层级清晰，'已连接'绿色作为辅助状态色与主色形成对比。但底部分割线 wash_bottom（#33000000）从左侧白卡下方延伸出来，穿过右侧 action_panel 的半透明蓝区域形成一条横贯的灰色短线，视觉上明显穿帮，扣 2 分；按钮文字截断为'打...'，按钮形状在视觉上显得不完整，扣 1 分。",
+    "layout": "截图最严重的问题是右侧蓝色按钮文字'打开天气'被截断为'打...'，受保护 CTA 文本被截断，按 action_panel 宽 86、padding 10 推算按钮内部文字区仅约 66，根本放不下 4 个 14pt 汉字 + 内边距，扣 3 分。其次 backdrop 中的 wash_bottom 横线在 action_panel 的 #190A59F7 半透明底上明显透出，破坏了右侧面板的完整性，扣 1.5 分。price_panel 内主价行 '青菜 3.8元/斤' 高度 34 在 20pt 加粗下基本可读，但与下方 weather_line 之间留白稍大，可接受。整体 left/right 双卡对齐尚可，标题/状态/主价三层文字结构清楚。"
+  },
+  "issues": [
+    "右侧 Button label '打开天气' 渲染为 '打...'，4 字 CTA 被截断，无法表达点击意图",
+    "action_panel 宽度 86 配 padding 10 后内部仅 66，无法容纳 4×14pt 文字，按钮热区也偏窄",
+    "backdrop 中 wash_bottom 横线透过 action_panel 的 #190A59F7 半透明背景显出，造成视觉穿帮",
+    "weather_line 用 formatString 拼接空 condition/temperatureText，截图中只显示孤零零'天气'，语义不清",
+    "price_line 使用了非标准的 {call: formatString, args: ...} 写法，未使用推荐的 {{ $__dataModel... }} 直接绑定",
+    "未体现用户'菜价文字盖在图上'诉求：没有图片/渐变/色块作为图面背景"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"backdrop\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\"}},{\"id\":\"backdrop\",\"component\":\"Column\",\"children\":[\"wash_top\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"clip\":true,\"padding\":10,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"wash_top\",\"component\":\"Divider\",\"styles\":{\"width\":118,\"height\":1,\"strokeWidth\":1,\"color\":\"#330A59F7\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"price_panel\",\"action_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"price_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"price_line\",\"weather_line\"],\"itemMargin\":8,\"styles\":{\"width\":156,\"height\":116,\"padding\":12,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":132,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.title }}\",\"styles\":{\"width\":76,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.connection.status }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF64BB5C\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"price_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.summary }}\",\"styles\":{\"width\":132,\"height\":34,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"点击右侧读天气\",\"styles\":{\"width\":132,\"height\":18,\"fontSize\":12,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"hint\",\"open_weather\"],\"itemMargin\":12,\"styles\":{\"width\":108,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#190A59F7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"读天气\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"打开天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF0A59F7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card\",\"path\":\"/\",\"value\":{\"market\":{\"title\":\"今日菜价\",\"itemName\":\"青菜\",\"priceText\":\"3.8元/斤\",\"summary\":\"青菜 3.8元/斤\"},\"connection\":{\"status\":\"已连接\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"\",\"temperatureText\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

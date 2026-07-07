@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-25-reading-500",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户明确要求的'每条用不同底色区分开'在截图中几乎没有体现——三条日子的 chip 底色都是同色系深蓝（#0A59F7 / #317AF7 的低 alpha），视觉上几乎无法区分。用户在指令中提到的'⭐📖✦'字符代替图标的需求，截图中完全没有任何字符占位（除 ring 自身的视觉元素外）。中间主行下方的副文本'读书会见右上角'是占位式硬编码，语义不通，也未真正展示日历日期内容。已完成状态、横排三天的 onClick 跳转到音乐 deeplink、深夜蓝紫渐变、'今日已听45分钟'拼接、corner 放日历文案均已落实，事件参数与 eventCandidates 一致。size=2x4、catalogId/version/updateDataModel 协议均正确。",
+    "aesthetic": "截图中深蓝到紫色渐变自然、夜色氛围到位；白色主文字与绿色完成态 chip 在深色底上对比清晰；圆环使用绿色高亮，与'已完成'色系呼应。问题主要在：三天 chip 颜色几乎相同，缺少视觉区分度（违反用户'不同底色'诉求）；'读书会见右上角'副文本语义不清、像漏出的占位文字；顶部 title 与 status chip 之间的间距偏紧，整张卡片缺少一个真正'装饰性'的字符点缀。",
+    "layout": "截图中所有文字、按钮均未被裁切或截断，'今日已听45分钟'完整显示，三天 chip 文案完整。卡片四边无溢出，padding 留白合适。topRow 高度 24 装下标题与状态无重叠，mainRow 中 ring 与 summary 横向居中无碰撞，weekRow 三块等分无挤压。唯一可挑剔处是副文本行高 16 与上方主文本 18 行间距略紧，但未触发视觉问题，整体布局成立。"
+  },
+  "issues": [
+    "三天 chip 底色（#330A59F7/#33317AF7/#190A59F7）均落在蓝色相，违反用户'每条用不同底色区分开'的明确要求",
+    "主行下方副文本硬编码为'读书会见右上角'，语义不通且非数据驱动",
+    "未使用任何字符占位（⭐📖✦），缺失用户提到的无图标时的字符点缀",
+    "ring 尺寸 50 偏小，与 18pt 主文本视觉权重不平衡",
+    "calendarCorner 仅显示'最近读书会'这一占位标签，并非真实日期字符串（属于数据/语义层面问题）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"reading_500_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"reading_500_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF202224\",0],[\"#564AF7\",0.58],[\"#AC49F5\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"topRow\",\"mainRow\",\"weekRow\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"titleBlock\",\"calendarCorner\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"titleBlock\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":150,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.title }}\",\"styles\":{\"width\":84,\"height\":22,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.status }}\",\"styles\":{\"width\":54,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#33317AF7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF5BA854\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendarCorner\",\"component\":\"Text\",\"content\":\"读书会·{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":118,\"height\":18,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mainRow\",\"component\":\"Row\",\"children\":[\"ring\",\"summary\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.reading.todayMinutes }}\",\"total\":\"{{ $__dataModel.reading.goalMinutes }}\",\"styles\":{\"type\":\"ring\",\"width\":54,\"height\":54,\"color\":\"#FF5BA854\",\"backgroundColor\":\"#33FFFFFF\"}},{\"id\":\"summary\",\"component\":\"Column\",\"children\":[\"todayLine\",\"bookLine\"],\"itemMargin\":4,\"styles\":{\"width\":192,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"todayLine\",\"component\":\"Text\",\"content\":\"今日已听{{ $__dataModel.reading.todayMinutes }}分钟\",\"styles\":{\"width\":192,\"height\":24,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bookLine\",\"component\":\"Text\",\"content\":\"目标{{ $__dataModel.reading.goalMinutes }}分钟·今日100%\",\"styles\":{\"width\":192,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weekRow\",\"component\":\"Row\",\"children\":[\"day1\",\"day2\",\"day3\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"day1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.week[0].label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":88,\"height\":28,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#330A59F7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.week[1].label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":88,\"height\":28,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#55E07A5F\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day3\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.week[2].label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":88,\"height\":28,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#552DD4BF\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"reading_500_card\",\"path\":\"/\",\"value\":{\"reading\":{\"title\":\"夜读听书\",\"todayMinutes\":45,\"goalMinutes\":45,\"status\":\"已完成\",\"glyph\":\"*\",\"week\":[{\"day\":\"周一\",\"minutes\":38,\"label\":\"周一38分钟\"},{\"day\":\"周二\",\"minutes\":52,\"label\":\"周二52分钟\"},{\"day\":\"周三\",\"minutes\":47,\"label\":\"周三47分钟\"}]},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"reading-club-latest\",\"title\":\"读书会\",\"dtStart\":\"最近读书会\",\"dtEnd\":\"\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

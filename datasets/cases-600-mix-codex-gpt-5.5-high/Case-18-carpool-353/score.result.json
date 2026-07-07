@@ -2,29 +2,35 @@
   "case_id": "Case-18-carpool-353",
   "scores": {
     "instruction": {
-      "score": 5.5,
+      "score": 6.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 5.0,
+      "score": 6.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 4.5,
+      "score": 4.0,
       "weight": 0.4
     }
   },
-  "weighted_total": 5.0,
+  "weighted_total": 5.4,
   "reasons": {
-    "instruction": "用户明确要求'夜晚深蓝渐变背景'，原DSL使用 #ff191a1c→#ff202224→#ff2e3033 暗灰色渐变(几乎无蓝色分量)，与'深蓝'要求明显不符，扣分明显。'三个区域底色各不相同'，原 taskPanel=#19ffffff、navPanel=#33317af7、notePanel=#19317af7，后两者基底同为 #317af7 仅透明度不同，区分度不足。状态大字、纵向三任务、勾选高亮、◆※● 符号、clickToIntent 跳转、底部锚定等其余主要诉求基本落实，事件 call/args 与 eventCandidates 完全一致。",
-    "aesthetic": "暗色调与夜晚意图方向一致，但因渐变缺失蓝色调，整体观感偏冷灰工业风而非'夜晚深蓝'氛围，与用户语义不符。三块面板圆角、字阶、留白整体克制，绿色高亮已勾选对比清晰。但三处受保护文本截断(确认…/已戴…/带宠…/去集)严重破坏完整性与精致感，削弱整体观感。",
-    "layout": "panels Row 宽 280，子项宽 104+84+76=264 + itemMargin 8×2=16 = 280，恰好填满 ✓。taskPanel Column 子项 3×16+2×4=56 ≤ 内容高 58 ✓。navPanel Column 14+8+26=48 ≤ 58 ✓。notePanel Column 14+6+18=38 ≤ 54 ✓。hero Column 22+2+14=38 ✓。但 checkbox 内部宽 90，box≈12 + gap≈6 + label '确认出发'4×10=40 + 内边距≈8×2，可用于文本区约 56–60px 实际渲染仍被截断为'确认…'，同理'已戴口罩'→'已戴…'、'带宠物OK'→'带宠…'三条受保护文本被截断隐藏。Button 宽 68，扣除内边距后文本可用 52px，'去集合点'4×14=56px 超出，被截断为'去集'。底部锚定 10vp，满足 ≤16vp。"
+    "instruction": "截图可确认顶部状态'今晚已找到拼友'与副标题'集合 20:15'完整呈现,三块区域分列、勾选状态正确(第1/3项绿勾、第2项空)、◆※●符号作为图标就位、中间按钮 onClick 绑定了 clickToIntent/StartNavigate 与 eventCandidates 一致,事件落实到位。但用户明确要求'夜晚深蓝渐变',实际背景为接近全黑的极深灰(#191a1c→#2e3033),完全没有蓝色色相,与'深蓝渐变'指令有偏差;更重要的是三块任务标签与按钮文字均被截断为'确认...''已戴...''带宠...''去集...',用户实际看到的核心可勾选文字与 CTA 文案信息不完整,指令信息呈现存在实质性缺失。",
+    "aesthetic": "深色主题与文字白色对比度尚可,蓝色 CTA 按钮作为视觉焦点效果不错,三块面板圆角一致,符号◆※● 居中处理也较精致。但'夜晚深蓝'的视觉气质缺失——背景读起来是深炭黑而非深蓝,渐变层次几乎不可见;受保护文本被强制 ellipsis 截断,在视觉上像渲染事故而不是设计语言,严重拉低整体专业度。",
+    "layout": "截图中最严重的问题是 4 处受保护文本被截断:左侧三个 Checkbox 标签全部显示为'确认...''已戴...''带宠...',由于 Checkbox 内置 mark+内边距吃掉约 22-26px,可用文本宽度仅剩约 60px,但 label 实际宽度超过该值,触发 ellipsis;中间 Button '去集合点' 在 width=68、fontSize=14 设定下,减去按钮左右内边距后实际可用仅约 44px,无法容纳 56px 文本,因此显示为'去...'。三块面板宽 104/84/76,加上 Row itemMargin=8 后在 280 内容宽度中虽然没溢出,但子组件内部 padding 预留不足是文字截断的直接原因。结构上无元素堆叠、无越出卡片边界的组件,但 4 处关键文本截断属于 D3 描述的核心问题,必须重扣分。"
   },
   "issues": [
-    "背景渐变 #ff191a1c/#ff202224/#ff2e3033 为暗灰近黑，几乎无蓝色分量，违反'夜晚深蓝渐变'要求",
-    "三个 checkbox 任务标签全部被截断(确认…/已戴…/带宠…)，受保护文本未完整展示",
-    "中部导航 Button '去集合点' 被截断为'去集'，按钮宽 68 不足以容纳 4 字中文标签",
-    "navPanel(#33317af7) 与 notePanel(#19317af7) 底色基底同为 #317af7，'三区底色各不相同'区分度不足",
-    "hero 高度 38 + itemMargin 8 + panels 74 正好填满 120 可用空间，无任何缓冲余量"
+    "三个任务 Checkbox 标签被截断为'确认...''已戴...''带宠...',关键任务文案不可读",
+    "中间导航 Button 文案被截断为'去集...',CTA 文字不可读",
+    "背景渐变使用 #191a1c/#202224/#2e3033 等深灰,未实现用户要求的'夜晚深蓝渐变'色相",
+    "三块区域背景区分度偏弱,中间与右侧同为冷蓝系,仅饱和度差异",
+    "Checkbox 实际渲染时 mark+padding 占用约 22-26px,label 可用宽度估算偏低",
+    "Button width 68 / fontSize 14 组合下,内部 padding 挤占文案空间,触发 ellipsis"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_353\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_353\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"panels\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a1738\",0],[\"#ff142a55\",0.55],[\"#ff1f3a78\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"status\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":280,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.status }}\",\"styles\":{\"width\":280,\"height\":22,\"fontSize\":17,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.subtitle }}\",\"styles\":{\"width\":280,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#aac8dfff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panels\",\"component\":\"Row\",\"children\":[\"taskPanel\",\"navPanel\",\"notePanel\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":78,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"taskPanel\",\"component\":\"Column\",\"children\":[\"taskOne\",\"taskTwo\",\"taskThree\"],\"itemMargin\":3,\"styles\":{\"width\":100,\"height\":78,\"padding\":{\"left\":8,\"right\":6,\"top\":8,\"bottom\":8},\"borderRadius\":14,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"taskOne\",\"component\":\"Checkbox\",\"label\":\"{{ ${/carpool/tasks/0/label} }}\",\"select\":{\"path\":\"/carpool/tasks/0/done\"},\"styles\":{\"width\":86,\"height\":16,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":7,\"strokeWidth\":1.5}}},{\"id\":\"taskTwo\",\"component\":\"Checkbox\",\"label\":\"{{ ${/carpool/tasks/1/label} }}\",\"select\":{\"path\":\"/carpool/tasks/1/done\"},\"styles\":{\"width\":86,\"height\":16,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":7,\"strokeWidth\":1.5}}},{\"id\":\"taskThree\",\"component\":\"Checkbox\",\"label\":\"{{ ${/carpool/tasks/2/label} }}\",\"select\":{\"path\":\"/carpool/tasks/2/done\"},\"styles\":{\"width\":86,\"height\":16,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":7,\"strokeWidth\":1.5}}},{\"id\":\"navPanel\",\"component\":\"Column\",\"children\":[\"navGlyph\",\"navButton\"],\"itemMargin\":8,\"styles\":{\"width\":96,\"height\":78,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":14,\"backgroundColor\":\"#ff1f3a8a\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"navGlyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.note }}\",\"styles\":{\"width\":80,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"navButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.navLabel }}\",\"styles\":{\"width\":82,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff4d8dff\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"39.908722\",\"longitude\":\"116.397499\"},\"trafficpe\":\"Drive\"}}}]},{\"id\":\"notePanel\",\"component\":\"Column\",\"children\":[\"pointLabel\",\"point\"],\"itemMargin\":4,\"styles\":{\"width\":72,\"height\":78,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":14,\"backgroundColor\":\"#33178060\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"pointLabel\",\"component\":\"Text\",\"content\":\"集合点\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#aac8dfff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"point\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.meetPoint }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_353\",\"path\":\"/\",\"value\":{\"carpool\":{\"status\":\"今晚已找到拼友\",\"subtitle\":\"集合 20:15\",\"tasks\":[{\"label\":\"确认出发\",\"done\":true},{\"label\":\"已戴口罩\",\"done\":false},{\"label\":\"带宠物OK\",\"done\":true}],\"navLabel\":\"去集合点\",\"meetPoint\":\"东门 A2\",\"note\":\"◆※●\"}}}}"
   ]
 }

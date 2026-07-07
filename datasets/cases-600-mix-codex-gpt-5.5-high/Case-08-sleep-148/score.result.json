@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-sleep-148",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.5,
+  "reasons": {
+    "instruction": "截图中几乎看不到任何用户要求的信息：标题\"睡眠\"、状态\"规律\"、主时长\"7小时12分\"、日历提示\"日历日程\"、两条日程\"22:30 准备睡觉 / 07:00 晨间唤醒\"、以及按钮文字\"打开\"均未在画面中呈现。DSL 中 dataModel 字段齐全、onClick 事件 call/args 与 eventCandidates 完全一致、catalogId/size/version/updateDataModel 协议合规，但实际渲染完全没有把信息交付给用户，指令的核心诉求（列一串日程、点一下跳 app）肉眼不可见，遵从度极低。",
+    "aesthetic": "深色渐变背景本身质感尚可，圆角与配色专业克制，但截图中卡片内部完全空白，仅左下角漂浮一个白色胶囊按钮，没有文字层级、没有主次、没有留白节奏——整体观感像一个未渲染完成的占位卡片，专业度与可用性都很低。",
+    "layout": "截图里能清楚看到的视觉问题：(1) 标题\"睡眠\"和状态\"规律\"完全不可见；(2) 主指标\"7小时12分\"完全不可见；(3) \"日历日程\"小标题与两条日程行均不可见；(4) 按钮\"打开\"的文字不可见，只剩 58x24 的白色胶囊背景孤悬在左下角；(5) 唯一可见的元素是 Button 的背景，说明 Text 组件的 content 在 `{{ }}` 表达式下被求值为空，导致所有文本丢失；(6) 内容 Column 子项累计高度 18+4+28+4+40+4+24=122vp 已超过 116vp 容器，存在 6vp 溢出（不是文字丢失的主因，但加剧了底部按钮区被挤压的观感）。"
+  },
+  "issues": [
+    "截图中所有 Text 组件的 content 均为 `{{ $__dataModel.X }}` 形式，实际渲染全部为空，导致标题、状态、时长、日历提示、两条日程文字全部不可见",
+    "截图中 Button 组件的 label 同样使用 `{{ ... }}` 表达式，按钮文字\"打开\"也未渲染，只剩白色背景孤悬",
+    "内容 Column 子项累计高度 122vp 超过 116vp 容器，存在 6vp 溢出，按钮底边距离卡片底边偏紧",
+    "日程项使用 `+` 字符串拼接表达式 `{{ ...time + ' ' + ...name }}`，即便数据绑定引擎支持，文本内容也偏长，在 10pt/116vp 宽行内拥挤",
+    "ambient_band 半透明蓝色背景与根容器线性渐变在视觉上几乎重合，没有起到分层作用，反而可能干扰前景可读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_148\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"styles\":{\"width\":140,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_148\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_band\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF101417\",0],[\"#FF162033\",0.68],[\"#FF223047\",1]]}}},{\"id\":\"ambient_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#1A64B5F6\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"duration\",\"schedule_header\",\"s1\",\"s2\",\"action_btn\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ sleep.title }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ sleep.status }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration\",\"component\":\"Text\",\"content\":\"{{ sleep.duration }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_header\",\"component\":\"Text\",\"content\":\"{{ sleep.calendarHint }}\",\"styles\":{\"width\":116,\"height\":11,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"s1\",\"component\":\"Row\",\"children\":[\"s1_time\",\"s1_name\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":13,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"s1_time\",\"component\":\"Text\",\"content\":\"{{ sleep.schedule[0].time }}\",\"styles\":{\"width\":30,\"height\":13,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"s1_name\",\"component\":\"Text\",\"content\":\"{{ sleep.schedule[0].name }}\",\"styles\":{\"width\":74,\"height\":13,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"s2\",\"component\":\"Row\",\"children\":[\"s2_time\",\"s2_name\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":13,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"s2_time\",\"component\":\"Text\",\"content\":\"{{ sleep.schedule[1].time }}\",\"styles\":{\"width\":30,\"height\":13,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"s2_name\",\"component\":\"Text\",\"content\":\"{{ sleep.schedule[1].name }}\",\"styles\":{\"width\":74,\"height\":13,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ sleep.actionText }}\",\"styles\":{\"width\":58,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#FF162033\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepSchedule\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"sleep\":{\"title\":\"睡眠\",\"duration\":\"7小时12分\",\"status\":\"规律\",\"calendarHint\":\"日历日程\",\"schedule\":[{\"time\":\"22:30\",\"name\":\"准备睡觉\"},{\"time\":\"07:00\",\"name\":\"晨间唤醒\"}],\"actionText\":\"打开\"}}}}"
+  ]
+}

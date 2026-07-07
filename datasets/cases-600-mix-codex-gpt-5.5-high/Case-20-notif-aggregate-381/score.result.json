@@ -2,7 +2,7 @@
   "case_id": "Case-20-notif-aggregate-381",
   "scores": {
     "instruction": {
-      "score": 7.0,
+      "score": 8.0,
       "weight": 0.4
     },
     "aesthetic": {
@@ -10,26 +10,25 @@
       "weight": 0.2
     },
     "layout": {
-      "score": 6.0,
+      "score": 5.0,
       "weight": 0.4
     }
   },
   "weighted_total": 6.3,
   "reasons": {
-    "instruction": "用户要求'重要的标红'，原 DSL 将 status 徽章背景设为 #ffed6f21（深橙色）而非红色，未满足'标红'诉求；其余诉求均满足：会议提醒卡主题明确、title/time/place 展示今天日程、onClick 绑在 root 上并完整使用 eventCandidates 的 clickToDeeplink 参数（bundleName/abilityName/uri 原样）、size=2x2 协议字段 width/height/borderRadius/clip/catalogId/version 均合规。",
-    "aesthetic": "标题、status 徽章、actionText 三处均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'规则；status 用了 #ffed6f21 橙色而非用户要求的红色，色彩语义错位；Root Column 设了 justifyContent:spaceBetween 但渲染器未正确执行，导致内容集中在顶部约 40%，底部约 60% 大量留白，视觉重心严重失衡、卡片像被截断。",
-    "layout": "Root Column：padding 12+12+12+12=24，children 总高 28+1+48+18=95，3 个 itemMargin=6 共 18，合计 137 ≤ 140，按公式无溢出。topRow 宽 40+6+70=116 ≤ 116 ✓；infoCol 高 22+4+18=44 ≤ 48 ✓。但截图显示 spaceBetween 未被渲染，4 个子项被压在上半区，actionText 底边到卡片底边目测约 60vp，远超 8-12vp 规则，底部锚定失效。文字宽度均安全：'今天 14:30'≈58.8<70、'产品评审会'=80<116、'A座 1206'≈48<116、'打开日程'=48<116。受保护文本未截断，但布局整体失衡。"
+    "instruction": "用户要求的四点诉求基本落实：1) 会议提醒卡——已呈现'产品评审会'标题与时间；2) 点一下跳到app——root 上挂有 clickToDeeplink，call/args 与 eventCandidates 完全一致；3) 看今天日程——title/time/place 三个字段均通过 {{ /calendar/... }} 渲染；4) 重要的标红——使用橙色 #ffed6f21 胶囊标记'重要'，颜色偏橙但语义清晰可被理解为'红色高亮'。尺寸 2x2、catalogId、version、updateDataModel 路径与值均符合协议。扣分点：'打开日程'被处理为普通右对齐文本而非视觉明显的按钮，CTA 强度不足；状态色用橙色而非更明确的红色。",
+    "aesthetic": "截图中卡片整体配色克制：白底、橙色高亮、灰色次级文字、蓝色 CTA 文字，色相关系和谐，前景文字在背景上清晰可读，无渐变或配色错误。扣分主要是版式问题而非色彩：内容仅占卡片约 1/3 高度，其余约 60-70% 区域为大片空白，导致卡片视觉上像'未完成'或'被截断'；同时缺少底部锚定的视觉重心，'打开日程'仅以小号蓝字呈现，缺少按钮形态或图标点缀，专业感与精致度不足。",
+    "layout": "截图中可观察到最突出的排版问题是 root Column 内的四项内容（topRow + divider + infoCol + actionText）虽设置了 justifyContent: spaceBetween，但渲染后四块全部聚集在卡片顶部约 1/3 区域（视觉估算约 y=10 到 y=120 之间），下方约 y=120 到 y=540（按 140 卡片高度推算相对空白）出现大面积无内容的纯白区域，形成明显的'头重脚轻'失衡。'打开日程'文本漂浮在中部偏右位置，并非锚定在底部，无按钮热区包围，作为可点击 CTA 在视觉上不易识别。文字、标题、地点、状态胶囊均未被裁切，Stack 也未出现层叠遮挡，因此没有溢出/截断/堆叠类硬伤，但底部空白与 CTA 弱化构成严重的版式缺陷。"
   },
   "issues": [
-    "status 徽章背景色 #ffed6f21 为橙色，用户明确要求'标红'",
-    "标题、status 徽章、actionText 三处均 fontWeight 700，违反单一最强字重规则",
-    "Root Column 的 justifyContent:spaceBetween 未被渲染器正确执行，内容堆在顶部，底部 60% 留白",
-    "actionText 底边到卡片底边在视觉上约 60vp，远超 8-12vp 锚定规则",
-    "infoCol 的 justifyContent:center 与高度 48 不匹配（内容仅 44），造成内部额外留白"
+    "root Column 使用 spaceBetween 但渲染后内容全部聚集在卡片顶部，下方约 60% 区域为纯白空白，版式严重失衡",
+    "'打开日程'被实现为普通右对齐 Text 而非 Button，缺少蓝色按钮热区，作为可点击 CTA 视觉权重不足",
+    "状态色使用橙色 #ffed6f21，用户原意是'标红'，应使用更明确的红色系（如 #ffe53935）以贴合语义",
+    "actionText 缺少底部锚定，未与卡片下边距建立稳定留白关系（按 2x2 规范理想 8-12vp）"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_381\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_381\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"topRow\",\"divider\",\"infoCol\",\"actionRow\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://agenda/today?source=card381\"}}]},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"status\",\"time\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/status\"},\"styles\":{\"width\":40,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#ffe50000\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/time\"},\"styles\":{\"width\":64,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"infoCol\",\"component\":\"Column\",\"children\":[\"title\",\"place\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/title\"},\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/place\"},\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionRow\",\"component\":\"Row\",\"children\":[\"actionText\"],\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/actionText\"},\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_381\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"topRow\",\"divider\",\"infoCol\",\"actionBtn\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://agenda/today?source=card381\"}}]},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"status\",\"time\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/status\"},\"styles\":{\"width\":40,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":1,\"bottom\":1},\"borderRadius\":10,\"backgroundColor\":\"#ffe53935\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/time\"},\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"infoCol\",\"component\":\"Column\",\"children\":[\"title\",\"place\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/title\"},\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place\",\"component\":\"Text\",\"content\":{\"path\":\"/calendar/place\"},\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionBtn\",\"component\":\"Button\",\"label\":{\"path\":\"/calendar/actionText\"},\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://agenda/today?source=card381\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_381\",\"path\":\"/\",\"value\":{\"calendar\":{\"title\":\"产品评审会\",\"time\":\"今天 14:30\",\"place\":\"A座 1206\",\"status\":\"重要\",\"actionText\":\"打开日程\"}}}}"
   ]
 }

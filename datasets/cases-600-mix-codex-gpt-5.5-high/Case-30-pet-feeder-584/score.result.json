@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-584",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户要求的所有要素：余粮百分比'68%'、大字数值突出显示（'会跳'的数字感）、'打开App'按钮并绑定 clickToDeeplink 事件（call/args 原样来自 eventCandidates）、右侧'日程 待同步'日历面板、以及'今日已喂食'已完成状态徽标。尺寸 2x4(300x140)、catalogId、version、updateDataModel.path/value 均符合协议。轻微扣分点：dataModel.calendar.items 为空时仅显示'待同步'占位，未呈现真实日程条目，属于数据层面的限制但视觉上略有空洞。",
+    "aesthetic": "截图中卡片配色和谐：浅灰底(#FFF1F3F5)+ 绿色高亮(#64BB5C) + 深色文字，绿色用于关键数据 68%、进度条和 CTA 按钮，主次层级清晰。字号阶梯合理（32/14/12），最强字重 32px 粗体仅用于 68% 数值。'今日已喂食'状态徽标仅为浅灰胶囊(#19000000)，视觉上稍显平淡，未能体现'已完成'的积极语义，可考虑加绿色调以匹配已完成态。",
+    "layout": "截图未发现任何堆叠、溢出或文字截断问题。布局公式核算：根 Row 12+184+10+82+12=300 刚好填满；左 Column 24+8+40+8+10+8+18=116 填满；右 Column 68+10+30=108 落在 116 内。'喂食状态'标题、'今日已喂食'徽标、'68%'主数值、'余粮'标签、进度条、'读取今日喂食日程'提示文字均完整可见无截断；右侧'日程/待同步'面板与'打开App'按钮分层清晰、底边距卡片底边约 12vp 符合规范。按键热区 82x30vp 略偏窄但可点。整体排版干净紧凑。",
+    "issues": [
+      "状态徽标'今日已喂食'视觉权重偏弱，与'已完成'的积极语义不匹配，建议加绿色调",
+      "日历面板仅显示'待同步'占位，未呈现真实日程条目，略显空洞",
+      "scheduleHint 文字颜色 #66000000 偏淡，与背景对比度略低"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"pet_feeder_584\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"pet_feeder_584\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"grain_row\",\"grain_progress\",\"schedule_text\"],\"itemMargin\":8,\"styles\":{\"width\":184,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_pill\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":184,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.title }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.feedStatus }}\",\"styles\":{\"width\":96,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#1A64BB5C\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF2E7D32\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"grain_row\",\"component\":\"Row\",\"children\":[\"grain_value\",\"grain_label\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":184,\"height\":40,\"alignItems\":\"bottom\"}},{\"id\":\"grain_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.grainPercent + '%' }}\",\"styles\":{\"width\":78,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#FF64BB5C\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"grain_label\",\"component\":\"Text\",\"content\":\"余粮\",\"styles\":{\"width\":48,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"grain_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.feeder.grainPercent }}\",\"total\":100,\"styles\":{\"type\":\"linear\",\"width\":184,\"height\":10,\"borderRadius\":5,\"color\":\"#FF64BB5C\",\"backgroundColor\":\"#19000000\"}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.scheduleHint }}\",\"styles\":{\"width\":184,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#8A000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"calendar_panel\",\"open_button\"],\"itemMargin\":10,\"styles\":{\"width\":82,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"calendar_panel\",\"component\":\"Column\",\"children\":[\"calendar_label\",\"calendar_title\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":68,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#0C000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"calendar_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":66,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.loading ? '待同步' : '已同步' }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.feeder.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":82,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF64BB5C\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"pet_feeder_584\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"喂食状态\",\"grainPercent\":68,\"grainLabel\":\"余粮 68%\",\"feedStatus\":\"今日已喂食\",\"scheduleHint\":\"读取今日喂食日程\",\"actionLabel\":\"打开App\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

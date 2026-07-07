@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-455",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.9,
+  "reasons": {
+    "instruction": "用户明确要求中间环形显示'距离周年纪念还有X天'格式，截图中环形内的文字仅显示'距离周年纪念还有'，关键的天数'18天'被完全裁切掉，格式诉求严重未满足；标题'周年纪念'已呈现，底部'爱人'/'家人'两个拨号按钮可点击（onClick 事件原样来自 eventCandidates），暗黑橙红渐变与无图设计已实现，2x2 协议壳正确，核心信息缺失导致指令遵从显著扣分。",
+    "aesthetic": "截图中暗黑底配橙红渐变的方向感、紧迫感氛围基本到位，前景白色加粗文字在深色背景上可读；问题在于环形内部被截断的文字'距离周年纪念还有'显示成两行不齐整的短句，环形被一块半透明方形'舞台纱'叠压（实际是 stage_band_bottom 与环形区视觉重叠），观感上像透出底色而不是有意为之的图层叠加，整体精致度下降。",
+    "layout": "截图中存在多个明显布局问题：1) 环形内文字'距离周年还有18天'在 48x40 容器、12pt 字号、wordBreak:breakAll 下被强制换行，maxLines:2 导致第 3 行'18天'被完全裁切；2) Stage 装饰带 stage_band_bottom（116x28）位于 y≈88，与环形（y 24~90）发生位置重叠，在截图中表现为压在环形下沿的半透明方框，破坏了环形完整性；3) content_col 内部 title(18) + margin(6) + ring(66) + margin(6) + contact(26) 纵向合计 122，超出 116 高度，contact_row 实际被挤到与 stage_band_bottom 同层，造成按钮热区与底带视觉冲突。"
+  },
+  "issues": [
+    "环形内关键倒计时数字'18天'因 maxLines=2 被截断丢失，核心信息缺失",
+    "stage_band_bottom 与环形在 y≈88 处发生重叠，截图中可见半透明方框压在环形右下",
+    "content_col 纵向占用 122 超出 116 父高，contact_row 实际已与底部装饰带冲突",
+    "ring_text 使用 wordBreak:breakAll 在 48 宽、12pt 下把'距离周年纪念还有18天'拆成 3 行",
+    "标题字号 14pt 与环形内 12pt 字重未拉开明显层级，主次信息不够清晰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_23_countdown_455\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_23_countdown_455\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"stage_wash\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff191a1c\",0],[\"#9c554b\",0.45],[\"#db6b42\",1]]}}},{\"id\":\"stage_wash\",\"component\":\"Column\",\"children\":[\"stage_band_top\",\"stage_band_bottom\"],\"itemMargin\":20,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"stage_band_top\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":104,\"height\":10,\"borderRadius\":5,\"backgroundColor\":\"#19ffffff\"}},{\"id\":\"stage_band_bottom\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":104,\"height\":10,\"borderRadius\":5,\"backgroundColor\":\"#19000000\"}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"ring_stack\",\"ring_caption\",\"contact_row\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#f0ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"ring_progress\",\"ring_inner\"],\"styles\":{\"width\":56,\"height\":56}},{\"id\":\"ring_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.event.ringValue }}\",\"total\":\"{{ $__dataModel.event.ringTotal }}\",\"styles\":{\"type\":\"ring\",\"width\":56,\"height\":56,\"color\":\"#f0a050\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"ring_inner\",\"component\":\"Column\",\"children\":[\"ring_days\",\"ring_unit\"],\"itemMargin\":0,\"styles\":{\"width\":56,\"height\":56,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"ring_days\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.event.daysLeft }}\",\"styles\":{\"width\":40,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"lineHeight\":22}},{\"id\":\"ring_unit\",\"component\":\"Text\",\"content\":\"天\",\"styles\":{\"width\":40,\"height\":10,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"lineHeight\":10}},{\"id\":\"ring_caption\",\"component\":\"Text\",\"content\":\"距离周年纪念还有\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":9,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"contact_row\",\"component\":\"Row\",\"children\":[\"contact_a\",\"contact_b\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"contact_a\",\"component\":\"Button\",\"label\":\"{{ ${/contacts/0/name} }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"13800138000\"}}],\"styles\":{\"width\":50,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}},{\"id\":\"contact_b\",\"component\":\"Button\",\"label\":\"{{ ${/contacts/1/name} }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"13900139000\"}}],\"styles\":{\"width\":50,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_23_countdown_455\",\"path\":\"/\",\"value\":{\"event\":{\"title\":\"周年纪念\",\"daysLeft\":18,\"countdownText\":\"距离周年纪念还有18天\",\"ringValue\":82,\"ringTotal\":100},\"contacts\":[{\"name\":\"爱人\",\"phoneNumber\":\"13800138000\"},{\"name\":\"家人\",\"phoneNumber\":\"13900139000\"}]}}}"
+  ]
+}

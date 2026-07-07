@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-26-group-buy-509",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户三大诉求基本落实：凑单清单标题显示、Checkbox 已勾选且 3/3 数字呈现、'已完成' 状态徽标显示、底部'看天气'Button 绑定了 clickToDeeplink 事件，uri 来自 eventCandidates 原样。size 2x2、catalogId、version、updateDataModel.path='/'、value 与 TaskSpec 一致。但底部 Button 文字'看天气'在截图里出现明显横向线条/描边叠层，疑似被渲染为 stroke+fill 双层，导致 CTA 可读性受损，酌情扣分。",
+    "aesthetic": "整体绿色渐变 + 白色 CTA 配色思路正确，'3/3' 大字与'凑单清单'小字层级合理。但截图里'凑单清单'标题使用 #99ffffff 显得非常灰弱，视觉权重与下方 summary 几乎齐平，缺少主次。底部 Button 文字'看天气'呈现异常横线（疑似 fontWeight='medium' 字符串值被引擎误解析为加描边或下划线），严重破坏 CTA 观感。留白尚可，但底部按钮与卡片底边几乎贴齐。",
+    "layout": "截图未出现元素堆叠或溢出卡片边界：status_row 顶部对齐、count_block 居中、Button 底部锚定，三段由 spaceBetween 撑开。Checkbox + '清单' + '已完成' 胶囊在 116 宽度内排布正常。'3/3' 与'已勾选3项'距离偏紧，但未截断。核心问题是 Button 文字'看天气'中间出现明显横线/双层描边，这是 Button 默认样式对 fontWeight='medium' 字符串值渲染异常的视觉表现，CTA 文字可读性受影响。"
+  },
+  "issues": [
+    "底部 Button 文字'看天气'在截图中出现横向线条/双层描边叠加，疑似 fontWeight 字符串值 'medium' 渲染异常，CTA 可读性受损",
+    "标题'凑单清单'使用 #99ffffff 透明度太低，与下方 summary 视觉权重齐平，缺少层级对比",
+    "Button 高度 24vp 偏小，底部外边到卡片底边几乎贴齐，热区与留白均偏紧",
+    "count_text (fontSize 32 height 28) 与 summary (height 14) 纵向间距仅 2vp，视觉过挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_group_buy_509\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_group_buy_509\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status_row\",\"count_block\",\"weather_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff4caf50\",0],[\"#ff2e7d32\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"list_check\",\"status_pill\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"list_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.groupBuy.checkLabel }}\",\"select\":\"{{ $__dataModel.groupBuy.checked }}\",\"styles\":{\"width\":68,\"height\":20,\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"fontSize\":13,\"fontColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ff2e7d32\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.status }}\",\"styles\":{\"width\":40,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_block\",\"component\":\"Column\",\"children\":[\"title\",\"count_text\",\"summary\"],\"itemMargin\":1,\"styles\":{\"width\":116,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.title }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.completedCount + '/' + $__dataModel.groupBuy.totalCount }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.summary }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.groupBuy.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff1b5e20\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_group_buy_509\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"title\":\"凑单清单\",\"checkLabel\":\"清单\",\"checked\":true,\"status\":\"已完成\",\"completedCount\":3,\"totalCount\":3,\"summary\":\"已勾选3项\",\"actionLabel\":\"看天气\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--\",\"condition\":\"加载中\",\"airQuality\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

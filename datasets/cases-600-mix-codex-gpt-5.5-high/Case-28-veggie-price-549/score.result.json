@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-549",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "截图中标题'买菜日程'、状态'正在读取日历'、日程标题'买菜'、时间'待同步'、CTA'看日程'均完整呈现，点击事件 onClick 原样使用 clickToIntent + ViewCalendarEvent + entityId 路径，size 2x2、catalogId、version、updateDataModel 路径与 value 均符合协议。但 copy.hint 字段未使用，且 '待同步' 文本本身缺乏信息量（用户期望看到可读的日程内容），属于轻微信息缺憾。",
+    "aesthetic": "渐变背景（浅灰到薄荷绿）和谐，蓝色 CTA 按钮在白底面板下方形成清晰的视觉层级，字号阶梯（16/12/14/12/14）合理。但白色日程面板中 '待同步' 文本紧贴面板底边，视觉上略显局促；整体留白偏紧，缺少呼吸感。",
+    "layout": "截图显示白色日程面板中 '待同步' 文字几乎贴合面板底部圆角边——这是因为 eventPanel 声明 height:38 但内部 padding 8+8=16 加内容 16+4+14=34 共需 50，导致内容被面板边界挤压，'待同步' 文字视觉上溢出到面板下沿。其余元素（标题、状态、按钮）均落在 140 边界内，按钮底边距卡片底边约 8vp 符合规范，无明显文字截断或元素堆叠。"
+  },
+  "issues": [
+    "白色日程面板 height:38 不足以容纳 padding:8 + 标题16 + itemMargin:4 + 时间14 + padding:8 = 50 的内容，导致 '待同步' 文本贴合面板底沿",
+    "copy.hint 字段（'同步后可看买菜安排'）未在卡片中呈现",
+    "eventTitle/timeRow 子项 width:100 相对面板 width:116 来说左右各留 8vp 边距偏窄，与面板 padding:8 重复扣除可用宽度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"veggie_price_549\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"veggie_price_549\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"eventPanel\",\"openButton\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#ff92d6cc\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title\",\"status\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.copy.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.copy.status }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventPanel\",\"component\":\"Column\",\"children\":[\"eventTitle\",\"timeRow\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":42,\"padding\":4,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeRow\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":108,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.copy.action }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"veggie_price_549\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"\",\"title\":\"买菜\",\"dtStart\":\"待同步\",\"dtEnd\":\"\",\"eventLocation\":\"日历\"}]}},\"state\":{\"loading\":true},\"copy\":{\"title\":\"买菜日程\",\"status\":\"正在读取日历\",\"hint\":\"同步后可看买菜安排\",\"action\":\"看日程\"}}}}"
+  ]
+}

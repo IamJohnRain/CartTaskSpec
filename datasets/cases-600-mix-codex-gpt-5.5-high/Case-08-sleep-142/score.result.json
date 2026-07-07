@@ -2,11 +2,11 @@
   "case_id": "Case-08-sleep-142",
   "scores": {
     "instruction": {
-      "score": 7.0,
+      "score": 6.0,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 6.5,
+      "score": 5.5,
       "weight": 0.2
     },
     "layout": {
@@ -14,22 +14,22 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 5.3,
+  "weighted_total": 4.7,
   "reasons": {
-    "instruction": "尺寸 2x2 / root 140x140 / borderRadius 18 / clip / catalogId / version / updateDataModel 全部满足；onClick.clickToDeeplink 的 call 与 args 与 eventCandidates 完全一致；'字叠在深色背景上'通过 root #ff141518 + bgPanel 蓝色渐变实现；'数字会跳'靠 fs40 700 字重的 86 突出；五个字段（title/stage/score/duration/hint）均有绑定。但 '查看详情' 按钮文字与 '7h 42m' 时长在实际渲染中均出现被截断，导致用户能感知的字段不全，扣 3 分。",
-    "aesthetic": "深色渐变背景与白色文字对比清晰，配色和谐；圆角 18/16/12 一致；层级 40-14-12-12 合理，fontWeight 700/600/500/400 多档，'最强字重唯一性'略有瑕疵（700 与 600 并存），扣 0.5；按钮文字完全不可见、时长截断成 '7h' 影响观感，扣 1 分；整体仍是克制、专业风格。",
-    "layout": "content Column 预算：padding 10+10=20 + itemMargin 8*2=16 + 子项高 38+40+24=102，合计 138 > 可用 116，溢出 22；top Column 预算 16+4+16=36 > 设高 38 差 2，可忽略；scoreRow 预算 54+4+16=74 < 96 不溢出；bottom Row 预算 48+6+42=96 刚好不溢出。但 '7h 42m' 在 fs14 文本估算宽约 48、容器 48 处于临界，常因渲染精度被挤掉 '42m'，且 '查看详情' 在 fs12 实测需 48 宽 > 按钮 42，按钮文字完全被吃掉；content 溢出进一步把底排挤出根容器内侧 padding 区域，叠加使底排热区与可读性同时受损，整体布局评分低。"
+    "instruction": "用户要求：睡眠卡 + 文字叠在深色背景 + 数字会跳 + 点击进 app。截图中深色渐变背景已落实，'86' 主数值展示到位，onClick clickToDeeplink 事件已绑定；但截图底部 '7h 42m' 时长被截断为 '7h'，'查看详情' 按钮文字完全不可见（仅剩灰色胶囊形），用户明确要求查看详情的入口和完整时长信息在视觉上无法传达，指令落实有重大缺失。'数字会跳'的动画从静态截图无法验证，DSL 也未显式声明动画能力，存疑。",
+    "aesthetic": "截图中深蓝渐变背景与白色文字搭配协调，'86' 大字粗体突出，是这张卡片的视觉亮点，字号层级清晰。但底部右侧的按钮呈现为一个无字灰色胶囊，视觉上像'未完成的占位框'，与左侧 '7h' 文字形成明显违和感，破坏了整体的克制美感；按钮背景色 #33ffffff（低透明度白）虽与暗色协调，但缺少文字后显得空荡。",
+    "layout": "截图中最严重的两个布局问题：(1) 底部左侧时长文本 '7h 42m' 被截断为 '7h'，受保护的数据信息丢失，duration 节点 width 仅 48，fontSize 14 下文本约需 47-48px，宽度临界导致 '42m' 被裁切；(2) 底部右侧 Button '查看详情' 文字完全不可见，按钮 width 42 而 '查看详情' 4 字在 fontSize 12 下约需 48px，文本宽度超出按钮宽度被裁掉，仅留下灰色胶囊底色。这两处都是受保护文本（数据指标 + CTA）出现截断/裁切，违反排版硬约束，是布局失败的核心问题。"
   },
   "issues": [
-    "content Column 纵向占用 138 > 容器 116，溢出 22dp",
-    "Button '查看详情' 在 fs12 下需要约 48 宽 > 容器 42，文字被完全截断",
-    "duration 文本 '7h 42m' 在 fs14 宽约 48 与容器 48 临界，实际渲染丢 '42m'",
-    "底排被 content 溢出挤出 root padding 区，底部约 12dp 视觉压到 root 的 #141518 上",
-    "fontWeight 出现 700（score）与 600（duration）两档强字重，未保持唯一最强"
+    "底部 duration '7h 42m' 被截断为 '7h'，受保护数据信息丢失",
+    "底部 Button '查看详情' 文本因宽度不足被裁掉，按钮仅剩灰色胶囊",
+    "content Column 内三段（top 38 + scoreRow 40 + bottom 24 + itemMargin 16 = 118）超过 116 高度，存在纵向溢出",
+    "Button 宽 42 装不下 '查看详情' 4 字，缺文字的胶囊严重影响 CTA 可识别性",
+    "duration fontSize 14 配 width 48 在临界值，未给文本留出余量"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_142\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_142\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bgPanel\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff141518\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]},{\"id\":\"bgPanel\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"linearGradient\":{\"angle\":160,\"colors\":[[\"#ff192235\",0],[\"#ff334a68\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"scoreRow\",\"bottom\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"stage\"],\"styles\":{\"width\":96,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stage\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.stage }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scoreRow\",\"component\":\"Row\",\"children\":[\"score\",\"unit\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"end\"}},{\"id\":\"score\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.score }}\",\"styles\":{\"width\":54,\"height\":40,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"分\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"duration\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"duration\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.duration }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.hint }}\",\"styles\":{\"width\":44,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_142\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bgPanel\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff141518\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]},{\"id\":\"bgPanel\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"linearGradient\":{\"angle\":160,\"colors\":[[\"#ff192235\",0],[\"#ff334a68\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"scoreRow\",\"bottom\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"stage\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stage\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.stage }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"scoreRow\",\"component\":\"Row\",\"children\":[\"score\",\"unit\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"end\"}},{\"id\":\"score\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.score }}\",\"styles\":{\"width\":56,\"height\":34,\"fontSize\":34,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"分\",\"styles\":{\"width\":14,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"duration\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"duration\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.duration }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.hint }}\",\"styles\":{\"width\":48,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sleep_142\",\"value\":{\"sleep\":{\"title\":\"昨晚睡眠\",\"score\":86,\"duration\":\"7h 42m\",\"stage\":\"深睡稳定\",\"hint\":\"查看详情\"}}}}"
   ]
 }

@@ -2,11 +2,11 @@
   "case_id": "Case-07-sports-event-125",
   "scores": {
     "instruction": {
-      "score": 7.3,
+      "score": 6.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 5.2,
+      "score": 5.0,
       "weight": 0.2
     },
     "layout": {
@@ -14,23 +14,22 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 5.2,
+  "weighted_total": 4.8,
   "reasons": {
-    "instruction": "用户主要诉求(倒计时卡、点进app、文字叠背景图)均有体现：title/label/countdown/time/actionText/background 全部展示；clickToDeeplink 事件原样使用(bundleName/abilityName/uri 与 eventCandidates 一致)；素材 assets/match-countdown-bg.png 正确绑到 /match/background；尺寸 2x2、root borderRadius 18、catalogId 与 version 符合协议。但 updateDataModel 缺少 'path' 字段（应为 '/'），违反协议硬约束；'数字要跳' 在静态 DSL 中无法实现跳动效果，模型用 32px 显眼数字替代，意图可接受但不完整。",
-    "aesthetic": "配色：白色文字配半透明黑色渐变遮罩，理论上层次清晰；但因背景图未加载回退为灰色，主视觉信息弱化。字阶 32/14/12 层级合理，title 与 countdown 共用 700 字重形成最强字重，符合唯一最强字重原则。底部红色 CTA 按钮与白色文字对比鲜明，可识别。整体可读但因内容截断('今晚 19:35'→'今晚'、'进 App'→'进 ...')破坏完整感。",
-    "layout": "content Column 纵向占用：title(18)+spacer(16)+label(14)+countdown(34)+bottom_row(28)=110，加 itemMargin=4 共 4 间隔=16，合计 126 > 可用高度 116，溢出 10。bottom_row 横向占用：time(50)+open_btn(60)+itemMargin 6=116，容器恰好等于可用宽度 116 无溢出，但 time 文本 '今晚 19:35' 在 fontSize=12 / width=50 下估算宽度 ≈ 2*12 + 4 + 5*7.2 = 64 > 50，文字被截断为 '今晚'；Button '进 App' 在 fontSize=14 / width=60 下扣除按钮内边距后空间不足，被截断为 '进 ...'。受保护文本 time 与 CTA 按钮均被截断，问题严重。"
+    "instruction": "用户四点诉求：1)倒计时卡(显示09:36, 满足)；2)数字要跳(静态截图中无法判断是否跳动，但数字本身已呈现)；3)点一下进app(root 与 open_btn 双重 onClick + clickToDeeplink 落实, 满足)；4)字要叠背景图上(Stack 层级正确, 但截图中完全看不到 assets/match-countdown-bg.png 实际图像, 整张卡只是一片深灰渐变, 关键视觉诉求'叠在背景图上'实质落空)。尺寸/root shell/catalogId/version/updateDataModel 均合规, event 与 asset 引用正确, 但背景图未真正呈现, 是指令层面最大扣分点。",
+    "aesthetic": "截图中可见的视觉观感：白色标题与'09:36'倒计时在深灰底上对比清晰, 红色 CTA 按钮色突出, 整体配色有'赛事直播'调性, 但因背景图缺失, 卡片观感平庸、缺乏临场氛围。红色按钮内'进 App'被截成'进...', 视觉上明显'破图'，是严重的美观减分项。",
+    "layout": "截图中两处受保护文本被截断：1)底部 Row 左侧 time 文案在 width:50、fontSize:12 下承载'今晚 19:35'实际约需 64vp, 渲染结果只剩'今晚'两字, 其后 '19:35' 被吃掉；2)右下角 open_btn 按钮在 width:60、fontSize:14 下无法容纳'进 App'完整文本, 实际渲染为'进...'省略号, CTA 文字被裁。底部 Row 占用核算: 50+6+60=116 横向未溢出, 但子项 width 不足以放下其各自内容, 导致 textOverflow:none 仍被裁切。Column 内部 title(18)+spacer(16)+label(14)+countdown(34)+bottom_row(28)+4×4=126, 纵向也微超 116, 靠 spaceBetween 勉强撑住, 进一步挤压底部。两处文字截断均属核心信息丢失, 排版扣重分。"
   },
   "issues": [
-    "content Column 纵向占用 126 > 116，溢出 10vp，触发整体内容挤压",
-    "time 文本 '今晚 19:35' fontSize 12 / width 50，估算宽 64 > 50，渲染截断为 '今晚'",
-    "open_btn 文本 '进 App' 在 width 60 + fontSize 14 下，扣除按钮内边距后被截断为 '进 ...'",
-    "updateDataModel 缺少 'path' 字段（应为 '/'），违反协议硬约束",
-    "spacer (height 16) 占用宝贵纵向空间且无实际价值，应删除",
-    "shade Column 无 children 仅作视觉遮罩，与 content Column 在 Stack 中同层叠加，需确认未遮挡关键文本"
+    "背景图 assets/match-countdown-bg.png 在截图中完全未呈现, 整张卡只是一片深灰渐变, '字要叠背景图上'的视觉诉求未真正实现",
+    "底部 time 文本宽度 50 不足以容纳 '今晚 19:35', 截图中'19:35'被裁掉",
+    "open_btn 按钮宽 60 + fontSize 14 容纳不下 '进 App' 5 个字符, 截图中显示为 '进...'",
+    "内容 Column 总占用 126 略大于 116 内容区, 靠 spaceBetween 硬撑, 增加底部挤出风险",
+    "Title '申花 vs 海港' 在 width 116 + fontSize 14 下虽勉强放下, 但右侧留白已贴边, 抗溢出能力差"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_125\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_125\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff1a1d23\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-125\"}}]},{\"id\":\"bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.match.background }}\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#73000000\",\"linearGradient\":{\"colors\":[[\"#33000000\",0],[\"#a6000000\",1]],\"direction\":\"toBottom\"}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"label\",\"countdown\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.countdownLabel }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.countdown }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"time\",\"open_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.time }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":50,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#fff23030\",\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-125\"}}]}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_125\",\"path\":\"/\",\"value\":{\"match\":{\"title\":\"申花 vs 海港\",\"countdownLabel\":\"距离开赛\",\"countdown\":\"09:36\",\"time\":\"今晚 19:35\",\"actionText\":\"进 App\",\"background\":\"assets/match-countdown-bg.png\"}}}}"
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_125\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff1f1f1f\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-125\"}}]},{\"id\":\"bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.match.background }}\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#55000000\",\"linearGradient\":{\"colors\":[[\"#22000000\",0],[\"#aa000000\",1]],\"direction\":\"toBottom\"}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"spacer\",\"label\",\"countdown\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"spacer\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":6}},{\"id\":\"label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.countdownLabel }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.countdown }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"time\",\"open_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.time }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":50,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#fff23030\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-125\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_125\",\"value\":{\"match\":{\"title\":\"申花 vs 海港\",\"countdownLabel\":\"距离开赛\",\"countdown\":\"09:36\",\"time\":\"今晚 19:35\",\"actionText\":\"进 App\",\"background\":\"assets/match-countdown-bg.png\"}}}}"
   ]
 }

@@ -6,29 +6,30 @@
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 6.0,
+      "score": 7.0,
       "weight": 0.2
     },
     "layout": {
-      "score": 3.5,
+      "score": 4.5,
       "weight": 0.4
     }
   },
-  "weighted_total": 6.0,
+  "weighted_total": 6.6,
   "reasons": {
-    "instruction": "用户三类明确诉求（按钮、点开app、显示已完成）均已落实：4 个 dataModel 字段（glyph/statusText/hint/actionText）全部参与展示，onClick.call=clickToDeeplink 与 args（bundleName/abilityName/uri）原样来自 eventCandidates，根 shell 140x140/borderRadius 18/clip:true 正确，createSurface.catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value 与 TaskSpec.dataModel.value 逐字段一致。轻微扣分因 hint 受保护文本被裁，体感影响指令完整度。",
-    "aesthetic": "采用深色 stage 渐变（#101827→#1f3a5f→#134e4a）+ 绿色 #22c55e 表达完成语义，配米白 paper 面板，色系和谐、对比清晰。字号梯度 16/14/14/12，主字重 700 出现在 status 与按钮、glyph 三个位置，未严格收束到「唯一一个最强字重」。最大问题是 paper_panel 内部溢出 30vp 导致 hint 文本被裁，影响整体观感。",
-    "layout": "Root Column（140x140，padding 12/12/12/12）：垂直占用 = 12 + paper_panel(72) + itemMargin(8) + open_button(32) + 12 = 136 > 可用 116，溢出 20vp。paper_panel Column（116x72，padding 8/8/10/10）：内部可用高 56，垂直占用 = 8 + glyph_text(22) + 6 + status_text(20) + 6 + hint_text(16) + 8 = 86 > 56，溢出 30vp。提示文字「专注记录已保存」作为受保护文本被底部裁切。底部 button 距卡片底 12vp 在 2x2 规范内，宽度 116 与内容区一致，无左右溢出。"
+    "instruction": "用户要求做一个按钮能打开app并显示已完成状态。截图中可见绿色'打开应用'按钮、'OK'徽章、'已完成'主状态文字以及提示语，事件 clickToDeeplink 参数原样来自 eventCandidates，dataModel 路径绑定正确，2x2 尺寸与 catalogId/version 协议均合规。但提示语'专注记录已保存'被裁切，信息呈现不完整，扣 1.5 分。",
+    "aesthetic": "截图配色和谐：深蓝渐变背景搭配白色 paper panel 与绿色 CTA，形成清晰的'确认完成'语义，绿色按钮与 OK 徽章呼应，视觉语言统一。字号层级 OK 14 < 已完成 16(粗) > 提示 12 > 按钮 14，主次分明。但底部提示文字被裁切破坏整体观感，留白分布因溢出而失衡，扣 3 分。",
+    "layout": "截图中最显著的布局问题是 paper panel 内部的提示语'专注记录已保存'底部被裁切，字符下半部分被 panel 边框遮住。核算可知 panel 高度 72，内含 padding 16 + glyph 22 + status 20 + hint 16 + itemMargin 12 = 86，超出 panel 高度的 14 像素恰好落在 hint_text 上。Button 高度 32、热区充足，底部锚定尚可，但 panel 溢出会导致整个上半区视觉崩塌。受保护文本被截断是严重布局缺陷，扣至 4.5 分。"
   },
   "issues": [
-    "Root Column 垂直占用 136 > 116，溢出 20vp",
-    "paper_panel Column 内部垂直占用 86 > 56，溢出 30vp",
-    "受保护文本 hint_text「专注记录已保存」被 paper_panel 底部裁切",
-    "status_text、open_button、glyph_text 三处并用 fontWeight 700，未收束到单一最强字重"
+    "paper_panel 内容总高 86vp 超过 panel 自身高度 72vp，提示语'专注记录已保存'被裁切",
+    "glyph_text 高度 22 留白偏多，可压缩至 20",
+    "status_text 高度 20 偏大，可压缩至 18",
+    "hint_text 高度 16 在溢出情况下仍被截断，需调整 panel 高度或内边距",
+    "paper_panel 内边距 top/bottom 各 8 偏大，可压缩至 6"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_070\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_070\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"paper_panel\",\"hint_text\",\"open_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff101827\",0],[\"#ff1f3a5f\",0.58],[\"#ff134e4a\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"glyph_text\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":124,\"height\":48,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#f2ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.glyph }}\",\"styles\":{\"width\":36,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff14532d\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.hint }}\",\"styles\":{\"width\":124,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff94a3b8\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":124,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_070\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"paper_panel\",\"open_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff101827\",0],[\"#ff1f3a5f\",0.58],[\"#ff134e4a\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"glyph_text\",\"status_text\",\"hint_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":82,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#f2ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.glyph }}\",\"styles\":{\"width\":36,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff14532d\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.hint }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff475569\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus\"}}]}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_070\",\"value\":{\"focus\":{\"glyph\":\"OK\",\"statusText\":\"已完成\",\"hint\":\"专注记录已保存\",\"actionText\":\"打开应用\"}}}}"
   ]
 }

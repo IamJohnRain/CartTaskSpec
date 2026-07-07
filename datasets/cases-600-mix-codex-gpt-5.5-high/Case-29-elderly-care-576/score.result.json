@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-29-elderly-care-576",
+  "scores": {
+    "instruction": {
+      "score": 5.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "截图中可见：标题'紧急异常'正常显示在顶部，进度圆环中央叠着'异常'两字，底部有三个指标文字胶囊（心128/氧89%/温38.8），按钮显示'立即呼叫'文字且 clickToCallPhone 事件已绑定。但用户明确要求'异常用红色告警色'，截图中所有告警元素（标题、圆环、按钮、指标文字）都使用了橙色 #ffed6f21，与用户要求的红色不一致，属于明显指令偏离；用户要求'浅色背景配一个氛围大背景'，截图中只看到一个浅灰底色，callIcon 仅作为 0.16 透明度的 20×20 小水印叠在圆环内，并未形成'氛围大背景'的视觉感受；用户要求'用场景里的图标'来表达心率/血氧/体温，但 assetCandidates 中实际只有 call_icon，指标只能以纯文字胶囊呈现，缺失图标。",
+    "aesthetic": "从截图看整体配色为'白底+橙'，但用户要求的是红色告警色，色系与诉求不符。截图中圆环组件背后出现一块明显浅灰色矩形（Progress 的 backgroundColor #0c000000 透过 Stack 渲染形成的视觉残影），与白色卡片底色形成可见的方块边界，破坏圆环的视觉完整性；按钮的 14pt 文字看起来与内部装饰元素有些拥挤，字符辨识度一般；指标胶囊底色与卡片底色对比度较低。",
+    "layout": "从截图观察：内容纵向总高 12+16+2+50+2+24+2+18+12=138vp，卡片高 140vp，未越界。横向指标行 34×3+4×2=110，落在 116 内容区内，未溢出。Stack 内圆环后方出现的浅灰矩形是 Progress 背景透出的视觉残影，圆环外被一个矩形框包裹，圆环在视觉上不够干净；按钮内 4 个汉字 14pt + 装饰元素挤在 92×24 内，截图中文字与图标位置紧贴、字符可读但稍显局促；圆环与按钮之间的间距为 2vp，偏紧。整体没有严重截断或溢出，但圆环的'方框感'和按钮文字密度是可见的布局问题。"
+  },
+  "issues": [
+    "用户明确要求'异常用红色告警色'，但截图中所有告警相关元素均使用橙色 #ffed6f21，与指令不符",
+    "用户要求'浅色背景配一个氛围大背景'，当前 callIcon 仅以 0.16 透明度 20×20 叠在圆环内，未形成大背景氛围",
+    "截图中圆环组件背后出现可见的浅灰色矩形（Progress backgroundColor #0c000000 透出），破坏圆环视觉完整性",
+    "按钮 92×24 内 4 字汉字 14pt 与装饰元素紧贴，文字密度偏大，截图中文本可读但略显局促",
+    "用户要求'用场景里的图标'，但心率/血氧/体温指标只能用纯文字胶囊呈现，无图标辅助（受 assetCandidates 限制）",
+    "指标文字与告警主题色不一致，未用红色突出异常值（心128/氧89%/温38.8 均明显异常）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_elderly_care_576\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_elderly_care_576\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"atmosphere_bg\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffaf2f2\"}},{\"id\":\"atmosphere_bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.callIcon }}\",\"styles\":{\"width\":120,\"height\":120,\"objectFit\":\"contain\",\"opacity\":0.08,\"alignSelf\":\"center\",\"margin\":{\"top\":10,\"left\":10}}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"alert_stack\",\"call_button\",\"metric_row\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.status.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_stack\",\"component\":\"Stack\",\"children\":[\"alert_ring\",\"alert_text\"],\"styles\":{\"width\":52,\"height\":52,\"alignContent\":\"center\"}},{\"id\":\"alert_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.status.progress }}\",\"total\":\"{{ $__dataModel.status.total }}\",\"styles\":{\"width\":52,\"height\":52,\"type\":\"ring\",\"color\":\"#ffd32f2f\",\"backgroundColor\":\"#00000000\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.status.level }}\",\"styles\":{\"width\":50,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"styles\":{\"width\":100,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffd32f2f\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"120\"}}]},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"metric_hr\",\"metric_o2\",\"metric_temp\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"metric_hr\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.metrics.heartRate }}\",\"styles\":{\"width\":34,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#1ad32f2f\",\"borderRadius\":9}},{\"id\":\"metric_o2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.metrics.oxygen }}\",\"styles\":{\"width\":34,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#1ad32f2f\",\"borderRadius\":9}},{\"id\":\"metric_temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.metrics.temperature }}\",\"styles\":{\"width\":34,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#1ad32f2f\",\"borderRadius\":9}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_elderly_care_576\",\"path\":\"/\",\"value\":{\"status\":{\"title\":\"紧急异常\",\"level\":\"异常\",\"progress\":82,\"total\":100},\"metrics\":{\"heartRate\":\"心128\",\"oxygen\":\"氧89%\",\"temperature\":\"温38.8\"},\"action\":{\"label\":\"立即呼叫\",\"phoneNumber\":\"120\"},\"asset\":{\"callIcon\":\"resources/base/media/icon_call.png\"}}}}"
+  ]
+}

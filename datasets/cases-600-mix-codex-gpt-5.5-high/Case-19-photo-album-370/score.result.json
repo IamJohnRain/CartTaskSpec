@@ -2,11 +2,11 @@
   "case_id": "Case-19-photo-album-370",
   "scores": {
     "instruction": {
-      "score": 7.0,
+      "score": 7.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 4.0,
+      "score": 6.5,
       "weight": 0.2
     },
     "layout": {
@@ -14,23 +14,21 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 4.8,
+  "weighted_total": 5.5,
   "reasons": {
-    "instruction": "用户四个核心诉求（勾选重复照片、显示张数、点进相册、空间不足提醒）均已落地：Checkbox 组件带 select.path 绑定展示重复照片，Text 显示 128，Button '进相册' 配 clickToDeeplink 跳设置，Text '空间快满' + Progress 91/100 表达预警；dataModel 所有字段被引用，eventCandidates 被原样使用。扣分点：1) updateDataModel 缺少 path '/' 字段，违反硬约束；2) Text content 使用 formatString 调用而未走规范的 {{ }} 直接绑定，虽功能上能工作但偏离'优先使用表达式'建议。",
-    "aesthetic": "深色暖棕渐变（#ff241918→#ff7a2d22）+ 琥珀色 #ffffc857 强调色形成克制的暗色暖系，CTA 按钮与复选标记色一致，视觉系统基本成立。但三处受保护文本均被截断（'重...'、'空间快'、'128张待勾'），从截图看像明显 bug，严重破坏专业感与可读性；同一卡片中字重 500/600/700/800/'medium' 多档并存，最强字重不唯一。整体因截断降为 4.0。",
-    "layout": "预算核算：Root Column 纵向 = padding.top(12) + top(28) + itemMargin(6) + count(32) + itemMargin(6) + meter(8) + itemMargin(6) + action(30) + padding.bottom(12) = 140，恰好填满 140，无纵向溢出；Top Row 横向 = itemMargin(8) + pick(72) + warning(36) = 116，恰好填满 116，无横向溢出。但容器内文本均出现溢出/截断：(1) count '128张待勾选' 实际宽度 = 3×0.6×20 + 4×20 = 116 恰好等于 width 116，fontWeight 800 加粗后约 122-125，超出 116 约 6-9，maxLines:1 截断为 '128张待勾'，丢失 '选'；(2) warning '空间快满' 实际宽度 = 4×10 = 40 > width 36，超出 4，截断为 '空间快'；(3) Checkbox 内部 mark 12 + 内边距约 8 + 文本可用区约 52-56，'重复照片' fontSize 12 fontWeight 600 实际宽度约 52-56，叠加 mark 占位后 label 被截断为 '重...'。三处受保护文本全部被裁，主指标 '128张待勾选' 残缺，布局判失败。"
+    "instruction": "用户诉求基本落实：Checkbox 用于勾选重复照片（绑定 /album/selected）、主数值 128 张、'进相册' Button 带正确 onClick(clickToDeeplink)、空间预警 '空间快满' + Progress 进度条均存在；尺寸 2x2、catalogId/version/updateDataModel.path='/value' 全部符合协议。但 '显示多少张'、'重复照片' 标题、'空间快满' 警示三项关键信息在截图中均被截断（'128张待勾'、'重...'、'空间快'），导致用户实际看不到完整内容，按指令'信息真实完整呈现'的尺度扣分。",
+    "aesthetic": "截图整体观感尚可：深棕渐变背景 + 暖黄色高亮对比鲜明，黄色 Button 与进度条在深色底上识别度高，Button 文字深棕在黄底上清晰。但 3 处文字被裁切（标题/警示/主数值均带省略号或被切）严重破坏完成感，留白集中在底部，顶部信息区因截断显得'压'得慌，层级感被截断破坏。",
+    "layout": "截图存在严重文字截断问题：① 顶部 Checkbox 标签 '重复照片' 渲染为 '重...'，title 文本宽度超出 pick(width:72) 容器；② 右上角 '空间快满' 渲染为 '空间快'，warning(width:36,fontSize:10) 容器过窄；③ 主指标 '128张待勾选' 渲染为 '128张待勾'，末字'选'被容器右边界裁掉。3 处都是受保护的关键信息（标题/状态/主数值），属于 D3 重扣分项。Button 与卡片底部锚定尚可，热区足够，未出现 Stack 遮挡。"
   },
   "issues": [
-    "count 主指标 '128张待勾选' 被截断为 '128张待勾'，丢失 '选' 字",
-    "warning 文本 '空间快满' 在 width 36 下溢出 4px，截断为 '空间快'，'满' 字丢失",
-    "Checkbox label '重复照片' 在 width 72 + mark 12 + 内边距下被截断为 '重...'，标题信息残缺",
-    "updateDataModel 缺少 path '/' 字段，违反协议硬约束",
-    "Text content 使用 formatString 调用而非规范的 {{ }} 直接绑定，偏离'优先使用表达式'建议",
-    "同一卡片中并存 fontWeight 500/600/700/800/'medium'，最强字重不唯一"
+    "标题 '重复照片' 在 Checkbox 标签中被截断为 '重...'，title 文本宽度超过容器 72",
+    "'空间快满' 警示文本被截断为 '空间快'，warning width:36/fontSize:10 容器宽度过窄",
+    "主数值 '128张待勾选' 在 count(width:116, fontSize:20) 中末字 '选' 被裁切",
+    "3 处均为受保护文本，受限于 2x2 卡片 116px 内容宽度，需缩字/缩字号/重组布局"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_370\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_370\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"countNum\",\"countUnit\",\"meter\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff241918\",0],[\"#ff7a2d22\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"pick\",\"warning\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"pick\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.album.title }}\",\"select\":{\"path\":\"/album/selected\"},\"styles\":{\"width\":60,\"height\":18,\"shape\":\"rounded_square\",\"selectedColor\":\"#ffffc857\",\"unSelectedColor\":\"#66ffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ff241918\",\"size\":10,\"strokeWidth\":1.5}}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.warning }}\",\"styles\":{\"width\":48,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffc857\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"countNum\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.duplicateCount }}\",\"styles\":{\"width\":116,\"height\":26,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countUnit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.countUnit }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffe8c97a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.album.storageUsed }}\",\"total\":\"{{ $__dataModel.album.storageTotal }}\",\"styles\":{\"width\":116,\"height\":6,\"type\":\"capsule\",\"color\":\"#ffffc857\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":116,\"height\":26,\"borderRadius\":12,\"backgroundColor\":\"#ffffc857\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff241918\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
-    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_370\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"重复照片\",\"duplicateCount\":128,\"countUnit\":\"张待勾选\",\"selected\":true,\"warning\":\"空间快满\",\"storageUsed\":91,\"storageTotal\":100,\"actionText\":\"进相册\"}}}}"
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_370\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"count\",\"meter\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff241918\",0],[\"#ff7a2d22\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"pick\",\"warning\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"pick\",\"component\":\"Checkbox\",\"label\":\"重复\",\"select\":{\"path\":\"/album/selected\"},\"styles\":{\"width\":56,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#ffffc857\",\"unSelectedColor\":\"#66ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ff241918\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"空间快满\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffc857\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"count\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/album/duplicateCount}${/album/countUnit}\"}},\"styles\":{\"width\":116,\"height\":28,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.album.storageUsed }}\",\"total\":\"{{ $__dataModel.album.storageTotal }}\",\"styles\":{\"width\":116,\"height\":8,\"type\":\"capsule\",\"color\":\"#ffffc857\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":12,\"backgroundColor\":\"#ffffc857\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff241918\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_370\",\"value\":{\"album\":{\"title\":\"重复照片\",\"duplicateCount\":128,\"countUnit\":\"张待勾选\",\"selected\":true,\"warning\":\"空间快满\",\"storageUsed\":91,\"storageTotal\":100,\"actionText\":\"进相册\"}}}}"
   ]
 }

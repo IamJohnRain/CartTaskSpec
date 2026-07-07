@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-28-veggie-price-550",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户要求菜价卡、数字会变、点击跳应用、能从日历读日程。截图中可见：标题'今日菜价'、主数值'3.8'绑定到 dataModel.price.mainValue（数字可变化）、'打开应用'按钮带 onClick 事件。但存在以下不足：1）根 Column 与底部 Button 同时绑定了同一 onClick，存在事件双触发风险；2）提供的 deeplink URI 指向 healthapp/sport 运动应用，与'菜价'语义不符（虽然参数原样来自 eventCandidates，模型无法修改，但视觉上'打开应用'的承诺与跳转目标错位）；3）'能从日历读日程'诉求体现不足——截图中只显示'采购日程'作为 hint 标签，未渲染任何日程条目（data.calendar.items 为空），也没有 List 组件承接未来日程数据；4）state.loading=true 未渲染任何加载态反馈。总体主要诉求落地但日历维度偏弱，扣 2.5 分。",
+    "aesthetic": "截图整体观感优秀：绿到浅绿的线性渐变（135°）自然柔和，与'菜价/果蔬'主题契合；白色前景在绿色背景上对比度足够、清晰可读；字号层级清晰——标题 16px 加粗、主数值 20px 加粗为最强字重（仅这两个使用 700，其余为 400/500），其余 caption/单位为 10px 弱化层级；白色胶囊按钮配合绿色文字形成视觉焦点；留白均衡、对齐统一、无明显土气或拥挤感。整体可给 8.5 分。",
+    "layout": "截图无任何元素堆叠或文字裁切：标题'今日菜价'、caption'均价实时更新'完整显示；'3.8'主数值与'元/斤'单位左对齐无截断；垂直 divider 清晰分隔主数值区与'采购日程'；底部'打开应用'胶囊按钮完整居于卡片底部，底边距卡片下边距适中（约 10vp 左右），未越过 16vp 上限；所有元素均位于 140x140 卡片边界内，无溢出；按钮热区约 116x30vp，>24vp 满足可点击要求。唯一可观察的小问题是根 Column 的 onClick 与 Button.onClick 同时存在，事件层级略冗余，但布局本身干净。"
+  },
+  "issues": [
+    "根 Column 与底部 Button 同时绑定相同 onClick（clickToDeeplink），存在事件双触发风险且不符合单一职责",
+    "eventCandidates 提供的 deeplink 指向 healthapp/sport（运动应用），与'菜价'卡片语义错位",
+    "用户明确要求'能从日历读日程'，但卡片仅显示 hint 文本'采购日程'，未提供 List 组件承载 data.calendar.items 日程条目",
+    "state.loading=true 未在 UI 上体现任何加载态视觉反馈",
+    "Button.fontWeight 写成字符串 'medium'，非标准值（应为 normal/bold 或数字），存在解析兼容风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_veggie_price_550\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_veggie_price_550\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"meter\",\"bottom\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#64bb5c\",0],[\"#92c48d\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"caption\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.price.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"caption\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.price.caption }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter\",\"component\":\"Row\",\"children\":[\"valueBlock\",\"divider\",\"schedule\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"valueBlock\",\"component\":\"Column\",\"children\":[\"mainValue\",\"unit\"],\"itemMargin\":0,\"styles\":{\"width\":48,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"mainValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.price.mainValue }}\",\"styles\":{\"width\":48,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.price.unit }}\",\"styles\":{\"width\":48,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"width\":1,\"height\":30,\"strokeWidth\":1,\"color\":\"#66ffffff\"}},{\"id\":\"schedule\",\"component\":\"Column\",\"children\":[\"scheduleHint\"],\"itemMargin\":0,\"styles\":{\"width\":55,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"scheduleHint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.calendarHint }}\",\"styles\":{\"width\":55,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.price.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff3d8b3d\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_veggie_price_550\",\"value\":{\"price\":{\"title\":\"今日菜价\",\"mainValue\":\"3.8\",\"unit\":\"元/斤\",\"caption\":\"均价实时更新\",\"actionText\":\"打开应用\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true,\"calendarHint\":\"采购日程\"}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-29-elderly-care-562",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户要求文字叠在背景上、老人关怀、点击跳app并提醒'快不行了'。截图中可见'长辈看护'标题、'状态很危险'主警语、'请立即查看/刚刚提醒'副信息和'打开查看'按钮，dataModel 字段全部正确绑定呈现；root 与 Button 均带有原样的 clickToDeeplink 事件，参数 uri 与 TaskSpec 一致；尺寸 140x140、catalogId、version、updateDataModel.path=/ 全部满足硬约束。assetCandidates 为空时用渐变作为'背景图'的替代是合理的妥协。唯一小缺是没有真正的背景图（仅纯色渐变），与'叠在背景图上'的字面要求有轻微落差。",
+    "aesthetic": "橙红到亮黄的纵向渐变与'危险/紧急'语义匹配，白色主文字在橙色背景上对比清晰可读。'打开查看'白色胶囊按钮与主题色呼应，对比也清晰。但截图中可见背景层有一颗'看护'浅橙色胶囊形装饰（top_wash），与前景的'长辈看护'标题在右上角发生明显叠压——'看护'二字被标题文字覆盖，胶囊边沿与标题笔画相互穿插，形成类似错版的视觉噪点，破坏了顶部信息的整洁度；底部分割线（bottom_wash）在 92×1 的设置下几乎不可见，沦为无效装饰。整体配色和谐但叠层冲突让高级感下降。",
+    "layout": "从截图中可观察到明确布局问题：1）背景层 bg 的子项 top_wash（'看护'胶囊，60×24，居中）位于内容层 content 的子项 title（'长辈看护'，fontSize 14，宽度 116 左对齐）之上，两者在卡片右半部分发生叠压，'看护'文字被标题覆盖，胶囊轮廓穿插进'护'字笔画，属于 Stack 装饰元素遮挡受保护前景文本的典型问题；2）content 列高 116，子项合计 20+24+32+28=104，itemMargin 4×3=12，合计 116，spaceBetween 几乎无空隙可分配，底部'打开查看'按钮底边距离卡片底边约 (140-12-116)=12vp，符合 ≤16vp 的硬约束；3）未见文字被裁切/截断，未见组件溢出 140 边界；4）按钮高度 28vp，热区充足。整体扣分集中在叠层冲突一项。"
+  },
+  "issues": [
+    "背景层 top_wash（'看护'胶囊）与前景 title（'长辈看护'）在卡片右上方发生叠压，标题文字被胶囊装饰遮挡/穿插",
+    "背景层 bottom_wash（分割线 92×1）几乎不可见，未起到装饰作用",
+    "content 列内 4 个子项累计高度等于 116，spaceBetween 几乎无额外空间分配，纵向留白偏紧",
+    "标题 fontSize 14 与主警语 fontSize 20 字重差距小，主次层级可再拉开",
+    "缺少真正的背景图，渐变作为'背景图'的替代在视觉丰富度上偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"elderly_care_alert_562\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"elderly_care_alert_562\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"content\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true}},{\"id\":\"bg\",\"component\":\"Column\",\"styles\":{\"width\":116,\"height\":116,\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[[\"#ffed6f21\",0],[\"#f9a01e\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"main_text\",\"support_text\",\"open_btn\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alertText }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"support_text\",\"component\":\"Column\",\"children\":[\"summary\",\"time\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.summary }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.timeText }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.care.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":116,\"height\":26,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"elderly_care_alert_562\",\"path\":\"/\",\"value\":{\"care\":{\"title\":\"长辈看护\",\"alertText\":\"状态很危险\",\"summary\":\"请立即查看\",\"timeText\":\"刚刚提醒\",\"actionText\":\"打开查看\"}}}}"
+  ]
+}

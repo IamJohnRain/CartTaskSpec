@@ -2,11 +2,11 @@
   "case_id": "Case-14-commute-280",
   "scores": {
     "instruction": {
-      "score": 2.5,
+      "score": 3.0,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 3.0,
+      "score": 3.5,
       "weight": 0.2
     },
     "layout": {
@@ -14,24 +14,24 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 2.2,
+  "weighted_total": 2.5,
   "reasons": {
-    "instruction": "用户明确要求'纵向排列三个路线选项'+三条细线分隔+每条'开始导航'按钮+底部'今天9:30有客户拜访'+深蓝到黑渐变+字符图标+左右分区底色差异。生成结果中标题'通勤导航'和底部'9:30 客户拜访'可见，但核心的3条路线及对应的'开始'按钮完全未出现在视图中（截图中部全空）；calendar 文本也丢了'今天'和'有'两个关键字；eventCandidates 的 clickToIntent/StartNavigate 事件接线在 DSL 中存在但因父 Column 整体塌陷/不可见而无法被感知；字符图标字段 glyph 已在 dataModel 提供但渲染未体现；左右分区底色差异未做。综合判定：关键诉求（3条路线 + 按钮）全部缺失，扣重分。",
-    "aesthetic": "深蓝到凌晨黑渐变实现正确，根容器 borderRadius 18 / clip 也合规。问题在于渲染结果中部大面积留白（routes Column 整体未呈现），导致整张卡片显得空洞、头重脚轻；标题字阶 14 / routeText 10 / calendar 10 的层级设计尚可但未能落地；最强字重只有 title 的 700 这一点 OK，但因为核心内容缺失，'漂亮与否'已经无意义。",
-    "layout": "按预算公式核算：根 Column padding 12、内框 116x116；children 4 项（title 16 + routes 86 + divider3 1 + calendar 14）+ itemMargin 4×3 = 12，纵向占用 16+86+1+14+12 = 129 > 116，**溢出 13vp**。routes Column 内 3 个 routeItem（高 26）总高 78 + itemMargin 2×2 = 4 = 82 ≤ 86，自身不溢出；routeItem Column 高 22+1+1 = 24 ≤ 26 OK；routeRow 横向 18+44+46 = 108 + itemMargin 4×2 = 8 = 116 ≤ 116 OK。结论：所有内部 Row/Column 单看都在预算内，但根 Column 累计溢出 13vp 是关键致命伤；叠加 routes 的 routeText 使用了非标准 formatString call、模板内 `${...}` 插值在多数 A2UI 渲染器上不被识别，导致 routeText 解析失败、进而 routes Column 实际塌陷为 0 高，最终在截图中表现为标题与底部日历之间整片空白。受保护的 CTA 按钮、路线名/动态分钟数全部不可见。"
+    "instruction": "用户明确要求卡片纵向排列三条路线（京藏/北四环/南五环）并各自带'开始导航'按钮，但截图中三条路线及按钮完全不可见，只显示了顶部'通勤导航'标题和底部'9:30 客户拜访'。核心信息缺失严重。事件 onClick 写法、参数 path 引用 dstLocation/latitude、longitude、trafficpe 协议合法，但因模板未渲染出实例而无法生效。'道路照片小图'因 assetCandidates 为空被替换为字符图标可接受，但'左右分区不同底色'的设计意图也未呈现。",
+    "aesthetic": "截图可见深蓝到凌晨黑的纵向渐变效果自然，顶部白色'通勤导航'与底部'9:30 客户拜访'在深色底上可读性尚可。但卡片中部约 80% 区域完全空白塌陷，没有路线条目填充，视觉上像加载失败或模板未实例化，留白严重失衡，整体观感极差。",
+    "layout": "截图显示标题下方到分隔线之间是整片空白，三条路线、字符图标、路线文字、'开始'按钮全部缺失。这是排版崩溃级别的缺陷：关键信息（3 条路线 + 3 个 CTA）100% 不可见。按布局核算原 DSL 总占用 = 16(标题)+86(routes)+1(divider3)+14(calendar)+12(3 段 itemMargin)+24(上下 padding)=153 > 140，确实存在纵向溢出，且 routes 模板子项在预览渲染中未展开为空容器，导致中部完全空白。"
   },
   "issues": [
-    "根 Column 纵向总占用 129 > 可用 116，溢出 13vp",
-    "routeText 使用 formatString call + ${shortName} 插值，模板作用域下解析失败，导致 routes 区域塌陷",
-    "渲染截图中 3 条路线及'开始导航'按钮完全缺失，核心诉求未落地",
-    "calendar 文本只展示 '9:30 客户拜访'，遗漏'今天'与'有'两段用户明示文案",
-    "未实现'左右分区不同底色'的视觉差异",
-    "assetCandidates 为空且未在 DSL 中显式声明无图，符合约束但用户期望的'道路照片小图'被字符图标代替、应在 caption 中体现",
-    "按钮 label 写'开始'而用户原文是'开始导航'，存在文义偏差"
+    "截图中三条路线（京藏/北四环/南五环）及其'开始'按钮完全不可见，是最严重的渲染/布局问题",
+    "routes Column 高度 86 + 标题 16 + 分隔线 1 + 日历 14 + 3 段 itemMargin 4 = 超出 140 卡片高度，纵向溢出",
+    "模板子项 pattern (componentId:'routeItem', path:'/routes') 在预览渲染中未实例化，导致整片空白",
+    "按钮文字被截断为'开始'，偏离用户要求的'开始导航'",
+    "路线文字格式从'走京藏高速 预计48分钟'压缩为'京藏 48分'，丢失'走'和'预计'语义",
+    "'左右分区不同底色'的设计意图未实现（glyph 仅设了 18x18 极小色块，无大区域分色）",
+    "道路照片小图因 assetCandidates 为空被替换为字符图标，偏离用户原意但属可接受妥协"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"commute280\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"commute280\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"routes\",\"calendar\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#0A59F7\",0],[\"#191A1C\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.header.title }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"routes\",\"component\":\"Column\",\"children\":{\"componentId\":\"routeItem\",\"path\":\"/routes\"},\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":78,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"routeItem\",\"component\":\"Column\",\"children\":[\"routeRow\",\"routeDivider\"],\"itemMargin\":1,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"routeRow\",\"component\":\"Row\",\"children\":[\"routeGlyph\",\"routeText\",\"routeButton\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"routeGlyph\",\"component\":\"Text\",\"content\":{\"path\":\"glyph\"},\"styles\":{\"width\":18,\"height\":18,\"borderRadius\":4,\"backgroundColor\":\"#26FFFFFF\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"routeText\",\"component\":\"Text\",\"content\":\"{{ shortName + ' ' + etaMinutes + '分' }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"routeButton\",\"component\":\"Button\",\"label\":\"开始\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":{\"path\":\"dstLocation/latitude\"},\"longitude\":{\"path\":\"dstLocation/longitude\"}},\"trafficpe\":{\"path\":\"trafficpe\"}}}}],\"styles\":{\"width\":42,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\"}},{\"id\":\"routeDivider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33FFFFFF\"}},{\"id\":\"calendar\",\"component\":\"Text\",\"content\":\"今天{{ $__dataModel.data.calendar.items[0].dtStart }} 有{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"commute280\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"routes\",\"divider3\",\"calendar\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#0A59F7\",0],[\"#191A1C\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.header.title }}\",\"styles\":{\"width\":124,\"height\":14,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"routes\",\"component\":\"Column\",\"children\":{\"componentId\":\"routeItem\",\"path\":\"/routes\"},\"itemMargin\":0,\"styles\":{\"width\":124,\"height\":82,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"routeItem\",\"component\":\"Column\",\"children\":[\"routeRow\",\"routeDivider\"],\"itemMargin\":1,\"styles\":{\"width\":124,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"routeRow\",\"component\":\"Row\",\"children\":[\"routeGlyph\",\"routeText\",\"routeBtn\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"routeGlyph\",\"component\":\"Text\",\"content\":{\"path\":\"glyph\"},\"styles\":{\"width\":16,\"height\":16,\"borderRadius\":4,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"routeText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"走${shortName} ${etaMinutes}分\"}},\"styles\":{\"width\":60,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"routeBtn\",\"component\":\"Button\",\"label\":\"导航\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":{\"path\":\"dstLocation/latitude\"},\"longitude\":{\"path\":\"dstLocation/longitude\"}},\"trafficpe\":{\"path\":\"trafficpe\"}}}}],\"styles\":{\"width\":36,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\"}},{\"id\":\"routeDivider\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1,\"strokeWidth\":1,\"color\":\"#33FFFFFF\"}},{\"id\":\"divider3\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1,\"strokeWidth\":1,\"color\":\"#33FFFFFF\"}},{\"id\":\"calendar\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":124,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"commute280\",\"path\":\"/\",\"value\":{\"header\":{\"title\":\"通勤导航\"},\"routes\":[{\"glyph\":\"路\",\"shortName\":\"京藏\",\"etaMinutes\":48,\"trafficpe\":\"Drive\",\"dstLocation\":{\"latitude\":\"39.908722\",\"longitude\":\"116.397499\"}},{\"glyph\":\"环\",\"shortName\":\"北四环\",\"etaMinutes\":35,\"trafficpe\":\"Drive\",\"dstLocation\":{\"latitude\":\"39.985889\",\"longitude\":\"116.350572\"}},{\"glyph\":\"行\",\"shortName\":\"南五环\",\"etaMinutes\":52,\"trafficpe\":\"Drive\",\"dstLocation\":{\"latitude\":\"39.767522\",\"longitude\":\"116.401985\"}}],\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"client-visit-0930\",\"title\":\"客户拜访\",\"dtStart\":\"9:30\",\"dtEnd\":\"10:30\"}]}},\"state\":{\"loading\":false}}}}"
   ]
 }

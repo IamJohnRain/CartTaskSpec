@@ -2,11 +2,11 @@
   "case_id": "Case-11-fitness-207",
   "scores": {
     "instruction": {
-      "score": 8.5,
+      "score": 9.5,
       "weight": 0.4
     },
     "aesthetic": {
-      "score": 7.5,
+      "score": 8.5,
       "weight": 0.2
     },
     "layout": {
@@ -14,22 +14,20 @@
       "weight": 0.4
     }
   },
-  "weighted_total": 8.5,
+  "weighted_total": 9.1,
   "reasons": {
-    "instruction": "完整满足用户诉求：title/destination/status/actionText 四个 dataModel 字段均渲染到位；root onClick 原样引用 clickToDeeplink 与 huaweischeme://maps/navi URI；size 2x2、catalogId 'ohos.a2ui.extended.catalog'、version v0.9、updateDataModel.value 与 TaskSpec 一致、path='/' 等硬约束均满足。轻微扣分点：渲染中新增了硬编码文案'状态'作为 status 字段的标签前缀（status_label 文本'状态'），既不在 dataModel 中，也未被 userQuery 显式要求（用户仅说'显示已连接'），属于过度诠释。",
-    "aesthetic": "深墨绿→翡翠绿的对角渐变（#ff101820 → #ff0a7d5a）与白色主文字对比清晰、阅读舒适；'附近健身房' 18pt 白色加粗作为主指标突出；'导航前往' 白色实心胶囊与绿底形成强对比、CTA 突出；'已连接' 半透明白胶囊与底色融合自然，整体克制专业。扣分点：违反'同一卡片只保留一个最强字重'规则——title(700)、destination(700)、action(700)、status_text(700) 四处均使用 fontWeight 700，缺乏层级区分；title 字号 14 略小，与下方 18 字号主指标形成轻微断层。",
-    "layout": "逐项预算核算：① root Column 纵向占用 = 12(padding top) + 18(title) + 8(itemMargin) + 58(hero) + 8(itemMargin) + 20(bottom_row) + 12(padding bottom) = 136 ≤ 140，可用于布局高 116，实占 96，余量 4，无溢出；② hero Column 占用 = 6(itemMargin) + 24(destination) + 24(action) = 54 ≤ 58，无溢出；③ bottom_row 横向占用 = 28(status_label) + 4(itemMargin) + 48(status_text) = 80 ≤ 116，无溢出；④ status_text 内 text-area = 48-12(padding) = 36，'已连接' 3 字 × 12 = 36 几乎贴边、无富余；⑤ 受保护文本 title/destination/action/status_text 均设置 maxLines:1 + textOverflow:none，未依赖 ellipsis 截断；⑥ 底部 bottom_row 底边到卡片底 = 12vp，处于 2x2 的 8-12 区间下沿、可接受。"
+    "instruction": "用户要求'整个运动卡片可点击导航到附近健身房，并显示已连接'。截图中可见完整呈现：标题'运动卡片'、目的地'附近健身房'、CTA'导航前往'白色胶囊按钮、底部'状态 已连接'状态徽标四要素齐全。root.onClick 绑定的 clickToDeeplink 与 eventCandidates 完全一致，bundleName/abilityName/uri 原样保留。dataModel.value 与 TaskSpec 一致，path 为 '/'，size 2x2、catalogId、version 等硬约束全部满足。无任何协议违规。",
+    "aesthetic": "截图整体观感较好：深绿到翠绿的 135° 对角渐变和谐自然，白色文字在深色背景上对比强烈、清晰可读。字号层级清晰（标题 14pt < 目的地 18pt 粗体），目的地作为视觉焦点突出。'导航前往'采用白底绿字胶囊按钮与背景绿色形成同色系呼应，'已连接'徽标用半透明白底处理层次感好。不足：标题、目的地、按钮、状态文字均使用 700 字重，略显厚重，未做字重差异化；'状态'标签与'已连接'徽标并列略显冗余，可去掉'状态'两字直接显示徽标让画面更简洁。",
+    "layout": "截图观察：所有元素均位于卡片边界内，无任何堆叠或溢出。纵向：标题 18 + itemMargin 8 + hero 58 + itemMargin 8 + 状态行 20 = 112 ≤ 116，剩余 4vp 由 spaceBetween 自然分配，视觉上下间距均衡。横向：底部 Row（28 + 4 + 48 = 80）左对齐后右侧留白充裕，无截断。'运动卡片'、'附近健身房'、'导航前往'、'已连接'四个受保护文本均完整呈现，未出现裁切或省略号。底部状态行底边距卡片底边约 12vp，符合规范区间。无明显视觉问题。"
   },
   "issues": [
-    "新增硬编码文案'状态'（status_label）作为 status 字段标签前缀，未在 dataModel 与 userQuery 中出现",
-    "title、destination、action、status_text 四处均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'规则，层级扁平",
-    "root Column 纵向总高 136/140，使用率 97%，余量仅 4vp",
-    "status_text 内 text-area 36vp 与 3 字×12vp 完全相等，无任何排版容差",
-    "action 胶囊文本用 Text+padding 模拟按钮热区，未使用 Button 组件（虽不违规，但热区与可访问性弱于标准 Button）"
+    "标题、目的地、CTA、状态文字均使用 fontWeight 700 同一字重，缺少字重差异化，可将次要文字降至 500 让主信息更突出",
+    "'状态'二字与'已连接'徽标并列表达冗余，可省略'状态'直接展示'已连接'徽标让画面更克制",
+    "'导航前往'当前以 Text 胶囊样式模拟按钮，建议改为真正的 Button 组件以获得更准确的语义与可点击热区"
   ],
   "improved_dsl": [
     "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_207\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
-    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_207\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"hero\",\"status_row\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff101820\",0],[\"#ff0a7d5a\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://maps/navi?query=%E9%99%84%E8%BF%91%E5%81%A5%E8%BA%AB%E6%88%BF\"}}]},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"destination\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"destination\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.destination }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":72,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff0a7d5a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"status_pill\"],\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.status }}\",\"styles\":{\"width\":56,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_207\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"hero\",\"bottom_row\"],\"itemMargin\":10,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0f2a1f\",0],[\"#ff0a7d5a\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://maps/navi?query=%E9%99%84%E8%BF%91%E5%81%A5%E8%BA%AB%E6%88%BF\"}}]},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"letterSpacing\":1,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"destination\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"destination\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.destination }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":72,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0a7d5a\",\"textAlign\":\"center\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_dot\",\"status_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_dot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":14,\"height\":18,\"fontSize\":10,\"fontColor\":\"#ff4ade80\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.status }}\",\"styles\":{\"width\":54,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
     "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_207\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"运动卡片\",\"destination\":\"附近健身房\",\"status\":\"已连接\",\"actionText\":\"导航前往\"},\"state\":{\"loading\":false}}}}"
   ]
 }

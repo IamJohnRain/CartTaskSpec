@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-24-todo-476",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "截图中可见运动打卡标题、连续7天动态数字、3项可勾选任务（快走20分/深蹲3组/拉伸10分均已勾选）、奖励歌单按钮，顶部OK文字符号作图标，蓝绿渐变与半透明白色磨砂面板均已呈现，奖励按钮绑定clickToDeeplink事件与uri完全来自eventCandidates，尺寸2x2与root shell协议合规。主要扣分：底部按钮文字\"奖励歌单\"在截图中明显出现重影/渲染残缺，可读性受损；任务容器内容高度(54)超出其设定高度(50)，第三项被裁切，影响'每项能打勾'的完整呈现。",
+    "aesthetic": "截图整体观感良好：蓝到青绿渐变自然、半透明白色面板有磨砂质感、绿色OK圆点与黑底白字CTA形成对比、字号层级清晰（14/16/12/14）。但底部黑色Button的文字\"奖励歌单\"在截图中可见明显的字符重影/断裂（疑似文字与按钮底色渲染冲突或被竖向裁切），严重破坏按钮可读性与精致感，扣分明显。任务区与按钮间距过紧，第三个勾选项视觉上几乎贴着按钮边缘。",
+    "layout": "截图存在两处具体布局问题：1) 中间任务列表面板被设定为height:50，但内部3个Checkbox(h=14)加padding(2+2)与itemMargin(4+4)实际纵向占用=2+14+4+14+4+14+2=54，超出4vp，导致第三项\"拉伸10分\"的勾选框底边紧贴任务面板下沿、且与下方黑色Button的间距几乎为0，视觉上有挤压和潜在裁切感；2) 底部奖励按钮文字\"奖励歌单\"在截图中出现明显的字符残缺/重影（中部出现横向断裂感），疑似按钮height:24与fontSize:14在垂直居中时字形被切或描边叠加。整张卡片纵向排布成立，但根容器(140)被12+12 padding扣除后内容区仅116，而 hero(34)+4+tasks(50)+4+button(24)=116虽总和刚好，但tasks内部实际需要54，实际溢出4vp。根容器clip:true存在但任务面板未设clip，未能阻止内容越界。"
+  },
+  "issues": [
+    "任务Column实际内容纵向占用54vp，超过设定的height:50，第三个Checkbox\"拉伸10分\"被挤压、与底部Button几乎无间距",
+    "底部Button的\"奖励歌单\"文字在截图中出现明显重影/字符残缺，可读性受损",
+    "hero区域title与streak字号(14/16)与hero_text容器宽度(62)在140小尺寸下偏紧，'运动打卡'与'连续7天'视觉上有顶满感",
+    "任务区与底部Button之间间距为0，不符合底部动作区应有8-12vp留白的设计规范"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_todo_476\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_todo_476\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"tasks\",\"reward_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#92d6cc\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"done_glyph\",\"hero_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":32,\"padding\":{\"left\":6,\"right\":6,\"top\":0,\"bottom\":0},\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"done_glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.habit.heroGlyph }}\",\"styles\":{\"width\":32,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"hero_text\",\"component\":\"Column\",\"children\":[\"title\",\"streak\"],\"itemMargin\":0,\"styles\":{\"width\":66,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.habit.title }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"streak\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.habit.streakText }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tasks\",\"component\":\"Column\",\"children\":[\"task_one\",\"task_two\",\"task_three\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":52,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"task_one\",\"component\":\"Checkbox\",\"label\":\"{{ ${/habit/tasks/0/label} }}\",\"select\":\"{{ ${/habit/tasks/0/done} }}\",\"styles\":{\"width\":104,\"height\":13,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"task_two\",\"component\":\"Checkbox\",\"label\":\"{{ ${/habit/tasks/1/label} }}\",\"select\":\"{{ ${/habit/tasks/1/done} }}\",\"styles\":{\"width\":104,\"height\":13,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"task_three\",\"component\":\"Checkbox\",\"label\":\"{{ ${/habit/tasks/2/label} }}\",\"select\":\"{{ ${/habit/tasks/2/done} }}\",\"styles\":{\"width\":104,\"height\":13,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"reward_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.habit.rewardLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ff1f3a5f\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_todo_476\",\"path\":\"/\",\"value\":{\"habit\":{\"title\":\"运动打卡\",\"heroGlyph\":\"OK\",\"streakText\":\"连续7天\",\"rewardLabel\":\"奖励歌单\",\"tasks\":[{\"label\":\"快走20分\",\"done\":true},{\"label\":\"深蹲3组\",\"done\":true},{\"label\":\"拉伸10分\",\"done\":true}]}}}}"
+  ]
+}

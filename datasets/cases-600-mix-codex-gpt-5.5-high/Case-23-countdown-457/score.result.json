@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-457",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.2,
+  "reasons": {
+    "instruction": "用户明确要求右侧纵向排列'买花/订餐厅/写情书'三行待办，每行前面带方框能勾。截图中右侧白板内部除底部'播放我们的歌'蓝色按钮外完全空白，三条待办及勾选框均未呈现，是重大指令遗漏。左侧'还剩365天'虽有显示但被截断成'还剩36/5天'两行，未能正确传达'大数字压住背景'的视觉诉求。按钮和onClick配置、渐变方向、纯文字无图等次要诉求基本满足。",
+    "aesthetic": "右侧白板与左侧渐变形成明显留白失衡：白板内部上方约2/3面积为纯白无内容，下方仅一个蓝按钮，视觉重量严重不均。'还剩365天'在fontSize 32下被强行折行为'还剩36'+'5天'，中英数字混排断词极不雅观。配色（白→浅灰→深蓝）与按钮蓝尚算协调，但整体观感因布局崩溃而显得粗陋。",
+    "layout": "截图中可观察到三处严重排版问题：(1) 左侧'还剩365天'在116px宽容器内用fontSize 32，需要约154px宽度，导致文字在'36'与'5'之间被强制换行，主指标被截断；(2) 右侧todo_panel中todo_list区域（高60）完全无内容渲染，三条Checkbox待办全部缺失，仅底部music_button可见，todo_list区域沦为空白；(3) 右侧白板因内容缺失导致上下大面积留白，与左侧形成不均衡对比。"
+  },
+  "issues": [
+    "右侧'买花/订餐厅/写情书'三条Checkbox待办在截图中完全未渲染，todo_list区域为空白",
+    "倒计时文本'还剩365天'因fontSize 32超出容器宽度，被强制折行为'还剩36'+'5天'两行，主数字被截断",
+    "右侧todo_panel因待办缺失产生大面积空白，与左侧内容密度严重不均衡",
+    "Checkbox的label/select使用对象语法`{path:'label'}`，可能与模板循环的$item引用不兼容，建议改为表达式字符串`{{ $item.label }}`",
+    "Checkbox的`mark`嵌套属性（size/strokeWidth）可能不被支持，建议移除以提升渲染兼容性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_23_countdown_457\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_23_countdown_457\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"todo_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF1F3F5\",0.5],[\"#FF0A59F7\",1]]},\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"countdown\"],\"itemMargin\":8,\"styles\":{\"width\":132,\"height\":116,\"padding\":{\"left\":10,\"right\":6,\"top\":14,\"bottom\":14},\"borderRadius\":18,\"backgroundColor\":\"#26FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.title }}\",\"styles\":{\"width\":112,\"height\":16,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.countdown }}\",\"styles\":{\"width\":116,\"height\":60,\"fontSize\":22,\"fontWeight\":800,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"todo_panel\",\"component\":\"Column\",\"children\":[\"todo_list\",\"music_button\"],\"itemMargin\":6,\"styles\":{\"width\":132,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"todo_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"todo_item\",\"path\":\"/todos\"},\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":68,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"todo_item\",\"component\":\"Checkbox\",\"label\":\"{{ $item.label }}\",\"select\":\"{{ $item.done }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":12,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#66000000\",\"shape\":\"rounded_square\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_23_countdown_457\",\"path\":\"/\",\"value\":{\"anniversary\":{\"title\":\"恋爱纪念日\",\"countdown\":\"还剩365天\"},\"todos\":[{\"label\":\"买花\",\"done\":false},{\"label\":\"订餐厅\",\"done\":false},{\"label\":\"写情书\",\"done\":false}],\"action\":{\"label\":\"播放我们的歌\"}}}}"
+  ]
+}

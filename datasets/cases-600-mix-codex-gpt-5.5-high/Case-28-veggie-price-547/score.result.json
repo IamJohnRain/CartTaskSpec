@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-28-veggie-price-547",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "截图中可见卡片完整呈现了用户要求的关键信息：左侧'今日菜价'标题、绿色'已比完'状态标签、大号'¥3.28/斤'均价数字、'均价已更新'来源说明；右侧日历图标配'日历日程'文字以及绿色'去买菜'按钮；root 与 button 双重 onClick 均正确绑定到 TaskSpec 中的 clickToDeeplink 事件。createSurface/catalogId/version/size 等协议硬约束均满足，updateDataModel 与 dataModel 完全一致。扣分点：deeplink 的 uri 指向 hwmusic 音乐 app，与用户'跳买菜app'的语义不一致（这是 TaskSpec 给出，模型无权修改），日历中 items 为空数组导致'日历里有日程'只以静态文字'日历日程'呈现，无实际日程条目。",
+    "aesthetic": "从截图看，配色采用绿色 #64bb5c 强调 CTA 与状态、中性灰白底，色彩和谐统一，绿色对白色文字对比度足够。字号阶梯 32/16/14/12 清晰、字重层次合理（价格 700、标题 700、状态 500、来源 400），只有一个最强字重（价格）。问题：内容明显集中在卡片上半部分，下方约 50% 区域为大片空白白底，导致视觉重心严重偏上、整体不均衡，削弱了精致感；日历图标在浅灰底上略显暗淡，识别度一般。",
+    "layout": "这是本卡片最突出的问题：截图中所有内容（标题行、价格、来源、日历方块、按钮）全部聚集在卡片顶部约 y=20–80 区域，而卡片总高 140，下方约 y=80–140 几乎完全是空白。根因是 root Row 用了 alignItems:center 但其子 main/side Column 的 justifyContent:center 未能将内容在 116px 高度内真正居中，导致内容贴顶、底部约 60px 空白。受保护文本（价格 ¥3.28/斤、状态已比完、按钮'去买菜'）均未被截断，组件未溢出卡片边界，无堆叠遮挡——主要扣分点就是竖向不居中、底部大面积留白，使 2x4 卡片利用率严重不足。"
+  },
+  "issues": [
+    "内容竖向未居中：root 高度 140、padding 12、内容区 116，但 main/side Column 的 justifyContent:center 未生效，截图显示内容贴顶，底部约 50% 区域为空白",
+    "deeplink uri 为 hwmusic 音乐 app，与用户'跳买菜app'意图不匹配（受 TaskSpec 约束）",
+    "data.calendar.items 为空，日历仅展示静态'日历日程'文字，无实际日程条目",
+    "日历图标在 #19000000 浅灰底上偏淡，视觉识别度一般",
+    "价格使用 formatString 函数调用绑定，虽渲染正确但可简化为直接表达式以提升兼容性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_veggie_price_547\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_veggie_price_547\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"stretch\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"main\",\"divider\",\"side\"],\"itemMargin\":10,\"styles\":{\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title_row\",\"price\",\"source\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"status_dot\",\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":176,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_dot\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"width\":4,\"height\":18,\"strokeWidth\":4,\"color\":\"#ff64bb5c\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.veggie.title }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.veggie.status }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"price\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.veggie.avgPrice }}\",\"styles\":{\"width\":176,\"height\":42,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"source\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.veggie.source }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"width\":1,\"height\":86,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"glyph_box\",\"action\"],\"itemMargin\":10,\"styles\":{\"width\":79,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_box\",\"component\":\"Column\",\"children\":[\"calendar_icon\",\"calendar_text\"],\"itemMargin\":6,\"styles\":{\"width\":79,\"height\":64,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/scheduleIcon\"},\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"日历日程\",\"styles\":{\"width\":63,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.veggie.actionText }}\",\"styles\":{\"width\":79,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_veggie_price_547\",\"value\":{\"veggie\":{\"title\":\"今日菜价\",\"avgPrice\":\"¥3.28/斤\",\"status\":\"已比完\",\"source\":\"均价已更新\",\"actionText\":\"去买菜\"},\"asset\":{\"scheduleIcon\":\"resources/base/media/icon_schedule.png\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}
