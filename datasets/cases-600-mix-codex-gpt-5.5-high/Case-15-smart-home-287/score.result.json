@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-15-smart-home-287",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户要求智能音箱卡含图、数字行、点击跳app、显示已连上。原 DSL 全部展示字段（name/statusText/visualMark/onlineCount/actionText）已通过 {{ }} 或 formatString 绑定；onClick 正确使用 eventCandidates 中的 clickToDeeplink；尺寸 2x4、catalogId、version、updateDataModel.path='/' 与 value 原样对齐。轻微偏差：用户原意'中间是个图'被实现为左侧视觉块（visual_panel 在左），属于'图片作主体'的常见左/右分栏解释，未严格落到水平居中；assetCandidates 为空时使用 'AI' 文字作占位视觉合理；onClick 同时挂在 root Row 与 Button 上略冗余但无害；metric_text 用 formatString 而非 {{ }} 拼接，属合规替代（dataModel 未提供 deviceOnlineText 字段）。",
+    "aesthetic": "配色采用浅绿底（#FFE8F5EE）+ 深绿文字（#FF0A7F42）与浅灰卡片底（#FFF7F8FA）协调，主色统一应用于视觉块、状态文字与 CTA，层次清晰。字号阶梯 40/18/14/14/14 合理，仅状态文字 fontWeight=700 最强，符合'仅保留一个最强字重'约束。留白（padding 12、itemMargin 6/8/12）疏密得当，无明显空洞或拥挤。按钮主绿描底白字，热区 96x34 接近理想 40vp，对比度足。唯一不足是按钮与文字相对居中而非贴底，缺少底部锚定感。",
+    "layout": "1) root Row（300x140，padding 12/12/12/12）：横向占用 = 12+122+12+142+12 = 300，等于卡片宽，无溢出。2) visual_panel Column（122x116，itemMargin 6）：纵向占用 = 44+6+18 = 68 ≤ 116，无溢出；'AI' 字宽 ≈ 2×0.6×40=48 ≤ 74 不截断。3) info_panel Column（142x116，itemMargin 8，justifyContent=center）：纵向占用 = 22+8+20+8+34 = 92 ≤ 116，无溢出；'已连上' ≈ 3×18=54 ≤ 142、'3台设备在线' ≈ 8.4+56+8.4=72.8 ≤ 142、'打开应用' ≈ 4×14=56 ≤ 96 全部安全。关键问题：Column 居中后按钮底边到 info_panel 底边 = 12，info_panel 在卡片内 12-128，按钮底边到卡片底边 = 140-(12+104) = 24vp，超过 2x4 规范'通常 10-14vp、不得 >16vp'的硬约束。改进版改 justifyContent=end 后按钮贴底，间距 12vp 落入合规区间。"
+  },
+  "issues": [
+    "info_panel Column 使用 justifyContent=center 导致按钮底边到卡片底边 = 24vp，超过 2x4 卡片底部动作区 ≤16vp 的硬约束",
+    "open_button fontWeight 设为字符串 'medium'，应改为 600 等数值以确保跨端渲染一致",
+    "用户原意'中间是个图'被实现为左侧视觉块而非水平居中主体（设计选择，轻微扣分）",
+    "metric_text 用 formatString 拼接，未采用 {{ }} 表达式；但因 dataModel 未提供预拼接字段，该用法为合规替代",
+    "root Row 与 open_button 同时绑定同一 onClick，存在事件冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_speaker_287\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_speaker_287\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"visual_panel\",\"info_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"visual_panel\",\"component\":\"Column\",\"children\":[\"speaker_mark\",\"device_name\"],\"itemMargin\":6,\"styles\":{\"width\":122,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#FFE8F5EE\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"speaker_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.speaker.visualMark }}\",\"styles\":{\"width\":74,\"height\":44,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#FF0A7F42\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"device_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.speaker.name }}\",\"styles\":{\"width\":98,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FF18201A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"metric_text\",\"open_button\"],\"itemMargin\":8,\"styles\":{\"width\":142,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.speaker.statusText }}\",\"styles\":{\"width\":142,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FF0A7F42\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/speaker/onlineCount}台设备在线\"}},\"styles\":{\"width\":142,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF4A524C\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.speaker.actionText }}\",\"styles\":{\"width\":96,\"height\":34,\"borderRadius\":16,\"backgroundColor\":\"#FF0A7F42\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_speaker_287\",\"path\":\"/\",\"value\":{\"speaker\":{\"name\":\"智能音箱\",\"statusText\":\"已连上\",\"visualMark\":\"AI\",\"onlineCount\":3,\"actionText\":\"打开应用\"}}}}"
+  ]
+}

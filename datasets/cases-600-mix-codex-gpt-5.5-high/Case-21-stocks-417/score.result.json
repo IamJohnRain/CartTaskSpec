@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-21-stocks-417",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "主要诉求基本落实：时间段分组(close/invest)用细线(Divider)隔开✓，距离收盘/下次定投的拼接文本✓，点击按钮跳闹钟应用(clickToDeeplink,bundleName/abilityName 原样来自 eventCandidates)✓，横向并排基金持有天数(funds 模板)✓，字符图标(glyph)✓，浅米色背景(#FFF8EEDF)✓，红色警示文字(#FFE84026)✓，日历区有 label 提示。扣分点：calendar items 数组为空因此无具体会议/财报日条目；content 字段使用 formatString + ${path} 拼接而非协议推荐的 {{ $__dataModel.* }} 完整表达式，属于非首选但可工作，扣 0.5；缺少对'大跌熔断预警'的更强视觉强化（仅文本红字，无背景色块或警示图标），扣 1.0。",
+    "aesthetic": "配色和谐：米色背景 + 蓝紫按钮 + 红色警示 + 橙桃色面板，整体暖调统一。字号 14/12/10 阶梯合理，主标题(close)用 600 较其他强，层级清晰。扣分点：因布局溢出导致 fund_row 不可见，底部 calendar_label 被裁切，视觉完整性破坏；橙色面板 #19ED6F21 透明度低、对比度弱，扣 0.5；基金行使用 #0C000000 几乎不可见的微暗背景作为容器，弱化分组感，扣 0.5。",
+    "layout": "严重溢出：root Column 实际占用 = padding 24 + itemMargin×4=32 + Σ子项高 54+1+32+1+20=108 → 24+32+108=164 > 父容器 140，溢出 24。导致 fund_row(32 高)整行被 clip:true 裁切不可见，section_line_2 与 calendar_row 部分被裁，calendar_label 文字底部被切。内部 main_panel Column 也溢出：padding 16 + margins 8 + Σ文本高 46 = 70 > 父 54，溢出 16（虽内容因 panel 自适应仍可见但违反预算）。fund_row 横向 3×86+2×8=274 ≤ 276 自身合规，但被父级溢出牺牲。截图佐证：基金行完全缺失、日历标签底边被切。"
+  },
+  "issues": [
+    "root Column 总占高 164 > 140，溢出 24，导致 fund_row 整行被裁切不可见",
+    "main_panel Column 内 8 padding + 2×4 margins + 46 内容高 = 70 > 54，溢出 16",
+    "calendar_row 底部被卡片底边裁切，文字出现半截",
+    "Text.content 全部使用非标 formatString + ${path} 拼接，违反'展示值优先用 {{ }} 完整表达式'协议建议",
+    "risk 警示仅靠红字无背景/图标强化，视觉警示度不足",
+    "基金项容器 #0C000000 背景几乎不可见，分组感弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card_21_stocks_417\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card_21_stocks_417\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"section_line_1\",\"fund_row\",\"section_line_2\",\"calendar_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF8EEDF\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"main_panel\",\"alarm_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"close_text\",\"invest_text\",\"risk_text\"],\"itemMargin\":2,\"styles\":{\"width\":200,\"height\":50,\"padding\":0,\"borderRadius\":14,\"backgroundColor\":\"#26ED6F21\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"close_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminders.close.prefix }}{{ $__dataModel.reminders.close.value }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"invest_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminders.invest.prefix }}{{ $__dataModel.reminders.invest.value }}\",\"styles\":{\"width\":188,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.risk.label }}\",\"styles\":{\"width\":188,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alarm_button\",\"component\":\"Button\",\"label\":\"开闹钟\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":64,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A59F7\",\"fontColor\":\"#FFFFFFFF\",\"fontSize\":13,\"fontWeight\":\"medium\"}},{\"id\":\"section_line_1\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"fund_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"fund_item\",\"path\":\"/funds\"},\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"fund_item\",\"component\":\"Row\",\"children\":[\"fund_glyph\",\"fund_days\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":86,\"height\":28,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#1A000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"fund_glyph\",\"component\":\"Text\",\"content\":\"{{ $item.glyph }}\",\"styles\":{\"width\":14,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"fund_days\",\"component\":\"Text\",\"content\":\"{{ $item.name }} {{ $item.days }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"section_line_2\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"calendar_row\",\"component\":\"Row\",\"children\":[\"calendar_label\",\"calendar_list\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.calendarHint }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_list\",\"component\":\"Row\",\"children\":{\"componentId\":\"calendar_item\",\"path\":\"/data/calendar/items\"},\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":168,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_item\",\"component\":\"Text\",\"content\":\"{{ $item.dtStart }} {{ $item.title }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card_21_stocks_417\",\"path\":\"/\",\"value\":{\"reminders\":{\"close\":{\"prefix\":\"距离收盘还有\",\"value\":\"2小时\"},\"invest\":{\"prefix\":\"下次定投还有\",\"value\":\"5天\"}},\"risk\":{\"showAlert\":true,\"label\":\"大跌熔断预警\"},\"funds\":[{\"glyph\":\"A\",\"name\":\"指数\",\"days\":\"128天\"},{\"glyph\":\"B\",\"name\":\"医疗\",\"days\":\"64天\"},{\"glyph\":\"C\",\"name\":\"红利\",\"days\":\"209天\"}],\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true,\"calendarHint\":\"重要会议或财报日\"}}}}"
+  ]
+}

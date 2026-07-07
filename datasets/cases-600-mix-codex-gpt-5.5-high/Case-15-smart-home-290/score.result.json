@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-15-smart-home-290",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "用户三点诉求（带数字、点一下跳app、能从日历读日程）均已落实：dateNumber='05' 通过 $__dataModel.ui.dateNumber 表达式绑定并以 32px 大字呈现；root 整体 onClick 与 openButton 均挂载 clickToDeeplink 且 call/args 原样来自 eventCandidates；scheduleIcon 引用了 resources/base/media/icon_schedule.png，nextLabel='日历日程' 与 eventList 模板（path=/data/calendar/items）已配置。尺寸 2x4（300x140）、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 与 value 原样回填等硬约束全部满足。扣 1 分因为 nextPanel 内部 eventList 因溢出未在截图中可见，影响'从日历读日程'的可视交付。",
+    "aesthetic": "配色克制专业：浅灰底 #fff1f3f5 + 蓝色强调 #ff0a59f7 + 黑灰文字层级，对比清晰可读；圆角节奏统一（22/14/20）；字号阶梯 32/14/12/14 均合规。但最强字重 700 同时出现在 dateNumber 与 eventTime 两处，违反'同一卡片只保留一个最强字重'约束，扣 0.5 分。底部 nextPanel 因溢出导致 eventItem 行缺席，视觉完整性明显受损，再扣约 2 分中的 2 分。",
+    "layout": "核心失分项：nextPanel Column 子项纵向占高 = padding.top(6) + nextLabel.h(14) + itemMargin(4) + eventList.h(23) + padding.bottom(6) = 53vp，而 nextPanel.height = 49vp，溢出 4vp，导致 eventItem（'--:--' 与 '日程同步中'）被完全裁掉，截图中仅见 '日历日程' 标签。root Column 总占高 = padding.top(10) + hero(54) + itemMargin(8) + divider(1) + itemMargin(8) + bottomRow(49) + padding.bottom(10) = 140vp，恰好等于容器高度 140，无误差余量。其他 Row/Column 预算均成立：hero Row = 48+10+218 = 276 ✓，bottomRow = 176+10+90 = 276 ✓，eventItem Row = 42+6+108 = 156 ✓。button 底边到卡底 = 14.5vp，落在 10-14vp 区间上沿。"
+  },
+  "issues": [
+    "nextPanel Column 内容需要 53vp 但 height 仅 49vp，溢出 4vp，eventList 被裁掉，'日程同步中 / --:--' 不可见",
+    "root Column 总占高 140vp 恰等于容器高度，无误差余量",
+    "最强字重 700 出现两次（dateNumber 与 eventTime），违反单卡唯一最强字重约束",
+    "eventTitle 使用 textOverflow:'clip'，与'受保护文本不得依赖 ellipsis/clip 隐藏'精神相违"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_290\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_290\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"mainDivider\",\"bottomRow\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"scheduleIcon\",\"heroText\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"scheduleIcon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"heroText\",\"component\":\"Column\",\"children\":[\"dateNumber\",\"heroTitle\"],\"itemMargin\":2,\"styles\":{\"width\":218,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"dateNumber\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.dateNumber }}\",\"styles\":{\"width\":218,\"height\":32,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"heroTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.title }}\",\"styles\":{\"width\":218,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mainDivider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"nextPanel\",\"openButton\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":49,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"nextPanel\",\"component\":\"Column\",\"children\":[\"nextLabel\",\"eventList\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":49,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"nextLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.nextLabel }}\",\"styles\":{\"width\":156,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventList\",\"component\":\"Column\",\"children\":{\"componentId\":\"eventItem\",\"path\":\"/data/calendar/items\"},\"itemMargin\":2,\"styles\":{\"width\":156,\"height\":23,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"eventItem\",\"component\":\"Row\",\"children\":[\"eventTime\",\"eventTitle\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"eventTime\",\"component\":\"Text\",\"content\":{\"path\":\"dtStart\"},\"styles\":{\"width\":42,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":{\"path\":\"title\"},\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.ui.actionLabel }}\",\"styles\":{\"width\":90,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_290\",\"value\":{\"ui\":{\"dateNumber\":\"05\",\"title\":\"今日日程\",\"nextLabel\":\"日历日程\",\"actionLabel\":\"跳转App\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"\",\"title\":\"日程同步中\",\"dtStart\":\"--:--\",\"dtEnd\":\"--:--\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

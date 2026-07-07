@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-342",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户四项诉求（勾选确认、点击导航、日历下班时间、迟到提醒）均在 DSL 中体现：carpool.title、carpool.status 状态徽章、数据.calendar.items[0]、三组 checks、StartNavigate 事件绑定 onClick 均落地，且 call/args 与 eventCandidates 完全一致。但勾选项受保护文本在渲染中已被挤掉（截图中只能看到三个圆圈和 '...'），用户'打个勾确认'的语义目的被破坏，扣分。",
+    "aesthetic": "配色（暖米色底 + 橙色徽章 + 蓝按钮）总体和谐，背景与文字对比度可读。但标题、状态徽章两处同时使用 fontWeight 800，违反'同一卡片只保留一个最强字重'规则；字号 10/12/14/16 都在阶梯上；check 面板内部元素过密、视觉上像被挤压，整体精致度不足。",
+    "layout": "逐项预算核算：①Root Column：父 padding 顶10+底10，可用 120；子项 28+54+28=110，itemMargin 8×2=16，总计 126 > 120，溢出 6vp。②title_col：父高 28，title 16 + calendar_time 12 + margin 2 = 30 > 28，溢出 2vp，calendar_time 底部被裁。③check_panel：父宽 164、padding 6+6=12、内宽 152；check_0(48)+check_1(48)+check_2(52)+4×2=156 > 152，溢出 4vp；其中 check_2 宽 52 容纳不下'通知车友'4 字×10pt+勾选框≈54-60，必然被 ellipsis 截断。④Row 横向：top_row 188+80+8=276 贴合；main_row 164+104+8=276 贴合，但子面板已溢出。综合判断：受保护的勾选标签被截断、Root 内容超出导致底部 6vp 被 clip，布局明显不达标。"
+  },
+  "issues": [
+    "Root Column 子项占用高 126 > 可用 120，整体溢出 6vp，被 clip 裁切底部",
+    "title_col 占用 30 > 28，calendar_time 副标题底部被裁 2vp",
+    "check_panel 内宽 152 被 3 个 Checkbox+margin 占 156，溢出 4vp",
+    "check_2 宽 52 不够容纳 '通知车友'（4 字×10pt≈40 + 勾选框≈14），受保护标签被省略号截断",
+    "title 与 status_badge 同时使用 fontWeight 800，违反单一最强字重规则",
+    "Button 底部到卡底边距偏小（受 Root 溢出影响），未稳定在 2x4 推荐 10-14vp 区间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_342\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_342\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"nav_button\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fffaf7f0\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_col\",\"status_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"calendar_time\"],\"itemMargin\":2,\"styles\":{\"width\":180,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.title }}\",\"styles\":{\"width\":180,\"height\":14,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.leaveHint + ' · ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":180,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#aa182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.status }}\",\"styles\":{\"width\":80,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffff9500\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"check_panel\",\"pickup_panel\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check_panel\",\"component\":\"Row\",\"children\":[\"check_0\",\"check_1\",\"check_2\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":184,\"height\":58,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check_0\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.carpool.checks[0].label }}\",\"checked\":\"{{ $__dataModel.carpool.checks[0].checked }}\",\"styles\":{\"width\":52,\"height\":46,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff182431\"}},{\"id\":\"check_1\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.carpool.checks[1].label }}\",\"checked\":\"{{ $__dataModel.carpool.checks[1].checked }}\",\"styles\":{\"width\":52,\"height\":46,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff182431\"}},{\"id\":\"check_2\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.carpool.checks[2].label }}\",\"checked\":\"{{ $__dataModel.carpool.checks[2].checked }}\",\"styles\":{\"width\":60,\"height\":46,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff182431\"}},{\"id\":\"pickup_panel\",\"component\":\"Column\",\"children\":[\"pickup_label\",\"pickup_eta\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":58,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":14,\"backgroundColor\":\"#fffff2d9\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"pickup_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.pickupName }}\",\"styles\":{\"width\":70,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff2d2d2d\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pickup_eta\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.etaText }}\",\"styles\":{\"width\":70,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffff6d00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.actionText }}\",\"styles\":{\"width\":276,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff1f6feb\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"},\"trafficpe\":\"Drive\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_342\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"work-off-20260705-001\",\"title\":\"下班\",\"dtStart\":\"18:00\",\"dtEnd\":\"18:05\",\"eventLocation\":\"公司\"}]}},\"carpool\":{\"title\":\"拼车接人\",\"status\":\"快赶不上了\",\"pickupName\":\"南山科技园\",\"etaText\":\"18:12到\",\"leaveHint\":\"下班18:00\",\"checks\":[{\"label\":\"钥匙\",\"checked\":true},{\"label\":\"工牌\",\"checked\":true},{\"label\":\"通知车友\",\"checked\":false}],\"actionText\":\"导航去接人\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

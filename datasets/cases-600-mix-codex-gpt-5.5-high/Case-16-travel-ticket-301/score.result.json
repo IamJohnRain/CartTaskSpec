@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-16-travel-ticket-301",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "用户明确要求三项能力：进入导航、读日历、快迟到提醒。当前卡片：1) 日历读取通过显示 title/eventLocation/countdownText 已落实；2) 快迟到提醒通过 statusLabel 标签和 countdownText 已落实；3) 进入导航未被落实——eventCandidates 仅提供 clickToIntent/ViewCalendarEvent，按协议不得自创新事件，但卡片未利用 /trip/navigation/dstLocation 与 trafficpe 等导航数据做导航指示（无交通方式/无导航入口提示），用户在卡片上看不到任何'可进入导航'的视觉信号，属于关键诉求缺失。协议层面 createSurface catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、width/height 140×140、updateDataModel.path='/' 数值与 TaskSpec 一致，符合硬约束；root 上同时挂 onClick 与 Button onClick 重复，不符合单一主交互原则，轻微扣分。",
+    "aesthetic": "暖色渐变（#ffb87333→#ff7a4f2b）作为行程提醒氛围合适，白色主文字对比度充足。圆角 18、Divider 弱化分层合理。但存在两处问题：1) 同一卡片出现两处 fontWeight 700（title 与 time），违反'同一卡片只保留一个最强字重'的字号阶梯规则，视觉重量冲突；2) root 整体作为可点击层与内部 Button 视觉职责重叠，CTA 主次不清。整体可用但有可优化项。",
+    "layout": "布局预算核算：root Column 宽140高140，padding 12 各方向，可用内容区 116×116；子项高度合计 top(40)+countdown(34)+divider(1)+action(28)=103，itemMargin=6×3=18，理论纵向占用 24(padding)+103+18=145 > 140，溢出 5vp。渲染截图显示 spaceBetween 实际将 13vp 剩余空间均分到 3 个 gap（约 4.33vp/个），覆盖了 itemMargin=6，视觉上未发生裁剪，但数值上不严格成立，是潜在风险。top Column 宽116高40，子项 tag(14)+title(22)+margin(2)=38≤40 OK；countdown Column 宽116高34，子项 time(18)+place(14)+margin(2)=34 OK；各 Text 字符宽度均≤116（如 '20分钟后出发'≈98vp、'去高铁站'≈64vp、'查看日程'≈56vp），无文本截断。Button 热区 28vp≥24vp OK，底部到卡片底边 12vp 在 2x2 允许 8-12vp 区间内。"
+  },
+  "issues": [
+    "1. 用户明确要求'能进入导航'，但卡片未展示任何导航指示（如交通方式、导航入口），navigation 数据未被利用，关键诉求缺失。",
+    "2. root Column 纵向预算 145 > 140，潜在溢出 5vp，依赖 spaceBetween 覆盖 itemMargin 才未触发裁剪，数值上不严格。",
+    "3. title 与 time 均为 fontWeight 700，违反'同一卡片只保留一个最强字重'规则。",
+    "4. root 与 Button 重复绑定同一 onClick，主交互职责不清。",
+    "5. 字号 14 配 height 18（time）行高偏紧，h12 配 fontSize 10（tag）也在临界。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_travel_ticket_301\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_travel_ticket_301\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"countdown\",\"nav\",\"divider\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#ffb87333\",0],[\"#ff7a4f2b\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"tag\",\"title\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"tag\",\"component\":\"Text\",\"content\":{\"path\":\"/trip/statusLabel\"},\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffe1b8\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":{\"path\":\"/data/calendar/items/0/title\"},\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown\",\"component\":\"Column\",\"children\":[\"time\",\"place\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":{\"path\":\"/trip/countdownText\"},\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place\",\"component\":\"Text\",\"content\":{\"path\":\"/data/calendar/items/0/eventLocation\"},\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav\",\"component\":\"Text\",\"content\":\"驾车导航\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffe1b8\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":{\"path\":\"/trip/actionText\"},\"styles\":{\"width\":116,\"height\":26,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff7a4f2b\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_travel_ticket_301\",\"value\":{\"trip\":{\"statusLabel\":\"快迟到提醒\",\"countdownText\":\"20分钟后出发\",\"actionText\":\"查看日程\",\"navigation\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Drive\"}},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"trip_calendar_301\",\"instanceId\":\"trip_calendar_301_0\",\"senderName\":\"calendar\",\"title\":\"去高铁站\",\"eventLocation\":\"香港西九龙站\",\"description\":\"预留导航时间\",\"dtStart\":\"15:30\",\"dtEnd\":\"16:00\",\"importantEventType\":0,\"remindTime\":[\"15:10\"],\"oneClickServiceType\":\"navigate\",\"oneClickServiceLink\":\"map://navigate/west-kowloon\",\"isServiceValid\":2,\"accountId\":1}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

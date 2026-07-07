@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-22-express-421",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户四大诉求：①整张待取清单（两件均展示）满足；②Checkbox + select.path 提供打勾交互满足；③'点一下跳快递app'未实现——但 eventCandidates 为空，按协议不得编造 onClick，故属于 TaskSpec 限制下的合理不实现；④'已取的显示已连'弱落实——仅用静态 statusText '已取显示已连' 放在底部，未在 picked=true 的项上把 label 替换/追加 '已连' 字样，也未用绿色等视觉语言突出已取项，语义对齐度不足。尺寸 2x2、catalogId、version、updateDataModel.path='/'、value 原样回填均合规。",
+    "aesthetic": "配色采用低饱和绿色渐变 #FFF1F8F3→#FFEAF6ED，温和和谐；标题 16/700 黑色、摘要 12/中等灰，层级清晰且只有一个最强字重；状态条圆角 9vp、浅灰底、低对比灰字，整体克制。但 Checkbox label 字号 12 在该列宽下造成 '丰巢柜 3...' 与 '驿站包裹...' 截断，破坏可读性与美感；状态条颜色 #66000000 灰字在 #19000000 灰底上对比偏弱。",
+    "layout": "root Column 内容预算：padding.top+bottom=24，itemMargin*2=16，header 34 + list 48 + status 18 = 100，总 24+16+100=140 恰好等于 140，root 整体未溢出。但 list 内 Checkbox label 横向预算：可用列宽 116，Checkbox 形+内边距约占 26-30，可用文本宽 ≈86；'丰巢柜 3号柜' 在 fontSize 12 下约 72-78，刚好贴边；'驿站包裹 货架B2' 含 4+1+1+1+1=8 字符宽度 ≈86-92，超出 86 → 溢出约 6vp，截图实际出现 '丰巢柜 3...'、'驿站包裹...' 截断，受保护文本（清单条目）被裁。header Column 预算 18+2+14=34，列宽 116，标题 4 字 ≈ 64 无溢出。status Text 高度 18 含 2+2 内边距字 14，'已取显示已连' 6 字 ≈ 72 居中显示未溢出。底部 status 底边到卡片底 12vp，符合 2x2 8-12vp 区间。核心扣分点：清单项 label 横向溢出 6-10vp 导致两个条目均截断。"
+  },
+  "issues": [
+    "Checkbox label 横向溢出：'丰巢柜 3号柜' 和 '驿站包裹 货架B2' 在列宽 116 - 复选框 26-30 后剩余 ≈86 的可写区下被裁为 '丰巢柜 3...' 与 '驿站包裹...'，受保护文本丢失",
+    "未实现用户 '点一下能跳快递app' 诉求：无 onClick（受 eventCandidates=[] 协议限制，但应在产品层建议补充）",
+    "'已取的显示已连' 落实弱：仅在底部放静态 statusText，picked=true 的条目未在 label 中显示 '已连'，也未用绿色等视觉语言与未取项区分",
+    "状态条字色 #66000000 在 #19000000 灰底上对比度偏低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_421\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_421\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"list\",\"status\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF1F8F3\",0],[\"#FFEAF6ED\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title\",\"summary\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":12,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"list\",\"component\":\"Column\",\"children\":[\"item_one\",\"item_two\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"item_one\",\"component\":\"Checkbox\",\"label\":\"{{ ${/items/0/name} + '·' + ${/items/0/detail} }}\",\"select\":{\"path\":\"/items/0/picked\"},\"styles\":{\"width\":116,\"height\":20,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"item_two\",\"component\":\"Checkbox\",\"label\":\"{{ ${/items/1/name} + '·已连' }}\",\"select\":{\"path\":\"/items/1/picked\"},\"styles\":{\"width\":116,\"height\":20,\"fontSize\":10,\"fontColor\":\"#FF64BB5C\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.statusText }}\",\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":11,\"backgroundColor\":\"#19000000\",\"fontSize\":10,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_421\",\"path\":\"/\",\"value\":{\"title\":\"待取快递\",\"summary\":\"2件待取\",\"statusText\":\"已取显示已连\",\"items\":[{\"name\":\"丰巢柜\",\"detail\":\"3号柜\",\"picked\":false},{\"name\":\"驿站包裹\",\"detail\":\"货架B2\",\"picked\":true}]}}}"
+  ]
+}

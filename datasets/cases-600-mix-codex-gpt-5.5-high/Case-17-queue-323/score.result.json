@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-17-queue-323",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "用户5项诉求中4项完整满足：①取号卡整体（root Column+三段布局）✓；②前面人数会变（dataModel.queue.aheadText 绑定 ✓）；③点开跳APP（root 与 Button 都带 clickToIntent，intentName/params 与 eventCandidates 严格一致 ✓）；④红字提醒快过号（#ffe84026 + 700 字重 ✓）。扣分点：calendar.title「市民服务中心取号」被截断为「市民服务...」，违反「能读日历」要求中应完整呈现日历条目的诉求。",
+    "aesthetic": "配色（#fff7f8fa 浅灰底 + #ff182431 深字 + #ffe84026 红色高亮）协调、信息层级清晰（A083 32pt 主导、次级 12pt），符合 2x2 卡片留白规范。主要瑕疵：Button 在 width:42 fontSize:14 下渲染出「...」而非「查看」（内边距挤压 28vp 文字到临界），视觉上 CTA 标识不清。",
+    "layout": "按公式逐项核算：①root Column 纵向 12+20+6+54+6+30+12=140 恰好等于父高 140，紧贴极限；②top_row 横向 40+6+56=102 ≤ 116 ✓；③ticket Column 34+4+16=54 ✓（A083 约 76.8 ≤ 116 ✓，前面3人 43.2 ≤ 116 ✓）；④bottom_row 横向 68+6+42=116 ✓，但 event_title「市民服务中心取号」8 字×12vp=96vp 远超 width:68，被 ellipsis 截断为「市民服务...」，命中受保护文本截断红线，是 D3 最大扣分项；⑤Button 文字 28vp 在 width:42-2×内边距 临界，截图实际显示「...」，可点击元素热区 42×30 满足 ≥24vp，但标签不可读。root 同时设置 justifyContent:spaceBetween 与 itemMargin:6，行为依赖引擎，存在歧义。综合 D3 判 5.5。"
+  },
+  "issues": [
+    "event_title 宽度 68 容纳不下 8 字×12vp=96vp 的「市民服务中心取号」，被截断为「市民服务...」，违反受保护文本规则",
+    "Button width:42 fontSize:14 下「查看」28vp 因内边距被压成「...」显示，CTA 标签不可读",
+    "root Column 同时使用 justifyContent:spaceBetween 与 itemMargin:6，纵向内容 104+12=116 贴满无余量，引擎行为歧义",
+    "top_row 中 time_text width:40 容纳「10:30」约 33.6vp，余量偏小；alert_text width:56 容纳「快过号」36vp 也偏紧",
+    "D2 副层级中 A083(32/700) 与 statusText(12/700) 共用 700 字重，与「同一卡片只保留一个最强字重」原则略有冲突"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_queue_323\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_queue_323\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"ticket\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ $__dataModel.data.calendar.items[0].entityId }}\"}}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"alert_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.statusText }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"right\"}},{\"id\":\"ticket\",\"component\":\"Column\",\"children\":[\"ticket_no\",\"ahead_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"ticket_no\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.ticketNo }}\",\"styles\":{\"width\":116,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ahead_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.aheadText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff5b6470\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"event_title\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff5b6470\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.actionText }}\",\"styles\":{\"width\":30,\"height\":30,\"borderRadius\":10,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ $__dataModel.data.calendar.items[0].entityId }}\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_queue_323\",\"value\":{\"queue\":{\"ticketNo\":\"A083\",\"aheadCount\":3,\"aheadText\":\"前面3人\",\"statusText\":\"快过号\",\"actionText\":\"查看\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"queue-calendar-323\",\"title\":\"市民服务中心取号\",\"dtStart\":\"10:30\",\"dtEnd\":\"10:50\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-14-commute-273",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "用户主要诉求均已落实：root Column 实现竖向堆叠；linearGradient 呈现橙红渐变环境背景（'磨砂'在协议内无 blur 能力,以渐变近似）；speed_value fontSize 20 居中大字号展示 '15km/h' 告警；nav_button 标签为 '立即导航' 且 onClick.call/args 与 eventCandidates 中唯一一项 clickToIntent+StartNavigate 完全一致；facts_row 横向并排 weather 与 remaining；红色圆形 + 白色 '!' 字符实现红感叹号警告语义。updateDataModel.path='/' 且 value 与 TaskSpec.dataModel.value 完全相同；createSurface.catalogId/size/width/height/v0.9 全部合规。扣分点：'磨砂底'语义无法精准还原；事件与字段虽全,但布局溢出/截断导致部分信息丢失,影响信息完整性观感。",
+    "aesthetic": "配色采用浅灰-琥珀-橙红渐变,呼应'低速告警/通勤黄昏'语义,前景文字黑/白对比度足;红圆+白感叹号识别度高;Button 蓝 #0a59f7 与暖色背景对比强,CTA 清晰。最强字重 speed_value fontWeight 800,其余 700/600/500 递减,符合'只保留一个最强字重'原则。扣分点:facts_row 右侧 '剩余' chip 实际渲染只显示 '剩余' 两字,'8km' 缺失,影响关键信息可读与版面美观,这是最突出的视觉瑕疵。",
+    "layout": "root Column 纵向预算:padding.top+bottom=10+10=20,itemMargin*3=6*3=18,Σ子项高=18(status_row)+36(speed_group)+28(nav_button)+26(facts_row)=108,合计=20+18+108=146>140(容器高),溢出 6vp。facts_row 横向:padding 0+0+itemMargin 6+(55+55)=116 勉强贴平,chip '剩余8km' 文本估算 ≈45.6vp + chip padding 4+4=8vp = 53.6vp,chip 宽 55vp,余量仅 1.4vp 几乎贴边,实际渲染截图证实 '8km' 被裁掉,只余 '剩余',违反'受保护文本不得被截断'硬约束。root 横向 padding 12+12+116=140 ✓;status_row 18+94+4=116 ✓;speed_group 24+12=36 ✓;Button 热区 28vp≥24vp ✓;facts_row 底到卡片底=padding.bottom 10vp ≤16vp ✓;alert_glyph 18×18 红圆 + ! 居中,符合热区。整体因 Column 溢出 + '8km' 截断两项硬性违反,排版布局评分较低。"
+  },
+  "issues": [
+    "root Column 纵向内容 146vp > 容器 140vp,溢出 6vp,导致底部 facts_row 与卡片 clip 边界贴边或被裁",
+    "facts_row 右侧 chip '剩余8km' 实际渲染只显示 '剩余','8km' 因 chip 宽 55vp 与文本+padding 53.6vp 几乎贴边而被裁,违反受保护文本不截断原则",
+    "'磨砂底' 在 A2UI 协议内无 blur 能力,仅以 linearGradient 近似,语义未充分还原",
+    "整体 padding=10、itemMargin=6 在 2x2=140vp 高度上略偏大,导致内部纵向吃紧,可下调至 8/4 释放空间",
+    "chip 背景为 #26ffffff 半透明白片,在橙红渐变上对比略弱,可考虑加深至 #40ffffff 或加细描边提升可读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_273\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_273\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status_row\",\"speed_group\",\"nav_button\",\"facts_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":150,\"colors\":[[\"#fff1f3f5\",0],[\"#fff9bc64\",0.52],[\"#ffed6f21\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"alert_glyph\",\"status_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_glyph\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":18,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ffe64566\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.statusText }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"speed_group\",\"component\":\"Column\",\"children\":[\"speed_value\",\"speed_label\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"speed_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.speedText }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"speed_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.speedLabel }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"立即导航\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}},{\"id\":\"facts_row\",\"component\":\"Row\",\"children\":[\"weather_chip\",\"distance_chip\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.weatherText }}\",\"styles\":{\"width\":56,\"height\":24,\"padding\":{\"left\":2,\"right\":2,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#40ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.remainingText }}\",\"styles\":{\"width\":56,\"height\":24,\"padding\":{\"left\":2,\"right\":2,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#40ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_273\",\"path\":\"/\",\"value\":{\"commute\":{\"speedText\":\"15km/h\",\"speedLabel\":\"当前车速\",\"statusText\":\"低速告警\",\"weatherText\":\"多云 26°\",\"remainingText\":\"剩余8km\",\"destination\":\"公司\",\"travelMode\":\"Drive\",\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"}}}}}"
+  ]
+}

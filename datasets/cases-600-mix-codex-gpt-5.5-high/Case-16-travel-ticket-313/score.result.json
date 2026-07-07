@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-16-travel-ticket-313",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "指令基本落实：3 块横向布局均存在，依次为倒计时/电量/天气；dataModel 中三个图标字段以 {{ $__dataModel.trip.*Icon }} 正确读取并以文字字符形式呈现；中间块 (battery_block) 设置 onClick=clickToIntent 且 args 严格来自 TaskSpec.eventCandidates；分隔线 Divider 存在；底部红色告警 '航班取消' 单独呈现。轻微偏离：用户口语指定 ✈️🌤🔋，dataModel 实际提供 ✈/▰/☀，DSL 正确遵循 dataModel，但 '▰' 视觉不像电池；'中间那块航班取消用红色告警' 在 DSL 中体现为'中间块整体红色+独立红色告警条'，与'把中间块直接替换为航班取消'的潜在意图有偏差。",
+    "aesthetic": "浅色底+三块彩色小面板的配色和卡片整体风格协调；标题/告警/块内文字均使用 fontWeight 700，字重一致。问题：1) 32px 宽的块文字因换行出现 '距离出/发3天'、'电量67/%'、'目的地/晴25°C' 等断词，可读性差；2) '▰' 作为电池图标在视觉上像横条而非电池图标；3) 行高未显式控制导致换行后两行贴在一起。",
+    "layout": "逐项核算：root Column 纵向占用=12+18+6+54+6+1+6+24+12=139 ≤140，仅余 1px 底部留白（底部动作区下沿距卡片底 1px，违反 8-12vp 规范）；panel Row 横向=3*36+2*4=116 等于可用宽度 116，恰好不溢出；block Column 纵向占用=5+16+2+28+5=56 > 块高 54，溢出 2px（'距离出发3天' 实宽 56 > 32 强制 2 行；'电量67%' 实宽 36 > 32 强制 2 行；'目的地晴25°C' 实宽 62 > 32 强制 2 行），受保护文本被 wordBreak 截断为难看断词；2x2 卡片底部动作区距底仅 1px 违反 8-12vp 要求。"
+  },
+  "issues": [
+    "root Column 纵向 139/140 几乎贴底，底部 alert 距卡片底边仅 1px，违反 2x2 卡片底部动作区 8-12vp 规范",
+    "块内 Column 纵向 56 > 块高 54，溢出 2px（padding top/bottom 5 + icon 16 + margin 2 + text 28 = 56）",
+    "32px 文字宽度过窄，'距离出发3天' (56px) '电量67%' (36px) '目的地晴25°C' (62px) 均被强制 2 行，断词为 '距离出/发3天' '电量67/%' '目的地/晴25°C'，可读性受损",
+    "alert h=24 文字 fontSize 14、padding 3+3，14*1.2=16.8 + 6 = 22.8 虽在 24 内但行高较紧，视觉贴边",
+    "电池图标使用 '▰'（实心方块）语义偏弱，视觉上不像电池",
+    "块内文字与块内 padding 顶部仅 5px，行高未被显式控制"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"travel_ticket_313\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"travel_ticket_313\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"panel\",\"divider\",\"alert\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF7FAFC\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"panel\",\"component\":\"Row\",\"children\":[\"count_block\",\"battery_block\",\"weather_block\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":52,\"padding\":0,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"count_block\",\"component\":\"Column\",\"children\":[\"count_icon\",\"count_text\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":52,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#FFEAF2FF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"count_icon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.countdownIcon }}\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"lineHeight\":18}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/trip/countdownText}\"}},\"styles\":{\"width\":32,\"height\":24,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\",\"wordBreak\":\"breakAll\",\"lineHeight\":12}},{\"id\":\"battery_block\",\"component\":\"Column\",\"children\":[\"battery_icon\",\"battery_text\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"trip-flight-313\"}}}],\"styles\":{\"width\":36,\"height\":52,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#FFFFE8E5\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"battery_icon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.batteryIcon }}\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"lineHeight\":18}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/trip/batteryText}\"}},\"styles\":{\"width\":32,\"height\":24,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\",\"wordBreak\":\"breakAll\",\"lineHeight\":12}},{\"id\":\"weather_block\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"weather_text\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":52,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#FFFFF4D8\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.weatherIcon }}\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFB86B00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"lineHeight\":18}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/trip/weatherText}\"}},\"styles\":{\"width\":32,\"height\":24,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF5B4A16\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\",\"wordBreak\":\"breakAll\",\"lineHeight\":12}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#FFE7EAEE\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.alertText }}\",\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#FFE84026\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"travel_ticket_313\",\"path\":\"/\",\"value\":{\"trip\":{\"title\":\"出行倒计时\",\"countdownIcon\":\"✈\",\"countdownText\":\"距离出发3天\",\"batteryIcon\":\"▰\",\"batteryText\":\"电量67%\",\"weatherIcon\":\"☀\",\"weatherText\":\"目的地晴25°C\",\"alertText\":\"航班取消\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"trip-flight-313\",\"title\":\"香港飞东京\",\"dtStart\":\"2026-07-08 09:30\",\"dtEnd\":\"2026-07-08 13:40\",\"eventLocation\":\"香港国际机场\",\"description\":\"航班取消，请进入日程详情确认改签。\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-20-notif-aggregate-387",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户三条诉求均落实：1)点击跳app——Button 上挂 onClick，call/args 原样引用 eventCandidates 的 clickToDeeplink 到设置-电池；2)天气显示——左侧 weather_panel 完整展示 weatherText '深圳 29°C' 与 weatherHint '多云'；3)提醒没电——右侧 alert_panel 用醒目橙色 status_text '电量仅剩 12%' + 建议 '请尽快充电' + 进度条 12% + CTA '打开电池'。size=2x4、root 300x140、borderRadius 22、catalogId、version、updateDataModel.path/value 均符合硬约束；DataModel 字段全部覆盖。扣 0.5 分因为 status_text fontColor='#ffed6f21' 较浅橙色在大字重下对比尚可但与 advice 灰文字层级稍弱。",
+    "aesthetic": "整体配色和谐：浅灰渐变背景 + 白色 weather 卡 + 浅橙底 alert 卡 + 纯橙 CTA，主题统一为低电量橙。层级清晰：status_text 20/800 橙色为最强字重（与 weather_value 16/800 并列，但语义主指标更突出），其他文本为 10/12/14 普通灰。圆角 18/16/22 一致，留白合适。但 alert 面板三条文字的视觉密度偏紧，title 与 status_text 之间几乎贴在一起，advice 字号 12 略小，略有土气。",
+    "layout": "按预算逐项核算：root Column 纵向 12+70+10+36+12=140 ✓；top_row 横向 0+10+96+170=276 ✓；bottom_row 横向 0+12+176+88=276 ✓；meter_area 纵向 0+10+4+16=30 ≤36 ✓；open_btn 88x36 热区合格；底部边距 12vp 合格。【溢出 1】weather_panel Column 纵向 8+14+2+22+2+16+8=72 > 70，超 2vp。【溢出 2】alert_panel Column 纵向 8+18+4+24+4+16+8=82 > 70，超 12vp，是主要扣分项，截图可见三条文字被紧密压缩，title 与 status_text 视觉上几乎贴在一起，存在受保护文本被挤压风险。weather_value '深圳 29°C' 估算宽 73.6vp 接近 76vp 边界。"
+  },
+  "issues": [
+    "alert_panel Column 纵向内容 82vp > 面板 70vp，溢出 12vp，导致 title/status_text/advice 三条受保护文本被压缩，渲染图可见字距极紧",
+    "weather_panel Column 纵向内容 72vp > 面板 70vp，轻微溢出 2vp",
+    "weather_value '深圳 29°C' 估算宽 73.6vp 接近 76vp 边界，存在贴边/截断风险",
+    "根节点 padding 12 + itemMargin 10 吃掉过多纵向空间，使 top_row 仅剩 70vp 不够容纳两面板内容",
+    "advice 字号 12 在 alert_panel 内与 status_text 20 形成 8vp 差，节奏偏跳跃"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_387\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_387\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#ffe5e5ea\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"alert_panel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":78,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"weather_label\",\"weather_value\",\"weather_hint\"],\"itemMargin\":2,\"styles\":{\"width\":92,\"height\":78,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.weatherText }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.weatherHint }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_panel\",\"component\":\"Column\",\"children\":[\"title\",\"status_text\",\"advice\"],\"itemMargin\":2,\"styles\":{\"width\":180,\"height\":78,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#19ed6f21\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":156,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.statusText }}\",\"styles\":{\"width\":156,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.advice }}\",\"styles\":{\"width\":156,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"meter_area\",\"open_btn\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"meter_area\",\"component\":\"Column\",\"children\":[\"meter_track\",\"meter_label\"],\"itemMargin\":4,\"styles\":{\"width\":180,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.level }}\",\"max\":100,\"styles\":{\"width\":180,\"height\":10,\"borderRadius\":5,\"color\":\"#ffed6f21\",\"backgroundColor\":\"#33000000\"}},{\"id\":\"meter_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.meterLabel }}\",\"styles\":{\"width\":180,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":88,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_387\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"电量提醒\",\"statusText\":\"电量仅剩 12%\",\"advice\":\"请尽快充电\",\"weatherText\":\"深圳 29°C\",\"weatherHint\":\"多云\",\"meterLabel\":\"剩余电量\"},\"battery\":{\"level\":12},\"actionText\":\"打开电池\"}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-16-travel-ticket-306",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户5项核心诉求（登机牌外观、倒计时数字、点开导航、日程同步、红色警告）均已落实：含ticket_icon图标、18分钟倒计时、StartNavigate onClick、已同步日程文字、快来不及红字。但onClick[].args被包装为{{}}表达式（latitude/longitude/trafficpe），未原样使用eventCandidates中的静态值'22.3080'/'113.9185'/'Drive'，违反'args必须原样来自eventCandidates'；route_text与gate_text的受保护文本被渲染截断，TPE与14:30两条关键信息丢失，指令落实打了折扣。",
+    "aesthetic": "红→米→白三段渐变契合登机告警主题，配色和谐、前景文字对比清晰。但countdown_text(700)、warning_text(700)、gate_text(700)三处均使用最强字重，违反'同一卡片只保留一个最强字重'的层级规则；字号阶梯基本合规（10/12/14/20），间距阶梯（2/4/8）合规，圆角与按钮质感尚可。",
+    "layout": "1) time_group Column宽68，子项route_text宽68、fontSize 10、内容'HX282 HKG > TPE'估算宽≈14×6=84px > 68px，溢出≈16px，'TPE'被裁（受保护文本）；2) info_col Column宽56，子项gate_text宽56、fontSize 14、内容'G16 14:30'估算宽≈9×8.4=75.6px > 56px，溢出≈19.6px，'14:30'被裁（受保护文本）；3) root Column内容区116，hero_row 62+itemMargin 8+bottom_row 46+padding 24=140恰好占满，无溢出；4) nav_button 52×36热区≥24vp合规，底部外框到卡片边12vp合规。两处受保护文本截断属'多处文字被裁'区间。"
+  },
+  "issues": [
+    "route_text内容'HX282 HKG > TPE'估算宽84px>容器68px，'TPE'被截断（受保护文本丢失）",
+    "gate_text内容'G16 14:30'估算宽76px>容器56px，'14:30'被截断（受保护文本丢失）",
+    "countdown_text/warning_text/gate_text三处均使用fontWeight 700，违反'同一卡片只保留一个最强字重'",
+    "onClick args使用{{}}表达式而非eventCandidates中的静态值'22.3080'/'113.9185'/'Drive'，违反'args必须原样来自eventCandidates'",
+    "textOverflow:'none'属非标准值，与maxLines:1组合在容器不足时仍被渲染截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_travel_ticket_306\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_travel_ticket_306\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#ffb3261e\",0],[\"#fffff7ed\",0.56],[\"#ffffffff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"ticket_icon\",\"time_group\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":74,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"ticket_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.ticketGlyph }}\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\",\"opacity\":0.95}},{\"id\":\"time_group\",\"component\":\"Column\",\"children\":[\"flight_text\",\"route_text\",\"countdown_text\",\"warning_text\"],\"itemMargin\":2,\"styles\":{\"width\":76,\"height\":74,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"flight_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.flightNo }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff7a1f17\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"route_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.route }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff6b7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.countdownText }}\",\"styles\":{\"width\":76,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffb3261e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.warningText }}\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe60000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"info_col\",\"nav_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"gate_text\",\"sync_text\"],\"itemMargin\":2,\"styles\":{\"width\":56,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"gate_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/trip/gate} ${/trip/boardingTime}\"}},\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff1d1b20\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sync_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.syncText }}\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff6b7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.trip.actionText }}\",\"styles\":{\"width\":52,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffe60000\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3080\",\"longitude\":\"113.9185\"},\"trafficpe\":\"Drive\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_travel_ticket_306\",\"path\":\"/\",\"value\":{\"trip\":{\"title\":\"登机牌\",\"route\":\"HKG > TPE\",\"flightNo\":\"HX282\",\"seat\":\"12A\",\"gate\":\"G16\",\"boardingTime\":\"14:30\",\"countdownText\":\"18分钟\",\"warningText\":\"快来不及\",\"actionText\":\"导航\",\"syncText\":\"已同步日程\",\"status\":\"alert\",\"destination\":{\"name\":\"香港国际机场 T1\",\"latitude\":\"22.3080\",\"longitude\":\"113.9185\",\"trafficpe\":\"Drive\"},\"calendar\":{\"synced\":true,\"entityId\":\"cal-flight-hx282-20260705\"}},\"asset\":{\"ticketGlyph\":\"resources/base/media/icon_boarding_pass.png\"},\"state\":{\"staticMock\":true,\"minutesUntilBoarding\":18,\"calendarSynced\":true}}}}"
+  ]
+}

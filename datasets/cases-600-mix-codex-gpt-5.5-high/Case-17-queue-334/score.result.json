@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-17-queue-334",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户原始指令中的'顶部大字您的检查序号:C015'未真正落实：title 使用 fontSize:12（而非 14/16+），且被 head_col 90×26 容器挤压成 2 行，未能形成'大字'的视觉权重。数据字段（dateText/weatherText/notice/items/asset）齐全，DataModel 通过 {{ $__dataModel... }} 正确读取。onClick 使用 clickToIntent + ViewCalendarEvent + hospital-check-queue-334，原样来自 eventCandidates。root shell 满足 2x2 (140×140)、borderRadius 18、clip true、catalogId/version/path 正确。createSurface + updateDataModel 满足硬约束。素材 resources/base/media/icon_schedule.png 来自 assetCandidates 并通过 /queue/asset 绑定。整体扣分主要因 '顶部大字' 这条用户明确诉求未满足。",
+    "aesthetic": "深色舞台渐变（#10131a→#4b1f16→#e84026）做得不错，红色紧迫感成立。notice 用 #ffc400 黄底 + #2b1600 深棕字，对比强烈，提示性突出。但存在两个明显问题：1）stage_glow 是一个 content 为空、backgroundColor #33ffc400 的 Text 组件，渲染后是一个可见的橙色矩形块（screenshot 中清晰可见），视觉上像占位图/未加载资源，破坏精致感；2）title 与 notice 都使用 fontWeight 800，违反'同一卡片只保留一个最强字重'原则，字重层级不清晰。icon、item 区域处理得比较克制。整体可用但有可见土气。",
+    "layout": "逐项核算如下：\n1) content Column（116×120, itemMargin 4, 4 子项预期但实际 3 子项）：top_row 42 + itemMargin 4 + item_list 35 + itemMargin 4 + notice 34 = 119 ≤ 120，险过，零误差余量。\n2) top_row Row（116×42, itemMargin 6）：icon 20 + head_col 90 + margin 6 = 116 ✓，宽度成立。\n3) head_col Column（90×42, itemMargin 2）：title 26 + meta 14 + margin 2 = 42 ✓，但 title 内 90×26 fs 12 装 2 行文字（'您的检查序号:C015' 约 105.6vp，2 行 2×16.8=33.6vp > 26vp），垂直超出 7.6+vp，受保护标题文字存在被截断/与 meta 重叠风险（screenshot 可见 '您的检查序/号:C015' 两行被压入与 meta 相邻位置）。\n4) item_list Column（116×35, itemMargin 3）：queue_item 16×2 + margin 3 = 35 ✓。\n5) queue_item Row（116×16, itemMargin 6, padding 12）：item_name 64 + item_time 34 + margin 6 + padding 12 = 116 ✓。\n6) notice Text（116×34, maxLines 2, padding 8）：文字 'CT室排队较久请提前30分钟到' 16 字符在 100vp 内分 2 行（10+6），2×12 + 8 = 32 ≤ 34 ✓。\n7) stage_glow（78×42, margin left 28 top 2）覆盖内容区上中部，stage_floor（104×22, margin left 6 top 88）覆盖 item_list 下半+notice 上半区域；由于 content 在 Stack 后置层，不直接遮挡文字，但 stage_glow 渲染为可见橙色实心矩形，视觉上像占位元素/渲染异常，遮盖了受保护的标题区域观感。\n综上：标题垂直预算违反、stack 装饰元素造成视觉占位错觉、Column 总占用 119/120 几无余量，整体布局不稳健。"
+  },
+  "issues": [
+    "title 在 90×26 容器内 fs 12 排 2 行（需 30-36vp），垂直超支 4-10vp，存在截断/与 meta 重叠风险（screenshot 已显现）",
+    "stage_glow 是 content 为空的 Text，仅靠 backgroundColor #33ffc400 渲染，呈现可见橙色矩形，视觉上像占位图",
+    "title(fontWeight 800) 与 notice(fontWeight 800) 同时使用最强字重，违反'一个最强字重'",
+    "title 字号 12 不满足用户'顶部大字'诉求，权重与字阶都不够",
+    "content Column 子项总占用 119/120，几无误差余量（item_list/notice 任何膨胀都会溢出）",
+    "stage_floor 暗色椭圆在 y=88-110 横跨 item_list 与 notice 区域，虽 content 置顶不挡文字，但视觉上破坏信息层级",
+    "字号阶梯仅 10/12 两档，缺少 14/16 等中间档，层级单调",
+    "icon 16-20vp、item 高度 16vp，受 2x2 限制可接受，但与'大字'标题同框时密度偏挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_queue_334\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_queue_334\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"stage_floor\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":150,\"colors\":[[\"#ff10131a\",0],[\"#ff4b1f16\",0.58],[\"#ffe84026\",1]]}},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"hospital-check-queue-334\"}}}]},{\"id\":\"stage_floor\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":80,\"height\":3,\"margin\":{\"left\":18,\"top\":98},\"borderRadius\":1.5,\"backgroundColor\":\"#66ffd166\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"meta_row\",\"item_list\",\"notice\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":120,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":116,\"height\":34,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"lineHeight\":16}},{\"id\":\"meta_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"meta\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.queue.asset }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"meta\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.dateText + ' ' + $__dataModel.queue.weatherText }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"queue_item\",\"path\":\"/queue/items\"},\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"queue_item\",\"component\":\"Row\",\"children\":[\"item_name\",\"item_time\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":14,\"padding\":{\"left\":6,\"right\":6,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"item_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item_time\",\"component\":\"Text\",\"content\":{\"path\":\"time\"},\"styles\":{\"width\":34,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffd166\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"notice\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.notice }}\",\"styles\":{\"width\":116,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#ffffc400\",\"fontSize\":10,\"fontWeight\":800,\"fontColor\":\"#ff2b1600\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_queue_334\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"您的检查序号:C015\",\"dateText\":\"7月5日\",\"weatherText\":\"阵雨 27℃\",\"notice\":\"CT室排队较久请提前30分钟到\",\"asset\":\"resources/base/media/icon_schedule.png\",\"items\":[{\"name\":\"CT室\",\"time\":\"14:30\"},{\"name\":\"采血\",\"time\":\"15:10\"}],\"calendarEvent\":{\"entityId\":\"hospital-check-queue-334\",\"title\":\"医院检查排队\"}}}}}"
+  ]
+}

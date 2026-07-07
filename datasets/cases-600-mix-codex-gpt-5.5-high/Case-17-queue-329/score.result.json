@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-17-queue-329",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户三条诉求均落实：背景渐变图（线性渐变 #FF7A3D14→#FFFFB34D）承载文字实现「文字叠在背景图」；root 与 button 都挂上 clickToDeeplink 事件，call/args 与 eventCandidates 完全一致实现「点一下进 App」；warningText「前面仅 1 桌」+ bg_glyph「!」感叹号圆点共同实现「快不行了提醒」。5 个 dataModel 字段（placeName/headline/numberLabel/warningText/actionText）均通过 {{path}} 绑定。size 2x4、catalogId、version、updateDataModel.path='/'' 与 value 都符合协议。无网络图、无 emoji。扣分点：内容 Row 横向预算超出（见 layout）。",
+    "aesthetic": "配色采用餐厅语义契合的暖棕→琥珀渐变，前景白色文字对比清晰，受保护文本可读性良好。字号阶梯 12/14/18/20 严格符合规范，间距 4/6/8/12/14/16 也在阶梯内。仅使用一个最强字重 700（headline/warning/number/button），place 用 500 区分层次，层级清晰。bg_glyph 「!」半透明白圆作为装饰既呼应警告语义又填补右上空白，是有想法的设计。扣分点：bg_glyph 与右侧 number/button 区域存在几何重叠，视觉上信息密度偏右。",
+    "layout": "1) 根 Stack 300x140、padding 12 合法。2) content Row 宽 276，padding left:16+right:12=28，可用于子项的横向预算 = 276-28=248vp；子项 info width 168 + itemMargin 16 + action width 80 = 264vp，超出 248vp 共 16vp，判定为 Row 横向溢出。3) button 底部到卡片底边 = root padding bottom 12 + content Row padding bottom 14 + action Column 内部 button 距底 10 = 36vp，远超 2x4 卡允许的 10-14vp（不得 >16vp），底部锚定失败。4) bg_glyph (218,26)~(276,84) 与 action Column (212,26)~(292,114) 重叠 (212,26)~(264,72)，又与 number A329 (212,36)~(292,60) 重叠，靠 Stack 层序规避（content 在最上），未发生文字截断。5) info Column 子项 16+6+24+6+26=78 ≤ 88 OK；action Column 子项 24+8+36=68 ≤ 88 OK。6) 受保护文本（headline/warning/number/button label）均 maxLines:1 + textOverflow:none，无截断。综合：横向 Row 溢出 16vp + 底部动作区悬空 36vp 是核心扣分点。"
+  },
+  "issues": [
+    "content Row 横向预算 264 > 可用 248，溢出 16vp（虽渲染器靠 flex 缩减未导致视觉截断，但严格按预算公式违规）",
+    "button 底边到卡片底边 36vp，远超 2x4 卡片允许的 10-14vp 上限（不得 >16vp），底部锚定失败",
+    "bg_glyph 与 number/button 区域存在几何重叠，虽然靠 Stack 层序规避，但视觉上信息层次略显拥挤",
+    "action Column 用 justifyContent:center 导致 button 漂浮在卡片中部偏上，未贴合底部"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_329\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_329\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_base\",\"bg_glyph\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF4E321D\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"bg_base\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":118,\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF7A3D14\",0],[\"#FFFFB34D\",1]]}}},{\"id\":\"bg_glyph\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":52,\"height\":52,\"margin\":{\"left\":214,\"top\":14},\"borderRadius\":26,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":36,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"info\",\"action\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":118,\"padding\":{\"left\":0,\"right\":0,\"top\":14,\"bottom\":4},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"place\",\"headline\",\"warning\"],\"itemMargin\":6,\"styles\":{\"width\":168,\"height\":100,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"place\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/placeName\"},\"styles\":{\"width\":168,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"headline\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/headline\"},\"styles\":{\"width\":168,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/warningText\"},\"styles\":{\"width\":116,\"height\":26,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF7A3D14\",\"backgroundColor\":\"#FFFFFFFF\",\"borderRadius\":13,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Column\",\"children\":[\"number\",\"button\"],\"itemMargin\":8,\"styles\":{\"width\":80,\"height\":100,\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"}},{\"id\":\"number\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/numberLabel\"},\"styles\":{\"width\":80,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"button\",\"component\":\"Button\",\"label\":{\"path\":\"/queue/actionText\"},\"styles\":{\"width\":80,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF7A3D14\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_329\",\"path\":\"/\",\"value\":{\"queue\":{\"placeName\":\"云庭小馆\",\"headline\":\"排队快到号\",\"numberLabel\":\"A329\",\"warningText\":\"前面仅 1 桌\",\"actionText\":\"进 App\"}}}}"
+  ]
+}

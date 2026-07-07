@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-19-photo-album-367",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户四项诉求中，'几项能打勾选'用 Checkbox 体现已选 3 项（仅单一勾选态，未表达多项可勾的交互），'显示数字'用 12 项可勾选体现，'点一下跳应用'用 Button 配 clickToDeeplink 实现。但用户明确要求'红色危险提示'，实际 alertText 字体色为 #ffed6f21（橙色），与'红色'指令直接冲突，扣 3 分；且 root Row 整体也挂载 onClick，会与 Button 重复触发，存在轻微事件冗余。",
+    "aesthetic": "白底+橙（#ffed6f21）主色，标题/数字/危险三色阶清晰，字号 16/32/14 梯度合理，字重主用 700。但危险文字使用与主品牌同色系的橙色，导致'危险'语义被弱化、警示感丢失；橙色与红色在用户心智中区分度大，违反色彩语义。整体仍属克制专业，扣分主要在危险色错用。",
+    "layout": "1) root Row 横向：12+144+12+120+12=300 ✓；纵向 12+116+12=140 ✓。2) hero Column 纵向：title 20 + itemMargin 6 + count 38 + itemMargin 6 + danger 20 = 90 ≤ 116 ✓。3) side Column 纵向：check_row 40 + itemMargin 16 + open_app 40 = 96 ≤ 116 ✓。4) hero 内 count Text 在 width=144、fontSize=32 下渲染'12 项可勾选'，字符宽度估算 0.6×32×2 + 0.4×32 + 1.0×32×4 = 179.2，溢出 144 约 35vp，截图证实末字'选'被裁，主指标受保护文本截断，严重扣分。5) danger Text 宽 103.6 ≤ 144 ✓。6) open_app 底边到卡片底 12vp ✓ 在 10-14 区间。"
+  },
+  "issues": [
+    "count Text 字号 32 在 144 宽 hero 中渲染 7 个中英混合字符总宽 ~179vp，溢出约 35vp，'选'字被裁（主指标受保护文本截断）",
+    "danger 文字使用 #ffed6f21 橙色，与用户'红色危险提示'指令不符",
+    "root Row 整体挂载 onClick 与 Button onClick 重复，会触发两次 deeplink",
+    "hero/side Column 未设 padding 但用 spaceBetween，导致纵向留白偏大（hero 26vp、side 24vp），可收紧 itemMargin 或去掉 spaceBetween",
+    "Checkbox label 使用 formatString 对象写法虽可工作，但协议更标准的是直接绑定字符串以减少渲染不确定性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_367\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_367\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"count\",\"danger\"],\"itemMargin\":6,\"styles\":{\"width\":144,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":144,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/album/selectableCount} 项可勾选\"}},\"styles\":{\"width\":144,\"height\":26,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"danger\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.alertText }}\",\"styles\":{\"width\":144,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"check_row\",\"open_app\"],\"itemMargin\":12,\"styles\":{\"width\":120,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"end\"}},{\"id\":\"check_row\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"已选 ${/album/checkedCount} 项\"}},\"select\":\"{{ $__dataModel.album.checked }}\",\"value\":\"{{ $__dataModel.album.checkValue }}\",\"styles\":{\"width\":120,\"height\":40,\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":16,\"strokeWidth\":2}}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":120,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_367\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"相册整理\",\"selectableCount\":12,\"checkedCount\":3,\"checked\":true,\"checkValue\":\"selected_album_items\",\"alertText\":\"危险：将清理原图\",\"actionText\":\"打开应用\"}}}}"
+  ]
+}

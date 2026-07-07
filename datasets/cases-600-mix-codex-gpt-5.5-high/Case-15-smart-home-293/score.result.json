@@ -1,0 +1,39 @@
+{
+  "case_id": "Case-15-smart-home-293",
+  "scores": {
+    "instruction": {
+      "score": 6.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "硬约束（2x2/catalogId/version/updateDataModel.path与value）均满足，eventCandidates 中的 clickToIntent 正确挂载在省电开关上。主要诉求基本落实：暖橙渐变、离家模式已就绪文案、动态倒计时、3个横向按钮（灯/空/帘）、省电开关、今日日程+可用面板。扣分点：1）dataModel 中三个按钮 label 被截断为「灯/空/帘」，与用户原始诉求「灯、空调、窗帘」不符；2）dinner_countdown 文本使用非标准 formatString 调用（{\"call\":\"formatString\",\"args\":{...}}）而非规范 {{ $__dataModel.dinner.countdownText }} 表达式绑定，存在运行时不解析风险；3）倒计时文本超长导致换行后内容被截/溢出。",
+    "aesthetic": "暖橙线性渐变与白色/半透面板形成合理对比，受保护文字在橙底上仍清晰。扣分点：1）room_title、away_status、agenda_status 三处均使用 fontWeight:700，违反「同一卡片只保留一个最强字重」原则；2）按钮使用 fontWeight:'medium' 字符串而非数值，类型不一致；3）saving_switch 宽 44 容纳不下 label「省电」+ 复选框 mark，从渲染看省电文字被裁掉只显示绿色对勾和「…」，标签不可读；4）status_panel 倒计时「分」字被挤到第二行，视觉割裂。",
+    "layout": "按预算公式核算：root Column 纵向 24+42+24+20+6+24=140 看似成立，但 status_panel 内部存在溢出——away_status 14 + itemMargin 2 + dinner_countdown 在 maxLines:2 下实际渲染需 2 行（10pt×1.4≈14px/行，共28px），再加 padding 8 共需 14+2+28+8=52，> status_panel.height 42，溢出 10px；该溢出向上传递导致 root Column 实际占用 24+52+24+20+6+24=150 > 140，整体超出 10px（root.clip:true 会切掉溢出的「分」字下方）。其余 Row/Column 横向均在 116 内：top_row 66+44+6=116 ✓、control_row 36×3+4×2=116 ✓、agenda_panel 54+38+8=100 ≤116 ✓。",
+    "issues_detail": []
+  },
+  "issues": [
+    "status_panel Column 子项纵向占用 14+2+28=44（倒计时 10pt 折行 2 行）> 内容可用高 34，溢出 10px",
+    "root Column 实际纵向占用 150 > 高度 140，溢出 10px，clip 会裁掉「分」字",
+    "dinner_countdown 文本宽 116（10 中×10 + 2 数×6 + 1 空×4）> 容器 100，必然换行，10pt 单行不够装下整句",
+    "dataModel 提供的 controls.label 为「灯/空/帘」缩写，与用户原意「灯/空调/窗帘」不符",
+    "dinner_countdown 使用非标准 formatString 调用绑定，建议改用 {{ $__dataModel.dinner.countdownText }}",
+    "saving_switch 宽 44 无法容纳「省电」label + 复选框 mark，label 被裁掉",
+    "room_title、away_status、agenda_status 三处均用 fontWeight 700，违反单一最强字重",
+    "按钮使用 fontWeight: 'medium' 字符串，应使用数值（500/600）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_293\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_293\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"status_panel\",\"control_row\",\"agenda_panel\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffed6f21\",0],[\"#fff9a01e\",0.62],[\"#fff7ce00\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"room_title\",\"saving_switch\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"room_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.roomTitle }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"saving_switch\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.energy.label }}\",\"select\":{\"path\":\"/energy/enabled\"},\"styles\":{\"width\":56,\"height\":22,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33ffffff\",\"fontSize\":11,\"fontColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"away_status\",\"dinner_countdown\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":38,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"away_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.awayStatus }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dinner_countdown\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.dinner.countdownText }}\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"control_row\",\"component\":\"Row\",\"children\":[\"btn_light\",\"btn_air\",\"btn_curtain\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"btn_light\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.controls.light.label }}\",\"styles\":{\"width\":36,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\"}},{\"id\":\"btn_air\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.controls.air.label }}\",\"styles\":{\"width\":36,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\"}},{\"id\":\"btn_curtain\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.controls.curtain.label }}\",\"styles\":{\"width\":36,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\"}},{\"id\":\"agenda_panel\",\"component\":\"Row\",\"children\":[\"agenda_label\",\"agenda_status\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#eeffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"agenda_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.label }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"agenda_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.agenda.statusText }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_293\",\"path\":\"/\",\"value\":{\"home\":{\"roomTitle\":\"客厅中控\",\"awayStatus\":\"离家模式已就绪\"},\"dinner\":{\"countdownText\":\"距离晚宴还有3小时28分\"},\"energy\":{\"label\":\"省电\",\"enabled\":true},\"controls\":{\"light\":{\"label\":\"灯\"},\"air\":{\"label\":\"空\"},\"curtain\":{\"label\":\"帘\"}},\"agenda\":{\"label\":\"今日日程\",\"statusText\":\"可用\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

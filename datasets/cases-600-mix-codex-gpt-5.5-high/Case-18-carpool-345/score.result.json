@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-345",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户诉求大部分落实：标题'拼车已出发'、状态徽章'已出发'、日历'09:00 会议'、按钮'去地铁'均展示到位，icon_car 与 icon_schedule 两个 asset 正确绑定，size=2x4、catalogId、version、updateDataModel.path='/'、value 等硬约束全部满足。扣分点：(1) saving_text 的 content 使用了非协议的 call 对象 {call:formatString, args:{...}}${/carpool/...}}，这是 JS 模板字符串写法，不是协议要求的 {{ ... }} 表达式形式，属于协议轻微违规；(2) 用户原话'省20块'被截断成'省20'，'块'字丢失，信息不完整。",
+    "aesthetic": "整体配色（薄荷绿 #fff3f8f5 底 + 深绿 #0a7f55 强调）协调统一，标题 18pt 加粗、状态徽章胶囊、白色日历胶囊、绿色 CTA 按钮形成清晰的视觉层级，留白与圆角处理专业。扣分点：(1) saving_text 末尾'块'字被裁切，视觉上明显残缺；(2) hero_panel 与 info_panel 中心对齐导致 saving_text 与 title/button 顶部基线不齐，对齐略不精致；(3) route_button 用 fontWeight:'medium' 非标准字重值。",
+    "layout": "逐项核算：(1) root Row 横向 = 12+12+94+10+1+10+161 = 300 ✓；(2) hero_panel Column 纵向 = 0+42+6+24+6+18 = 96 < 116 ✓；(3) info_panel Column 纵向 = 0+24+10+30+10+34 = 108 < 116 ✓；(4) meeting_row Row 横向 = 8+8+18+6+121 = 161 ✓；(5) saving_text 文本宽度 '同行3人 · 省20块' ≈ 同12+行12+3*7.2+人12+sp4.8+·4.8+sp4.8+省12+2*7.2+块12 = 96 > 容器 width 94，溢出 2vp，导致'块'字被裁切（受保护文本被截断，重扣分）；(6) status_badge'已出发'=42<72 ✓、title_text'拼车已出发'=90<161 ✓、meeting_text'09:00 会议'≈65<121 ✓、route_button'去地铁'=42<96 ✓；(7) 按钮热区 34vp ≥ 24vp ✓；(8) 底部 route_button 下沿到 root 底 ≈ (140-12-108+34) 反推 card 底内 8vp 内，符合 10-14vp 区间。"
+  },
+  "issues": [
+    "saving_text 使用 {call:formatString, args:{...}} 对象作为 content，违反 Text.content 应为字符串+{{ }} 表达式的协议规则",
+    "saving_text 文本 '同行3人 · 省20块' 估算宽度 96vp > 容器 94vp，溢出 2vp，'块' 字被裁切丢失",
+    "meeting_text 使用 {{ ... + ' ' + ... }} 字符串拼接，渲染时无空格分隔风险（实测正常，但协议不推荐）",
+    "root 整卡 onClick 与 route_button onClick 完全重复，整卡可点会与 button 热区冲突，事件目标不唯一",
+    "Button fontWeight 使用字符串 'medium'，不在数字字重阶梯内",
+    "hero_panel 与 info_panel 纵向均 center 对齐，导致 saving_text 与 title/button 顶部基线不齐"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_345\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_345\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"divider\",\"info_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff3f8f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"carpool_glyph\",\"status_badge\",\"saving_text\"],\"itemMargin\":8,\"styles\":{\"width\":94,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"carpool_glyph\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.carpoolGlyph }}\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.status }}\",\"styles\":{\"width\":72,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ff0a7f55\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"saving_text\",\"component\":\"Text\",\"content\":\"{{ '同行' + $__dataModel.carpool.riderCount + '人·省' + $__dataModel.carpool.saveAmount + '块' }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff14513b\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":96,\"strokeWidth\":1,\"color\":\"#3314513b\",\"vertical\":true}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"meeting_row\",\"route_button\"],\"itemMargin\":10,\"styles\":{\"width\":161,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.title }}\",\"styles\":{\"width\":161,\"height\":24,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ff15251f\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meeting_row\",\"component\":\"Row\",\"children\":[\"calendar_glyph\",\"meeting_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":161,\"height\":30,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_glyph\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.calendarGlyph }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"meeting_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":121,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff30473d\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"route_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.actionText }}\",\"styles\":{\"width\":96,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff0a7f55\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Bus\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_345\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"拼车已出发\",\"status\":\"已出发\",\"riderCount\":3,\"saveAmount\":20,\"route\":\"导航到地铁\",\"actionText\":\"去地铁\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"carpool-345-meeting\",\"title\":\"会议\",\"dtStart\":\"09:00\",\"dtEnd\":\"10:00\",\"eventLocation\":\"办公室\"}]}},\"asset\":{\"carpoolGlyph\":\"resources/base/media/icon_car.png\",\"calendarGlyph\":\"resources/base/media/icon_schedule.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

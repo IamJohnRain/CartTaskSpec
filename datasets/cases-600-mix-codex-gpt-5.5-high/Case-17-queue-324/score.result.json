@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-17-queue-324",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户原始指令的三大要素均已体现：餐厅信息（title/queueText/waitText）完整展示；点击动作用 onClick clickToDeeplink 实现，call/args 原样来自 eventCandidates（hww://www.huawei.com/totemweather?enterType=share&cityCode=），符合协议；天气提醒（condition='小雨'、alertText='外面下雨，记得带伞'）用黄底色块突出。assetCandidates 为空时使用纯文字视觉面板代替图片可接受。唯一轻微瑕疵：用户说'点进去看排队'，但卡片仅在底部'查看天气'按钮挂载了 click 事件（eventCandidates 也仅提供这一个），主信息面板不可点，与'点进去看排队'略有偏离；createSurface/catalogId/version/size 全部符合硬约束。",
+    "aesthetic": "深色渐变背景（#111827→#374151）专业克制；红色徽标'餐厅排队'+ 黄色雨提醒 + 白色主按钮形成清晰的视觉节奏；文字在背景上对比度足够可读。扣分点：(1) 出现 800/700/600 三种字重，未做到'只保留一个最强字重'；(2) 左侧 visual_panel 中红底白字徽标与白色文字'当前排队 18 桌'层级感略弱；(3) 字号阶梯 12/14/18 符合规范，间距 6/8/10/12 也合规，整体可用但未达精致。",
+    "layout": "逐项核算：(1) root Row 横向：12+12+itemMargin 12+(96+168)=300，等于容器 300，无溢出；纵向：12+116+12=140=容器高，无溢出。(2) visual_panel Column 纵向：padding 20+itemMargin 8*2+(24+32+22)=20+16+78=114≤116，OK，但仅余 2vp 余量；横向：10+76+10=96=容器宽，OK；问题：visual_label 内容'当前排队 18 桌'估算宽 ≈4*12+0.4*12+2*7.2+0.4*12+12=84vp > 设定的 width 76，被迫换行成两行'当前排队 18 / 桌'，信息保留但视觉略破碎。(3) info_col Column 纵向：itemMargin 6*3+(22+20+24+32)=18+98=116=容器高，spaceBetween 分布 OK；横向均 ≤168，OK；受保护字段（title/wait/alert/button）均未截断。(4) 按钮热区 96*32≥24vp，底边距卡片底 140-(12+116)=12vp，在 10-14vp 区间合规。"
+  },
+  "issues": [
+    "visual_label 文本宽 84vp > width 76，被强制换行为两行，破坏主指标'当前排队 18 桌'的视觉完整性",
+    "存在 800/700/600 三种字重，违反'同一卡片只保留一个最强字重'约束",
+    "visual_panel Column 纵向预算 114/116，余量仅 2vp，过于紧绷",
+    "info_col 内 wait_text 显示的是数据 waitText'预计等位 32 分钟'，但视觉面板 rain_badge 显示的是 weather.condition'小雨'，与'排队主题'的视觉面板存在语义混杂（雨信息在右侧更合理）",
+    "卡片未将整体设置为可点击容器，仅底部按钮可点击，与用户'点进去看排队'的措辞有偏差（受 eventCandidates 限制，可接受）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_324\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_324\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"visual_panel\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF111827\",0],[\"#FF374151\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"visual_panel\",\"component\":\"Column\",\"children\":[\"visual_roof\",\"visual_label\"],\"itemMargin\":10,\"styles\":{\"width\":96,\"height\":116,\"padding\":12,\"borderRadius\":18,\"backgroundColor\":\"#26FFFFFF\",\"borderWidth\":1,\"borderColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"visual_roof\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.restaurant.visualText }}\",\"styles\":{\"width\":72,\"height\":26,\"borderRadius\":8,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"visual_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.restaurant.queueText }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"wait_text\",\"rain_alert\",\"weather_button\"],\"itemMargin\":6,\"styles\":{\"width\":168,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.restaurant.title }}\",\"styles\":{\"width\":168,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wait_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.restaurant.waitText }}\",\"styles\":{\"width\":168,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rain_alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }} · {{ $__dataModel.weather.alertText }}\",\"styles\":{\"width\":168,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33FFC400\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFE58F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF111827\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_324\",\"path\":\"/\",\"value\":{\"restaurant\":{\"title\":\"云庭餐厅\",\"queueText\":\"当前排队 18 桌\",\"waitText\":\"预计等位 32 分钟\",\"visualText\":\"餐厅排队\"},\"weather\":{\"condition\":\"小雨\",\"alertText\":\"外面下雨，记得带伞\",\"actionLabel\":\"查看天气\"}}}}"
+  ]
+}

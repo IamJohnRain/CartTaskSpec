@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-009-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户要求'耳机连上自动弹歌单'，截图清楚呈现：左面板有'耳机已连接'与'自动推荐歌单'两行说明文字，右面板有'连接后已弹出'状态行、'每日30首'主歌单名、'为通勤节奏准备'副标题、'进入歌单'深绿色 CTA 按钮，自动化语义通过文案+状态明确传达，未退化为手动打开形式。TaskSpec 的 6 个字段全部可见且绑定到 DataModel 正确路径；onClick 的 call/args 与 eventCandidates 完全一致；size 2x4、root 300x140、borderRadius 22、clip、catalogId、version v0.9、updateDataModel.path='/' 等硬约束均满足。轻微扣分点：未使用 Image 资源（assetCandidates 为空可接受），但 '♬' 是 Unicode 音乐符号，介于纯文本与 emoji 之间，存疑。",
+    "aesthetic": "截图整体观感克制、专业：薄荷绿 (#EFF7F4) 背景 + 深一档的左面板 (#DFF1EA) 形成柔和层次，深绿 (#0A6B57) 用在主文字与 CTA 上做强调，对比度足够，文字均清晰可读。字号层级清晰——'每日30首' 用 20/700 作为唯一最强字重，状态行 12/500、说明 13/500、提示 13/400 形成梯度。留白舒适，两栏对齐整齐，圆角统一（卡片 22、面板 16、按钮 16）。扣 1.5 分原因：左面板用 '♬' 字符作为图标，视觉上略显单薄，缺少更有耳机/音乐语义感的图形元素；右侧没有装饰性元素，整体偏向极简但稍欠精致。",
+    "layout": "截图无任何元素堆叠重叠、无文字截断、无组件溢出卡片边界。左面板 (104w) + 12 itemMargin + 右面板 (160w) = 276，加上 root padding 12*2 = 300，正好填满。右栏 Column 内容总高 18+4+26+4+18+4+32=106，父高 116，justifyContent center 上下各留 5vp，视觉上垂直居中良好。CTA 按钮 108x32 落在 bottom_row 内，与歌单名左对齐，热区大于 24vp 接近 32vp，符合规范。底部按钮距卡片底边约 17vp，略超过 2x4 推荐的 10-14vp 区间（最大 16vp），是唯一的轻微违规点。Stack 未被使用，无遮挡风险。"
+  },
+  "issues": [
+    "底部按钮下边到卡片底边的间距约 17vp，略超 2x4 卡片 10-14vp 推荐区间（不得 >16vp）",
+    "左面板用 '♬' (BEAMED SIXTEENTH NOTES) Unicode 符号代替耳机图标，视觉表现力较弱，且该字符在部分字体下可能按 emoji 渲染，与协议 '禁止 emoji' 存在边界争议",
+    "右侧面板缺少装饰性视觉元素（如歌单封面缩略图占位），与'自动弹出歌单'的语义结合度可以更强"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"headphone_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"headphone_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"device_panel\",\"playlist_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#EFF7F4\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"device_panel\",\"component\":\"Column\",\"children\":[\"device_mark\",\"device_text\",\"auto_text\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#DFF1EA\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"device_mark\",\"component\":\"Text\",\"content\":\"MUSIC\",\"styles\":{\"width\":80,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#0A6B57\",\"textAlign\":\"center\",\"letterSpacing\":2,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"device_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.deviceText }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#123D35\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"auto_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.autoText }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#3A6B61\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"playlist_name\",\"song_hint\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":164,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.statusText }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#0A6B57\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlistName }}\",\"styles\":{\"width\":164,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#0E2722\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"song_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.songHint }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#5C6764\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"action_button\"],\"styles\":{\"width\":164,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.ctaText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":104,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#0A6B57\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"headphone_music_card\",\"path\":\"/\",\"value\":{\"music\":{\"deviceText\":\"耳机已连接\",\"autoText\":\"自动推荐歌单\",\"playlistName\":\"每日30首\",\"songHint\":\"为通勤节奏准备\",\"statusText\":\"连接后已弹出\",\"ctaText\":\"进入歌单\"}}}}"
+  ]
+}

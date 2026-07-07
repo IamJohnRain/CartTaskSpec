@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-03-001-v1",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.4,
+  "reasons": {
+    "instruction": "用户要求展示防沉迷卡片、每日使用进度、每日打开次数、每次平均使用时长。截图中可见：左侧蓝色面板显示'防沉迷'标题、'抖音'应用名、'1小时18分'主用量、'每日上限 2小时'以及65%的进度条；右侧显示'今日还可用42分'状态、'打开14次'、'次均5分34...'（'秒'被裁切）以及'使用设置'按钮（绑定clickToDeeplink事件）。所有用户明确点名的字段基本都呈现，事件正确绑定，size=2x4、catalogId、version、updateDataModel等硬约束全部满足。扣分点：平均时长的'秒'单位字符被裁切，信息不完整。",
+    "aesthetic": "截图整体观感良好：左侧浅蓝渐变面板与右侧白底形成清晰分区，蓝色#0A59F7作为主强调色（用量文字、进度条、CTA按钮）一致性强；字号阶梯12/14/16/20使用合理；'1小时18分'用20px加粗700作为最强字重，层级清晰。留白适中，对齐统一，文字与背景对比度足够。扣分点：右侧平均时长'次均5分34'末端被截断，破坏了该单元格的视觉完整性。",
+    "layout": "截图中明确观察到右侧'平均时长'对应的数值文本'次均5分34秒'被裁切，最后一个'秒'字不可见，呈现为'次均5分34'。原因：avg_value容器width=68，而'次均5分34秒'在fontSize=14下约需81vp，超出容器宽度约13vp，textOverflow='none'下右端被裁切。这是用户明确要求展示的关键数据字段被截断。其余布局：左面板与右列宽度分配合理（各132vp），无元素堆叠重叠，进度条完整显示，CTA按钮热区32vp达标且居中良好，仅'秒'被裁切这一处明显问题。"
+  },
+  "issues": [
+    "右侧'平均时长'数值'次均5分34秒'在avg_value(width=68)中被裁切，最后一字'秒'不可见",
+    "建议改用更短的数据字段averageDuration('5分34秒')以避免裁切，并提升语义清晰度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_03_001_anti_addiction\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_03_001_anti_addiction\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"usage_panel\",\"detail_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"usage_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"app_text\",\"usage_text\",\"limit_text\",\"usage_progress\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#FFE8F0FF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"app_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.appName }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usage_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.todayUsage }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"limit_text\",\"component\":\"Text\",\"content\":\"{{ '每日上限 ' + $__dataModel.antiAddiction.dailyLimit }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usage_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.antiAddiction.progress }}\",\"total\":100,\"styles\":{\"width\":116,\"height\":8,\"type\":\"linear\",\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#330A59F7\",\"borderRadius\":4}},{\"id\":\"detail_col\",\"component\":\"Column\",\"children\":[\"status_text\",\"count_row\",\"avg_row\",\"setting_button\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.statusText }}\",\"styles\":{\"width\":132,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_row\",\"component\":\"Row\",\"children\":[\"count_label\",\"count_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":132,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"count_label\",\"component\":\"Text\",\"content\":\"打开次数\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.openCountText }}\",\"styles\":{\"width\":68,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"avg_row\",\"component\":\"Row\",\"children\":[\"avg_label\",\"avg_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":132,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"avg_label\",\"component\":\"Text\",\"content\":\"平均时长\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"avg_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.averageDuration }}\",\"styles\":{\"width\":68,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_03_001_anti_addiction\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"appName\":\"抖音\",\"title\":\"防沉迷\",\"todayUsage\":\"1小时18分\",\"dailyLimit\":\"2小时\",\"progress\":65,\"progressText\":\"65%\",\"openCount\":14,\"openCountText\":\"打开14次\",\"averageDuration\":\"5分34秒\",\"averageDurationText\":\"次均5分34秒\",\"statusText\":\"今日还可用42分\",\"actionText\":\"使用设置\"}}}}"
+  ]
+}

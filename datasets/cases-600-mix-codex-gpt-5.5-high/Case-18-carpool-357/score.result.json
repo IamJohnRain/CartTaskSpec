@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-357",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.7,
+  "reasons": {
+    "instruction": "硬约束层面（size 2x2、root 140×140、borderRadius 18、catalogId、version、updateDataModel 原样）均正确落实。天气面板、司机倒计时面板、橙字提醒 '司机未现身'、天气面板的 clickToDeeplink 事件与 eventCandidates 完全一致。但是用户明确要求的'明天匹配到的几个顺路车友按时间纵向列出 + 每行打勾确认'，在渲染截图中完全不可见：List 模板（componentId='rider_item', path='/carpool/riders'）未渲染出任何 item，也看不到 Checkbox 勾选行；且原 Gradient 配色 #564af7→#317af7 更偏中紫到中蓝，与用户要求的'深紫到深蓝'有差距；用户要求的 ⏰🚗🌧 文字符因协议禁止 emoji 未能体现（按协议处理合理，但用户主观诉求未实现）。",
+    "aesthetic": "两块小面板用 #19ffffff 半透明白底在渐变上比较克制，主指标（小雨、4分钟）字重 700 与标签字重 400 形成层级，警示橙 #ffed6f21 在深色底上对比度好。但卡片下半部大片留白（List 区域未渲染），造成视觉上'头重脚轻'，原本应承载 2 条车友勾选行的位置变成空白；渐变色饱和度偏高、不够'素净'，离'简洁素净'的设计感有距离。",
+    "layout": "Root Column（140×140，padding 12+12=24，content 116×116）子项纵向占用 = top_panels(40) + itemMargin(2) + warning(16) + itemMargin(2) + rider_list(56) = 116，等于可用高度 116，本身预算成立。top_panels Row（宽 116）：children 宽度 56+56 + itemMargin 4 = 116，正好填满，未溢出。weather_panel / driver_panel Column：padding 8 + label 14 + itemMargin 2 + value 16 = 40，等于面板高度 40，成立。问题集中在 List 渲染层：rider_list List（高 56）内模板未能生成任何 rider_item，截图显示整片空 gradient 背景，等同于 List 占位但内容缺失；又因 List 模板 path='/carpool/riders' 与 Checkbox 用 'label':{'path':'label'} 把 label 当数据路径绑定，协议规范 Checkbox.label 应为静态文本，该用法不合法导致 item 不渲染。CheckBox width:116+height:24 也使 rider_item 内部控件过宽，与 List 模板 row 高度 26 仅差 2，过紧。综上根级预算成立但功能上 List 内容丢失，布局完整性实际降级。"
+  },
+  "issues": [
+    "rider_list List 在渲染截图中完全未渲染任何 item，整个下半区域为空白 gradient",
+    "List 模板 children 用 {componentId, path} 形式，Checkbox 又用 label:{path:'label'} 当数据路径绑定，与协议 Checkbox.label 应为静态文本的规范冲突，致模板无法产出可视项",
+    "渐变配色 #564af7→#317af7 偏中紫中蓝，未达到用户要求的'深紫到深蓝'夜间基调",
+    "weather_panel / driver_panel 实际有效文本宽度仅 48，但 child 文本宽度声明 48，对 2 字中文如'小雨'够用，但 '18°/24°' 等更长字段将贴边",
+    "⏰🚗🌧 文字符诉求与协议禁止 emoji 冲突，模型未在内容/可读性上做替代设计（如符号前缀）",
+    "CheckBox 样式 width:116 + row 高度 26，仅给 mark 留 2 高度余量，mark.size=12 时热区偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_357\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_357\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_panels\",\"warning\",\"rider_list\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#1f0a4a\",0],[\"#0a1a5a\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_panels\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"driver_panel\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"weather_label\",\"weather_value\"],\"itemMargin\":2,\"styles\":{\"width\":56,\"height\":38,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":48,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.daily[0].condition }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"driver_panel\",\"component\":\"Column\",\"children\":[\"driver_label\",\"driver_value\"],\"itemMargin\":2,\"styles\":{\"width\":56,\"height\":38,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"driver_label\",\"component\":\"Text\",\"content\":\"司机\",\"styles\":{\"width\":48,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"driver_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.driver.countdownText }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.driver.warningText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rider_list\",\"component\":\"Column\",\"children\":[\"rider1_row\",\"rider2_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"rider1_row\",\"component\":\"Row\",\"children\":[\"rider1_check\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"rider1_check\",\"component\":\"Checkbox\",\"label\":\"19:10 林 一起拼\",\"value\":\"rider_1\",\"group\":\"carpool_riders\",\"select\":{\"path\":\"/carpool/riders/0/confirmed\"},\"styles\":{\"width\":116,\"height\":24,\"fontSize\":12,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}}},{\"id\":\"rider2_row\",\"component\":\"Row\",\"children\":[\"rider2_check\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"rider2_check\",\"component\":\"Checkbox\",\"label\":\"19:18 周 待确认\",\"value\":\"rider_2\",\"group\":\"carpool_riders\",\"select\":{\"path\":\"/carpool/riders/1/confirmed\"},\"styles\":{\"width\":116,\"height\":24,\"fontSize\":12,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_357\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"18°C\",\"condition\":\"小雨\"},\"daily\":[{\"date\":\"2026-07-06\",\"weekday\":\"周一\",\"condition\":\"小雨\",\"temperatureRangeText\":\"18°/24°\",\"rainProbabilityPercent\":\"65%\"}],\"updatedAt\":\"2026-07-05 20:00\"}},\"carpool\":{\"driver\":{\"countdownText\":\"4分钟\",\"warningText\":\"司机未现身\"},\"riders\":[{\"id\":\"rider_1\",\"label\":\"19:10 林 一起拼\",\"confirmed\":true},{\"id\":\"rider_2\",\"label\":\"19:18 周 待确认\",\"confirmed\":false}]}}}}"
+  ]
+}

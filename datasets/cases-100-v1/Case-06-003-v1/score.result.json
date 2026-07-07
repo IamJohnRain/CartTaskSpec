@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-06-003-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "截图中清晰呈现了用户要求的所有核心信息：标题'整机储存'、副标题'空间占用'、超大主指标'75%'、底部详情'总 512GB / 已用 386GB'、进度条按 75% 填充以及'储存设置'CTA 按钮。onClick 事件 call 与 args 原样来自 eventCandidates，updateDataModel.path 为 '/'，value 与 TaskSpec.dataModel.value 完全一致。尺寸 2x2、catalogId、version 等硬约束均满足，协议合规。仅极微瑕疵是用户提到'内存清理'语义，但卡片实际是'整机储存空间'展示（TaskSpec 即如此），渲染与契约一致，不扣分。",
+    "aesthetic": "截图整体观感克制专业：浅灰底 (#FFF6F8FA) 配单一蓝色主色 (#FF0A59F7)，主指标 75% 在视觉上最强、标题次之、辅助灰字层级清晰，标题与按钮均使用接近唯一的强字重。进度条、按钮圆角统一，留白密度合理，对齐工整，无明显土气或不协调处。",
+    "layout": "截图显示无任何元素堆叠、重叠或被裁切：标题'整机储存'与'空间占用'在同一行内左对齐与右对齐清晰；'75%'居中显示完整；进度条下方紧接'总 512GB / 已用 386GB'两段文字无截断；'储存设置'按钮完整可见。按列布局核算总占用约 138vp（父高 140vp），余 2vp 留底，底部动作区底边到卡片底边约 12vp（合规）。唯一可挑剔的是内容纵向排布略紧，但截图观感仍干净。"
+  },
+  "issues": [
+    "纵向排布略紧：Column 子项累计 ~138vp，仅余 2vp 安全余量，对不同字号渲染差异敏感",
+    "标题与百分比均使用 fontWeight 700，最强字重未做到完全唯一（视觉上仍以 28pt 百分比为最强，副作用不大）",
+    "进度条与上方百分比之间间距仅为 itemMargin(4)，视觉上略拥挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_06_003_storage_clean\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_06_003_storage_clean\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"percent_text\",\"storage_progress\",\"detail_row\",\"settings_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"top\":10,\"right\":12,\"bottom\":8,\"left\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF6F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.title }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.subtitle }}\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"percent_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.usedPercentText }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":26,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"storage_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.storage.usedPercent }}\",\"total\":100,\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":4,\"borderRadius\":2,\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#1F0A59F7\"}},{\"id\":\"detail_row\",\"component\":\"Row\",\"children\":[\"total_text\",\"used_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"total_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.totalText }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.storage.usedText }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"settings_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.storage.settingsText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_06_003_storage_clean\",\"path\":\"/\",\"value\":{\"data\":{\"storage\":{\"title\":\"整机储存\",\"subtitle\":\"空间占用\",\"totalText\":\"总 512GB\",\"usedText\":\"已用 386GB\",\"usedPercent\":75,\"usedPercentText\":\"75%\",\"settingsText\":\"储存设置\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

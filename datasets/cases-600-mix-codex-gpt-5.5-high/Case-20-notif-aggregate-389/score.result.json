@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-20-notif-aggregate-389",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户要求做一个点一下能进入系统操作的卡片。原 DSL 完整使用了 4 个 dataModel 字段（status/title/hint/actionText），并把 eventCandidates 中的 clickToDeeplink 原样挂载在 root.onClick，整张 140x140 区域均可点击触发系统操作，size=2x2、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 与 value 一一吻合等硬约束全部满足。assetCandidates 为空、未发明事件与参数，事件落实正确。轻微扣分：actionText 使用 Text 而非 Button，CTA 视觉暗示偏弱，整张卡点击区过大但缺乏明确动作锚点。",
+    "aesthetic": "配色为浅灰底 #fff1f3f5 + 蓝色 pill #ff0a59f7 + 同色 CTA，色系统一和谐，蓝色文字在浅灰底上对比度清晰，黑/灰文字层级合理。问题：status、title、action 三处同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'约束；justifyContent:spaceBetween 造成 content 与 action 之间出现明显空洞，2x2 卡片视觉密度偏疏，整体偏空。",
+    "layout": "Root Column：父 padding 12+12=24，itemMargin 8×(3-1)=16，子项 height 之和 24+48+18=90，纵向占用 24+16+90=130 < 父 height 140，未溢出。Content Column：itemMargin 4×1=4，子项 height 22+18=40，纵向占用 4+40=44 < 父 height 48，未溢出。横向所有子项 width（58/116/116/116）均 ≤ 内容区 116，无溢出。底部 action 文字底边 y=140-12=128，距卡片底边 12vp，处于 2x2 推荐区间 8-12vp 内。受保护文本均设 textOverflow:'none'，未触发 ellipsis/clip。唯一小瑕疵是中部留白偏大。"
+  },
+  "issues": [
+    "action 使用 Text 而非 Button，CTA 视觉暗示偏弱，热区仅 18vp（<24vp 推荐值）",
+    "status、title、action 三处同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'约束",
+    "justifyContent:spaceBetween 造成 content 与 action 之间留白过多，2x2 视觉密度偏疏"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_389\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_389\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status\",\"content\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://agenda/today?source=card389\"}}]},{\"id\":\"status\",\"component\":\"Text\",\"content\":{\"path\":\"/system/status\"},\"styles\":{\"width\":58,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":{\"path\":\"/system/title\"},\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":{\"path\":\"/system/hint\"},\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":{\"path\":\"/system/actionText\"},\"styles\":{\"width\":116,\"height\":28,\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://agenda/today?source=card389\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_389\",\"path\":\"/\",\"value\":{\"system\":{\"status\":\"待处理\",\"title\":\"系统操作\",\"hint\":\"查看通知与日程\",\"actionText\":\"点按进入\"}}}}"
+  ]
+}

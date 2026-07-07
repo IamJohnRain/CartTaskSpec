@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-03-008-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图清晰呈现了用户要求的全部信息：标题\"防沉迷管控\"、核心状态\"到时锁屏\"（红色加粗突出\"锁屏\"动作语义）、生效时间\"21:30 生效\"、以及可点击的\"家长设置\"按钮——完全回应了用户\"到时间锁屏就行别只做计时器\"的诉求，按钮带 onClick 跳转到家长控制设置页（call/args 与 eventCandidates 完全一致）。dataModel 四个字段全部正确绑定，size 2x2、root 140x140、borderRadius 18、clip:true、catalogId/version/updateDataModel.path/\"\\/\" 全部满足硬约束，无协议违规。",
+    "aesthetic": "截图中浅灰底（#FFF7F8FA）与红色\"到时锁屏\"主信息、蓝色\"家长设置\"按钮形成清晰的视觉层级，色彩和谐且语义合理（红色=警示/限制，蓝色=可点击操作）。字重仅在 status 700 处最强，title 500、次级文本 400，层级克制。留白舒适，对齐统一。略微可改进：底色偏冷灰与暖红对比稍强，若有渐变或柔和背景会更精致，但整体已属专业可用。",
+    "layout": "截图显示四个元素自上而下竖直排布，全部完整可见、无截断、无堆叠：title（18）+ status（28）+ time（18）+ button（32）+ 三个 itemMargin 6 共计 114vp，落在 116vp 内容区内（pad 12），底部距卡片底边约 14vp，处于 8-16vp 合理区间。按钮 32vp 热区充足，文字\"家长设置\"未出现 ellipsis，红色状态\"到时锁屏\"4 字在 20pt 完整呈现，无遮挡。Stack 未被使用，关键文本/CTA 全部安全。"
+  },
+  "issues": [
+    "内容整体偏卡片顶部（14vp 底距），可通过 justifyContent:center 让 116vp 内容居中以获得更平衡的视觉重量",
+    "title 与 status 之间 itemMargin=6 略紧，红色大字号与标题之间呼吸感可加强",
+    "缺少可识别的视觉锚点（如左侧色条/图标），仅靠配色区分类别，但 assetCandidates 为空、禁止 SVG/emoji，受协议限制可理解"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_03_008_anti_addiction_control\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_03_008_anti_addiction_control\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"lock_time_text\",\"setting_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.statusText }}\",\"styles\":{\"width\":116,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lock_time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.lockTimeText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_03_008_anti_addiction_control\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"防沉迷管控\",\"statusText\":\"到时锁屏\",\"lockTimeText\":\"21:30 生效\",\"actionText\":\"家长设置\"}}}}"
+  ]
+}

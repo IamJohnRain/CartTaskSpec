@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-344",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户四项明确诉求全部落实：拼车导航标题、日历日程 09:00 客户会议、目的地 会展中心A馆、迟到提醒 '我快赶不上了'、按钮 '导航' 触发 clickToDeeplink 且 call/args 与 eventCandidates 完全一致。size=2x4、catalogId=ohos.a2ui.extended.catalog、root 300x140、borderRadius=22、clip=true、padding=12、updateDataModel.path='/' 与 value 等硬约束均满足。dataModel 字段全部以 {{ $__dataModel.carpool.* }} 表达式绑定。轻微扣分：'medium' 字符串字重与多重字重（700/500/400/medium）共存的非标写法。",
+    "aesthetic": "橙色 135° 渐变（#fff48c00→#ffffb74d）与白色文字对比清晰，倒计时药丸与按钮采用反色填充，视觉层次合理。字号阶梯 18/16/14/12 都在规定档位上，行/列间距 8/4/2 也合规。主要扣分：fontWeight 出现 700/500/400 与字符串 'medium' 共存，违反'只保留一个最强字重'的规范（最强 700 出现在 title/destination/remainingText/button 四处，未做差异化），整体略缺克制感。",
+    "layout": "逐项预算核算：(1) 根 Column 子项总高 42+34+34=110、itemMargin 8×2=16、padding 24，纵向占用 24+16+110=150 > 可用 140，溢出 10vp，违反根容器预算。(2) bottom_row 底边位于 y=12+42+8+34+8+34=138，卡片底边 140，底部锚定仅 2vp，违反 2x4 卡片 10–14vp 的要求（差 8vp）。(3) dest_row 内部 destination 18 + warning 14 + itemMargin 4 = 36 > dest_row 高度 34，溢出 2vp。(4) 其余 top_row(174+86+8=268<276)、title_block(22+16+2=40<42)、bottom_row(150+104+8=262<276) 横向均合格。受保护文本未使用 ellipsis/clip 隐藏策略正确，但容器级硬性溢出仍属严重排版失分点。"
+  },
+  "issues": [
+    "根 Column 纵向总占用 150 > 内容区 116（实为 140-24=116）即按整体 140 计也溢出 10vp",
+    "底部动作区 bottom_row 底边距离卡片底仅 2vp，远小于 2x4 规范要求的 10–14vp",
+    "dest_row 内部 18+14+4=36 超出自身 34 高度 2vp",
+    "fontWeight 同时使用 700/500/400 与字符串 'medium'，'medium' 不在数字字重阶梯上",
+    "最强字重 700 在 title、destination、remainingText、action 四处重复，层级感削弱",
+    "time_pill padding top/bottom 6 + 字号 14 已使药丸高度 26，但显式 height=30 偏大，加剧顶层挤压"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_344\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_344\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"dest_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff48c00\",0],[\"#ffffb74d\",1]]},\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_block\",\"time_pill\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_block\",\"component\":\"Column\",\"children\":[\"title\",\"schedule\"],\"itemMargin\":4,\"styles\":{\"width\":174,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.title }}\",\"styles\":{\"width\":174,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.schedule }}\",\"styles\":{\"width\":174,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.remainingText }}\",\"styles\":{\"width\":86,\"height\":28,\"padding\":{\"left\":10,\"right\":10,\"top\":5,\"bottom\":5},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#fff48c00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dest_row\",\"component\":\"Column\",\"children\":[\"destination\",\"warning\"],\"itemMargin\":2,\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"destination\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.destination }}\",\"styles\":{\"width\":276,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.warning }}\",\"styles\":{\"width\":276,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#fffef3df\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"depart_time\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"depart_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.departTime }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.actionText }}\",\"styles\":{\"width\":104,\"height\":32,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#fff48c00\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.app.MapsAbility\",\"uri\":\"maps://navigation?destination=会展中心A馆\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_344\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"拼车导航\",\"schedule\":\"09:00 客户会议\",\"destination\":\"会展中心A馆\",\"departTime\":\"08:45 出发\",\"warning\":\"我快赶不上了\",\"remainingText\":\"剩12分钟\",\"actionText\":\"导航\"}}}}"
+  ]
+}

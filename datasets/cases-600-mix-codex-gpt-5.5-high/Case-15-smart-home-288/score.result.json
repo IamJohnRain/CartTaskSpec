@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-15-smart-home-288",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "用户4点诉求均落实：1)开关卡片 2x4 尺寸正确(width:300/height:140, borderRadius:22, clip:true)；2)按钮可点，onClick.call='clickToDeeplink'，args.bundleName/abilityName/uri 完全原样来自 eventCandidates；3)显示一行带数字的话——connection_line 用 formatString 输出'已连接 3 台设备'，路径 /home/connectedCount 可从 dataModel 推导；4)能看已连接——status_label 与 connection_line 都展示了 connectionLabel。dataModel.value 原样回填,version 'v0.9' 与 catalogId 'ohos.a2ui.extended.catalog' 均正确。唯一瑕疵：status_dot 内容 '●'(U+25CF)属几何符号而非典型 emoji,边界可接受,但不够理想；最强字重 700 出现在 status_dot / device_name / open_button 三处,违反'同一卡片只保留一个最强字重'规则,扣 1.0。",
+    "aesthetic": "配色合法:浅灰底 #fff1f3f5 + 绿色 #ff64bb5c 强调 CTA,和谐专业;字号阶梯 12/14/20 在规范内,层级清晰(标题 20 为主,状态 14/12 为辅);圆角 22/20/12 一致性好;但出现 3 处 fontWeight:700(status_dot 圆点、device_name 标题、open_button 按钮),违反'只保留一个最强字重'的层级规则,标题的视觉主导被稀释,扣 1.5-2.0。留白与对齐良好,无明显空洞。",
+    "layout": "逐项核算:① root Column 实际占用 12(padding-top)+12(padding-bottom)+10(itemMargin)+78(top_row)+24(connection_line)=136 ≤ 140(根高),内容区 116 容纳 78+10+24=112 < 116,无溢出;② top_row Row 横向 178+12+86=276 = 容器 276,贴合无溢出;③ left_panel Column 纵向 0+0+4*2+18+24+18=68 < 78,纵向有 10vp 余量;④ status_row Row 横向 12+6+80=98 < 178,宽松;⑤ connection_line 文字 7 个汉字 14px≈98,远小于内宽 256。无截断,无堆叠,无遮盖;按钮热区 86x40 ≥ 40vp 理想值;连接线到卡底 12vp,落在 2x4 推荐 10-14vp 区间。整体排版稳健。"
+  },
+  "issues": [
+    "fontWeight:700 出现 3 处(status_dot / device_name / open_button),违反'同一卡片只保留一个最强字重'规则,弱化主标题层级",
+    "status_dot 使用 Unicode 字符 '●'(U+25CF)作图标,虽非典型 emoji 但视觉表达力有限,资产完全为空时可考虑用更可识别的形式",
+    "connection_line 使用 formatString 函数调用形式而非常规 {{ $__dataModel.home.connectedCount }} 表达式,虽结果正确但偏离推荐写法",
+    "open_button 圆角 20 与 root 圆角 22 不在同一阶梯(20 vs 22),可统一到 20 简化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"smart_home_switch_288\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"smart_home_switch_288\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"connection_line\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"open_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":78,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"status_row\",\"device_name\",\"state_text\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":78,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"status_dot\",\"status_label\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":178,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_dot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":12,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"status_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.connectionLabel }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"device_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.deviceName }}\",\"styles\":{\"width\":178,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.switchState }}\",\"styles\":{\"width\":178,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":86,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}},{\"id\":\"connection_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"已连接 ${/home/connectedCount} 台设备\"}},\"styles\":{\"width\":276,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#19000000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"smart_home_switch_288\",\"path\":\"/\",\"value\":{\"home\":{\"deviceName\":\"客厅总开关\",\"switchState\":\"当前已开启\",\"connectionLabel\":\"已连接\",\"connectedCount\":3},\"action\":{\"label\":\"打开应用\"}}}}"
+  ]
+}

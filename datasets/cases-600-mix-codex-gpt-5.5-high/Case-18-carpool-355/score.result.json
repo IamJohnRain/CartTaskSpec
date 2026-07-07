@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-18-carpool-355",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.0,
+  "reasons": {
+    "instruction": "结构上满足用户所有诉求：root 纵向 Column 串接到达文本/天气面板/告警/按钮行；formatString 正确拼接 '距离司机到达还有 ${arrivalMinutes} 分钟'；contact_button 上 onClick 正确使用 eventCandidates 中的 clickToCallPhone(13800138000)；红色告警色块用 backgroundColor 实现无图；catalogId/size 协议正确。但受保护文本 '8 分钟' 与按钮 '联系司机/取消拼车' 均被截断，动态拼接结果不完整，按钮文案 '联.../取...' 形同丢失，核心信息兑现不完整，扣分明显。",
+    "aesthetic": "配色：白底+红色告警+蓝色主按钮+灰白次按钮，搭配协调，信息层级清晰，单一最强字重（700）合理。但中间 weather_panel 内容互相挤压：'天气' 与 '小雨 28°C' 文字明显叠在一起（截图可见 '天紦' 重影），破坏面板观感；按钮被截成单字 + 省略号也严重影响美观。",
+    "layout": "逐项预算核算：(1) root Column 纵向：padding 12+12=24 + itemMargin×3=18 + Σ子项高(20+32+18+28=98) = 140，刚好等于 140，root 不溢出；(2) arrival_text 单行 width 116 容纳 '距离司机到达还有 8 分钟'（10 中文×14 + 1 数字×0.6×14 + 2 空格×0.4×14 = 159.6），容器 116，溢出 43.6，且 maxLines:1 + textOverflow:none 仍被截断，受保护主信息 '8 分钟' 丢失；(3) weather_panel 子项占高 = 5+5(padding) + 2(itemMargin) + 10(title) + 16(value) = 38，容器 32，溢出 6，子项竖向堆叠导致 '天气' 与 '小雨 28°C' 文字重叠；(4) action_row 横向：55+6+55=116 等于 116 不溢出，但 '联系司机'(4×12=48) 在 55 宽按钮内（默认内边距后可用约 39）放不下，被截为 '联...'，'取消拼车' 同理截为 '取...'，两个 CTA 文案被裁。三处关键受保护文本裁剪/堆叠，布局严重失败。"
+  },
+  "issues": [
+    "arrival_text: '距离司机到达还有 8 分钟' 在 fontSize 14 + width 116 下需宽 159.6，溢出 43.6，'8 分钟' 被截断，丢失用户最关心的动态拼接部分",
+    "weather_panel: 内容实际占高 38（padding 10 + itemMargin 2 + title 10 + value 16），容器 height 32，溢出 6，title 与 value 在面板内竖向重叠",
+    "contact_button: '联系司机' 4×12=48，button width 55 被默认内边距挤压后只能显示 '联...'，CTA 文案被截",
+    "cancel_button: '取消拼车' 同理被截为 '取...'，CTA 文案被截",
+    "maxLines:1 + textOverflow:none 同时设置与实际渲染行为冲突，引擎仍按 ellipsis 截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_355\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_355\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"arrival_text\",\"weather_panel\",\"alert_text\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"borderWidth\":1,\"borderColor\":\"#1aff3b30\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"arrival_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"距离司机到达还有 ${/carpool/arrivalMinutes} 分钟\"}},\"styles\":{\"width\":120,\"height\":30,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff1f1f1f\",\"textAlign\":\"center\",\"maxLines\":2,\"lineHeight\":15,\"textOverflow\":\"none\"}},{\"id\":\"weather_panel\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_value\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#fff4f8fb\",\"borderWidth\":1,\"borderColor\":\"#223f7fbf\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":24,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff667085\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/data/weather/current/condition} ${/data/weather/current/temperatureText}\"}},\"styles\":{\"width\":76,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.delayText }}\",\"styles\":{\"width\":120,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ffff3b30\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"contact_button\",\"cancel_button\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"contact_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.contactLabel }}\",\"styles\":{\"width\":58,\"height\":26,\"borderRadius\":10,\"backgroundColor\":\"#ff007dff\",\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"13800138000\"}}]},{\"id\":\"cancel_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.cancelLabel }}\",\"styles\":{\"width\":58,\"height\":26,\"borderRadius\":10,\"backgroundColor\":\"#fff2f4f7\",\"borderWidth\":1,\"borderColor\":\"#33667085\",\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#ff344054\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_355\",\"path\":\"/\",\"value\":{\"carpool\":{\"arrivalMinutes\":8,\"delayText\":\"司机迟到 5 分钟\",\"contactLabel\":\"联系司机\",\"cancelLabel\":\"取消拼车\",\"driverPhone\":\"13800138000\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山区\",\"prefectureName\":\"深圳\"},\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"小雨\",\"airQuality\":\"良\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

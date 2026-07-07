@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-22-express-424",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户三项诉求：(1) 包裹清单打勾选 — DSL 用了 Checkbox + select 绑定 picked 字段，结构上满足，但截图显示三个 Checkbox 完全不可见（label 用 formatString call 表达式在 Checkbox 上未被 catalog 渲染），实际诉求未视觉落实；(2) 点开能改时间 — DSL 无任何包裹项的 onClick，唯一可用 eventCandidate 是 battery_saving_mode，与改时间语义无关，诉求完全缺失；(3) 从日历读日程 — 仅静态显示 calendarStatus='待同步'，data.calendar.items 为空，并未真正读日历。事件 call/args 原样引用符合协议，但语义与用户意图不匹配。协议层（size=2x4、catalogId、version、updateDataModel.path/value）正确。",
+    "aesthetic": "整体设计语言统一：白色到浅灰渐变背景 + 右侧半透明白色毛玻璃面板，主色用 #FF64BB5C 绿色，色彩来源合法。字号阶梯 16/12/18 在范围内，字重 700 单一最强。但 Button 文字'同步提醒'在 14pt+72 宽下被截断为'同步...'，CTA 不可读；hint 文字'日历同步取件时间'使用 wordBreak:breakAll 出现'间'字单独成行的丑陋断字；左侧包裹清单区域大块留白（Checkbox 不可见），破坏了信息密度与视觉完整性。",
+    "layout": "逐项核算：Root Row 横向 12+10+178+88=288 ≤ 300 ✓；left_panel 纵向 6+34+74=114 ≤ 116 ✓；title_group 纵向 2+18+14=34 ✓；parcel_list 纵向 12+20×3=72 ≤ 74 ✓；right_panel 纵向 16+8+64+28=116 ✓；calendar_box 纵向 8+16+22+18=64 ✓。主要问题：(a) Button 文字'同步提醒'4×14=56px 超出 72 宽按钮内部可用区（padding 8-12vp 两侧后约 48-56vp），截断为'同步...'；(b) hint 文字 8×10=80px > 72 宽，breakAll 断字为'日历同步取件时/间'；(c) 底部 Button 底边到卡片底边约 20vp（root padding-bottom 12 + right_panel padding-bottom 8），超过 2x4 卡片 16vp 上限。"
+  },
+  "issues": [
+    "Checkbox label 使用 {call:formatString, args:{value:'${name} ${detail}'}} 表达式，截图证实三个 Checkbox 文字完全不渲染，用户核心诉求'包裹清单能打勾选'未视觉落实",
+    "Button '同步提醒' 在 fontSize=14、width=72 下被截断为'同步...'，CTA 不可用",
+    "hint '日历同步取件时间' (8×10=80px) 超过 72 宽，wordBreak:breakAll 断字为'间'字单独成行",
+    "缺少'点开能改时间'的 onClick 交互，eventCandidates 中唯一的 clickToIntent 是 battery_saving_mode，与改时间语义不匹配",
+    "右栏底部 Button 底边到卡片底边约 20vp，超过 2x4 卡片 16vp 上限",
+    "calendar_box 纵向计算 8+16+22+18=64 恰等于其 height=64，无安全余量，hint 实际两行时会顶出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_424\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_424\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF1F3F5\",1]]}}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_group\",\"parcel_list\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":116}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title\",\"summary\"],\"itemMargin\":2,\"styles\":{\"width\":178,\"height\":32}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":178,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary }}\",\"styles\":{\"width\":178,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"parcel_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"parcel_row\",\"path\":\"/items\"},\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":72}},{\"id\":\"parcel_row\",\"component\":\"Row\",\"children\":[\"item_check\",\"item_text\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":20,\"alignItems\":\"center\"}},{\"id\":\"item_check\",\"component\":\"Checkbox\",\"label\":\" \",\"select\":{\"path\":\"/picked\"},\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"item_text\",\"component\":\"Text\",\"content\":\"{{ name }} · {{ detail }}\",\"styles\":{\"width\":150,\"height\":16,\"fontSize\":11,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"calendar_box\",\"sync_button\"],\"itemMargin\":8,\"styles\":{\"width\":88,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":0},\"borderRadius\":18,\"backgroundColor\":\"#19FFFFFF\",\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"calendar_box\",\"component\":\"Column\",\"children\":[\"time_label\",\"time_value\",\"hint\"],\"itemMargin\":3,\"styles\":{\"width\":72,\"height\":62,\"alignItems\":\"center\"}},{\"id\":\"time_label\",\"component\":\"Text\",\"content\":\"取件日程\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendarStatus }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.hint }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":10,\"fontColor\":\"#66000000\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"sync_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":72,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF64BB5C\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_424\",\"path\":\"/\",\"value\":{\"title\":\"包裹清单\",\"summary\":\"3件待处理\",\"hint\":\"日历同步取件时间\",\"calendarStatus\":\"待同步\",\"actionLabel\":\"同步提醒\",\"items\":[{\"name\":\"顺丰包裹\",\"detail\":\"18:30前取\",\"picked\":false},{\"name\":\"菜鸟驿站\",\"detail\":\"明天10:00\",\"picked\":false},{\"name\":\"京东快递\",\"detail\":\"已预约\",\"picked\":true}],\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

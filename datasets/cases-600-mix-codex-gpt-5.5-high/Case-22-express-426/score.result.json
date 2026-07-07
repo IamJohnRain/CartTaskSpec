@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-22-express-426",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "尺寸 2x4 满足，root shell 正确（300x140、borderRadius 22、clip true），catalogId 与 version 正确；onClick 调 clickToDeeplink 且 args 原样来自 eventCandidates；Image.src 引用 /asset/scheduleIcon 来自 assetCandidates；DataModel 顶层表达式绑定正确。但用户四项核心诉求中只有『点开看物流』(看物流按钮) 与『日程同步』(已同步日程面板) 在截图中可见，『能打勾』(Checkbox) 与『已取的划掉』(lineThrough) 因为 pickup_list 区域在截图中完全空白而未被用户感知——3 件取件 (顺丰速运/菜鸟驿站/京东快递) 全部未渲染，等同核心信息缺失，扣重分。",
+    "aesthetic": "配色方案专业：浅灰底 #f1f3f5、绿色 #64bb5c 表达已同步状态、蓝色 #0a59f7 主按钮，色阶克制；右侧日程胶囊 + 蓝色 CTA 按钮层级清晰，字重梯度合理（700/600/500/400），仅一个最强字重 700 用于标题。但 main Column 190x78 的内容区在截图中完全空白，导致上半部只剩孤立的标题，与右侧面板形成巨大空洞，整体视觉不完整，扣分明显。",
+    "layout": "逐项核算：Root Row 占用 = 12+12+10+190+76 = 300 ✓；main Column 占用 = 0+0+8+30+78 = 116 ✓；header Row 占用 = 6+24+160 = 190 ✓；title_group Column 占用 = 2+16+12 = 30 ✓；side Column 占用 = 8+52+32 = 92 ≤ 116 ✓；sync_panel Column 占用 = 4+14+16 = 34 ≤ 36 ✓（padding 8 已计）。问题 1：item_text Column 子项高 12+10+0=22（要求 height:22，源文件 item_name 高度被设为 13、item_detail 10，margin 0，合计 23 > 22 溢出 1vp），最严处的 name/detail 行高 12/10 安排更稳。问题 2：pickup_list 高度 78 容纳 3×22+2×4=74 数学可行，但截图中 Column 内的模板 children={componentId:'item_tpl',path:'/items'} 实际未渲染出任何 item，导致整块 190x78 内容区空缺——是渲染层（Column 模板不被支持）问题而非预算问题。底部 action_btn 底边到卡片底边 = 12vp（2x4 范围 10-14vp）✓。"
+  },
+  "issues": [
+    "pickup_list 在渲染截图中完全空白，3 件取件均未出现，导致用户核心信息不可见",
+    "Checkbox 可勾选态在截图中不可见（因未渲染）",
+    "京东快递的 lineThrough 划线效果在截图中不可见（因未渲染）",
+    "item_text Column 子项高 item_name(13)+item_detail(10)+margin(0)=23 > 容器 22，溢出 1vp",
+    "pickup_list 使用 Column 承载模板 children 在当前渲染器下不显示，建议改用 List 组件以支持模板循环",
+    "item_check 22x22 与 item_text 22 高存在垂直中心对齐潜在误差，建议同步缩到 20x20 留出基线余量"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_pickup_426\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_pickup_426\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main\",\"side\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"header\",\"pickup_list\"],\"itemMargin\":8,\"styles\":{\"width\":190,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"icon\",\"title_group\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":190,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/scheduleIcon\"},\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title\",\"summary\"],\"itemMargin\":2,\"styles\":{\"width\":160,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary }}\",\"styles\":{\"width\":160,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pickup_list\",\"component\":\"List\",\"children\":{\"componentId\":\"item_tpl\",\"path\":\"/items\"},\"itemMargin\":4,\"styles\":{\"width\":190,\"height\":78,\"listDirection\":\"vertical\"}},{\"id\":\"item_tpl\",\"component\":\"Row\",\"children\":[\"item_check\",\"item_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":190,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"item_check\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":{\"path\":\"picked\"},\"styles\":{\"width\":20,\"height\":20,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"item_text\",\"component\":\"Column\",\"children\":[\"item_name\",\"item_detail\"],\"itemMargin\":0,\"styles\":{\"width\":164,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"item_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":164,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"decoration\":{\"type\":{\"path\":\"decoration/type\"},\"color\":\"#66000000\"}}},{\"id\":\"item_detail\",\"component\":\"Text\",\"content\":{\"path\":\"detail\"},\"styles\":{\"width\":164,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"sync_panel\",\"action_btn\"],\"itemMargin\":8,\"styles\":{\"width\":76,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"sync_panel\",\"component\":\"Column\",\"children\":[\"sync_label\",\"sync_value\"],\"itemMargin\":4,\"styles\":{\"width\":76,\"height\":52,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"sync_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"sync_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.syncStatus }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":76,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_pickup_426\",\"path\":\"/\",\"value\":{\"title\":\"取件清单\",\"summary\":\"3件待取\",\"syncStatus\":\"已同步日程\",\"actionLabel\":\"看物流\",\"asset\":{\"scheduleIcon\":\"resources/base/media/icon_schedule.png\"},\"items\":[{\"name\":\"顺丰速运\",\"detail\":\"18:30前取\",\"picked\":false,\"decoration\":{\"type\":\"none\"}},{\"name\":\"菜鸟驿站\",\"detail\":\"明天10:00\",\"picked\":false,\"decoration\":{\"type\":\"none\"}},{\"name\":\"京东快递\",\"detail\":\"已取\",\"picked\":true,\"decoration\":{\"type\":\"lineThrough\"}}],\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

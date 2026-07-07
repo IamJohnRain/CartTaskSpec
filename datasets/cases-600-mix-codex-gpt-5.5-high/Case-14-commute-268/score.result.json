@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-14-commute-268",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.0,
+  "reasons": {
+    "instruction": "用户要求一行字带数字、能跳应用、能看日程、标红。事件 clickToDeeplink 正确绑定，Image 使用了 assetCandidates 的 icon_schedule.png，dataModel 字段齐全。但状态文本'日程标红'以白色写在橙色渐变上，在截图中几乎不可见，'标红'语义未被视觉强化；按钮'跳应用'被截断为'跳...'，行程行'项'字缺失，信息传达不完整。尺寸 2x2、catalogId、version、updateDataModel.path=/ 等硬约束均满足。",
+    "aesthetic": "渐变配色（橙到浅灰）尚可，但白色'日程标红'落在渐变最上沿、与图标同色系，视觉层级混乱；按钮文字被截断成'跳...'，看起来像未完成的设计；行程行尾部缺'项'字，整行收尾突兀；整体留白分布不均，底部约 1/2 区域为空，密度失衡。最强字重方面同时出现 fontWeight 700（status、agenda）和 medium（button），层级略乱。",
+    "layout": "预算核算：Root Column 纵向占用 = padding 12+12 + itemMargin 8*(3-1)=16 + 子项高 32+24+36=92 = 132，可用于 root 高度 140-24=116，溢出 16vp；agenda_line 文本'08:30 早高峰通勤 1项'在 fontSize 14、宽 116 下估算宽 ≈ 5*0.6*14 + 4*0.6*14 + 5*14 + 4*0.6*14 + 1*0.6*14 + 1*14 = 145.6，溢出约 30vp，导致'项'被裁；Button label'跳应用'在 button 宽 64、fontSize 14 下，文字 3*14=42 加上按钮内边距后超宽，被截断为'跳...'；top_row 中 status 文本宽 82 但与白色字在橙色渐变最上沿对比度不足，截图几乎不可见。底部 action_row 底边到卡片底边 ≈ 12vp，合规。"
+  },
+  "issues": [
+    "Root Column 纵向总占用 132vp > 可用 116vp，溢出 16vp",
+    "agenda_line 文本'08:30 早高峰通勤 1项'估算宽 145.6vp > 容器宽 116vp，'项'字被裁",
+    "Button '跳应用' 在 width 64 下被截断为 '跳...'",
+    "状态文本'日程标红'白色字落在橙色渐变最上沿，截图几乎不可见",
+    "'标红'语义未通过视觉强调（如红色徽标/红字）实现",
+    "卡片底部约一半区域为空白，留白分布不均",
+    "formatString 调用为非标准绑定形式，与协议默认的 {{ }} 表达式不一致（仍可工作但非首选）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_268\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_268\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"agenda_line\",\"action_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[[\"#ffed6f21\",0],[\"#fff1f3f5\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"badge\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"badge\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/calendar/statusText} ${/calendar/count}项\"}},\"styles\":{\"width\":86,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe50000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"agenda_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/calendar/timeText} ${/calendar/title}\"}},\"styles\":{\"width\":116,\"height\":22,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"hint\",\"open_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.sourceText }}\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"styles\":{\"width\":80,\"height\":32,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_268\",\"path\":\"/\",\"value\":{\"calendar\":{\"statusText\":\"日程标红\",\"timeText\":\"08:30\",\"title\":\"早高峰通勤\",\"count\":1,\"sourceText\":\"日历\"},\"action\":{\"label\":\"跳应用\"}}}}"
+  ]
+}

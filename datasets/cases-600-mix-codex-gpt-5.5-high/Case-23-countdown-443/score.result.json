@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-23-countdown-443",
+  "scores": {
+    "instruction": {
+      "score": 7.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户要求纪念日卡+字压照片+日历日程可拉入。结构意图完整：root 渐变作底，shade 上下深色遮罩+content 文字层形成'压字'版式，模板循环 children 用 {componentId,path} 绑定到 /data/calendar/items 实现了'日程拉入'。但 assetCandidates 为空导致无真实照片，模型用渐变+photo_line Divider 假替，未完整满足'照片'诉求。DataModel 字段全部以 {{}} 表达式引用，路径可推导。2x4 尺寸/root shell/catalogId/version/updateDataModel 全部满足硬约束。eventCandidates 为空故无 onClick 合理。",
+    "aesthetic": "紫色三段渐变协调，白字+深紫底主标题对比清晰。字号阶梯合理（16/32/14/12），仅 days 一处最强字重 800 合规。但 days 容器 36 < fontSize 32 行高约 38.4，'导'字顶部被裁切；photo_line Divider 位于右下像视觉瑕疵；date_label #99ffffff 在 shade 间隙的渐变中段偏暗；'日历'/'从日历同步纪念日' 处于 light 渐变区，对比度不足。",
+    "layout": "content Column 纵向占用 22+8+36+8+34=108 ≤ 116 OK，spaceBetween 留 4+4vp 余量。top_row 横向 170+8+78=256 ≤ 276 OK。hero_row 横向 104+8+156=268 ≤ 276 OK。unit_block 纵向 16+2+16=34 ≤ 36 OK。bottom_panel 横向 20(pad)+100+8+138=266 ≤ 276 OK。event_item 横向 78+4+56=138=138 紧贴边界，0 余量。shade Column 纵向 34+54=88 ≤ 116 OK，spaceBetween 28vp 间隙。底部 bottom_panel 距卡片底 12vp 在 2x4 推荐 10-14vp 区间内。但 days 行高 38.4 > 容器 36，导致'待导入'顶部被裁约 2.4vp。photo_line Divider 落在 ambient_photo 右下角成视觉噪声。"
+  },
+  "issues": [
+    "无真实照片素材：assetCandidates 为空致无法使用 Image，'字压照片'仅以渐变+假 Divider 模拟，未完整实现",
+    "days 容器高度 36 < fontSize 32 行高约 38.4，'待导入' 文字顶部被裁切约 2vp",
+    "photo_line Divider 在 ambient_photo 右下角渲染中像装饰瑕疵，无明确语义",
+    "date_label fontColor #99ffffff 在 shade 间隙的中段渐变上对比偏弱，可读性下降",
+    "event_item 横向 78+4+56=138=138 紧贴 event_list 138 边界，0 余量风险",
+    "shade_top 高度 34 覆盖了 hero_row 上沿 4vp，导致 hero 文字跨越 shade_top/gap/shade_bottom 三段对比度不一致"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_23_countdown_443\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_23_countdown_443\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_photo\",\"shade\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#3a2dbb\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#3a2dbb\",0],[\"#7a5cf0\",0.5],[\"#f0a4d8\",1]]}}},{\"id\":\"ambient_photo\",\"component\":\"Column\",\"children\":[],\"itemMargin\":0,\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1affffff\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[\"shade_top\",\"shade_bottom\"],\"itemMargin\":0,\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"shade_top\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":30,\"backgroundColor\":\"#55000000\"}},{\"id\":\"shade_bottom\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":48,\"backgroundColor\":\"#66000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"hero_row\",\"bottom_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"padding\":0,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"source_pill\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.title }}\",\"styles\":{\"width\":170,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"source_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.sourceLabel }}\",\"styles\":{\"width\":78,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"days\",\"unit_block\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"days\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.daysText }}\",\"styles\":{\"width\":104,\"height\":40,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit_block\",\"component\":\"Column\",\"children\":[\"unit\",\"date_label\"],\"itemMargin\":2,\"styles\":{\"width\":156,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.unitText }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"date_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.anniversary.dateLabel }}\",\"styles\":{\"width\":156,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_panel\",\"component\":\"Row\",\"children\":[\"hint\",\"event_list\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":34,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":17,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.hint }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_list\",\"component\":\"Row\",\"children\":{\"componentId\":\"event_item\",\"path\":\"/data/calendar/items\"},\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":138,\"height\":22,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"event_item\",\"component\":\"Row\",\"children\":[\"event_title\",\"event_time\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":138,\"height\":22,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":{\"path\":\"title\"},\"styles\":{\"width\":78,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":{\"path\":\"dtStart\"},\"styles\":{\"width\":56,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_23_countdown_443\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[]}},\"anniversary\":{\"title\":\"纪念日倒计时\",\"daysText\":\"待导入\",\"unitText\":\"日历\",\"dateLabel\":\"从日历同步纪念日\",\"sourceLabel\":\"日历日程\"},\"state\":{\"loading\":true,\"hint\":\"等待日历导入\"}}}}"
+  ]
+}

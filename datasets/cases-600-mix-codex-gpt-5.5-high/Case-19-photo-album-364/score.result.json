@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-364",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.4,
+  "reasons": {
+    "instruction": "用户四点诉求基本全部落实：能打勾（Checkbox 渲染为红色对勾方块、select 绑定 album.checked）、点进相册（Button.onClick 走 clickToDeeplink 至 storage_settings，args 与 eventCandidates 完全一致）、从日历拿日程（顶部展示 calendar.summary「整理相册 20:30」+ 底部 event_title「整理相册」）、红色那种（背景 #fff8f1f0、描边 #33d94838、徽章/主指标/按钮统一 #d94838）、提醒快满了（statusText「快满了」+ usageText「已用 92%」+ ring progress 92）。数据字段全部通过 {{ ... }} 读取。轻微扣分：deeplink 落到 storage_settings 而非相册 app，但与「快满去清理」意图一致；size 2x4、catalogId、version、updateDataModel 协议全部满足。",
+    "aesthetic": "整体配色（浅粉底 + 红色强调 + 白色徽章/按钮文字）契合'红色那种'需求，层级清晰（title 16 粗 → usage 32 粗 → 副文本 10-12）。微调空间：title、status、usage 三处均使用 fontWeight 700，按'同一卡片只保留一个最强字重'规则略有冗余，但因尺寸差异明显（32 vs 16 vs 12）实际层级不混。徽章留白、按钮 borderRadius 17 与卡片 22 协调。",
+    "layout": "根 Column 实测：height=140、padding 12+12=24、内容可用 116；3 个子行高 34+42+34=110，itemMargin 8×2=16，合计占用 126 > 可用 116，溢出 10vp（违反内容区且把底部 padding 压缩到 2vp，导致 action Button 底边到卡片底边仅 2vp，远低于 2x4 要求的 10-14vp）。top_row 横向核算：check 26 + 8 + title_col 174 + 8 + status 60 = 276 恰好填满，无溢出；title_col 纵向 18+2+14=34 刚好等于自身高度。meter_row 横向 206+10+42=258 ≤ 276 无溢出；纵向 max(38,42)=42 等于自身高度。bottom_row 横向 178+8+90=276 刚好；纵向 max(18,34)=34 等于自身高度。综上子层无溢出，但根 Column 总高溢出 10vp 且底边距严重不足，是主要扣分点。"
+  },
+  "issues": [
+    "根 Column 子项总占用 126 > 内容可用 116，溢出 10vp",
+    "底部 action Button 底边到卡片底边仅 2vp（应 10-14vp），底部锚定不足",
+    "title、status、usage 三处均使用 fontWeight 700，违反'同一卡片只保留一个最强字重'",
+    "usage fontSize 32 配 line-height ~38，在 42 高行中纵向偏满，挤压上下呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_364\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_364\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"meter_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff8f1f0\",\"borderWidth\":1,\"borderColor\":\"#33d94838\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"check\",\"title_col\",\"status\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"check\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":\"{{ $__dataModel.album.checked }}\",\"styles\":{\"width\":24,\"height\":24,\"selectedColor\":\"#ffd94838\",\"unSelectedColor\":\"#66d94838\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"calendar_text\"],\"itemMargin\":2,\"styles\":{\"width\":174,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.summary }}\",\"styles\":{\"width\":174,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.statusText }}\",\"styles\":{\"width\":56,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#ffd94838\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"usage\",\"progress\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"usage\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.usageText }}\",\"styles\":{\"width\":220,\"height\":34,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress\",\"component\":\"Progress\",\"value\":92,\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":36,\"height\":36,\"color\":\"#ffd94838\",\"backgroundColor\":\"#22d94838\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"event_title\",\"action\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":178,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#cc182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":90,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffd94838\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_364\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"相册空间提醒\",\"statusText\":\"快满了\",\"usageText\":\"已用 92%\",\"actionText\":\"去清理\",\"checked\":true},\"data\":{\"calendar\":{\"summary\":\"整理相册 20:30\",\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-photo-album-364\",\"title\":\"整理相册\",\"dtStart\":\"20:30\",\"dtEnd\":\"21:00\",\"eventLocation\":\"手机日历\"}]}}}}"
+  ]
+}

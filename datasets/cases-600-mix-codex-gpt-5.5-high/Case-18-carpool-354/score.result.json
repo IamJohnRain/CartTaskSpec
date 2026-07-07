@@ -1,0 +1,23 @@
+{
+  "case_id": "Case-18-carpool-354",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "DSL 结构基本满足用户诉求：渐变主题色（淡紫→粉）、纵向堆叠、标题'今日已拼2次'、第二行'天气 晴 25℃'、状态'行程完成'药丸、CTA 按钮均已落实；事件 onClick 原样引用 eventCandidates 的 clickToDeeplink 与 music uri；size 2x4、root 300x140、borderRadius 22、clip:true、catalogId 与 version 均合规。但用户明确点名的'可滚动的重复列表显示每次拼车的费用'在渲染截图中整片空白，是关键诉求的视觉缺失；CTA 按钮文字在截图中显示为异常字符（疑似模板/字体回退问题）。",
+    "aesthetic": "渐变氛围淡紫到粉和谐舒服；标题字重 700 形成明确焦点；天气条与状态药丸作为色块点缀；按钮配色（紫底白字）对比清晰。但 cost list 区为整片空白形成明显'视觉空洞'，破坏密度感；最强字重 700 同时出现在 title/cost_fee/status/music_btn 多处，违反'同一卡片只保留一个最强字重'原则；cost_item 背景 #f2ffffff（95% 不透明白）在淡紫渐变上几乎不可见，对比度严重不足。",
+    "layout": "root Column 高度 140、padding 8+8=16，可用内容高 124；子项 title(24)+weather(20)+cost_list(36)+footer(24)=104，itemMargin 5×3=15，总占 119≤124，root 整体未溢出。但 cost_list 高度 36 远小于渲染 3 项所需的 16×3+2×2=52（按 cost_item 16、space 2 算），溢出 16，导致 3 个费用项被裁切/不可见，是布局重大失败点（截图验证列表区为空白）。footer_row 横向 8+142+86=236＜276 通过；cost_item Row 横向 8+160+78=246＜276 通过；status_text 内容 48 < 内容区 122 通过；music_btn 内容 56 < 86 通过。底部动作区到卡片底边 8vp，略低于 2x4 典型 10-14vp。"
+  }
+}

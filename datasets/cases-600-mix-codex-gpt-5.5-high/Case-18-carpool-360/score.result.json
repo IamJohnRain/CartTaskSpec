@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-360",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.5,
+  "reasons": {
+    "instruction": "大数字'3/5 已完成'已显示在顶部，onClick 事件 call/args 原样来自 eventCandidates，未使用网络图(图标用文字字符)且 size/catalogId/version/updateDataModel 等硬约束均满足。但以下用户明确诉求未落实:(1) 横向排列的勾选待办未渲染,Checkbox 组件在模板循环中未可见,中部大面积空白;(2) '不同区域用不同底色区分'未实现,三个 todo_item 全部使用同色 #ffffffff;(3) 迟到警告未'标红',颜色为橙色 #ffed6f21,且文字被截断无法读全",
+    "aesthetic": "卡片配色单调,三个 todo 区均为白色,缺乏视觉区分;中部 todo_row 因 Checkbox 未渲染形成大块空洞,视觉断裂;底部 warning 因截断显示'! 李师傅迟到 8 分'显得不完整;字号层级尚可但整体观感破碎、不专业",
+    "layout": "root Column 纵向预算:hero 32 + todo_row 46 + warning 20 + itemMargin 6×2=12,合计 110 < 可用 116,纵向未溢出 ✓;todo_row 横向预算:36×3 + 4×2=116 = 可用 116,刚好顶满无余量 ⚠;warning 文本在 fontSize 12 下宽度估算 112.8vp(7.2+4.8+60+4.8+7.2+4.8+24),而 padding 6/6 后内容区仅 104vp,溢出 8.8vp,截图证实'钟'字被裁 ✗;Checkbox 模板循环在截图中完全未渲染,导致中部 46vp 高度空白,核心信息缺失"
+  },
+  "issues": [
+    "CheckBox 组件在模板循环渲染中未出现,中部三个 todo 全部不可见,核心信息缺失",
+    "三个 todo_item 背景色全部为 #ffffffff,未实现用户要求的'不同区域用不同底色区分'",
+    "warning 文字在 fontSize 12 + 内边距 6/6 下内容宽 104,文本估算 112.8,溢出 8.8vp,'钟'字被截断",
+    "warning 颜色 #ffed6f21 为橙色,不符合用户'标红'要求",
+    "todo_row 横向 36×3+4×2=116 刚好等于可用 116,无安全余量",
+    "中部 todo_row 完全空白造成视觉空洞,卡片上下信息断裂"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_360\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_360\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"todo_row\",\"warning\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7f2e8\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.deskclock\",\"abilityName\":\"com.huawei.deskclock.MainAbility\",\"uri\":\"clock://alarm/create?source=carpool&title=carpool_reminder\"}}]},{\"id\":\"hero\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/progressText\"},\"styles\":{\"width\":120,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"todo_row\",\"component\":\"Row\",\"children\":[\"todo1\",\"todo2\",\"todo3\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo1\",\"component\":\"Column\",\"children\":[\"t1_box\",\"t1_label\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":54,\"padding\":{\"left\":2,\"right\":2,\"top\":6,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#ffe8f5e9\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"t1_box\",\"component\":\"Text\",\"content\":\"[V]\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff2e7d32\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"t1_label\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/statusRows/0/label\"},\"styles\":{\"width\":32,\"height\":12,\"fontSize\":9,\"fontColor\":\"#cc000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"todo2\",\"component\":\"Column\",\"children\":[\"t2_box\",\"t2_label\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":54,\"padding\":{\"left\":2,\"right\":2,\"top\":6,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#ffe3f2fd\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"t2_box\",\"component\":\"Text\",\"content\":\"[V]\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff1565c0\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"t2_label\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/statusRows/1/label\"},\"styles\":{\"width\":32,\"height\":12,\"fontSize\":9,\"fontColor\":\"#cc000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"todo3\",\"component\":\"Column\",\"children\":[\"t3_box\",\"t3_label\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":54,\"padding\":{\"left\":2,\"right\":2,\"top\":6,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#fffafafa\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"t3_box\",\"component\":\"Text\",\"content\":\"[ ]\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff9e9e9e\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"t3_label\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/statusRows/2/label\"},\"styles\":{\"width\":32,\"height\":12,\"fontSize\":9,\"fontColor\":\"#cc000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/warningText\"},\"styles\":{\"width\":120,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":6,\"backgroundColor\":\"#fffdecea\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_360\",\"path\":\"/\",\"value\":{\"carpool\":{\"progressText\":\"3/5 已完成\",\"statusRows\":[{\"id\":\"departed\",\"label\":\"已出发\",\"done\":true},{\"id\":\"boarded\",\"label\":\"已上车\",\"done\":true},{\"id\":\"delivered\",\"label\":\"已送达\",\"done\":false}],\"warningText\":\"! 李师傅迟到 8 分钟\"}}}}"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-14-commute-276",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.6,
+  "reasons": {
+    "instruction": "2x2 尺寸、catalogId/version、onClick 事件（clickToDeeplink 含正确 uri）、Image 资源（icon_weather1.png）、模板循环（/data/weather/daily）、左右并排的 morning/evening Row、'上班路上/下班途中' 固定前缀拼接模式、渐变背景均已落实。但存在两个关键偏差：(1) dateLine/commuteLine 文本使用了非标 formatString 调用而非协议规定的 {{...}} 表达式，导致模板渲染后内容为空，截图仅显示 header，数据完全未呈现；(2) 用户明确要求'有降雨就黄色注意'，但实现中无任何条件分支，dateLine 颜色固定为 #99000000（深灰），eveningText 用 #E84026 红色，且与是否降雨无关，未实现黄色警示。",
+    "aesthetic": "渐变 #86C5E3→#F5DC62 蓝到黄有环境氛围感，配色和谐；标题 16px fontWeight 700 层级清晰；dayTpl 用了 #33FFFFFF 半透明白底做分组卡片，思路合理。但因为 formatString 导致内容为空，截图实际只看到 header 一行 + 空白渐变，主体信息缺失，视觉密度极低、显得空洞；字体阶梯 fontSize 16/10/9 混用，字重 700/500 出现两个较重权重（'通勤天气' 与 '上班/下班' 文本），未做到'只保留一个最强字重'。",
+    "layout": "逐项预算核算：(a) root Column 140×140 padding 12 → 内容 116×116；head 24h + days 84h + itemMargin 8 = 116，刚好填满 ✓；(b) head Row 116×24：glyph 20w + title 90w + itemMargin 6 = 116 ✓；(c) days Column 116×84 itemMargin 4：3×dayTpl(24h) + 2×4 = 80 ≤ 84 ✓；(d) dayTpl Column 116×24 padding 3 itemMargin 2：内容区 110×18，dateLine 10h + commuteLine 12h + itemMargin 2 = 24，**比可用 18 溢出 6vp**，commuteLine 会被裁切或挤压；(e) commuteLine Row 110×12 itemMargin 4：morningText 53w + eveningText 53w = 110 ✓，但 '上班路上26°晴' 中文 4×10 + 数字 2×6 + °5 + 晴10 ≈ 67px > 53w，'下班途中25°小雨' ≈ 77px > 53w，即便触发 minFontSize 8 后 eveningText 仍约 61.6px > 53w 溢出 8.6px，受保护通勤文本会被截断/挤压。叠加 formatString 内容空，截图只能看到 header，days 区视觉上完全不存在，布局实际已崩溃。"
+  },
+  "issues": [
+    "关键协议违规：dateLine/commuteLine/morningText/eveningText 全部使用 {call:formatString, args:{...}} 表达式，而协议要求使用 {{...}} 数据路径表达式；运行时无法解析，导致模板渲染后所有文本内容为空",
+    "dayTpl Column 高度 24 减去上下 padding 3×2=6 后内容区仅 18，但子项 dateLine(10)+commuteLine(12)+itemMargin(2)=24，溢出 6vp，commuteLine 必然被裁",
+    "morningText/eveningText 分配 53w，但 '上班路上26°晴' 估算宽 67px、'下班途中25°小雨' 估算宽 77px，minFontSize 8 后 eveningText 仍约 61.6px 超 53w 约 8.6px，受保护通勤文本会被截断",
+    "用户要求'有降雨就黄色注意'，但未实现任何条件逻辑，dateLine 用深灰 #99000000、eveningText 用红色 #E84026，且与 rainProbabilityPercent 完全无关",
+    "字号阶梯 fontSize 16/10/9 混用（9 不在 10/12/14/16/18/20/32/40 阶梯），字重 700/500 出现两个较重权重，违反'同一卡片只保留一个最强字重'",
+    "eveningText 颜色 #E84026 红色与用户'黄色注意'语义不符，且无差异化背景区分有雨/无雨天",
+    "padding 12 + itemMargin 8 + head 24 + days 84 = 128，再加 root 自身 padding 12+12 实际 152 > 140 容器（head+itemMargin+days=116 等于内容区，刚好满但无容错，dayTpl 一旦溢出直接撞到 root 底边）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"commute_weather_276\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"commute_weather_276\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"head\",\"days\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#7FB8DC\",0],[\"#F5DC62\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"head\",\"component\":\"Row\",\"children\":[\"glyph\",\"title\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"通勤天气\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days\",\"component\":\"Column\",\"children\":{\"componentId\":\"dayTpl\",\"path\":\"/data/weather/daily\"},\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":94,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"dayTpl\",\"component\":\"Column\",\"children\":[\"dateLine\",\"commuteLine\"],\"itemMargin\":1,\"styles\":{\"width\":120,\"height\":28,\"padding\":2,\"borderRadius\":6,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"dateLine\",\"component\":\"Text\",\"content\":\"{{weekday}} 降水{{rainProbabilityPercent}}\",\"styles\":{\"width\":116,\"height\":10,\"fontSize\":9,\"fontColor\":\"#E5A65900\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"commuteLine\",\"component\":\"Row\",\"children\":[\"morningText\",\"eveningText\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":13,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"morningText\",\"component\":\"Text\",\"content\":\"上班路上{{morningTemp}}{{morningCondition}}\",\"styles\":{\"width\":57,\"height\":13,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"minFontSize\":7,\"textOverflow\":\"none\"}},{\"id\":\"eveningText\",\"component\":\"Text\",\"content\":\"下班途中{{eveningTemp}}{{eveningCondition}}\",\"styles\":{\"width\":57,\"height\":13,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"minFontSize\":7,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"commute_weather_276\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"cityCode\":\"\",\"districtName\":\"\",\"prefectureName\":\"\"},\"current\":{\"temperatureC\":0,\"temperatureText\":\"\",\"condition\":\"\",\"feelsLikeC\":0,\"humidityPercent\":0,\"airQuality\":\"\",\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[{\"date\":\"2026-07-05\",\"weekday\":\"今天\",\"condition\":\"晴\",\"temperatureRangeText\":\"23° / 26°\",\"rainProbabilityPercent\":\"0%\",\"airQuality\":\"\",\"uvIndex\":\"\",\"coldLevel\":\"\",\"morningTemp\":\"26°\",\"morningCondition\":\"晴\",\"eveningTemp\":\"23°\",\"eveningCondition\":\"多云\"},{\"date\":\"2026-07-06\",\"weekday\":\"明天\",\"condition\":\"小雨\",\"temperatureRangeText\":\"22° / 25°\",\"rainProbabilityPercent\":\"70%\",\"airQuality\":\"\",\"uvIndex\":\"\",\"coldLevel\":\"\",\"morningTemp\":\"25°\",\"morningCondition\":\"小雨\",\"eveningTemp\":\"22°\",\"eveningCondition\":\"阵雨\"},{\"date\":\"2026-07-07\",\"weekday\":\"周二\",\"condition\":\"多云\",\"temperatureRangeText\":\"24° / 28°\",\"rainProbabilityPercent\":\"20%\",\"airQuality\":\"\",\"uvIndex\":\"\",\"coldLevel\":\"\",\"morningTemp\":\"28°\",\"morningCondition\":\"多云\",\"eveningTemp\":\"24°\",\"eveningCondition\":\"阴\"}],\"updatedAt\":\"\"}},\"state\":{\"loading\":true},\"assets\":{\"weatherGlyph\":\"resources/base/media/icon_weather1.png\"}}}}"
+  ]
+}

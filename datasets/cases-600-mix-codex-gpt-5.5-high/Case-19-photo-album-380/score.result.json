@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-19-photo-album-380",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "DSL 在结构上覆盖了用户全部诉求：顶部标题 '2024回忆'、横向 12 个月份色块、onClick 绑定 clickToDeeplink（call/args 原样来自 eventCandidates）、主题色背景、无图片、countText 来自 DataModel。但 Button.label 用了非标准的 formatString 函数调用配合 ${} 模板字符串（'label':{'call':'formatString','args':{'value':'${label} + ${countText}'}}），A2UI 协议只支持 {{ }} 表达式，导致模板渲染时 label 无法求值，12 个月份色块在截图中全部缺失，'X月 + xx张' 文本完全不可见，用户最核心诉求（看到 12 个月份 + 张数）实质未达成，扣重分。",
+    "aesthetic": "已渲染部分（顶部标题 '2024回忆' 白色 700 字重 20pt、底部 '年度相册' 淡白 12pt 提示）配色克制、青色 #FF0F766E 背景与白色文字对比度好、字重层级清晰（标题 700 / 提示 500）、单卡只一个最强字重，整体风格符合用户'简约'诉求。但中间本应承载 12 个月份色块的核心区域完全空白，破坏留白节奏、视觉重心缺失，可用但有明显空洞感。",
+    "layout": "Root Column 高 140：padding top 12 + title 24 + itemMargin 8 + month_list 54 + itemMargin 8 + hint 18 + padding bottom 12 = 136，136 < 140，剩 4vp 余量，未溢出根容器。month_list 116×54，month_chip 58×46 装得下，space=6 时可见 1 个半色块。预算数值本身没有溢出问题。但截图显示 month_list/month_chip 区域为空，问题在 label 用了非协议的 formatString(${...}) 调用导致模板不渲染，并非预算溢出——结果上 12 个核心交互元素缺失、CTA/可点击块全部不可见，相当于布局功能失效。"
+  },
+  "issues": [
+    "Button.label 用了非协议的 formatString 函数调用 + ${} 模板字符串（'label':{'call':'formatString','args':{'value':'${label} + ${countText}'}}），协议只支持 {{ }} 表达式，导致 12 个月份块不渲染",
+    "渲染截图中 month_list 区域完全空白，'X月 + xx张' 文本和点击块全部缺失，用户最核心诉求未实现",
+    "Root Column 垂直预算偏紧：title(24) + month_list(54) + hint(18) + itemMargin 8*2 + padding 24 = 136，剩 4vp，可适当扩大 month_list 给 chip 留足空间",
+    "month_chip 高 46、宽 58，按 fontSize 12 渲染 'X月 + xx张' 文本（'1月 + 42张' 估宽约 70+）> 文本区 46，会拥挤；建议缩字到 11 或扩 chip 到 60+",
+    "12 个月份块中 '10月/11月/12月' 的 label 比 '1月～9月' 多 1 个字符，2x2 极小 chip 下宽窄差异会被放大，建议统一换行模板"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_380\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_380\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"month_list\",\"hint\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF0F766E\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"month_list\",\"component\":\"List\",\"children\":{\"componentId\":\"month_chip\",\"path\":\"/album/months\"},\"space\":6,\"styles\":{\"width\":116,\"height\":60,\"listDirection\":\"horizontal\",\"scrollBar\":\"off\"}},{\"id\":\"month_chip\",\"component\":\"Button\",\"label\":\"{{label}} +\\n{{countText}}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":60,\"height\":52,\"padding\":{\"left\":5,\"right\":5,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF0F766E\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.hint }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_380\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"2024回忆\",\"hint\":\"年度相册\",\"months\":[{\"label\":\"1月\",\"countText\":\"42张\"},{\"label\":\"2月\",\"countText\":\"36张\"},{\"label\":\"3月\",\"countText\":\"58张\"},{\"label\":\"4月\",\"countText\":\"44张\"},{\"label\":\"5月\",\"countText\":\"61张\"},{\"label\":\"6月\",\"countText\":\"73张\"},{\"label\":\"7月\",\"countText\":\"69张\"},{\"label\":\"8月\",\"countText\":\"82张\"},{\"label\":\"9月\",\"countText\":\"55张\"},{\"label\":\"10月\",\"countText\":\"47张\"},{\"label\":\"11月\",\"countText\":\"63张\"},{\"label\":\"12月\",\"countText\":\"96张\"}]}}}}"
+  ]
+}

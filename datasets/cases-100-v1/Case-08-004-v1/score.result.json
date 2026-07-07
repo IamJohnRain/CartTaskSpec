@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-004-v1",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "截图中可见用户要求的所有信息：标题'昨晚睡眠报告'、时间段'23:48-06:36'、睡眠时长'6小时48分'、深睡18%/浅睡62%、打呼噜'轻微打呼12分钟'、手环数据已同步、'查看详情'按钮均齐全；事件 onClick.call/args 与 eventCandidates 完全一致；root shell(300x140/borderRadius22)、catalogId、version、updateDataModel 路径与值均符合 2x4 协议要求；assetCandidates 为空且未引入额外图源，无违规。仅 snoreText 因排版问题被截为两行，扣 0.5 分。",
+    "aesthetic": "截图整体观感清爽：浅蓝渐变底+主蓝主数值+琥珀色'质量偏低'徽章形成冷暖对比，层级清晰；'6小时48分'作为视觉焦点且加粗加色合理；正文灰阶 5E6670/99000000 区分得当。但右上徽章与'打呼噜'区右侧贴边，'轻微打呼 12分钟'换行后'钟'字独占一行，破坏了对齐与视觉节奏，扣 0.7 分。",
+    "layout": "截图最显著的布局问题是 snore_col(宽88)在主行与 duration_col(宽100)、stage_col(宽72)并排时，'轻微打呼 12分钟'无法在 12pt 下排成一行，被拆为'轻微打呼 12分'/'钟'两行，导致右侧三列高度不齐，main_row 实际渲染高度超过 46 设定；下方 detail_button 因此被略向下推但未溢出卡片。其余区域无截断、无堆叠、按钮热区充足、左右内边距对称。"
+  },
+  "issues": [
+    "snore_col 宽度 88vp 不足以容纳 '轻微打呼 12分钟' 12pt 单行，'钟'字被迫换到第二行，破坏三列等高对齐",
+    "main_row 三个子列宽度配比 (100/72/88) 未按文本长度合理分配，stage_col 过宽而 snore_col 过窄",
+    "因 snore_text 自动换行，main_row 实际占用高度超出 46 设定，挤压底部 row 的视觉留白"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_08_004_sleep_report\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_08_004_sleep_report\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F7FAFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_col\",\"summary_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"time_text\"],\"itemMargin\":2,\"styles\":{\"width\":178,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleepReport.title }}\",\"styles\":{\"width\":178,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleepReport.timeRange }}\",\"styles\":{\"width\":178,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleepReport.summary }}\",\"styles\":{\"width\":90,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FFFFF1D6\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF8A5A00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"duration_col\",\"stage_col\",\"snore_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"duration_col\",\"component\":\"Column\",\"children\":[\"duration_label\",\"duration_text\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"duration_label\",\"component\":\"Text\",\"content\":\"睡眠时长\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleepReport.totalText }}\",\"styles\":{\"width\":88,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stage_col\",\"component\":\"Column\",\"children\":[\"deep_text\",\"light_text\"],\"itemMargin\":4,\"styles\":{\"width\":68,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"deep_text\",\"component\":\"Text\",\"content\":\"{{ '深睡 ' + $__dataModel.sleepReport.deepPercent + '%' }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"light_text\",\"component\":\"Text\",\"content\":\"{{ '浅睡 ' + $__dataModel.sleepReport.lightPercent + '%' }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"snore_col\",\"component\":\"Column\",\"children\":[\"snore_label\",\"snore_text\"],\"itemMargin\":2,\"styles\":{\"width\":108,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"snore_label\",\"component\":\"Text\",\"content\":\"打呼噜\",\"styles\":{\"width\":108,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"snore_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleepReport.snoreText }}\",\"styles\":{\"width\":108,\"height\":28,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"source_text\",\"detail_button\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"手环数据已同步\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleepReport.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"huaweischeme://healthapp/sleep/detail\"}}],\"styles\":{\"width\":98,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_08_004_sleep_report\",\"path\":\"/\",\"value\":{\"sleepReport\":{\"title\":\"昨晚睡眠报告\",\"summary\":\"质量偏低\",\"timeRange\":\"23:48-06:36\",\"totalText\":\"6小时48分\",\"deepPercent\":18,\"lightPercent\":62,\"snoreText\":\"轻微打呼 12分钟\",\"actionText\":\"查看详情\"}}}}"
+  ]
+}

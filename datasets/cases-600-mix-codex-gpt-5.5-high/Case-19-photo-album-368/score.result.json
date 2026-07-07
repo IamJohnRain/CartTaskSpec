@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-368",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.3,
+  "reasons": {
+    "instruction": "尺寸 2x4 (300x140) 正确，catalogId/version/path 等协议硬约束均满足；事件 clickToDeeplink 正确落在 root 与 action Button 上，args 与 eventCandidates 完全一致；展示了 title、cover、storageStatus、storageHint、actionText 以及 weather.condition+temperatureText 等所有用户提及字段。但用户明确要求'主体是图'，当前图片 120x116 ≈ 13920 px²、信息区 146x116 ≈ 16936 px²，信息区面积反而大于图片，未充分体现'图为主体'的诉求，扣分。",
+    "aesthetic": "背景 #fff1f3f5 浅灰干净，前景文字在背景上对比度良好；'空间快满' 用 #ffe84026 红色突出警示，层次合理；字号阶梯 18/14/12/10 合规；仅 title 一处 700 字重作为最强字重，其余 600/400 配合得当；底部蓝色 CTA 与红色警示形成视觉锚点；但信息区四行+按钮堆叠略密，整体略显拥挤，扣轻微分。",
+    "layout": "root Row 横向 12+10+120+146+12=300 ✓，纵向 12+116+12=140 ✓；info Column 子项高 22+18+30+30=100，itemMargin 8×3=24，合计 124 > 可用 116，溢出 8vp，依赖 justifyContent:spaceBetween 兜底才视觉贴合；storage Column 16+12+2=30 ✓；底部按钮到卡片底 12vp 在 10-14 区间 ✓；按钮热区 30vp ≥24vp ✓；受保护文本（标题/状态/CTA）未截断。"
+  },
+  "issues": [
+    "info Column 子项占用 100 + itemMargin(8)×3 = 124 > 父高 116，存在 8vp 理论溢出，依赖 spaceBetween 兜底，存在渲染器实现差异风险",
+    "图片 120×116 面积小于信息区 146×116，未充分满足用户'主体是图'的明确诉求",
+    "root 与 action Button 同时挂载 onClick，存在事件双触发/冒泡冗余风险",
+    "图片区域在截图中呈现为纯灰色块，未能体现 travel_album_cover 图形素材的视觉特征（可能为资源缺失）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_368\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_368\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"info\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]},{\"id\":\"hero\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.album.cover }}\",\"styles\":{\"width\":140,\"height\":116,\"borderRadius\":16,\"objectFit\":\"cover\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"title\",\"weather\",\"storage\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":126,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":126,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":126,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"storage\",\"component\":\"Column\",\"children\":[\"storageStatus\",\"storageHint\"],\"itemMargin\":2,\"styles\":{\"width\":126,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"storageStatus\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.storageStatus }}\",\"styles\":{\"width\":126,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"storageHint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.storageHint }}\",\"styles\":{\"width\":126,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":126,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_368\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"旅行相册\",\"cover\":\"assets/photo-album-travel-glyph.png\",\"storageStatus\":\"空间快满\",\"storageHint\":\"仅剩 1.2GB\",\"actionText\":\"管理空间\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京\"},\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"多云\",\"airQuality\":\"良\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

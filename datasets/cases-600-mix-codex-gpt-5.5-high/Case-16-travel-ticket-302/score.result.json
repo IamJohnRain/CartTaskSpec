@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-16-travel-ticket-302",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户要求 ①清单+打勾 ②点一下能操作 ③读天气，三项诉求在结构上均已落地：3 个 Checkbox 绑定 /checklist/* 状态，Button 携带 eventCandidates 唯一 clickToIntent(ViewCalendarEvent,entityId=flight-prep-302)，weatherNote 与 data.weather.current 字段已绑定展示，assetCandidates.flight_glyph 路径正确（/assets/flightGlyph）。扣分点：受保护的 CTA 文本 '看行程' 在渲染时被截断为 '看...'，用户实际看不到完整动作含义，属功能性瑕疵；checkbox 标签 '登机口' 也被截成 '...'。",
+    "aesthetic": "配色与渐变（#FFEAF6FF→#FFFFF8E6）+ 深蓝文字对比可读，字号阶梯 14/10 合理，字重 700/500/600 层次清晰。扣分项：flight_glyph 图标未加载呈现为左上灰色占位块；CTA 按钮文字截断成 '看...'，黑色药丸内出现省略号破坏整体感；check_row 末端出现 '...' 残影（label 截断溢出），整体观感略糙。",
+    "layout": "核心预算核算：①Root Column 内容区 140-24(padding)=116，子项累计高 30(hero_row)+16(weather_text)+30(check_row)+28(action_row)=104，gaps 3*6(itemMargin)=18，纵向占用 122>116，**溢出 6**。②title_col 自身高 28，子项 16+2+12=30，**内部溢出 2**（被 maxLines:1 截断保护）。③check_row 宽 116，子项 36+2+36+2+40=116 刚满，label '登机口' (3 字*10+box=46) > 40 被截为 '...'。④action_btn 宽 62，'看行程' 3*15(fontSize14 w700)=45 + 内部 padding≈12 > 62，**CTA 文字被截断为 '看...'**，这是受保护文本，按规范不得省略。⑤action_row 距底 = 12 满足 2x2 范围，但因整体内容溢出 6，实际底部动作锚定被压缩。"
+  },
+  "issues": [
+    "Root Column 纵向占用 122 > 可用 116，溢出 6，存在堆叠/挤压",
+    "title_col 内部 30 > 高度 28，title 或 flight 被 maxLines 截断",
+    "Button '看行程' 在宽 62 容器内被截断为 '看...'，受保护 CTA 不可读",
+    "Checkbox 标签 '登机口' 在宽 40 内被截断为 '...'",
+    "flight_glyph 图标未渲染，显示为灰色占位",
+    "weatherNote 与 action_hint 重复显示天气信息，浪费版面"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"travel_ticket_boarding_302\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"travel_ticket_boarding_302\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"weather_text\",\"check_row\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFEAF6FF\",\"linearGradient\":{\"angle\":90,\"colors\":[[\"#FFEAF6FF\",0],[\"#FFF7FBFF\",0.62],[\"#FFFFF8E6\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"flight_glyph\",\"title_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"flight_glyph\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.flightGlyph }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"flight\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.title }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF123047\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"flight\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.flightText }}\",\"styles\":{\"width\":88,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF4B6475\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weatherNote }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF4B6475\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"id_check\",\"bag_check\",\"gate_check\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"id_check\",\"component\":\"Checkbox\",\"label\":\"证件\",\"value\":\"idReady\",\"group\":\"boarding\",\"select\":{\"path\":\"/checklist/idReady\"},\"styles\":{\"width\":36,\"height\":30,\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#FF9CA3AF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"bag_check\",\"component\":\"Checkbox\",\"label\":\"行李\",\"value\":\"bagDone\",\"group\":\"boarding\",\"select\":{\"path\":\"/checklist/bagDone\"},\"styles\":{\"width\":36,\"height\":30,\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#FF9CA3AF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"gate_check\",\"component\":\"Checkbox\",\"label\":\"登机口\",\"value\":\"gateChecked\",\"group\":\"boarding\",\"select\":{\"path\":\"/checklist/gateChecked\"},\"styles\":{\"width\":36,\"height\":30,\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#FF9CA3AF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"action_btn\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ $__dataModel.action.entityId }}\"}}}],\"styles\":{\"width\":80,\"height\":30,\"borderRadius\":14,\"backgroundColor\":\"#FF123047\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"travel_ticket_boarding_302\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"登机准备\",\"flightText\":\"MU5123 09:35\"},\"checklist\":{\"idReady\":true,\"bagDone\":false,\"gateChecked\":false},\"weatherNote\":\"外出 多云 24C\",\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\",\"prefectureName\":\"\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"24C\",\"condition\":\"多云\",\"airQuality\":\"\",\"humidityPercent\":58,\"windDirection\":\"\",\"windLevel\":2,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"action\":{\"label\":\"看行程\",\"entityId\":\"flight-prep-302\"},\"assets\":{\"flightGlyph\":\"resources/base/media/icon_flight.png\"},\"state\":{\"loading\":true}}}}"
+  ]
+}

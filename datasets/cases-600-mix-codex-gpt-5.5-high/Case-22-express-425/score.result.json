@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-425",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "DSL 在结构上覆盖了用户三个明确诉求：Checkbox 列表（3 个 item）由 List 模板绑定 /items 渲染、summary_text 通过 formatString 读取 /summary/remainingCount+unit+suffix 显示'还剩 3件未取'、root 与 action_button 均挂载 onClick 调用 clickToDeeplink 且 call/args 原样来自 eventCandidates，素材 icon_schedule.png 也来自 assetCandidates。2x4 尺寸/catalogId 'ohos.a2ui.extended.catalog'/version v0.9/updateDataModel path='/' 协议均合规。但渲染截图中 3 个 Checkbox 完全不可见、CTA'打开快递'被截断为'打开...'，用户最关心的'整张能打勾'与'点了能直接打开快递'两处关键诉求在视觉上未落实，故扣分。",
+    "aesthetic": "配色（白底 #FFFFFFFF + 浅灰面板 #FFF1F3F5 + 蓝 CTA #FF0A59F7）和字重梯度（标题 700/16、摘要 500/14、CTA 500/14）协调且只有一个最强字重，色阶清晰可读。但 main_panel 摘要下方因溢出而留出大块空白（约 44vp）、按钮文案出现省略号'打开...'，破坏了视觉完整感与 CTA 强度，整体观感打折。",
+    "layout": "核心预算核算：① root Row 300x140 padding 12：横向 12+10+190+76+12=300 临界、纵向 12+max(116,116)+12=140 暂未溢出。② main_panel Column 190x116 padding 8：纵向 = padding.top 8 + padding.bottom 8 + itemMargin 6*2 + Σheight(22+18+44) = 16+12+84 = 112 > 可用 100，溢出 12，pickup_list 被挤出可视区（截图未渲染 3 个 Checkbox）。③ action_button 76x32 fontSize 14：'打开快递'估算 4*14=56 + 按钮内边距约 24 = 80 > 76，导致受保护 CTA 文案被截断为'打开...'。④ action_panel Column 76x116 itemMargin 12：纵向 0+0+12+16+32=60 ≤ 116 ok；底部 CTA 底边到卡底 12vp 合规。综合：存在 1 处纵向溢出 + 1 处受保护文本截断，layout 严重失败。"
+  },
+  "issues": [
+    "main_panel Column 子项总高 112 > 可用 100，溢出 12，导致 pickup_list 列表完全不可见，违背用户'整张能打勾'核心诉求",
+    "action_button 宽 76 容纳不下 '打开快递'（约 80），受保护 CTA 文案被截断为 '打开...'",
+    "截图摘要下方留出约 44vp 空白，视觉密度严重不均",
+    "3 个 Checkbox（丰巢柜/菜鸟驿站/门卫室）未在渲染中出现，用户逐项打勾的交互语义缺失",
+    "main_panel 内边距 8 偏大、List 高度 44 紧张，未给 Checkbox 留出足够行高（每项仅 12）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_425\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_425\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"action_panel\"],\"itemMargin\":10,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"top_row\",\"summary_text\",\"pickup_list\"],\"itemMargin\":6,\"styles\":{\"width\":184,\"height\":116,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#FFF1F3F5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"icon_box\",\"title\"],\"itemMargin\":8,\"styles\":{\"width\":172,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":144,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"还剩 ${/summary/remainingCount}${/summary/unit}${/summary/suffix}\"}},\"styles\":{\"width\":172,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pickup_list\",\"component\":\"List\",\"children\":{\"componentId\":\"item_tpl\",\"path\":\"/items\"},\"space\":4,\"styles\":{\"width\":172,\"height\":56,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"item_tpl\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${name} ${location}\"}},\"select\":{\"path\":\"picked\"},\"styles\":{\"width\":172,\"height\":14,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"action_hint\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":82,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"整卡可点\",\"styles\":{\"width\":82,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":82,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_425\",\"path\":\"/\",\"value\":{\"title\":\"待取快递\",\"summary\":{\"remainingCount\":3,\"unit\":\"件\",\"suffix\":\"未取\"},\"items\":[{\"name\":\"丰巢柜\",\"location\":\"3号柜\",\"picked\":false},{\"name\":\"菜鸟驿站\",\"location\":\"货架B2\",\"picked\":false},{\"name\":\"门卫室\",\"location\":\"小件区\",\"picked\":false}],\"actionLabel\":\"打开快递\"}}}"
+  ]
+}

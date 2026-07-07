@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-17-queue-326",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户六大诉求均已落实：背景图 bg_icon(opacity 0.2)+ 文字叠层 content Row；数字会变 currentNumber 绑 dataModel；点一下进 app 落在 root 与 open_btn 的 onClick clickToDeeplink（call/args 原样来自 eventCandidates）；还剩几个 remainingText '前方还剩 3 位'；红色危险提示 #E84026 徽标 + alertText '即将叫到，请留意'。size=2x4 width:300 height:140 borderRadius:22 clip:true、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/ 且 value 等于 TaskSpec.dataModel.value，全部硬约束满足。轻微扣分：shade Column 子项为空数组，是无效/冗余节点；root 与 open_btn 都挂了同一份 onClick，事件冗余双绑。",
+    "aesthetic": "暗红 + 白字 + 红色徽标配色契合排队告警语义，对比度充足，字号阶梯 40/14/12/14 形成清晰层级，只有一个最强字重 800 在 A086 上其余 700 节奏合理；徽标 pill 化、CTA 按钮反白处理都是加分项。扣分点：整卡饱和暗红视觉压迫偏强、缺一抹冷色中和；shade 空 Column 在多数引擎不渲染其 backgroundColor，导致背景层次只靠 bg_icon opacity 0.2 撑起，深度感偏薄；'前方还剩 3 位' 在 84 宽列内偏贴边略显局促。",
+    "layout": "【预算核算】content Row：12(padL)+156(left_info)+12(itemMargin)+84(action_col)+12(padR)=276，可用 276，无横向溢出；纵向 10+max(96,96)+10=116，无纵向溢出。left_info Column：0+6*2+20(title)+40(number)+24(alert)=96，与可用 96 等高（无 padding 余量；若 alert 外高含 padding 24+8=32 则超 8vp 风险）。action_col Column：0+12*1+20(remain)+32(open_btn)=64≤96，余 32。title '取号进度' 4*14=56≤156；number 'A086' 0.6*40*4=96≤156；alert 文本 '即将叫到，请留意' 7*12+0.4*12≈89≤120，外宽 120+16=136≤156；remain '前方还剩 3 位' 4*12+0.4*12*2+0.6*12≈77≤84（贴边）；open_btn '进入排队' 4*14=56≤84。Button 底沿距卡底 10vp 在 10-14vp 区间合规。Stack 叠层 [bg_icon, shade, content] 顺序合理，content 居顶未遮受保护文本/CTA。整体未观察到明显文字截断或点击热区不足，但 left_info 处于 0 余量且 shade 不可见是隐患。"
+  },
+  "issues": [
+    "shade Column 子项为空数组，引擎通常不渲染其 backgroundColor，属于无效节点却消耗层级",
+    "root 与 open_btn 都绑了 clickToDeeplink，事件语义重复，理论上可能双触发",
+    "left_info Column 子项累计 96=容器高，0 余量；若 alert height 含 padding 外高 32 则超 8vp",
+    "remain 文本估算 77vp 落在 84vp 宽列内，偏紧",
+    "整卡高饱和暗红视觉压迫偏强，缺冷色辅助",
+    "bg_icon opacity 0.2 几近不可见，'背景图'的语义效果偏弱",
+    "底部动作区 Button 距卡底 10vp 在允许区间但接近下限，建议 12vp"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_326\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_326\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF7F1D1D\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.queue\",\"abilityName\":\"com.example.queue.MainAbility\",\"uri\":\"queue://ticket/current\"}}]},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.queue.icon }}\",\"styles\":{\"width\":300,\"height\":140,\"opacity\":0.18,\"objectFit\":\"cover\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"left_info\",\"action_col\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_info\",\"component\":\"Column\",\"children\":[\"title\",\"number\",\"alert\"],\"itemMargin\":6,\"styles\":{\"width\":156,\"height\":96,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":156,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"number\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.currentNumber }}\",\"styles\":{\"width\":156,\"height\":40,\"fontSize\":40,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.alertText }}\",\"styles\":{\"width\":140,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"remain\",\"open_btn\"],\"itemMargin\":10,\"styles\":{\"width\":84,\"height\":96,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"remain\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.remainingText }}\",\"styles\":{\"width\":84,\"height\":20,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFDAD4\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.actionLabel }}\",\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF7F1D1D\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.queue\",\"abilityName\":\"com.example.queue.MainAbility\",\"uri\":\"queue://ticket/current\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_326\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"取号进度\",\"currentNumber\":\"A086\",\"remainingText\":\"前方还剩 3 位\",\"alertText\":\"即将叫到，请留意\",\"actionLabel\":\"进入排队\",\"icon\":\"assets/queue-ticket.png\"}}}}"
+  ]
+}

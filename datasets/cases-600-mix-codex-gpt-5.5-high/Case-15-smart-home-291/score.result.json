@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-15-smart-home-291",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "整体设计意图基本对齐用户诉求:顶部'睡前待办'大标题、深色舞台风渐变、三个checkbox横向并排、关灯完成态绿勾、右上角跳系统设勿扰、底部天气'晴 22°C'、未使用图片均已落实;事件绑定 clickToDeeplink 与 eventCandidates 一致。但渲染截图存在三处关键内容丢失:1)左下角步数胶囊只显示'6842','步'字被截断,丢失'6842步'完整信息;2)右上角'勿扰'按钮渲染为省略号'...',事件按钮失去文字指引;3)三个 Checkbox 的 label('关灯/锁门/闹钟')在 2x2 紧空间下被图标挤压,截图上看不到标签文字,只能识别勾选状态,弱化了'关灯、锁门、设闹钟'三项清单的语义,扣 3.5 分。",
+    "aesthetic": "渐变配色(深灰→紫→绿)契合'深色舞台风+运动催人渐变'语义,层级清晰;字号在 10/12/16 阶梯,绿色对白胶囊突出'6842'运动数据,完成态绿勾色与渐变绿呼应。但右上角'勿扰'渲染为'...'严重破坏按钮可读性,'步'字缺失破坏胶囊信息完整度,2x2 紧空间下 checkbox 标签不显示也让用户无法直接读出三项待办内容。视觉整体专业但有关键文字瑕疵,扣 4 分。",
+    "layout": "预算核算(根容器 140x140,内容区 116x116):① root Column 纵向占用 = 12+12 + 8*2 + 28+36+28 = 108 ≤ 116 ✓;② top_row 横向占用 = 74+6+36 = 116 ✓ 紧贴边界;③ check_row 横向占用 = padding(4+4)=8 + itemMargin(4)*2=8 + items(34+34+36)=104 = 120 > 116,溢出 4px,会导致三个 checkbox 被挤压/裁切;④ bottom_row 横向占用 = 52+6+58 = 116 ✓ 紧贴边界;⑤ steps_text 内部文本'6842步'估算 4*0.6*12+12=40.8 > 可用宽度 52-16=36,溢出 4.8px,'步'被截断;⑥ dnd_btn width=36 不足以容纳 '勿扰'(20px)+ Button 隐式 padding,导致文字渲染为 '...';⑦ 三个 Checkbox label 被 34 宽度的图标区挤压,标签不可见。问题集中在 check_row 横向溢出 4、steps_text 内部文本溢出 4.8、dnd_btn 文本被裁、checkbox 标签不可见,扣 5 分。"
+  },
+  "issues": [
+    "check_row 横向预算 120 > 116,溢出 4px,三个 checkbox 被挤压",
+    "steps_text 内部 '6842步' 估算 40.8 > 可用 36,'步'字被截断",
+    "dnd_btn width=36 容纳不下 '勿扰' + Button 隐式 padding,渲染为 '...'",
+    "三个 Checkbox label('关灯/锁门/闹钟')在 2x2 紧空间下被图标挤压,截图不可见",
+    "top_row 与 bottom_row 均处于 116 紧贴边界状态,抗扰动余量为 0"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_291\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_291\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"check_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff202224\",0],[\"#ff5f58c7\",0.55],[\"#ff5ba854\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"dnd_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bedtime.title }}\",\"styles\":{\"width\":68,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dnd_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.bedtime.actionText }}\",\"styles\":{\"width\":42,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}]},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"check_lights\",\"check_lock\",\"check_alarm\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":36,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"check_lights\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.bedtime.items.lights.label }}\",\"select\":\"{{ $__dataModel.bedtime.items.lights.done }}\",\"styles\":{\"width\":34,\"height\":28,\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"check_lock\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.bedtime.items.lock.label }}\",\"select\":\"{{ $__dataModel.bedtime.items.lock.done }}\",\"styles\":{\"width\":34,\"height\":28,\"fontSize\":10,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"check_alarm\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.bedtime.items.alarm.label }}\",\"select\":\"{{ $__dataModel.bedtime.items.alarm.done }}\",\"styles\":{\"width\":34,\"height\":28,\"fontSize\":10,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"steps_text\",\"weather_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bedtime.stepsText }}\",\"styles\":{\"width\":56,\"height\":22,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff5ba854\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":54,\"height\":22,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_291\",\"path\":\"/\",\"value\":{\"bedtime\":{\"title\":\"睡前待办\",\"actionText\":\"勿扰\",\"stepsText\":\"6842步\",\"items\":{\"lights\":{\"label\":\"关灯\",\"done\":true},\"lock\":{\"label\":\"锁门\",\"done\":false},\"alarm\":{\"label\":\"闹钟\",\"done\":false}}},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"晴\",\"temperatureText\":\"22°C\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-401",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户要求基金卡、点击跳应用、显示'已连接'，DSL 完整绑定了 dataModel 中所有基金字段（name/typeLabel/netValue/changeLabel/status/updatedAt/actionLabel），onClick[0] 原样采用 eventCandidates 的 clickToDeeplink 与 uri，size 2x4、catalogId='ohos.a2ui.extended.catalog'、version=v0.9、updateDataModel.path='/' 与 value 全部合规；唯一遗憾是按钮 label '打开应用' 渲染被截断为 '打开...'，影响 CTA 表意完整度，扣 1 分。",
+    "aesthetic": "配色采用浅灰到浅绿的对角渐变（#fff1f3f5→#e5f7ee），主蓝 #0a59f7 强调 CTA 与已连接状态，深绿 #64bb5c 表达涨幅，整体克制专业；字号阶梯 12/14/16/20 合理，主指标 20px 突出；但 name（16/700）与 netValue（20/700）同用字重 700，违反'同一卡片只保留一个最强字重'原则，扣 0.5 分；按钮截断使整体观感不完整，再扣 0.5 分。",
+    "layout": "逐项预算核算：root Row 横向 12+12+178+10+1+10+76=299 ≤ 300 临界合格（仅 1vp 余量）；root Row 纵向由 alignItems:center 与最大子项高 116 决定，116 ≤ 116 无溢出；hero Column 纵向 16+6+20+6+30+6+16=100 ≤ 116 合格；valueRow 横向 78+8+62=148 ≤ 168 合格；side Column 纵向 28+12+34=74 ≤ 116 合格。结构层面无堆叠/裁剪，但 Button label '打开应用' 估算宽 4×14=56，Button 宽 76 减去隐式内 padding（≈24）后文本区仅 52，被强制截为 '打开...'，属受保护 CTA 文本截断，违反 spec 硬约束，扣重分。"
+  },
+  "issues": [
+    "按钮 label '打开应用' 渲染为 '打开...'，受保护 CTA 文本被截断，违反 spec 硬约束",
+    "name(16px/700) 与 netValue(20px/700) 同为字重 700，未保留单一最强字重",
+    "root Row 横向预算 299/300 几乎贴边，无抗误差空间，hero/side 宽度分配可更均衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"stocks401\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"stocks401\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"divider\",\"side\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":105,\"colors\":[[\"#fff1f3f5\",0],[\"#e5f7ee\",1]]},\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"type\",\"name\",\"valueRow\",\"updated\"],\"itemMargin\":6,\"styles\":{\"width\":170,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"type\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.typeLabel }}\",\"styles\":{\"width\":70,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.name }}\",\"styles\":{\"width\":160,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"valueRow\",\"component\":\"Row\",\"children\":[\"netValue\",\"change\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":160,\"height\":30,\"alignItems\":\"center\"}},{\"id\":\"netValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.netValue }}\",\"styles\":{\"width\":78,\"height\":30,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"change\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.changeLabel }}\",\"styles\":{\"width\":62,\"height\":22,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"updated\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.updatedAt }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33000000\",\"height\":84}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"statusPill\",\"openBtn\"],\"itemMargin\":12,\"styles\":{\"width\":84,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"statusPill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.status }}\",\"styles\":{\"width\":68,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#330a59f7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"openBtn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fund.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":84,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"stocks401\",\"path\":\"/\",\"value\":{\"fund\":{\"name\":\"稳健优选基金\",\"typeLabel\":\"基金\",\"netValue\":\"1.2860\",\"changeLabel\":\"+0.42%\",\"status\":\"已连接\",\"updatedAt\":\"今日 15:00\",\"actionLabel\":\"打开应用\"}}}}"
+  ]
+}

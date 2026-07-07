@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-19-photo-album-365",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户三条诉求均已落实：人脸分组的列表展示了 3 行（家人/朋友/不认识）；root 与 Button 都挂了 onClick，call/args 原样来自 eventCandidates（clickToDeeplink 跳转 photos://album/faces）；红字提醒由 status 红色 pill 与「不认识」整行红字共同实现。但因为布局问题导致标题「人脸分组」被截成「人脸分」、状态「2个不认识」被截成「2个不认」，受保护的关键信息在视觉上不完整，扣 2.5 分。",
+    "aesthetic": "暖色系（#fff8f1f0 底 + #d94838 红）契合相册情感，红 border + 红 status pill + 红「不认识」行形成清晰的红色警示层级；字号阶梯（16/12/10）合理、字重仅 700 一个最强档；但截断与溢出让设计显得粗糙、不专业，扣 4 分。",
+    "layout": "按公式逐项核算：① root Column 纵向占用 = 12(padTop) + 24(top_row) + 6(margin) + 58(face_list) + 6(margin) + 26(action) + 12(padBottom) = 144 > 父高 140，溢出 4vp，clip:true 会被裁切；② top_row 横向 = 58(title) + 6(margin) + 52(status) = 116 正好填满 116，但 status 内置 padding 6+6=12，视觉宽度 64，从 x=64 延伸到 x=128，超出内容区右边界 12vp，被 card clip 裁掉右半 pill；③ title 文本「人脸分组」宽 4×16=64 > title width 58，被截为「人脸分」；④ status 文本「2个不认识」宽 0.6×10+4×10=46 > status 文本区 40（按 width 含 padding 计），被截为「2个不认」。三项截断 + 1 项 root 溢出，属严重布局事故，D3 给 3.5。"
+  },
+  "issues": [
+    "root Column 内容总高 144 > 卡片高 140，溢出 4vp",
+    "title 文本「人脸分组」(64) > title width 58，渲染截断为「人脸分」",
+    "status 文本「2个不认识」(46) > status 内容区，渲染截断为「2个不认」",
+    "status pill（含 padding 视觉宽 64）超出 top_row 内容区右边界 12vp，被卡片 clip 切掉右侧",
+    "title 字号 16 与 card 尺寸 2x2 不匹配，强行放大导致必截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_365\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_365\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"face_list\",\"action\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.photos\",\"abilityName\":\"com.huawei.photos.MainAbility\",\"uri\":\"photos://album/faces\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff8f1f0\",\"borderWidth\":1,\"borderColor\":\"#33d94838\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.statusText }}\",\"styles\":{\"width\":48,\"height\":20,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"face_list\",\"component\":\"Column\",\"children\":[\"face_one\",\"face_two\",\"face_unknown\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"face_one\",\"component\":\"Row\",\"children\":[\"face_one_name\",\"face_one_count\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"face_one_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.faces[0].name }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#cc182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"face_one_count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.faces[0].countText }}\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99182431\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"face_two\",\"component\":\"Row\",\"children\":[\"face_two_name\",\"face_two_count\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"face_two_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.faces[1].name }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#cc182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"face_two_count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.faces[1].countText }}\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99182431\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"face_unknown\",\"component\":\"Row\",\"children\":[\"unknown_name\",\"unknown_count\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":8,\"backgroundColor\":\"#22d94838\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"unknown_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.faces[2].name }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unknown_count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.faces[2].countText }}\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":88,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff182431\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.photos\",\"abilityName\":\"com.huawei.photos.MainAbility\",\"uri\":\"photos://album/faces\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_365\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"人脸分组\",\"statusText\":\"2个不认识\",\"actionText\":\"进相册\"},\"faces\":[{\"name\":\"家人\",\"countText\":\"128张\"},{\"name\":\"朋友\",\"countText\":\"46张\"},{\"name\":\"不认识\",\"countText\":\"2组\"}]}}}"
+  ]
+}

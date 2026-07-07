@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-012-v1",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户原始指令中明确要求显示'双方确认'与'到公司自动结算'等状态信息。截图中右上角拼车卡片右下方第二个白色面板里，主数值'油费¥18.5/人'正常显示，但紧随其下的副状态行直接暴露出原始模板字符串'{{ $__dataModel.data'，并未成功绑定并展示'双方已确认 · 到司后结算'。这说明两个 `{{ ... }}` 表达式在同一个 Text.content 中拼接时未被渲染引擎正确求值，关键的拼车确认/结算状态信息缺失。路线、时间、匹配人姓名、评分次数、油费分摊、导航按钮文案以及 clickToIntent 事件均按契约落实，size=2x4 / catalogId / version / updateDataModel 协议合规，但核心状态字段失败，扣分明显。",
+    "aesthetic": "整体配色为浅绿底+白色卡片+绿色强调色，主题一致且不刺眼；标题/副标题/CTA 字号阶梯较为清晰，留白和圆角处理也较舒适。但由于右侧 cost_panel 的副状态行直接渲染出未求值的模板字面量 '{{ $__dataModel.data'，文字突兀、与卡片整体的克制观感严重违和，相当于在用户面前暴露了内部数据模型路径，明显拉低美观度。",
+    "layout": "截图观察：左上 '上班拼车 / 我家 → 公司' 与右上 '08:10出发 · 约32分钟' 未越界；中间两个白卡（match_panel / cost_panel）宽度均为 134，内部 8 边距，结构上未发生堆叠遮挡；底部绿色 CTA '导航到公司' 满宽 276 居中显示，无文字被裁切。问题集中在右侧 cost_panel 副行：渲染出原始模板字符串 '{{ $__dataModel.data'，属于内容渲染失败，并非单纯的物理溢出，但客观上等同于'关键信息未呈现/被截断'，按 D3 的核心排查口径（受保护文本不可见）需要扣分。"
+  },
+  "issues": [
+    "confirm_text 使用了 '{{ confirmStatus }} · {{ settlementStatus }}' 两个表达式拼接，渲染引擎不支持同一 content 内多 `{{ }}` 求值，导致右侧面板直接输出原始模板字面量 '{{ $__dataModel.data'",
+    "用户要求的'双方确认'与'到公司自动结算'两个关键状态信息在截图中完全未呈现",
+    "cost_panel 内部横向空间 118，即使双表达式能求值，原始文案'双方已确认 · 到司后结算'在 12pt 下也会超宽，需要更小字号或拆 Row 容纳"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_11_012_carpool_commute\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_11_012_carpool_commute\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"mid_row\",\"nav_button\"],\"itemMargin\":2,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF2F8F5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_col\",\"time_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"route_text\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.title }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"route_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.routeText }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.timeText }}\",\"styles\":{\"width\":148,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"mid_row\",\"component\":\"Row\",\"children\":[\"match_panel\",\"cost_panel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"match_panel\",\"component\":\"Column\",\"children\":[\"match_name\",\"match_meta\"],\"itemMargin\":2,\"styles\":{\"width\":134,\"height\":48,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"match_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.matchName }}\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"match_meta\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.matchMeta }}\",\"styles\":{\"width\":118,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cost_panel\",\"component\":\"Column\",\"children\":[\"share_cost_text\",\"confirm_row\"],\"itemMargin\":2,\"styles\":{\"width\":134,\"height\":48,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"share_cost_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.shareCostText }}\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"confirm_row\",\"component\":\"Row\",\"children\":[\"confirm_text1\",\"dot_text\",\"confirm_text2\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":118,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"confirm_text1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.confirmStatus }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dot_text\",\"component\":\"Text\",\"content\":\"·\",\"styles\":{\"width\":8,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"confirm_text2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.carpool.settlementStatus }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.carpool.buttonText }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":276,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A8F6A\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_11_012_carpool_commute\",\"path\":\"/\",\"value\":{\"data\":{\"carpool\":{\"title\":\"上班拼车\",\"routeText\":\"我家 → 公司\",\"timeText\":\"08:10出发 · 约32分钟\",\"matchName\":\"邻居 李然\",\"matchMeta\":\"4.9分 · 拼过36次\",\"confirmStatus\":\"双方已确认\",\"shareCostText\":\"油费¥18.5/人\",\"settlementStatus\":\"到司后结算\",\"buttonText\":\"导航到公司\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-15-smart-home-283",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "智能家居标题('智能家居')、中间天气图标、已连接徽章('已连接')、天气主指标('--°'与'天气')均已展示；onClick.call/args原样引用eventCandidates中的clickToDeeplink；Image.src使用assetCandidates中icon_weather1.png；createSurface的catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、size='2x2'、width/height=140/140、borderRadius=18、clip=true、updateDataModel.path='/'且value与TaskSpec一致，全部硬约束满足。扣分:用户原query明确要求'跳到窗帘app'，但eventCandidates仅提供天气deeplink(hww://www.huawei.com/totemweather?cityCode=)，导致事件语义与用户意图不匹配(此为TaskSpec限制)。",
+    "aesthetic": "整体配色和谐(#fff1f3f5浅灰底+#ff0a59f7蓝色CTA点缀)，蓝色徽章(#330a59f7+白字)与底部按钮形成统一色系；字号阶梯14/12/10清晰，主标题fontWeight 700为唯一最强字重，状态徽章500，其余400，字重层级到位；圆角胶囊(11/14)处理精致。扣分:渲染截图中Button.label本应渲染为'查看'(2字×12≈24vp，宽44理应容纳)，实际显示为'...'，CTA文字完全不可读，严重影响视觉识别度。",
+    "layout": "root Column预算:padding.top+padding.bottom=12+10=22，itemMargin*(3-1)=7*2=14，Σ子项height=24(top_row)+54(hero_icon)+32(bottom_row)=110，合计22+14+110=146>可用140，溢出6vp(虽然spaceBetween勉强渲染，但预算不成立)。top_row(宽116)预算:itemMargin=6+62(title)+48(badge)=116≤116 ✓。bottom_row(宽116)预算:itemMargin=8+64(weather_col)+44(open_button)=116≤116 ✓。weather_col(高32)预算:itemMargin=2+16+12=30≤32 ✓。受保护Button.label='查看'在截图中显示为'...'，CTA文字被截断/未渲染，热区28vp可接受。受保护文本(智能家居、已连接、--°、天气)在截图均完整可见。"
+  },
+  "issues": [
+    "root Column纵向占用146>140，溢出6vp(spaceBetween下视觉勉强，但预算不成立)",
+    "Button.label绑定{{$__dataModel.home.actionText}}='查看'在截图中显示为'...'，CTA文字不可读",
+    "用户明确要求'跳到窗帘app'，但eventCandidates唯一提供的是天气deeplink，事件语义与userQuery不匹配(TaskSpec限制)",
+    "title宽度62在'智能家居'4字×14=56时余量6，偏紧但未截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_283\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_283\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"hero_icon\",\"bottom_row\"],\"itemMargin\":5,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status_badge\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.title }}\",\"styles\":{\"width\":62,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.home.statusText }}\",\"styles\":{\"width\":48,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#330a59f7\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":50,\"height\":50,\"objectFit\":\"contain\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_col\",\"open_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"weather_main\",\"weather_sub\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_main\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_sub\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.home.actionText }}\",\"styles\":{\"width\":48,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"padding\":{\"left\":4,\"right\":4}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_283\",\"path\":\"/\",\"value\":{\"home\":{\"title\":\"智能家居\",\"statusText\":\"已连接\",\"actionText\":\"查看\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"天气\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

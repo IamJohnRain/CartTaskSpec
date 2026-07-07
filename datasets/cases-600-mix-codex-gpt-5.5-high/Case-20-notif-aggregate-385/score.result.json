@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-20-notif-aggregate-385",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "尺寸 2x2、catalogId/version/updateDataModel/onClick.call/onClick.args 均与 TaskSpec 完全一致；assetCandidates 的 alert_icon 通过 /summary/icon 正确绑定到 Image.src；4 个文本字段(title/alertText/countText/appName)与 onClick 事件都已落地。主要扣分：用户明确说'主体是图那种'，原 DSL 把 Image 做成 28×28 的小图标(占 116×116 内容区仅约 6% 面积)，远未成为视觉主体；且渲染截图中 iconShell 显示为空白灰块，说明图像未实际加载(无法确认是资源问题还是 DSL 问题，但视觉上等于主体图形缺失)。红色危险提示由 alertText 红色徽章 + ambientBand 红渐变共同呈现，已落实。",
+    "aesthetic": "配色为暖白底 + 红橙渐变 + 红色徽章，主色安全。问题：1) title 700 + countText 800 同时出现两个最强字重，违反'同一卡片只保留一个最强字重'的规则；2) ambientBand 红渐变覆盖内容上半区(0-44vp)，导致 '通知汇总' 标题直接压在红渐变上、'未读 12 条' 下半部也压在渐变上，深棕字 #3A2A00 与红渐变对比度偏低、视觉糊在一起；3) iconShell 纯白底+灰色占位框在暖红主调中显得突兀、与卡片脱节。整体美感在'可用但有明显土气与不统一'区间。",
+    "layout": "核心排查：用预算公式核算所有 Row/Column。content Column 高度 = 42(topRow)+20(title)+22(countText)+16(appName)=100，叠加 3 个 itemMargin×6=18，合计 118 > 父可用 116，**溢出 2vp**。topRow 宽度 = 42(iconShell)+8+66(alertText)=116 刚好打满，没有容错。iconShell Stack 内部 = 28+7+7=42 自洽。Stack 层叠问题：ambientBand 116×44 作为底层与 content Column(0-116)重叠，y=0~44 区间直接覆盖了 topRow(0-42)和 title 上沿，深色文字压在红渐变上可读性下降。底部 appName 距卡底因溢出被压缩、距底 < 8vp。综合 content Column 溢出 2vp + 渐变层叠遮压受保护文本，判定布局明显问题。"
+  },
+  "issues": [
+    "content Column 子项总高 100 + 3×6 margins = 118 > 父可用 116，溢出 2vp，底层子项存在被压缩/裁切风险",
+    "Stack 中 ambientBand(116×44) 位于底层，与 content Column 上半区重叠，导致 '通知汇总' 标题、'未读 12 条' 主指标文字直接压在红渐变上，可读性下降",
+    "title 字重 700 与 countText 字重 800 同时为强字重，违反'同一卡片只保留一个最强字重'规则",
+    "icon 28×28 太小，未能成为用户要求的'主体图像'，且渲染截图中呈空白灰块",
+    "iconShell 使用纯白底 + 灰色占位框，与暖红主调脱节，破坏整体配色统一",
+    "'未读 12 条' 在 18 号字+800 字重+红色 下视觉过重，与下方 12 号 appName 层级关系过陡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_385\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_385\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF7F6\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.notificationcenter\",\"abilityName\":\"com.huawei.notificationcenter.MainAbility\",\"uri\":\"notificationcenter://aggregate?source=card385\"}}]},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"topRow\",\"title\",\"countText\",\"appName\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"heroIcon\",\"alertText\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"heroIcon\",\"component\":\"Stack\",\"children\":[\"icon\"],\"styles\":{\"width\":48,\"height\":48,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFF897D\",0],[\"#FFB3261E\",1]]}}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":{\"path\":\"/summary/icon\"},\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"alertText\",\"component\":\"Text\",\"content\":{\"path\":\"/summary/alertText\"},\"styles\":{\"width\":60,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#FFB3261E\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":{\"path\":\"/summary/title\"},\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF3A2A00\",\"maxLines\":1}},{\"id\":\"countText\",\"component\":\"Text\",\"content\":{\"path\":\"/summary/countText\"},\"styles\":{\"width\":116,\"height\":20,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFB3261E\",\"maxLines\":1}},{\"id\":\"appName\",\"component\":\"Text\",\"content\":{\"path\":\"/summary/appName\"},\"styles\":{\"width\":116,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#993A2A00\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_385\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"通知汇总\",\"alertText\":\"高危提醒\",\"countText\":\"未读 12 条\",\"appName\":\"安全中心\",\"icon\":\"assets/notif-aggregate-alert.png\"}}}}"
+  ]
+}

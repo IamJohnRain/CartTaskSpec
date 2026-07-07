@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-22-express-427",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户四项诉求中：'显示已签收'（status 文本）、'能看天气'（weatherBtn + 正确 deeplink uri）、'点一下能进系统操作'（onClick.clickToDeeplink 事件）均按 TaskSpec 落实；'一排包裹'在 DSL 中有水平 List+模板 path:/packages，但渲染截图中包裹卡片完全未显示（仅空绿底），属关键内容缺失。createSurface 尺寸/catalogId/version、updateDataModel.path='/' 与 value 原样、事件 call/args 原样自 eventCandidates 等协议硬约束全部满足，扣分主要因包裹未渲染导致用户主要诉求未真正呈现。",
+    "aesthetic": "绿色 linearGradient（#ff64bb5c→#92c48d，135°）和谐、白色前景在绿底上清晰可读、底部白色圆角按钮反差得当。层级基本清晰（标题14/状态12/包裹10）。主要扣分：title、status、pkgStatus 三处同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'原则；title 14+700 + status 12+700 + pkgStatus 10+700 出现 3 个 700，视觉权重分散。",
+    "layout": "Root Column 预算：padding-top 12 + header 22 + itemMargin 8 + pkgList 42 + itemMargin 8 + weatherBtn 32 + padding-bottom 12 = 136，< 140 可用高度，刚好压线；Header Row 预算：title 64 + itemMargin 6 + status 46 = 116，= 父宽 116，零缓冲；pkgList 水平：3×34 + 2×space 4 = 110 < 116 可用；pkgItem Column 预算：padding 8 + pkgName 14 + itemMargin 2 + pkgStatus 14 = 38 < 42。关键溢出：pkgName 宽 26 < '一号件' 3 字×fontSize10 = 30（溢出 4vp），pkgStatus 宽 26 < '已签收' 3 字×fontSize10 = 30（溢出 4vp），受保护文字无 ellipsis/clip，将被裁切。底部 margin：weatherBtn 底 124，卡底 140，margin 16vp，已达'不得>16'的硬上限。渲染截图中 List 区域为空，三张包裹卡完全不可见，疑为 List 模板未生效或被裁切，属严重布局失败。"
+  },
+  "issues": [
+    "pkgName 宽 26 < 文本 '一号件' 估算宽 30，溢出 4vp，受保护文字被裁切",
+    "pkgStatus 宽 26 < 文本 '已签收' 估算宽 30，溢出 4vp，受保护文字被裁切",
+    "渲染截图中水平 List 区域为空白，三张包裹卡完全未显示，'一排包裹'核心诉求未呈现",
+    "title/status/pkgStatus 三处均用 fontWeight 700，违反'只保留一个最强字重'原则",
+    "底部 weatherBtn 距卡底 16vp，刚好达到硬约束上限，应缩到 8-12vp 理想区间",
+    "Root Column 高度 136/140=97%，安全余量不足，任一字号微调即可能溢出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_22_express_427\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_22_express_427\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"pkgList\",\"weatherBtn\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff64bb5c\",0],[\"#92c48d\",1]]}}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.status }}\",\"styles\":{\"width\":48,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pkgList\",\"component\":\"List\",\"children\":{\"componentId\":\"pkgItem\",\"path\":\"/packages\"},\"space\":1,\"styles\":{\"width\":120,\"height\":42,\"listDirection\":\"horizontal\",\"scrollBar\":\"off\"}},{\"id\":\"pkgItem\",\"component\":\"Column\",\"children\":[\"pkgName\",\"pkgStatus\"],\"itemMargin\":2,\"styles\":{\"width\":38,\"height\":42,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"pkgName\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":30,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pkgStatus\",\"component\":\"Text\",\"content\":{\"path\":\"status\"},\"styles\":{\"width\":30,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherBtn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.weatherHint }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":120,\"height\":36,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":18}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_22_express_427\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"包裹动态\",\"status\":\"已签收\",\"weatherHint\":\"查看天气\"},\"packages\":[{\"name\":\"一号件\",\"status\":\"已签收\"},{\"name\":\"二号件\",\"status\":\"已签收\"},{\"name\":\"三号件\",\"status\":\"已签收\"}],\"data\":{\"weather\":{\"location\":{},\"current\":{},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

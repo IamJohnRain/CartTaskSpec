@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-15-smart-home-300",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户要求上下分两区(日程+设备)、左右分设备区、固定+动态拼接模式、右侧布防开关、橙红渐变、'已同步'状态等均在设计中体现;事件 clickToIntent 原样引用 eventCandidates(clickToIntent/SetSettingSwitch/battery_saving_mode/switchFlag:0);updateDataModel.value 与 TaskSpec 完全一致;size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、root 140x140、borderRadius=18、clip=true、updateDataModel.path='/' 均满足硬约束。但 schedule_item 用了非标准的 {call:formatString,args:{value:\"${dtStart} ${title}\"}} 表达式,渲染截图中日程项全部缺失,推测框架不识别该语法;device_info 文本使用 '字符串' + $path 拼接,同样未渲染,需在改进版中验证或替换。",
+    "aesthetic": "配色方案整体合理:橙红渐变 #ED6F21→#E64566 传达紧迫感,两个面板用半透明白色 (#CCFFFFFF / #33FFFFFF) 形成层级,标题深黑、'已同步'绿色 (#FF64BB5C) 语义清晰,按钮白底橙字与渐变呼应。但最强字重 700 出现在 calendar_title / mode_text / arm_button 三处,违反'同一卡片只保留一个最强字重'约束;渲染截图中 mode_text、power_text、schedule_item 全部缺失,device_info 区空白,视觉完整性严重受损。",
+    "layout": "预算核算:① root Column 子项 76+6+40=122,加 padding 20=142>140,溢出 2vp,clip 会裁掉底部 2px;② calendar_panel 内 schedule_list 高 38 放 3 项×10 + 2×3 itemMargin=36,虽未溢出但 formatString 表达式不渲染,内容为空;③ device_panel Row 内部可用宽度 120-12=108,子项 device_info 60 + arm_button 48 + itemMargin 6=114,横向溢出 6vp,导致左右元素互相挤压/错位;④ arm_button 宽 48 内放 '全屋布防'(4 字×fontSize 10×weight 700≈44),按钮内边距使文本被截断为 '全...',按钮基本不可读;⑤ device_info 内 mode_text 60×14 放 '当前模式·待机' 估算 5×11+5=60,刚好填满但 weight 700 偏粗,在被挤压情况下极易截断;⑥ power_text '待机12W' 与 mode_text '待机' 重复,语义冗余。整体布局多处堆叠/截断/缺失,设计意图无法落地。"
+  },
+  "issues": [
+    "root Column 内容总高 122+padding 20=142>140,溢出 2vp,clip 裁掉底部",
+    "device_panel Row 内部宽度仅 108,子项 60+48+6=114 横向溢出 6vp,导致 device_info 与 arm_button 互相挤压",
+    "arm_button 宽 48 容纳 '全屋布防' (≈44px) 被截断为 '全...',按钮热区与可读性双重损失",
+    "schedule_item content 使用 {call:formatString,args:{value:\"${dtStart} ${title}\"}} 非标准语法,框架不识别,日程项全部不渲染",
+    "device_info 的 mode_text/power_text 使用字符串拼接表达式,渲染截图中完全不可见,可能 '+' 拼接未生效或被溢出遮挡",
+    "最强字重 700 出现在 calendar_title / mode_text / arm_button 三处,违反单一最强字重约束",
+    "power_text '待机12W' 与 mode_text '当前模式·待机' 中 '待机' 重复,语义冗余",
+    "底部动作区(device_panel)到卡片底边距离 142-140=2vp 溢出,违反 2x2 应 8-12vp 且不得 >16vp 的约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"smart_home_schedule_300\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":{\"width\":140,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"smart_home_schedule_300\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"calendar_panel\",\"device_panel\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[[\"#ED6F21\",0],[\"#E64566\",1]]}}},{\"id\":\"calendar_panel\",\"component\":\"Column\",\"children\":[\"status_row\",\"schedule_list\"],\"itemMargin\":4,\"styles\":{\"width\":124,\"height\":74,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#CCFFFFFF\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"calendar_title\",\"sync_status\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":112,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"calendar_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.header.title }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sync_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.syncText }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF64BB5C\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"schedule_item\",\"path\":\"/data/calendar/items\"},\"itemMargin\":2,\"styles\":{\"width\":112,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_item\",\"component\":\"Text\",\"content\":\"{{ dtStart }} · {{ title }}\",\"styles\":{\"width\":112,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"device_panel\",\"component\":\"Row\",\"children\":[\"device_info\",\"arm_button\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":42,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"device_info\",\"component\":\"Column\",\"children\":[\"mode_text\",\"power_text\"],\"itemMargin\":3,\"styles\":{\"width\":56,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ '当前模式·' + $__dataModel.device.mode }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"power_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.standbyPower }}\",\"styles\":{\"width\":56,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"arm_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":\"{{ $__dataModel.action.switchFlag }}\"}}}],\"styles\":{\"width\":52,\"height\":30,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFED6F21\",\"labelMaxLines\":1,\"labelTextOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"smart_home_schedule_300\",\"path\":\"/\",\"value\":{\"header\":{\"title\":\"家庭日程\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"home-clean\",\"title\":\"打扫\",\"dtStart\":\"周一\",\"dtEnd\":\"周一\"},{\"entityName\":\"calendar_event\",\"entityId\":\"grocery\",\"title\":\"买菜\",\"dtStart\":\"周二\",\"dtEnd\":\"周二\"},{\"entityName\":\"calendar_event\",\"entityId\":\"party\",\"title\":\"聚会\",\"dtStart\":\"周三\",\"dtEnd\":\"周三\"}]}},\"device\":{\"mode\":\"待机\",\"standbyPower\":\"12W\"},\"action\":{\"label\":\"全屋布防\",\"switchFlag\":0},\"state\":{\"syncText\":\"已同步\",\"loading\":true}}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-21-stocks-404",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户四点诉求（涨跌幅、数字会变、点击进系统、天气可读）均已落实：changePercent 用表达式绑定、Button onClick 调用 clickToIntent 且 args 与 eventCandidates 一致、weather 三项字段均展示。createSurface/width/height/borderRadius/clip/catalogId/version、updateDataModel.path=/ 与 value 原样相等均符合硬约束。扣分点：受保护的 CTA 文案 actionText='进系统操作' 在渲染截图中被截断为'进系统...'，语义受损。",
+    "aesthetic": "蓝紫渐变背景与白字对比清晰、白色按钮配品牌蓝文字形成良好焦点。字号阶梯 12/14/18/32 分层合理。但标题 600、主指标 700、天气温度 700、按钮 medium 同时存在多个强字重，未满足'同一卡片只保留一个最强字重'。weather_panel 内文字紧贴边缘、整体留白偏紧。",
+    "layout": "逐一核算：root Row 横向=12+174+10+92+12=300=300✓；hero Column 纵向=18+6+18+6+58=106≤116✓；change_group=38+2+16=56≤58✓；side Column=70+8+38=116=116✓（贴边）；weather_panel 纵向=padding 16+itemMargin 6+子项高 15+22+15=74>70，溢出 4vp；Button 宽度 92，文字'进系统操作'在 fontSize 14 下约需 70vp，按默认内边距后内容区仅约 68vp，受保护 CTA 文案被截断为'进系统...'（截图实证）。底部动作底边到卡底 140-(12+70+8+38)=12vp✓。"
+  },
+  "issues": [
+    "受保护 CTA 文案 actionText='进系统操作' 被截断为'进系统...'，违反'受保护文本不得依赖 ellipsis 隐藏'硬约束",
+    "weather_panel 纵向预算 74vp > 70vp 容器高度，溢出 4vp",
+    "多处使用 700 字重（change_value、weather_temp），违反'同一卡片只保留一个最强字重'",
+    "side Column 总高 116 与可用区 116 贴边，无安全冗余",
+    "Button 缺少显式 padding 样式，导致内部可用文字宽度被默认 padding 压缩"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_stocks_404\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_stocks_404\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a59f7\",0],[\"#ff86c5e3\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"fund_name\",\"change_group\"],\"itemMargin\":6,\"styles\":{\"width\":174,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.title }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"fund_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.fundName }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"change_group\",\"component\":\"Column\",\"children\":[\"change_value\",\"change_label\"],\"itemMargin\":2,\"styles\":{\"width\":174,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"change_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.changePercent }}\",\"styles\":{\"width\":174,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"change_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.market.changeLabel }}\",\"styles\":{\"width\":174,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"weather_panel\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":92,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"weather_title\",\"weather_temp\",\"weather_condition\"],\"itemMargin\":2,\"styles\":{\"width\":92,\"height\":70,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.districtName }}\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":76,\"height\":20,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.market.actionText }}\",\"styles\":{\"width\":92,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"padding\":{\"left\":6,\"right\":6}},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ $__dataModel.market.calendarEntityId }}\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_stocks_404\",\"path\":\"/\",\"value\":{\"market\":{\"title\":\"基金涨跌幅\",\"fundName\":\"沪深300指数基金\",\"changePercent\":\"+1.26%\",\"changeLabel\":\"今日涨跌\",\"actionText\":\"进系统操作\",\"calendarEntityId\":\"market-rebalance-404\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"--\",\"condition\":\"读取中\",\"airQuality\":\"--\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

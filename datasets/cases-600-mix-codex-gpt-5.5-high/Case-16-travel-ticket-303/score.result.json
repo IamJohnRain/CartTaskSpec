@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-16-travel-ticket-303",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.6,
+  "reasons": {
+    "instruction": "用户明确要求『火车行程的清单+能打勾+点跳日历』。渲染中：标题『火车行程』✓、车次信息『高铁 G303 08:20』✓、查看日历按钮 onClick 绑定 clickToIntent/ViewCalendarEvent ✓，但数据中 /checklist 的 2 个 Checkbox（车票/证件）完全未出现在画面中，清单这一核心诉求缺失，扣重分。",
+    "aesthetic": "配色克制（白底 #fff1f3f5 + 蓝 #ff0a59f7 强调），按钮圆角风格统一；但渲染中部 checks 区域高度 38 全部空白，形成大块空洞，密度严重不均；此外 header(700) 与 train(700) 同时使用最强字重，违反『同一卡片只保留一个最强字重』规则。",
+    "layout": "根 Column 预算成立：padding.top(12)+padding.bottom(12)+itemMargin(4×3)+Σheight(20+20+38+26)=24+12+104=140 ✓；trip Row 横向：train(70)+itemMargin(4)+time(42)=116 ✓；底部动作区外框底边到卡片底边 = 140-128 = 12vp（2x2 8-12 范围内）✓。但实际渲染时 checks Column 高度 38 完全为空，Checkbox 未出图，视觉上中部留有 38px 空洞。"
+  },
+  "issues": [
+    "清单核心元素 Checkbox 未渲染：checks Column 高度 38 全部空白，用户明确要求的『能打勾的清单』未实现",
+    "字号层级存在两个最强字重：header fontWeight 700 与 train fontWeight 700 同时出现，违反『同一卡片只保留一个最强字重』",
+    "Checkbox 模板循环 + 顶层 label/select path 绑定方案在原 DSL 中未能正确出图，需改用直接组件 + 字符串模板表达式",
+    "渲染出现大片空白区域（checks 38px 全空），视觉密度不均",
+    "2x2 尺寸紧张，标题+车次+2 复选框+按钮四块叠加，应将次要文本缩到 12-14 阶以预留复选框行高"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_travel_ticket_303\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_travel_ticket_303\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"trip\",\"checks\",\"openCalendar\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":9,\"bottom\":9},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff6f8fa\",\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"header\",\"component\":\"Text\",\"content\":\"{{ $item.card.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"trip\",\"component\":\"Row\",\"children\":[\"train\",\"time\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"train\",\"component\":\"Text\",\"content\":\"{{ $item.data.calendar.items[0].title }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $item.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"checks\",\"component\":\"Column\",\"children\":[\"check1\",\"check2\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"check1\",\"component\":\"Checkbox\",\"label\":\"{{ $item.checklist[0].label }}\",\"select\":\"{{ $item.checklist[0].done }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":12,\"fontColor\":\"#99000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#66000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"check2\",\"component\":\"Checkbox\",\"label\":\"{{ $item.checklist[1].label }}\",\"select\":\"{{ $item.checklist[1].done }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":12,\"fontColor\":\"#99000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#66000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"openCalendar\",\"component\":\"Button\",\"label\":\"{{ $item.card.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_travel_ticket_303\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"火车行程\",\"actionText\":\"查看日历\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"rail-trip-303\",\"title\":\"高铁 G303\",\"dtStart\":\"08:20\",\"dtEnd\":\"12:05\",\"eventLocation\":\"虹桥站\"}]}},\"checklist\":[{\"label\":\"车票\",\"done\":true},{\"label\":\"证件\",\"done\":false}],\"state\":{\"loading\":false}}}}"
+  ]
+}

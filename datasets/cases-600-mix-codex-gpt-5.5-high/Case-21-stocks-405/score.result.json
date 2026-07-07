@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-21-stocks-405",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户原始诉求为『点开能进交易软件，红色那种风险提示』。卡片完整使用了 TaskSpec 中 stockRisk 的 title/alertText/hint/actionText/icon 五个字段，事件 clickToDeeplink 的 call/args 与 eventCandidates 完全一致，size=2x2、root 140x140、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value 与 TaskSpec.dataModel.value 严格一致。扣分点：素材 assetCandidates 绑定的是『resources/base/media/icon_music.png』（实为音符图标）却被语义用作 stock_risk_icon，渲染出音乐图标用于基金风险入口，语义不符；eventCandidates 提供的 uri 实为 hwmusic:// 音乐 deeplink，与用户期望的『交易软件』不一致，但 DSL 严格遵循 eventCandidates，不能擅自改，故仅轻微扣分。",
+    "aesthetic": "配色：白底 + 黑色标题 + 橙色 #ffed6f21 风险强调（主指标与 CTA 同色形成视觉呼应），二级文字 #99000000 透明灰，divider #33000000，整体克制和谐，红色风险语义达成。字号阶梯 16/20/12/14 均在 10/12/14/16/18/20 阶梯上。但 title fontWeight=700 与 alert fontWeight=700 同时为最强字重，违反『同一卡片只保留一个最强字重』原则，弱化层级、且与「高风险」作为视觉焦点的主次关系不清晰。",
+    "layout": "核心预算核算：root Column（width=140，padding=12+12，itemMargin=6，子项 top=28 + risk=42 + divider=1 + action=32）纵向占用 = 12+28+6+42+6+1+6+32+12 = 145 > 140，溢出 5vp，导致底部 padding 被压缩为 7vp（小于 2x2 规定的 8-12vp 区间下沿），底部锚定偏紧。risk Column（height=42，itemMargin=4，子项 alert=24 + hint=16）纵向占用 = 24+4+16 = 44 > 42，溢出 2vp，hint 文本存在被挤压或与底部分割线视觉粘连风险。top Row（width=116，itemMargin=8，子项 icon=24 + title=84）横向占用 = 24+8+84 = 116，无溢出。action Button 116x32，文本『打开查看』4 字 × 14 ≈ 56，热区 32vp ≥ 24vp 满足。无 Stack 遮盖问题。受保护文本（高风险/打开查看/基金风险/投资需谨慎）在 budget 上均有被截断风险。"
+  },
+  "issues": [
+    "root Column 纵向占用 145 > 140，溢出 5vp，底部 padding 被压缩到 7vp（低于 2x2 标准 8-12vp）",
+    "risk Column 纵向占用 44 > 42，溢出 2vp，hint 与下方 divider/action 存在挤压风险",
+    "title fontWeight=700 与 alert fontWeight=700 并列出现，违反『同一卡片只保留一个最强字重』",
+    "icon 实际为音符素材，被语义化为 stock_risk_icon 风险入口图标，视觉与『基金风险』主题不符（属 TaskSpec 资源错配）",
+    "deeplink uri 为 hwmusic:// 音乐链接，与用户期望的『交易软件』不一致（属 TaskSpec event 错配）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_stocks_405\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_stocks_405\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"risk\",\"divider\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"icon\",\"title\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.stockRisk.icon }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stockRisk.title }}\",\"styles\":{\"width\":84,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk\",\"component\":\"Column\",\"children\":[\"alert\",\"hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stockRisk.alertText }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stockRisk.hint }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.stockRisk.actionText }}\",\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_stocks_405\",\"value\":{\"stockRisk\":{\"title\":\"基金风险\",\"alertText\":\"高风险\",\"hint\":\"投资需谨慎\",\"actionText\":\"打开查看\",\"icon\":\"resources/base/media/icon_music.png\"}}}}"
+  ]
+}

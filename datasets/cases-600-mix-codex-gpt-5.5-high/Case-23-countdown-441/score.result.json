@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-23-countdown-441",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "四条用户诉求均已落实：标题『生日倒计时』、主数字『12 天』、背景图、Button.onClick 使用 clickToIntent→ViewCalendarEvent、entityId 路径 /data/calendar/items/0/entityId 与 eventCandidates 完全一致；dataModel 完整回填；assetCandidates 中 calendarIcon 正确绑定到 bgIcon。扣分点：softShade 用 Divider+strokeWidth:116 充当半透明蒙层属于对组件语义的非常规使用，存在渲染兼容性风险；hero Row 使用 alignItems:'bottom' 与 Text.textOverflow:'none' 均为非标准枚举值，违反协议语义。",
+    "aesthetic": "紫粉渐变（#564AF7→#AC49F5→#E67C92）有质感，白色文字在渐变上可读性良好；字号阶梯 40/16/14/10 清晰，主数字 40px 突出；层次与对齐基本统一。扣分点：日历图标被推到右侧（margin left:48）导致整体重心偏右、与主数字『12』的视觉关系不够平衡；Divider 充当蒙层造成图标被一层灰雾压暗，色彩不够干净；『天』字紧贴『12』且底对齐略显拥挤。",
+    "layout": "逐项核算：① content Column 纵向占用 = 34(top) + 42(hero) + 28(bottomAction) + itemMargin×2(6×2=12) = 116，等于可用 116，恰好填满无溢出；② top Column 纵向 18+14+2=34，宽度 max(104,96)=104 ≤ 116，过；③ hero Row 横向 50+4+20=74 ≤ 98，纵向 max(42,24)=42，过；④ bottomAction 96×28 ≤ 116，过。关键问题：bgIcon 横向 margin left:48 + width:74 = 122 > 父内容区 116，溢出 6vp，依赖 root clip:true 裁掉右侧图标（截图可见日历图标右沿被切）；softShade 用 Divider+strokeWidth:116 做整面蒙层是非预期用法，跨渲染器行为不确定；hero Row 的 alignItems:'bottom' 和 Text.textOverflow:'none' 均为非标准属性值，可能被忽略或回退。"
+  },
+  "issues": [
+    "bgIcon 横向 margin left:48 + width:74 = 122 > 内容区宽 116，溢出 6vp",
+    "softShade 用 Divider 组件（strokeWidth:116）模拟整面半透明蒙层，组件语义错用",
+    "hero Row 使用 alignItems:'bottom'，非标准属性值（应为 flex-end 等）",
+    "Text 使用 textOverflow:'none'，非标准枚举值",
+    "底按钮 bottomAction 底边到卡片底边距离 12vp，恰好 2x2 上限，可接受但偏贴底",
+    "日历图标右移导致整体视觉重心偏右，与主数字『12』的位置关系可更平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"birthday_countdown_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"birthday_countdown_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bgIcon\",\"softShade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#564AF7\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#564AF7\",0],[\"#AC49F5\",0.58],[\"#E67C92\",1]]},\"alignContent\":\"center\"}},{\"id\":\"bgIcon\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/calendarIcon\"},\"styles\":{\"width\":60,\"height\":60,\"margin\":{\"left\":50,\"top\":18},\"objectFit\":\"contain\"}},{\"id\":\"softShade\",\"component\":\"Column\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#33000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"hero\",\"bottomAction\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"dateLabel\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.title }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"dateLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.dateLabel }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"days\",\"unit\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":98,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"flex-end\"}},{\"id\":\"days\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.days }}\",\"styles\":{\"width\":50,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.unit }}\",\"styles\":{\"width\":20,\"height\":24,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1}},{\"id\":\"bottomAction\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.birthday.caption }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#40FFFFFF\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"birthday_countdown_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"birthday-20260718\",\"title\":\"生日\",\"dtStart\":\"2026-07-18\",\"dtEnd\":\"2026-07-18\",\"eventLocation\":\"日历\",\"description\":\"还有 12 天\",\"importantEventType\":2,\"senderName\":\"Calendar\"}]}},\"birthday\":{\"title\":\"生日倒计时\",\"days\":\"12\",\"unit\":\"天\",\"dateLabel\":\"7月18日\",\"caption\":\"来自日历\"},\"asset\":{\"calendarIcon\":\"resources/base/media/icon_schedule.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

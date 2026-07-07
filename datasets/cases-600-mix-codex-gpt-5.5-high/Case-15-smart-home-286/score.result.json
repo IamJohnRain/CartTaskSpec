@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-15-smart-home-286",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户诉求基本全部落实：调温卡片（title=室温调节）、数字会变（currentText=24° 取自 dataModel）、点进去能开系统（root 与 Button 均绑定 clickToDeeplink 到 com.huawei.hmos.settings，与 eventCandidates 完全一致）、能读外面天气（weather 显示 --° 天气读取中）、不行就提醒我（warningText=联动待确认）。尺寸 2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value 与 TaskSpec 完全一致等硬约束全部满足。轻微扣分是 weather 实际被截断、Button 标签未正确呈现，导致信息呈现完整性受损。",
+    "aesthetic": "橙黄渐变背景与白字对比度尚可，主指标 24° 用 32px 突出层级合理。但存在多个美观问题：1) 天气文本 '--° 天气读取中' 被截断为 '--° 天气读取'，丢失'中'字；2) 系统按钮在原 36vp 宽度下渲染为白底圆点 + 三点省略号而非'系统'两字，可读性差；3) 标题与主指标同用 fontWeight 700，违反'同一卡片只保留一个最强字重'原则；4) Button fontWeight 写为字符串 'medium' 而非标准数值 token，存在渲染一致性风险。",
+    "layout": "核心溢出：weather 内容 '--° 天气读取中' 在 fontSize 12 下估算宽 ≈ 2*0.4*12 + 0.4*12 + 0.4*12 + 5*12 = 79.2vp，超出 main Column 宽度 72vp，受 maxLines=1 与 textOverflow=none 限制被截断。Row 横向预算：12+72+8+36+12=140 成立；纵向 12+116+12=140 成立。Main Column 纵向预算：18+4+40+4+18=84 < 116 成立。ActionPane Column 纵向预算：46+8+40=94 < 116 成立。Status 文本宽 60vp 超框宽 36vp，靠 maxLines=2 折行为 2 行解决，框高 46 容纳 2 行 OK。Button 热区 36x40 ≥ 24vp 满足最低但偏窄，导致'系统'两字被挤压渲染异常。底部锚定：action 底边距卡片底 = 12vp，处于 2x2 建议区间 8-12vp 内，可接受。"
+  },
+  "issues": [
+    "weather 文本 '--° 天气读取中' 实际宽 79.2vp > main 列宽 72vp，被 maxLines=1 截断为 '--° 天气读取'，丢失'中'字",
+    "action 按钮宽 36vp 在 12px 字号与内边距下可绘区不足，'系统'未正确渲染，截图显示为白底圆点 + 三点省略号",
+    "title 与 temp 同时使用 fontWeight 700，违反'同一卡片只保留一个最强字重'原则",
+    "Button fontWeight 写为字符串 'medium' 而非数值 token（推荐 500/600），存在渲染一致性风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_286\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_286\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main\",\"actionPane\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffed955f\",0],[\"#fff9bc64\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}]},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"temp\",\"weather\"],\"itemMargin\":4,\"styles\":{\"width\":68,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.thermostat.title }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.thermostat.currentText }}\",\"styles\":{\"width\":68,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText + ' ' + $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionPane\",\"component\":\"Column\",\"children\":[\"status\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":40,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.thermostat.warningText }}\",\"styles\":{\"width\":40,\"height\":44,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"系统\",\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffed955f\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_286\",\"path\":\"/\",\"value\":{\"thermostat\":{\"title\":\"室温调节\",\"currentText\":\"24°\",\"warningText\":\"联动待确认\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"天气读取中\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

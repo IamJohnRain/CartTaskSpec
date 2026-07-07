@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-428",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户4项诉求基本落实：1) 列快递——parcel_list 通过模板渲染生鲜包裹/日用品两条；2) 点一下导航——nav_button 使用 onClick clickToIntent，call 与 args 原样来自 eventCandidates；3) 显示天气——weather_text 绑定 condition + temperatureText；4) 已签收——第二条 parcels.status = '已签收' 已渲染。轻微扣分：dataModel.summary.stationName '社区驿站' 字段未被任何组件读取利用，浪费了一个语义明确的字段；'已签收' 仅作为普通小字状态色，没有与'待取'形成强对比区分。硬约束全部满足：size 2x2、width/height 140、borderRadius 18、clip:true、catalogId/version/updateDataModel.path 全部正确。",
+    "aesthetic": "深色渐变背景与绿色主色 (#5ba854) 协调，标题 700 字重唯一最强，字号阶梯 12/14 合理。但存在两个明显美观缺陷：1) parcel_item 背景 #19ffffff（透明度仅约 10%）叠加 parcel_name 文字 #99ffffff（约 60% 白），在深色底上对比度严重不足，截图中部完全看不出两条快递，是本次最严重的视觉问题；2) count_pill 内容区仅 42px，但 '2件待取' 计算宽度约 43.2px，'取'字被裁掉（截图只显示 '2件待'），形成丑态的截断。",
+    "layout": "逐项核算：root Column 纵向 12+22+6+42+6+36+12=136 ≤ 140 ✓（剩 4vp）；top_row 横向 8+58+50=116 ✓；parcel_list 高度 2×19+4=42 ✓；parcel_item 横向 12+4+66+34+12=128 实际声明 width 116，但子项累加 12+4+66+34+12=128 > 116，parcel_name+parcel_status 声明宽 66+34+itemMargin 4+padding 12=116 在子项 width 维度上正好顶满，但 parcel_name 实际内容 '生鲜包裹' 4×12=48 ≤ 66 ✓，parcel_status '已签收' 3×12=36 > 34 略微超出 2px 风险区；bottom_row 横向 6+54+56=116 ✓；底部锚定 12vp 在 8-12vp 范围内 ✓。关键问题：count_pill 内部可用宽 50−8=42 < '2件待取' 43.2，文字被截；parcel_list 整体可见度过低（受 alpha 影响），渲染后中部呈空白。"
+  },
+  "issues": [
+    "count_pill 内部内容区 42px < '2件待取' 计算宽度 43.2px，'取'字被裁断（截图证实显示为 '2件待'）",
+    "parcel_item 背景 #19ffffff（α≈10%）+ 文字 #99ffffff（α≈60%）对比度严重不足，截图中部呈现为完全空白的深色块，两条快递信息实际不可读",
+    "parcel_status 声明 width 34 但 '已签收' 3×12=36 略超，存在被裁风险",
+    "dataModel.summary.stationName '社区驿站' 未被任何组件引用绑定，信息未利用",
+    "'已签收' 与 '待取' 两种状态使用相同绿色 #5ba854，视觉上无差异，未能体现'已签收'的完成语义"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_428\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_428\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"parcel_list\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff191a1c\",0],[\"#ff202224\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"count_pill\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#f2ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.pickupCountText }}\",\"styles\":{\"width\":56,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#ff5ba854\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"parcel_list\",\"component\":\"List\",\"children\":{\"componentId\":\"parcel_item\",\"path\":\"/parcels\"},\"space\":4,\"styles\":{\"width\":120,\"height\":50,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"parcel_item\",\"component\":\"Row\",\"children\":[\"parcel_name\",\"parcel_status\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":23,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"parcel_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":64,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"parcel_status\",\"component\":\"Text\",\"content\":{\"path\":\"status\"},\"styles\":{\"width\":32,\"height\":17,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff7bd389\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_text\",\"nav_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' · ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"去驿站\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"31.2304\",\"longitude\":\"121.4737\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":56,\"height\":28,\"padding\":{\"top\":2,\"bottom\":2},\"borderRadius\":14,\"backgroundColor\":\"#ff5ba854\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_428\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"待取快递\",\"pickupCountText\":\"2件待取\",\"stationName\":\"社区驿站\"},\"parcels\":[{\"name\":\"生鲜包裹\",\"status\":\"待取\"},{\"name\":\"日用品\",\"status\":\"已签收\"}],\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--\",\"condition\":\"查询中\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

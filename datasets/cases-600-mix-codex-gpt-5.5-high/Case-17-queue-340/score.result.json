@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-17-queue-340",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "满足部分指令：标题'多科排队'、顶部日历读数'今日 09:30 心内复诊'、红橙渐变、纯文字色块、横向并排两张科室卡、紧急科室橙色卡均正确呈现；紧急卡有拨号 Button 并绑定 clickToCallPhone(01083951234)，事件合法。但用户明确要求'每个独立环形进度加拨号按钮'未满足：内科卡片只有 ring + name + status 三个非交互元素，完全没有 Button 组件，无法拨号。紧急卡 Button label='急诊' 缺少拨号语义，易被误读为信息标签。refresh 按钮 fontWeight='medium' 是非标准字重值。一键刷新按钮无 onClick 事件（受 TaskSpec 仅一个 eventCandidate 限制，可接受）。",
+    "aesthetic": "红橙渐变主题契合紧迫感，色阶过渡和谐，浅色区域文字对比可读。但紧急卡背景色 #ed6f21 与渐变右下停色完全同色，卡片几乎与背景融合，'橙色突出'效果被严重弱化，视觉上无差异。字重阶梯不收敛：title 800 / appt 600 / 按钮 700 / 紧急按钮 700 / 内科名 700 / 状态 600 / refresh 'medium'，违反'同一卡片只保留一个最强字重'规则。refresh 按钮使用 'medium' 字符串字重，渲染层可能 fall back 到 400，与其它按钮视觉不一致。",
+    "layout": "预算核算（原始 DSL）：root Column 高 140 = padding 24 + itemMargin 4×2=8 + top 28 + dept_row 56 + refresh 24 = 140，刚好不溢出 ✓；top Column 高 28 = 14+12+itemMargin 2 = 28 ✓；dept_row Row 宽 116 = 55+55+itemMargin 6 = 116 ✓；urgent_card Column 高 56 = padding 4 + itemMargin 2 + 24+24 = 54 ≤ 56 余 2 ✓；normal_card Column 高 56 = padding 4 + itemMargin 2×2=4 + 24+14+10 = 56 正好填满，余 0 ✗ 极紧张；refresh 按钮 24vp 满足 ≥24vp 最小热区；底部距卡片底 12vp 在 8-12 区间 ✓。无 Stack 遮挡。问题：normal_card 纵向零余量，渲染稍有字体度量差异即溢出；紧急卡 label='急诊' 24vp 按钮压在 24vp ring 下方，视觉层级被压扁。"
+  },
+  "issues": [
+    "内科卡片完全缺少拨号 Button 组件，违反'每个独立环形进度加拨号按钮'的明确要求",
+    "紧急卡 Button label='急诊' 缺少拨号语义（应为'拨打'或含拨号提示），易被误读为信息标签",
+    "refresh 按钮 fontWeight='medium' 是非标准字重值，应使用 700 等数值",
+    "字重档位过多（800/700/600/medium），违反'只保留一个最强字重'约束",
+    "紧急卡 backgroundColor #ed6f21 与渐变右下停色完全同色，卡片与背景融合，'橙色突出'失效",
+    "normal_card Column 纵向占用 56 = 可用 56，几何零余量，字体度量偏差即溢出",
+    "refresh 按钮无 onClick 事件（受 TaskSpec eventCandidates 限制可接受）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_queue_340\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_queue_340\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"dept_row\",\"refresh_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffffffff\",0],[\"#f9a01e\",0.62],[\"#ed6f21\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"appt\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"appt\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.appointmentPrefix + ' ' + $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dept_row\",\"component\":\"Row\",\"children\":[\"urgent_card\",\"normal_card\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":64,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"urgent_card\",\"component\":\"Column\",\"children\":[\"urgent_ring\",\"urgent_info\",\"urgent_call\"],\"itemMargin\":2,\"styles\":{\"width\":55,\"height\":64,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#d63a1a\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"urgent_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.queue.departments[0].progress }}\",\"total\":\"{{ $__dataModel.queue.departments[0].total }}\",\"styles\":{\"width\":20,\"height\":20,\"type\":\"ring\",\"strokeWidth\":3,\"color\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"urgent_info\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.departments[0].current + ' ' + $__dataModel.queue.departments[0].status }}\",\"styles\":{\"width\":47,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"urgent_call\",\"component\":\"Button\",\"label\":\"拨打\",\"styles\":{\"width\":47,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"01083951234\"}}]},{\"id\":\"normal_card\",\"component\":\"Column\",\"children\":[\"normal_ring\",\"normal_info\",\"normal_call\"],\"itemMargin\":2,\"styles\":{\"width\":55,\"height\":64,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"normal_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.queue.departments[1].progress }}\",\"total\":\"{{ $__dataModel.queue.departments[1].total }}\",\"styles\":{\"width\":20,\"height\":20,\"type\":\"ring\",\"strokeWidth\":3,\"color\":\"#f9bc64\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"normal_info\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.departments[1].current + ' ' + $__dataModel.queue.departments[1].status }}\",\"styles\":{\"width\":47,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"normal_call\",\"component\":\"Button\",\"label\":\"拨打\",\"styles\":{\"width\":47,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"01083951234\"}}]},{\"id\":\"refresh_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.refreshText }}\",\"styles\":{\"width\":116,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_queue_340\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"appt-20260705-001\",\"title\":\"心内复诊\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"eventLocation\":\"门诊三层\"}]}},\"queue\":{\"title\":\"多科排队\",\"appointmentPrefix\":\"今日\",\"departments\":[{\"name\":\"急诊\",\"current\":\"A18\",\"progress\":82,\"total\":100,\"status\":\"紧急\",\"phoneNumber\":\"01083951234\"},{\"name\":\"内科\",\"current\":\"B07\",\"progress\":46,\"total\":100,\"status\":\"候诊\",\"phoneNumber\":\"01083952222\"}],\"refreshText\":\"一键刷新\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

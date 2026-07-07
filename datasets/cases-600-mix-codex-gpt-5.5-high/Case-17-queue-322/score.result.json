@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-17-queue-322",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户四项主要诉求均已落实：叫号卡片（title/号码/前方人数）、点击打电话（Button onClick 正确调用 clickToCallPhone 且 args 来自 eventCandidates）、天气（condition + temperature 拼接展示）、文字叠图（用装饰性 back_panel+两条 Divider 作为图底替代，因 assetCandidates 为空尚可接受）。尺寸 2x2、root 140x140、borderRadius 18、clip true、catalogId/version/updateDataModel 全部符合硬约束。扣分点：dataModel 中 storeName「星河茶饮」未呈现，叠图概念仅靠两条 Divider 表达较为薄弱；其余协议/绑定均正确。",
+    "aesthetic": "配色（淡粉底+淡蓝面板+蓝色 CTA）柔和、层次清晰；字号阶梯 12/28/10/10/12 合理，主指标 A128 用 28 号粗体形成最强字重，且全卡仅此一处 fontWeight 800，层级达标。带边框的 back_panel 配两条 Divider 营造了类票据视觉。扣分点：因 content_col 溢出，按钮底部被裁切破坏完整感；按钮热区 24vp 偏小，CTA 视觉不够突出。",
+    "layout": "content_col 纵向占用 = 父 padding 0 + 子项 18+36+16+14+24=108 + itemMargin 5×(5-1)=20 = 128 > 可用高度 116，溢出 12vp，导致最底部 call_button 被 root clip 裁掉（截图可见按钮底圆被切）。back_panel Column 占用 = padding 10+10 + 1+1 + itemMargin 10 = 32 ≤ 116-20=96，背景图底布局成立。Button 热区 24vp 仅达最小值；底边到卡底 12vp 在 8-12vp 区间内合格。整体因主内容列溢出 12vp 触发扣重分。"
+  },
+  "issues": [
+    "content_col 纵向 128 > 116，溢出 12vp，call_button 底部被裁切",
+    "call_button 热区仅 24vp，等于最小值，弱于理想的 40vp",
+    "dataModel 中的 storeName「星河茶饮」未被任何组件引用",
+    "「文字叠图」诉求仅有 Divider 线条，缺少真正图形/插画感（assetCandidates 为空时可用色块+图标替代）",
+    "panel_line_1 与 panel_line_2 颜色非常接近（#33256fff 与 #22256fff），对比度弱，装饰效果不明显"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_322\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140,\"size\":\"2x2\"}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_322\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"back_panel\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7fbff\"}},{\"id\":\"back_panel\",\"component\":\"Column\",\"children\":[\"panel_line_1\",\"panel_line_2\"],\"itemMargin\":10,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#ffe8f3ff\",\"borderColor\":\"#55256fff\",\"borderWidth\":1,\"justifyContent\":\"center\",\"alignItems\":\"stretch\"}},{\"id\":\"panel_line_1\",\"component\":\"Divider\",\"styles\":{\"width\":96,\"height\":1,\"backgroundColor\":\"#99256fff\"}},{\"id\":\"panel_line_2\",\"component\":\"Divider\",\"styles\":{\"width\":96,\"height\":1,\"backgroundColor\":\"#99256fff\"}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title\",\"number\",\"ahead_text\",\"weather_text\",\"call_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"flexStart\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff1f2937\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"number\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.currentNumber }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ff256fff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ahead_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.aheadText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff344054\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff667085\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.actionText }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"4008123123\"}}],\"styles\":{\"width\":96,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff256fff\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_322\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"门店叫号\",\"currentNumber\":\"A128\",\"aheadText\":\"前方 3 位\",\"storeName\":\"星河茶饮\",\"actionText\":\"联系店家\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"福田\"},\"current\":{\"temperatureText\":\"31°C\",\"condition\":\"多云\",\"alertLevel\":\"无预警\"},\"daily\":[],\"updatedAt\":\"演示数据\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

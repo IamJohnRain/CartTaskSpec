@@ -1,0 +1,30 @@
+{
+  "case_id": "Case-18-carpool-341",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求拼车卡片可点击进入系统操作，并展示已出发/已结束状态。DSL 完整展示了 title/status/route/time/actionText 五个字段，状态显示为'已出发'符合要求；onClick 的 call/args 原样取自 eventCandidates（clickToIntent / SetSettingSwitch / battery_saving_mode / 0），size=2x4、catalogId、version=v0.9、updateDataModel.path=/ 等硬约束均满足。轻微扣分：root Column 与 action Button 同时绑定了同一 clickToIntent，存在重复触发风险（应只在 button 上保留）。",
+    "aesthetic": "绿色渐变背景（#64bb5c → #92c48d）配白色文字对比度好，状态药丸与 CTA 按钮采用反白色块、14 号 700 字重，视觉一致；字号 18/16/14/12 严格落在阶梯上，root 22 / 药丸 14 圆角成体系。扣分点：title 与 status_pill 同为 fontWeight 700，违反'同一卡片只保留一个最强字重'规则；Button 使用字面字符串 'medium' 而非数字 500/600，略显不规范。",
+    "layout": "root Column 纵向占用 = padding 12+12 + 子项高 40+26+34 + itemMargin×2 = 8+8 = 24+100+16=140，恰等于容器高 140，无溢出（不过也无缓冲）。top_row 横向 178+8+72=258 ≤ 276 ✓；title_block Column 高 22+2+16=40 ✓；bottom_row 横向 156+8+112=276 恰等于容器 276 ✓（临界）。受保护文本宽度均通过估算：title 4×18=72/178，status 3×14=42/72，route 9×16=144/276，hint 7×12=84/156，button 4×14=56/112 全部安全。Button 热区 34vp≥24 ✓；底部锚定距离 = root padding.bottom=12vp，落入 2x4 推荐 10-14vp 区间。"
+  },
+  "issues": [
+    "root 与 action Button 重复绑定同一 clickToIntent，存在双重触发风险",
+    "title(700) 与 status_pill(700) 同为最强字重，违反'同一卡片只保留一个最强字重'",
+    "Button 使用字符串字面 'medium' 而非数字 500/600，规范化欠佳",
+    "bottom_row 子项宽度合计 276=容器宽 276，处于临界，无缓冲容差",
+    "root Column 高度占用 140=容器高 140，无缓冲容差"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-17-queue-336",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "三个区不同底色（白/浅蓝/浅黄）、顶部排队号与绿色可取徽标、中部天气、底部歌单勾选均已落实；歌单点击跳音乐应用的 deeplink 事件 call/args 原样来自 eventCandidates；纯文字色块无图片符合要求；'数据从日历和天气读'通过 dataModel 同时包含 weather 与 calendar 节点完成数据接入。扣分点：用户要求'整体氛围感背景'，原方案 #fff1f3f5 仅为中性浅灰，缺乏咖啡/等候/音乐的氛围烘托；日历数据虽接入但未在卡片中体现，存在信息浪费。",
+    "aesthetic": "三种色块（白/浅蓝/浅黄）分区清晰，绿色徽标突出可取状态，色彩搭配和谐无冲突；字号 10/12/14/16 处在阶梯上、层级基本清晰；唯一最强字重为 700（用于主指标与 CTA 文字），500/400 作为弱化辅助未违反规则。扣分点：根背景为冷灰，没有'氛围感'，与咖啡取号/听歌等待的场景情绪不匹配；多色块面积偏大、视觉信息略拥挤，缺少呼吸感。",
+    "layout": "root Column 纵向占用 = padding.top 12 + padding.bottom 12 + itemMargin 6×3 + Σchildren(44+1+26+33) = 12+12+18+104 = 146 > 内容区 116，超出 30 单元，已超出 root 高度 140 共 6 单元，靠 clip:true 截断；top_block Row 横向 8+8+6+56+36 = 116 ≤ 116 OK；weather_row Row 横向 8+8+6+48+46 = 116 ≤ 116 OK；music_row Row 横向 8+8+6+24+70 = 116 ≤ 116 OK；底部 music_row 距卡片底边 0，按规范 2x2 应在 8-12vp 区间，存在底部锚定不达标问题；受保护文本 A-036、可取、今日歌单未受 ellipsis 截断但受 root clip 风险影响。综合看布局超预算严重，需缩高与减 gap。"
+  },
+  "issues": [
+    "root Column 纵向总占用 146 超出内容区 116 共 30 单元，超出 root 高度 140 共 6 单元",
+    "底部 music_row 距卡片底边仅 0，按 2x2 规范应在 8-12vp",
+    "背景 #fff1f3f5 为冷灰，缺乏'等咖啡/听歌'的氛围感",
+    "日历数据已接入 dataModel 但卡片未消费",
+    "padding 12+12+12+12 偏大，挤压三个色块的高度预算"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_336\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_336\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_block\",\"divider\",\"weather_row\",\"music_row\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffefe6dd\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_block\",\"component\":\"Row\",\"children\":[\"number_col\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":34,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"number_col\",\"component\":\"Column\",\"children\":[\"brand_text\",\"number_text\"],\"itemMargin\":1,\"styles\":{\"width\":60,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"brand_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.brand }}\",\"styles\":{\"width\":60,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"number_text\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/numberText\"},\"styles\":{\"width\":60,\"height\":15,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/statusText\"},\"styles\":{\"width\":34,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff5fae5f\",\"borderRadius\":11,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"color\":\"#1f000000\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_title\",\"weather_value\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#ffe8f1ff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_title\",\"component\":\"Text\",\"content\":\"今天天气\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_row\",\"component\":\"Row\",\"children\":[\"music_check\",\"music_label\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#fffff0d6\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"music_check\",\"component\":\"Checkbox\",\"select\":{\"path\":\"/music/checked\"},\"styles\":{\"width\":22,\"height\":22}},{\"id\":\"music_label\",\"component\":\"Text\",\"content\":{\"path\":\"/music/label\"},\"styles\":{\"width\":78,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_336\",\"path\":\"/\",\"value\":{\"queue\":{\"brand\":\"咖啡取号\",\"numberText\":\"A-036\",\"statusText\":\"可取\"},\"music\":{\"checked\":true,\"label\":\"今日歌单\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"},\"daily\":[],\"updatedAt\":\"\"},\"calendar\":{\"items\":[]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

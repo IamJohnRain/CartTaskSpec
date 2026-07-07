@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-15-smart-home-284",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求灯控卡+一行数字+点击跳app+显示已连接，DSL均已覆盖：title='灯控'、numberLine 显示数字 level='1'、status='已连接'、onClick 用 clickToDeeplink 跳到 huaweischeme://... 链接，eventCandidates 参数原样使用。扣分点：numberLine.content 使用了非标准的 formatString 函数调用 + 模板 ${/light/level}，按协议应优先用 {{ $__dataModel.light.level }} 完整表达式，路径需可从 dataModel.value 推导；另 button.fontWeight 使用字符串 'medium' 也不在协议允许的字重数字范围内（如 400/500/600/700）。dataModel 与 TaskSpec 完全一致。",
+    "aesthetic": "白底 + 绿色渐变按钮 + 灰阶文字，配色克制和谐，绿点指示已连接状态语义清晰；字阶 14/40/12 三档层次分明，最强字重 700（数字）单一突出。间距 itemMargin 6/8/10/12 在阶梯内或属微调范围。actionHint 字号 12、颜色 #66000000 略偏淡但仍可读；右侧 actionPanel 内容垂直居中后上下留白偏大，视觉上右半区有轻微空旷感。",
+    "layout": "逐项核算：root Row 横向 = 12+12+10*2+(178+1+77) = 300 ≤ 300 刚好贴合，无溢出；root 纵向 = 12+12+max(116,84,116) = 140 ✓。main Column 纵向 = 8*2+(20+42+24) = 102 ≤ 116 ✓。statusRow 横向 = 6+(14+72) = 92 ≤ 178 ✓。actionPanel 纵向 = 12+(18+36) = 66 ≤ 116 ✓。Button 热区 77x36 ≥ 24 ✓。所有受保护文本（标题/数字/已连接/打开）未被截断，Divider 居于 main 与 actionPanel 之间不遮挡。底部动作区为右侧面板，非贴底布局，不触发 16vp 锚定规则。"
+  },
+  "issues": [
+    "numberLine.content 使用了非标准的 formatString 模板调用而非规范的 {{ $__dataModel.light.level }} 表达式绑定",
+    "openButton.fontWeight 写成字符串 'medium'，应改为数字字重（如 500 或 600）",
+    "actionPanel 内部内容垂直居中导致按钮上下均留白约 25vp，右侧视觉略空，可改为 flex-end 对齐贴近底边以增加锚定感",
+    "actionHint 颜色 #66000000 在白底上对比度偏低，弱视场景可读性下降，可提到 #99000000"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_284\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_284\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main\",\"divider\",\"actionPanel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"numberLine\",\"statusRow\"],\"itemMargin\":8,\"styles\":{\"width\":178,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.title }}\",\"styles\":{\"width\":178,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"numberLine\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.level }}\",\"styles\":{\"width\":178,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusRow\",\"component\":\"Row\",\"children\":[\"statusDot\",\"statusText\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":178,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"statusDot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":14,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.status }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"width\":1,\"height\":84,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"actionPanel\",\"component\":\"Column\",\"children\":[\"actionHint\",\"openButton\"],\"itemMargin\":12,\"styles\":{\"width\":77,\"height\":116,\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"}},{\"id\":\"actionHint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.actionHint }}\",\"styles\":{\"width\":77,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.light.actionText }}\",\"styles\":{\"width\":77,\"height\":36,\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff64bb5c\",0],[\"#ff92c48d\",1]]},\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_284\",\"value\":{\"light\":{\"title\":\"灯控\",\"level\":\"1\",\"status\":\"已连接\",\"actionHint\":\"设备在线\",\"actionText\":\"打开\"}}}}"
+  ]
+}

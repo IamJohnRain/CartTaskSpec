@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-20-notif-aggregate-383",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.6,
+  "reasons": {
+    "instruction": "用户要求四件事：汇总标题、列出未读（含群组细分）、点跳钉钉、堆多提醒。前三项主要诉求基本满足（title/unreadText/warning 都有，onClick.call=clickToDeeplink 与 args 三参数与 eventCandidates 完全一致），但 '列出未读' 的关键子项——两个群组的 name/countText（项目群 28条、值班群 18条）——在截图中完全不可见，List 区域被 ambient_band 的渐变覆盖，等同于该字段缺失；同时 Button.label '打开钉钉' 被截断为 '打...'，CTA 文案不可读。dataModel 路径与值、catalogId/version/size/root shell 等硬约束均满足。",
+    "aesthetic": "配色温暖统一（米黄底 #FFFFF7E6 + 黄橙渐变 + 暗红 #FFB3261E + 棕文字），信息层级清楚（18/16/12/10 字号阶梯、unread fw=800 唯一最强字重）。但渐变 pill 出现在卡片中部而非背景层，视觉上像独立组件，与文字信息脱节；按钮 '打...' 截断让 CTA 显得粗糙；群组缺失让版面中部留白空洞，破坏密度均衡。",
+    "layout": "核心预算违约：(1) content Column 纵向占用 = 20(title)+22(unread)+36(group_list)+26(footer) + 6*3(itemMargin) = 122 > 可用 116，溢出 6px，是本卡最严重违规；(2) footer Row 横向占用 = 58(warning)+54(btn)+4 = 116，刚好等于可用 116，但 Button 内边距吃掉约 16px 后仅剩 38px 文本区，'打开钉钉'(4×12=48px) 必然被截断为 '打...'；(3) group_row 68+42+4=114 < 116 本可容纳，但因外层 overflow 与 ambient_band 在 Stack 中位置异常，List 实际未渲染任何 group_name/group_count；(4) Stack 的 ambient_band(116×36) 没有 position 约束，被渲染到 content 的 group_list 位置形成遮挡；(5) 底部 action 距卡片底 12vp 尚在 8-12vp 区间。"
+  },
+  "issues": [
+    "content Column 子项占高 122 > 可用 116，溢出 6px（itemMargin=6 × 3 = 18 过大）",
+    "Button 宽 54px 容纳不下 '打开钉钉'（48px 文字 + 内边距），CTA 截断为 '打...'",
+    "List(group_list) 在截图中未渲染群组行，group_name/countText 全部缺失",
+    "Stack 子项 ambient_band 位置异常，渐变 pill 出现在 group_list 位置造成视觉遮挡",
+    "warning 宽 58px 留给 9 字中文仅能挤 2 行，'消息堆多了，快处理' 末行接近边缘"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_383\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_383\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_grad\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF7E6\"}},{\"id\":\"bg_grad\",\"component\":\"Column\",\"children\":[],\"styles\":{\"position\":\"absolute\",\"left\":0,\"top\":0,\"width\":116,\"height\":116,\"borderRadius\":14,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#22FFD166\",0],[\"#22FF8A65\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"title\",\"unread\",\"group_list\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF3A2A00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unread\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.unreadText }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFB3261E\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"group_list\",\"component\":\"List\",\"children\":{\"componentId\":\"group_row\",\"path\":\"/summary/groups\"},\"space\":2,\"styles\":{\"width\":116,\"height\":32,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"group_row\",\"component\":\"Row\",\"children\":[\"group_name\",\"group_count\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":15,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"group_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":70,\"height\":15,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#CC3A2A00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"group_count\",\"component\":\"Text\",\"content\":{\"path\":\"countText\"},\"styles\":{\"width\":42,\"height\":15,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFB3261E\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"warning\",\"open_btn\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.warning }}\",\"styles\":{\"width\":50,\"height\":26,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF7A4B00\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.alibaba.dingtalk\",\"abilityName\":\"\",\"uri\":\"dingtalk://dingtalkclient/page/conversation\"}}],\"styles\":{\"width\":62,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FFB3261E\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_383\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"群消息汇总\",\"unreadText\":\"未读 46 条\",\"warning\":\"消息堆多了，快处理\",\"groups\":[{\"name\":\"项目群\",\"countText\":\"28条\"},{\"name\":\"值班群\",\"countText\":\"18条\"}],\"actionText\":\"打开钉钉\"}}}}"
+  ]
+}

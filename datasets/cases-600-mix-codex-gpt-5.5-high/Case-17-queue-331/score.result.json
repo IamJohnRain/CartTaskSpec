@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-17-queue-331",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户主要诉求基本落实：标题'健康证排队'已绑定glyph字符'健'做小图标、横向3项Checkbox、进度环3/7、Button绑定clickToDeeplink到huaweischeme://healthapp/home/sport?sportType=2、淡蓝渐变soft_band、size 2x2根shell与catalogId/v0.9/updateDataModel均合规。但Checkbox的label（登记/体检/取证）在渲染截图中完全不可见，疑似字号或宽度未给label留出空间，导致'每项勾选'语义只能看到方框不看到任务名；环形'已完成3/7'被环遮挡一半，'7'被弧形覆盖，表达不完整，扣分。",
+    "aesthetic": "整体蓝色调统一，glyph圆形徽标与Button主色呼应。但soft_band被margin.left=12放置到x=24~140处，落在右下角形成一条割裂的色带，与'素净卡片底'初衷冲突；Button'完成项'文字出现明显横线穿过感，是因上层overflow被压变形的渲染痕迹；Checkbox label缺失导致列表区像3个空框；字号阶梯基本合规（10/12/14），但与字重800(标题)+700(按钮)并列两处最强字重，违反'同一卡片只保留一个最强字重'。",
+    "layout": "严重溢出：content Column内容区116x116，子项纵向占用=24(top_row)+44(mid_row)+24(todo_row)+26(action_btn)=118，加itemMargin 6×3=18，共136>116，溢出20vp；mid_row Stack中status文本宽56>环宽44，左右各溢出6vp与环弧线压字；todo_row中3个Checkbox width=36、itemMargin=3：36×3+3×2=114≤116尚可，但label区被切；soft_band width=116+margin.left=12=128>140根内宽，其右沿压到右边界并叠在Button之上。Button热区116×26合格，但因上方溢出被错位下推，底部距卡片底边仅约12vp勉强合规。",
+    "issues": [
+      "content Column 子项纵向占用118+18=136 > 可用116，溢出20vp",
+      "mid_row Stack status 宽56 > 环宽44，文本被环弧线遮挡，'7'不可读",
+      "soft_band width=116+margin.left=12=128 > 根内宽，贴右边并压在Button上方",
+      "Checkbox label 字段（登记/体检/取证）在渲染中未显示，疑似fontSize 10+box空间不够被吃掉",
+      "Button '完成项' 文字出现横线穿透感，是上层溢出挤压导致",
+      "字重800同时用于glyph+title+status+item label，存在两处最强字重冲突"
+    ],
+    "improved_dsl": [
+      "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"queue_health_331\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+      "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"queue_health_331\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF7FBFF\"}},{\"id\":\"bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":12,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFFFFF\",0],[\"#FFEAF7FF\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"mid_row\",\"todo_row\",\"action_btn\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":116}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"title\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.glyph }}\",\"styles\":{\"width\":20,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#FFEAF7FF\",\"fontSize\":12,\"fontWeight\":800,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1}},{\"id\":\"mid_row\",\"component\":\"Stack\",\"children\":[\"ring\",\"status\"],\"styles\":{\"width\":40,\"height\":40,\"alignContent\":\"center\"}},{\"id\":\"ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.queue.done }}\",\"total\":\"{{ $__dataModel.queue.total }}\",\"styles\":{\"type\":\"ring\",\"width\":40,\"height\":40,\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#FFD6EEFF\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.statusText }}\",\"styles\":{\"width\":40,\"height\":12,\"fontSize\":7,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"todo_row\",\"component\":\"Row\",\"children\":[\"item_one\",\"item_two\",\"item_three\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"item_one\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.queue.items[0].label }}\",\"select\":\"{{ $__dataModel.queue.items[0].done }}\",\"styles\":{\"width\":36,\"height\":22,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FF182431\",\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#FFB8C8D8\",\"shape\":\"rounded_square\"}},{\"id\":\"item_two\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.queue.items[1].label }}\",\"select\":\"{{ $__dataModel.queue.items[1].done }}\",\"styles\":{\"width\":36,\"height\":22,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FF182431\",\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#FFB8C8D8\",\"shape\":\"rounded_square\"}},{\"id\":\"item_three\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.queue.items[2].label }}\",\"select\":\"{{ $__dataModel.queue.items[2].done }}\",\"styles\":{\"width\":36,\"height\":22,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FF182431\",\"selectedColor\":\"#FF0A59F7\",\"unSelectedColor\":\"#FFB8C8D8\",\"shape\":\"rounded_square\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":116,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+      "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"queue_health_331\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"健康证排队\",\"statusText\":\"已完成3/7\",\"done\":3,\"total\":7,\"glyph\":\"健\",\"items\":[{\"label\":\"登记\",\"done\":true},{\"label\":\"体检\",\"done\":true},{\"label\":\"取证\",\"done\":false}],\"actionText\":\"完成项\"}}}}"
+    ]
+  }
+}

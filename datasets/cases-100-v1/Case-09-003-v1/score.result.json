@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-09-003-v1",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.7,
+  "reasons": {
+    "instruction": "用户明确要求'从深蓝到天空蓝的渐变+毛玻璃质感'，但截图中卡片背景为纯白/浅灰，linearGradient 完全未生效，玻璃质感也无从谈起。'显示深圳当前温度31°'：截图中最大的主数值'31°'完全不可见（白字落在白底上）。'天气情况'晴热标签、'感冒指数 易发'、'提醒家人'、'当前温度'小字全部不可见。'高温预警明显提醒'：只剩黄色胶囊里的感叹号图标，文字'高温预警'被白底吞没。'一键拨打电话'：右侧只剩电话图标，文字被截断为'联系...'。事件 call/args 虽正确（clickToCallPhone/15012345678），但按钮标签用了 emoji 📞 违反协议（禁止 emoji）。总体上用户列出的每一项关键信息在截图里几乎都看不到，指令落实严重失败。",
+    "aesthetic": "截图显示卡片整张是惨白底色，与用户要求的深蓝→天空蓝渐变和毛玻璃质感背道而驰。所有白色文字（城市名、温度、'当前温度'、'感冒指数'、'易发'、'提醒家人'）都因白底白字而消失，可读性几乎为零。右侧'玻璃面板'渲染为一块死板的浅灰矩形，没有半透明叠加、没有背后色彩透出的玻璃感。字重层级和留白也无法判断，因为主要文字都没渲染出来。整体观感非常糟糕，配色、对比、信息层级全部失效。",
+    "layout": "截图中可见的'病灶'：(1) 整张卡片底色为白，linearGradient 未生效，因此原计划用白字呈现的温度'31°'、'深圳天气'、'晴热'徽标、'当前温度'、'感冒指数'、'易发'、'提醒家人'全部不可见，等同于关键文本被裁切/丢失。(2) 黄色预警胶囊内只能看到感叹号图标，文字'高温预警'未渲染。(3) 右侧玻璃面板看起来完全是空矩形，三行小字全部消失。(4) 右下角电话图标旁的文字被截断为'联系...'，表明 Button 标签在 88 宽容器中放不下'📞 联系父母'（emoji+空格+4 个汉字）。(5) 卡片底色到根容器之间没有渐变衔接，'2x4'卡片应有的 22 圆角、12 内边距在截图中几乎被白色背景淹没。可见信息密度极低，多处关键信息缺失/截断，布局严重崩盘。"
+  },
+  "issues": [
+    "linearGradient 渐变在渲染中未生效，导致深蓝→天空蓝渐变背景和毛玻璃质感完全缺失",
+    "白字（城市名、温度、当前温度、感冒指数、易发、提醒家人）落在白底上全部不可见，等同于关键信息被裁切",
+    "黄色预警胶囊中只能看到 ⚠ 图标，'高温预警'文字未显示",
+    "右侧毛玻璃面板渲染为空白浅灰矩形，三行内容（感冒指数/易发/提醒家人）全部不可见",
+    "一键拨号按钮文字被截断为'联系...'，'📞 联系父母'在 88 宽容器中放不下",
+    "DSL 在 Button.label 和 alert_text.content 中使用了 emoji（📞、⚠），违反'禁止 emoji'的硬约束",
+    "城市名宽度 96 中'深圳天气'与 condition_text 在 178 容器内布局虽勉强放得下，但配合失效的渐变，整组文字在截图里集体消失"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_09_003_weather_care\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_09_003_weather_care\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"weather_col\",\"care_col\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF0E3A78\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"title_row\",\"temp_row\",\"alert_pill\"],\"itemMargin\":4,\"styles\":{\"width\":170,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"city_text\",\"condition_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":170,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"city_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.prefectureName }}天气\",\"styles\":{\"width\":90,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":60,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#33FFFFFF\",\"borderWidth\":1,\"borderColor\":\"#66FFFFFF\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_row\",\"component\":\"Row\",\"children\":[\"temp_text\",\"degree_note\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":170,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":84,\"height\":44,\"fontSize\":36,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"degree_note\",\"component\":\"Text\",\"content\":\"当前温度\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_pill\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"alert_label\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":170,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#FFFFE8B0\",\"borderWidth\":1,\"borderColor\":\"#FFFFD24A\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":14,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FF7A3300\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"alert_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.alertLevel }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF7A3300\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care_col\",\"component\":\"Column\",\"children\":[\"glass_panel\",\"call_button\"],\"itemMargin\":6,\"styles\":{\"width\":96,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glass_panel\",\"component\":\"Column\",\"children\":[\"care_label\",\"cold_value\",\"care_hint\"],\"itemMargin\":2,\"styles\":{\"width\":96,\"height\":70,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#3DFFFFFF\",\"borderWidth\":1,\"borderColor\":\"#99FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"care_label\",\"component\":\"Text\",\"content\":\"感冒指数\",\"styles\":{\"width\":80,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cold_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.coldLevel }}\",\"styles\":{\"width\":80,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care_hint\",\"component\":\"Text\",\"content\":\"提醒家人\",\"styles\":{\"width\":80,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#B3FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"联系父母\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"15012345678\"}}],\"styles\":{\"width\":96,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF0B2A5B\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_09_003_weather_care\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"深圳\",\"prefectureName\":\"深圳\"},\"current\":{\"temperatureC\":31,\"temperatureText\":\"31°\",\"condition\":\"晴热\",\"coldLevel\":\"易发\",\"alertLevel\":\"高温预警\"},\"daily\":[],\"updatedAt\":\"\"},\"family\":{\"phoneNumber\":\"15012345678\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

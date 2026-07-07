@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-22-express-423",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户四条诉求：①快递点图作背景 ②文字叠在上面 ③点一下看物流详情 ④快递丢了标红色。前三条基本满足：stationBg 绑定到 bg Image、全卡 onClick 调用 clickToDeeplink 与 eventCandidates 完全一致、所有数据字段均绑定。但第四条'标红色'严重违和——状态框使用 #FFED6F21 橙色，而非红色系，丢失了'红色警示'的语义。协议层面 size/catalogId/version/updateDataModel.path='/' 全部正确，createSurface 140x140 borderRadius 18 clip true 满足 2x2 硬约束。",
+    "aesthetic": "整体配色为深灰底+橙色状态框+白色动作按钮，视觉层级尚可，但状态框使用 #FFED6F21 橙色，与用户要求的'红色'不符，丢失警示感。shade 叠层使用 #99000000（60%黑）导致背景图几乎完全被遮盖，违背'快递点图作背景'的视觉诉求，图片氛围未呈现。字号阶梯 title16/station12/status14/tracking12/action14 合理，标题加粗为最强字重，层级清晰。配色、对比度尚可但因红色缺失和图片不可见扣分。",
+    "layout": "按公式核算：①content Column：可用高度 116-10-10=96，子项占高 top(34)+status(38)+action(24)+itemMargin×2(16)=112，溢出 16vp（严重）。②status Column：可用高度 38-4-4=30，子项占高 16+14+4=34，溢出 4vp。③status_text '包裹疑似丢失'宽 6×14=84，容器宽 80，溢出 4vp，截图显示被裁为'包裹疑似丢'。④action '查看物流详情'宽 6×14=84，按钮内文本区 96-10-10=76，溢出 8vp，截图显示被裁为'查看物流详'。两处受保护文本（状态文案、CTA）均被截断，是核心扣分项。底部动作区外框底边（y≈118）到卡片底边（y=140）距离 22vp > 16vp 限值。"
+  },
+  "issues": [
+    "状态框使用橙色 #FFED6F21，用户明确要求'快递丢了标红色'，应改为红色系如 #FFD32F2F",
+    "content Column 纵向严重溢出：子项占高 112 > 可用 96，溢出 16vp，导致整体布局被挤压",
+    "status Column 纵向溢出 4vp（34 > 30），内部子项贴底",
+    "status_text '包裹疑似丢失' 实际宽度 84 > 容器 80，被截断为'包裹疑似丢'",
+    "action '查看物流详情' 实际宽度 84 > 内容区 76，被截断为'查看物流详'",
+    "底部动作区到卡片底边距离约 22vp，超过 2x2 卡片 16vp 上限",
+    "shade 叠层 #99000000 过深，背景图几乎不可见，违背'快递点图作背景'的视觉意图"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_423\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_423\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"center\"}},{\"id\":\"bg\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/stationBg\"},\"styles\":{\"width\":140,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#55000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"status\",\"action\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":4},\"borderRadius\":14,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"station\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"station\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.station }}\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Column\",\"children\":[\"status_text\",\"tracking\"],\"itemMargin\":1,\"styles\":{\"width\":100,\"height\":36,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#FFD32F2F\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.status }}\",\"styles\":{\"width\":88,\"height\":13,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tracking\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trackingNo }}\",\"styles\":{\"width\":88,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.hint }}\",\"styles\":{\"width\":100,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#E51A1A1A\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_423\",\"path\":\"/\",\"value\":{\"title\":\"快递异常\",\"station\":\"小区快递点\",\"status\":\"包裹疑似丢失\",\"trackingNo\":\"SF 4238\",\"hint\":\"查看物流详情\",\"asset\":{\"stationBg\":\"resources/base/media/express_station_bg.png\"}}}}"
+  ]
+}

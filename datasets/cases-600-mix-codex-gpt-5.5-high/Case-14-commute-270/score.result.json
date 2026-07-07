@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-14-commute-270",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户 5 项主要诉求中：通勤卡主体 ✓、ETA 数字 '32分钟' ✓、天气 '--° 天气' ✓、onClick 跳转地图（call/args 原样来自 eventCandidates）✓、沿途路况列表（DSL 内 List 已正确模板循环绑定 /route/segments，但实际渲染未产出任何 segment 行）✗。CTA '地图' 被 Button 内部 padding 截断为 '...'，违反受保护文本不得 ellipsis 隐藏的协议。Size=2x2、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/ 与 value 原样回填等硬约束全部满足。综合扣分 7.0。",
+    "aesthetic": "深色线性渐变 + 绿色 pill 按钮配色和谐，前景白字在 #FF17181C→#FF233027 背景上对比度合格；字号阶梯 16/12/12 合理，唯一最强字重 700 落在 ETA 符合规则。扣分项：① 卡片中部因 List 未渲染出现约 50vp 的纯色空洞，与顶部内容形成明显的'挖空'节奏失衡；② CTA 文字 '...' 视觉上像加载占位，破损感强；③ List 区域用纯 #24FFFFFF 透明黑底在中部堆出一段灰白带，但内容全空，进一步暴露空洞。综合 5.5。",
+    "layout": "按公式核算：root Column 纵向占用 = 12+12+2×6+(34+0)+(44+0)+(20+0) = 134 ≤ 父 140 ✓ 但内容区 116，扣 padding 后仅剩 110 可分配给 3 个子项加 12 margin，可视上中段被吃紧；top Row 横向占用 = 0+0+8+70+38 = 116 = 父 116 ✓ 临界；hero Column 14+2+18=34=34 ✓；segmentItem Row 6+6+4+62+38=116=116 ✓ 单个没问题；navBtn width 38 容纳 '地图' 12pt×2=24vp + Button 默认约 16vp×2=32vp 内边距共需 56vp，38<56，文字被迫 ellipsis 截断为 '...'，是核心 CTA 截断。实际渲染截图佐证：List 区全空，按钮 '...'。综合 5.0。"
+  },
+  "issues": [
+    "navBtn width=38 不足以容纳 '地图'（24vp）+ Button 默认水平内边距，实际文字被截断为 '...'，违反受保护 CTA 不得 ellipsis 协议",
+    "List routeList 在截图中部完全未渲染出 segments 行，'列一列路况' 这条核心用户指令未视觉化达成",
+    "List 组件声明了 'listDirection'、'scrollBar'、'space' 等非协议标准属性，可能干扰 List 解析",
+    "root Column 使用 justifyContent='spaceBetween' 但中部 List 不渲染，导致上下两块之间出现明显空洞，视觉密度失衡",
+    "hero width 70 + navBtn width 38 + itemMargin 8 = 116 已达 Row 父宽上限，热区/边距 0 冗余，挪出空间更难",
+    "Button 用了 'fontWeight':'medium'（非标准关键字），建议用 500 数值"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_270\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_270\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"seg1\",\"seg2\",\"bottom\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF17181C\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF17181C\",0],[\"#FF233027\",1]]}}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"hero\",\"navBtn\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"eta\"],\"styles\":{\"width\":62,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.route.title }}\",\"styles\":{\"width\":62,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1}},{\"id\":\"eta\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.route.etaText }}\",\"styles\":{\"width\":62,\"height\":16,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"navBtn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.route.actionText }}\",\"styles\":{\"width\":50,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FF0A7D55\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":{\"path\":\"/route/destination/latitude\"},\"longitude\":{\"path\":\"/route/destination/longitude\"}},\"trafficpe\":{\"path\":\"/route/trafficType\"}}}}]},{\"id\":\"seg1\",\"component\":\"Row\",\"children\":[\"seg1Name\",\"seg1Status\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#24FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"seg1Name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.route.segments[0].name }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":11,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1}},{\"id\":\"seg1Status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.route.segments[0].statusText }}\",\"styles\":{\"width\":26,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF6FE2A0\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"seg2\",\"component\":\"Row\",\"children\":[\"seg2Name\",\"seg2Status\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#24FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"seg2Name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.route.segments[1].name }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":11,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1}},{\"id\":\"seg2Status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.route.segments[1].statusText }}\",\"styles\":{\"width\":26,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF6FE2A0\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"bottom\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText + ' ' + $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":11,\"fontColor\":\"#BFFFFFFF\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_270\",\"value\":{\"route\":{\"title\":\"通勤路况\",\"etaText\":\"32分钟\",\"actionText\":\"地图\",\"trafficType\":\"Drive\",\"destination\":{\"name\":\"公司\",\"latitude\":\"\",\"longitude\":\"\"},\"segments\":[{\"name\":\"内环高架\",\"statusText\":\"缓行\"},{\"name\":\"世纪大道\",\"statusText\":\"畅通\"}]},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"天气\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

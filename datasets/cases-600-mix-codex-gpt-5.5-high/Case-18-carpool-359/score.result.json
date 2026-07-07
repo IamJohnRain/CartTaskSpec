@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-18-carpool-359",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "DSL 覆盖了用户大部分诉求：尺寸 2x4、目录/版本/根容器硬约束满足、事件 call/args 原样来自 eventCandidates（clickToIntent/StartNavigate）、三个计划项水平排列、绿色 '已就绪'、CAR 文字字符图标、浅蓝到淡橙渐变、数据从 calendar 读取。但有几处偏差：(1) 用户明确要求 '每块左边信息…右边动作按钮'，DSL 实际是每块内 Column（信息在上、按钮在下），与左/右布局不符；(2) 用户期望的信息 '08:00 望京→上地 已成行' 中 '已成行'(description) 在 DSL 中被丢掉，只显示 dtStart+title；(3) plan_info 用 formatString+${...} 这种非标准调用，spec 推崇 {{...}} 模板，且该写法很可能在渲染端不可用，是导致三块不显示的根因之一；(4) 第二个事件候选 ViewCalendarEvent 完全没有被用上（数据里 actionLabel 全部是 '导航出发'，勉强说得过去但仍是覆盖不全）。",
+    "aesthetic": "渐变配色 #EAF7FF→#FFE7CC 协调，Header 文字层级清晰（CAR 蓝色加粗、标题深色、右上角绿色已就绪），按钮使用深青 #287A8C 与主题色一致，整体配色与清晨天空风格契合。但渲染截图显示卡片下半部（约 88vp）几乎全空，三块计划完全没显示出来，导致卡片呈现严重残缺、不完整，视觉上等同于布局失败，扣重分。",
+    "layout": "逐项核算：(1) Root Column 300x140 padding 12：纵向 = 12+12 + 8*(2-1) + 20+88 = 140 ✓；(2) Header Row 276x20：横向 = 6*2 + 34+174+50 = 270 ≤ 276 ✓；(3) Plans List 276x88：3 项宽度 = 6*2 + 88*3 = 276 ✓；(4) plan_tpl Column 88x88 padding 6：内容区 76x76，子项 plan_info(28)+plan_status(16)+plan_action(28) + itemMargin 4*2=8 = 内容总高 80 > 可用 76，溢出 4vp，加上 padding 12 后整列占高 92 > 父高 88，溢出 4vp，clip:true 会切掉最底部 Button 的若干像素；(5) plan_info 内容 '08:00 望京→上地' 在 76 宽 + 12pt 字体下宽度约 5*7.2+0.4*12+5*12 ≈ 98vp，> 76 容器宽度，必须依赖 wordBreak:breakAll 拆字，文字视觉破碎；(6) 渲染截图证实 List 区域三块全部未渲染，是 formatString 非标写法导致 plan_info 内容失败后整块未绘制。综合：根/Header/List 预算成立，但 plan_tpl 自身有 4vp 纵向溢出 + 子项文本宽度超 76，叠加 formatString 不可用导致三块完全不显示，布局严重崩溃。"
+  },
+  "issues": [
+    "plan_info 使用非标准 formatString 调用 {'call':'formatString','args':{'value':'${dtStart} ${title}'}}，应改为标准模板 'content':'{{ dtStart }} {{ title }}'",
+    "plan_tpl Column 纵向占高 92 > 父高 88，子项合计 80 > 可用 76，溢出 4vp",
+    "plan_info 文本 '08:00 望京→上地' 在 12pt 下约 98vp > 76 容器宽，必须拆字；建议拆为 info_time 与 info_title 两个 Text 组件",
+    "用户明确要求 '08:00 望京→上地 已成行' 中的 '已成行'(description) 字段在 DSL 中完全未展示",
+    "用户要求 '每块左边信息…右边动作按钮' 的左右布局，DSL 实际为上下 Column，未遵循指令",
+    "Button 高度 28 在 4vp 溢出下可能被 clip 切到边沿，渲染截图证实三块完全未显示",
+    "第二个事件候选 ViewCalendarEvent 从未被使用，若需 '联系' 按钮分支则缺少覆盖"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_18_carpool_359\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_18_carpool_359\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"plans\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7FAFF\",\"linearGradient\":{\"direction\":\"toRight\",\"colors\":[[\"#FFEAF7FF\",0],[\"#FFFFE7CC\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"glyph\",\"title\",\"ready\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"{{ summary.glyph }}\",\"styles\":{\"width\":34,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#FF287A8C\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ summary.title }}\",\"styles\":{\"width\":174,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF213843\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ready\",\"component\":\"Text\",\"content\":\"{{ summary.status }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF0A8F5A\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"plans\",\"component\":\"List\",\"children\":{\"componentId\":\"plan_tpl\",\"path\":\"/data/calendar/items\"},\"space\":6,\"styles\":{\"width\":276,\"height\":88,\"listDirection\":\"horizontal\",\"scrollBar\":\"off\"}},{\"id\":\"plan_tpl\",\"component\":\"Column\",\"children\":[\"info_time\",\"info_title\",\"info_desc\",\"plan_status\",\"plan_action\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":88,\"padding\":{\"left\":6,\"right\":6,\"top\":5,\"bottom\":5},\"borderRadius\":10,\"backgroundColor\":\"#E6FFFFFF\",\"borderWidth\":1,\"borderColor\":\"#66BFD9E6\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"info_time\",\"component\":\"Text\",\"content\":\"{{ dtStart }}\",\"styles\":{\"width\":76,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF213843\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_title\",\"component\":\"Text\",\"content\":\"{{ title }}\",\"styles\":{\"width\":76,\"height\":13,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF213843\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_desc\",\"component\":\"Text\",\"content\":\"{{ description }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF6A7B85\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_status\",\"component\":\"Text\",\"content\":\"{{ statusLabel }}\",\"styles\":{\"width\":76,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF0A8F5A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_action\",\"component\":\"Button\",\"label\":\"{{ actionLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"40.0322\",\"longitude\":\"116.3147\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":76,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF287A8C\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_18_carpool_359\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"今日拼车\",\"glyph\":\"CAR\",\"status\":\"已就绪\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"carpool-359-am\",\"title\":\"望京→上地\",\"dtStart\":\"08:00\",\"dtEnd\":\"08:35\",\"eventLocation\":\"上地\",\"description\":\"已成行\",\"statusLabel\":\"已就绪\",\"actionLabel\":\"导航出发\"},{\"entityName\":\"calendar\",\"entityId\":\"carpool-359-noon\",\"title\":\"中关村→望京\",\"dtStart\":\"12:30\",\"dtEnd\":\"13:05\",\"eventLocation\":\"望京\",\"description\":\"已成行\",\"statusLabel\":\"已就绪\",\"actionLabel\":\"导航出发\"},{\"entityName\":\"calendar\",\"entityId\":\"carpool-359-pm\",\"title\":\"上地→望京\",\"dtStart\":\"18:40\",\"dtEnd\":\"19:20\",\"eventLocation\":\"望京\",\"description\":\"已成行\",\"statusLabel\":\"已就绪\",\"actionLabel\":\"导航出发\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

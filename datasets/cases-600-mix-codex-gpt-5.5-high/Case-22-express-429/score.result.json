@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-429",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户原话包含两条意图：①『整张卡片可点击跳到物流app』②『把日历里的事也读一下』。原 DSL 未在 root 或顶层加 onClick（eventCandidates 为空，协议禁止自造事件），视觉上也未做整卡可点的暗示（如外描边/CTA 按钮），但通过 status=『待接入』与 hint=『物流跳转暂不可用』如实告知了功能未开通；②data.calendar.items 为空数组，原 DSL 仍保留 event_list 模板但未给空状态占位，用户看到的是空 panel，无任何『暂无日程』或『加载中』的视觉反馈；state.loading=true 也未渲染加载态。数据绑定路径、catalogId/version/updateDataModel.path 都正确。",
+    "aesthetic": "配色为浅灰白渐变 + 浅灰面板，主文字 #e5000000 对比度足够，标题 700 与正文 500/400 层级清晰且只有一个最强字重，符合字号阶梯。面板圆角 16 与卡片 18 一致，底部竖分割线为信息收尾。扣分点：缺少日历空列表占位导致中部面板下方留白突兀，state.loading 未转化为视觉元素使整体略显『未完工』感。",
+    "layout": "root Column 占高 = padding.top(12) + padding.bottom(12) + itemMargin×2(16) + top_row(20) + panel(60) + bottom_row(20) = 140，恰填满 ✓。top_row 横向 = title(70) + itemMargin(6) + status(40) = 116 ✓。panel 内 Column 纵向 = padding(8) + itemMargin×2(8) + hint(14) + calendar_head(14) + event_list(16) = 60 ✓；内宽 116-8=108，『物流跳转暂不可用』约 7×12=84、event_time 34、event_title 70 均 ≤108 ✓。bottom_row 横向 = divider(2) + itemMargin(8) + note(96) = 106 ≤116 ✓；底边距卡片底 12vp 在 8-12vp 范围内。无溢出/截断/堆叠。但 event_list 在 items=[] 时模板不渲染却保留 16 高，面板下方出现视觉空缺。"
+  },
+  "issues": [
+    "未体现用户『整卡可点击跳物流app』的明确诉求（受 eventCandidates 为空约束，但视觉上无任何整卡可点的暗示）",
+    "data.calendar.items 为空时面板缺少『暂无日程/加载中』占位文案",
+    "state.loading=true 未渲染加载指示（Progress 或文案）",
+    "event_list 模板空时仍占 16 高度，造成面板下方空缺视觉",
+    "事件候选为空导致 onClick 无法注册，应至少在视觉上提示『整卡可点』，或通过 Status 高亮待开通状态"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_22_express_429\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_22_express_429\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"panel\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#ffffffff\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.title }}\",\"styles\":{\"width\":70,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.status }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"panel\",\"component\":\"Column\",\"children\":[\"hint\",\"calendar_head\",\"empty_state\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":60,\"padding\":4,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.hint }}\",\"styles\":{\"width\":108,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_head\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.calendarLabel }}\",\"styles\":{\"width\":108,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"empty_state\",\"component\":\"Text\",\"content\":\"暂无日程\",\"styles\":{\"width\":108,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"divider\",\"note\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":2,\"color\":\"#33000000\",\"height\":18}},{\"id\":\"note\",\"component\":\"Text\",\"content\":\"正在同步日历…\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_22_express_429\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"快递物流\",\"status\":\"待接入\",\"hint\":\"物流跳转暂不可用\",\"calendarLabel\":\"今日日程\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

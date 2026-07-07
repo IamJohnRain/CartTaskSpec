@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-20-notif-aggregate-388",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "DSL 结构完整覆盖了用户四项诉求（消息聚合卡 / 微信 deeplink 跳转 / 明天天气 / 低电提醒），事件 onClick.call 与 args 与 eventCandidates 完全一致，updateDataModel.value 与 TaskSpec.dataModel.value 一致，size=2x2、catalogId、version、root 尺寸 140x140 / borderRadius 18 / clip 等硬约束均满足。扣分点：渲染截图中 msg_title 与 weather_text 出现了字面模板 '{{ $__dataM' / '{{ $__dataModel.wea'，说明一个 content 内拼接两个 {{...}} 表达式时数据绑定未被求值（同等结构的 msg_count/battery_text/open_btn 单一表达式则正常求值），用户实际看不到『微信 群消息』『明天 多云 28°C』的明文，属严重可用性瑕疵。",
+    "aesthetic": "配色合理（淡灰底 #fff1f3f5 + 微信绿 #ff64bb5c 主色 + 橙色低电提醒 #ffed6f21 + 文本灰阶 #e5000000 / #99000000），层级语义清晰，圆形 glyph 设计有亮点。扣分点：同一卡片出现 500 / 600 / 700 / 800 四种字重（glyph 用 800，msg_title/battery/open_btn 用 700，weather_text 用 600，msg_count 用 500），违反『同一卡片只保留一个最强字重』的规范，视觉重音分散；msg_count fontSize=12 与 weather_text fontSize=12 同色同字重相邻，信息密度上略显平淡。",
+    "layout": "布局预算逐项核算：①root Column 纵向 12(padT)+30(msg_row)+4+1(divider)+4+16(weather_text)+4+16(battery_text)+4+30(btn)+12(padB)=137 ≤ 140 成立；②msg_row 横向 24(??)=26(glyph)+8(margin)+82(msg_block)=116 成立；③msg_block 纵向 18+2+14=34 成立；④msg_title 内容『微信 群消息』宽 = 2*14+0.4*14+3*14=75.6 ≤ 82 成立（不算溢出），但因数据绑定失败实际渲染了 60+ 字符的模板字符串，被 textOverflow:none + maxLines:1 硬截断成 '{{ $__dataM'，等效横向溢出 ~350vp；⑤weather_text 横向 91.2 ≤ 116 成立但同样因绑定失败硬截断成 '{{ $__dataModel.wea'；⑥open_btn 热区 30 ≥ 24 且底部外边距 12vp ∈ [8,12] 合格。受保护文本（标题/天气）出现模板字面截断，违反『受保护文本不得依赖 ellipsis/clip 隐藏』规则，扣重分。"
+  },
+  "issues": [
+    "数据绑定在 content 含两个 {{...}} 表达式时未求值，msg_title 与 weather_text 渲染出字面模板 '{{ $__dataM...' / '{{ $__dataModel.wea...'",
+    "同一卡片存在 500/600/700/800 四种字重，违反『只保留一个最强字重』",
+    "msg_title 在 82px 宽 / fontSize 14 下虽恰能放下『微信 群消息』，但因绑定失败导致模板字面被硬截断，受保护文本被裁",
+    "msg_block 高度 34 与子项 18+2+14=34 紧贴零余量，缺乏 padding 缓冲",
+    "glyph 字号 16 配 26x26 容器过紧，建议降至 14 配 24x24 并将字重从 800 调到 700 以收敛层级"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_388\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_388\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"msg_row\",\"divider\",\"info_row\",\"open_btn\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"msg_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"msg_block\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"信\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"msg_block\",\"component\":\"Column\",\"children\":[\"msg_title\",\"msg_count\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"msg_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.message.target }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"msg_count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.message.unreadText }}\",\"styles\":{\"width\":86,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"color\":\"#33000000\"}},{\"id\":\"info_row\",\"component\":\"Column\",\"children\":[\"weather_text\",\"battery_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"明天 {{ $__dataModel.weather.summary }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.warning }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.tencent.mm\",\"abilityName\":\"com.tencent.mm.ui.LauncherUI\",\"uri\":\"weixin://dl/chat\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_388\",\"path\":\"/\",\"value\":{\"message\":{\"app\":\"微信\",\"target\":\"群消息\",\"unreadText\":\"3 条未读\"},\"weather\":{\"day\":\"明天\",\"summary\":\"多云 28°C\"},\"battery\":{\"level\":12,\"warning\":\"快没电了\"},\"actionText\":\"读群消息\"}}}"
+  ]
+}

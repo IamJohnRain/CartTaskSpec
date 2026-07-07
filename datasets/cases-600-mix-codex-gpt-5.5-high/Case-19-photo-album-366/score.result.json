@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-366",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户诉求四点均落实：图片为主（glyph 40x40 居左作为主视觉）、数字会变（{{ $__dataModel.album.photoCount }} 完整表达式绑定）、点一下跳应用（root 与 action_btn 双重 onClick，call/args 与 eventCandidates 完全一致）、提醒快不行了（statusText '快不行了' 以红色高权重呈现）。dataModel 全部 7 个字段都通过表达式绑定，assetCandidates 中的 icon_clear.png 通过 {{ $__dataModel.album.glyph }} 正确引用。size 2x2、catalogId、version、updateDataModel.path/value 等硬约束均满足。轻微扣分：actionText '看天气' 与相册卡主题语义不匹配（来自 dataModel，非 DSL 决定），且 root 与 action_btn 同时挂 onClick 略显冗余。",
+    "aesthetic": "整体配色和谐：浅灰底 #fff1f3f5 + 白色 hero panel + 蓝色 CTA + 红色警告，对比清晰可读。信息层级：图标+数字（主指标）+ 状态徽标 + CTA，符合卡片信息密度。但存在两处扣分：(1) title、status、photo_count 三个元素均使用 fontWeight=700，违反'同一卡片只保留一个最强字重'的规则，造成权重竞争，主次不清；(2) action_btn 缺少 textAlign:center，渲染截图中 '看天气' 文字明显偏左，未在蓝色按钮中居中。",
+    "layout": "逐项核算：(1) root Column：padding 24 + 子项高 20+52+28=100 + itemMargin 8*2=16 = 116，恰好等于可用 116，无溢出；(2) top_row：宽 62+50+4=116 = 可用 116 ✓；(3) hero_panel：内 padding 16 + 宽 40+52+8=100 = 可用 100 ✓、高 40 = 40 ✓；(4) count_col：14+24+2=40 = 可用 40 ✓；(5) count_row：宽 36+14+2=52 = 可用 52 ✓；(6) 受保护文本宽度核算：title 4 字*14=56 < 62、status 4 字*12=48 < 50、photo_count 3 数字*0.6*20=36 = 36、unit 1 字*12=12 < 14、count_label 3 字*12=36 < 52，全部成立。Button 热区 28vp ≥ 24vp；底部动作区外边距 = 140-(12+20+8+52+8+28)=12vp，落在 8-12vp 区间上限。整体布局无堆叠、无溢出、无截断。"
+  },
+  "issues": [
+    "title、status、photo_count 三处同时使用 fontWeight=700，违反'同一卡片只保留一个最强字重'的层级规则",
+    "action_btn 未设置 textAlign:center，截图显示 '看天气' 文字在蓝色按钮中偏左而非居中",
+    "actionText '看天气' 与卡片 '相册空间' 主题语义不匹配（来源为 dataModel，但点击 deeplink 是 weather URI，TaskSpec 内部语义自洽问题）",
+    "root 与 action_btn 同时挂同一 onClick 略冗余，但不影响功能"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_366\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_366\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"hero_panel\",\"action_btn\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }}\",\"styles\":{\"width\":62,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.statusText }}\",\"styles\":{\"width\":50,\"height\":20,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_panel\",\"component\":\"Row\",\"children\":[\"glyph_panel\",\"count_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":52,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph_panel\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.album.glyph }}\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"count_col\",\"component\":\"Column\",\"children\":[\"count_label\",\"count_row\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"count_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.countLabel }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_row\",\"component\":\"Row\",\"children\":[\"photo_count\",\"unit\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":52,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"photo_count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.photoCount }}\",\"styles\":{\"width\":36,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.unit }}\",\"styles\":{\"width\":14,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_366\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"相册空间\",\"statusText\":\"快不行了\",\"countLabel\":\"待整理\",\"photoCount\":248,\"unit\":\"张\",\"actionText\":\"看天气\",\"glyph\":\"resources/base/media/icon_clear.png\"}}}}"
+  ]
+}

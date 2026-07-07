@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-369",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "DSL 结构性满足诉求：title 来自 $__dataModel.title、红色 badge 来自 alertText、3 个分组走模板循环并各自带 Checkbox 与 countText，size=2x2、catalogId/version/updateDataModel.path 等硬约束均符合。但渲染结果中 group_list 整块未出现（截图仅显示标题与被截断的 badge），用户'勾选'这一核心交互载体缺失；eventCandidates 为空，DSL 也未误造事件，整体协议面正确但呈现面失败，扣至 4.5。",
+    "aesthetic": "红橙色调与'红色提醒'语义匹配，标题字重 700 与 badge 字重 600 层级清晰；但 alert_badge 实际渲染为'待确'，'认'被裁，红色提醒信息不完整；卡片下半部完全空白，密度严重不均，视觉上像未完成的卡片，扣至 4.0。",
+    "layout": "逐项核算：(1) Root Column：padding.top+bottom=24，itemMargin=8，子项高 22+86=108，合计 24+8+108=140，等于容器 140 ✓。(2) Header Row：父 padding=0，itemMargin=6，子项宽 66+44=110，合计 6+110=116，等于 116 ✓；但 alert_badge 内部 text '待确认' 在 fontSize 12 下约 36px + padding 12 = 48px > 宽度 44，文字溢出导致'认'被裁。(3) group_list Column：3 个 group_row 高 24×3=72 + itemMargin 6×2=12 = 84 ≤ 86 ✓。(4) group_row Row：父 padding 6+6=12，itemMargin=4，子项宽 72+34=106，合计 12+4+106=122 > 容器 116，横向溢出 6vp，这是导致 group_list 整块未渲染、3 个分组缺失的根因。多处溢出/裁切，layout 严重失败，扣至 2.5。"
+  },
+  "issues": [
+    "group_row 横向溢出 6vp（122 > 116），致 group_list 模板循环未能渲染，3 个分组（含 Checkbox + 名称 + 数量）整体缺失",
+    "alert_badge 文字 '待确认' 在 fontSize 12 + padding 12 下需 48px，宽度仅 44，'认'被裁，红色提醒信息不完整",
+    "卡片下半部大面积空白，密度严重不均，违背 2x2 卡片信息紧凑呈现的预期",
+    "group_row 内部 padding 6/2 与 itemMargin 4 与子项宽度 72+34 共同造成横向超载，需整体瘦身"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"photo_album_face_groups_369\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"photo_album_face_groups_369\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"group_list\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF1EE\",\"borderWidth\":1,\"borderColor\":\"#33ED6F21\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"alert_badge\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.alertText }}\",\"styles\":{\"width\":44,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#FFED6F21\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"group_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"group_row\",\"path\":\"/groups\"},\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":94,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"group_row\",\"component\":\"Row\",\"children\":[\"group_check\",\"group_count\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":26,\"padding\":{\"left\":4,\"right\":4,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#14ED6F21\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"group_check\",\"component\":\"Checkbox\",\"label\":{\"path\":\"name\"},\"select\":{\"path\":\"selected\"},\"styles\":{\"width\":68,\"height\":20,\"shape\":\"rounded_square\",\"selectedColor\":\"#FFED6F21\",\"unSelectedColor\":\"#33000000\"}},{\"id\":\"group_count\",\"component\":\"Text\",\"content\":{\"path\":\"countText\"},\"styles\":{\"width\":32,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"photo_album_face_groups_369\",\"path\":\"/\",\"value\":{\"title\":\"人脸分组\",\"alertText\":\"待确认\",\"groups\":[{\"name\":\"家人\",\"countText\":\"32张\",\"selected\":true},{\"name\":\"同事\",\"countText\":\"18张\",\"selected\":false},{\"name\":\"未命名\",\"countText\":\"9张\",\"selected\":false}]}}}"
+  ]
+}

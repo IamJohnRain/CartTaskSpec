@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-03-003-v1",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户明确要求'顶部显示应用使用时长监控标题'，但截图中标题区直接显示了未解析的模板字符串 '{{ $__dataModel.antiAddiction.title'，标题内容完全没有被求值渲染出来，这是核心诉求的严重缺失。进度条双色（蓝/橙）区分、今日已用/每日上限/已超出三组参数、底部重新设置上限按钮均正确呈现，onClick 的 clickToDeeplink 调用与 args 与 eventCandidates 一致，size=2x4、catalogId、version、updateDataModel.path/value 等硬约束也满足。扣分集中在标题未渲染这一关键遗漏。",
+    "aesthetic": "进度条蓝橙配色协调、按钮圆角胶囊形态干净、卡片底色与文字对比清晰，但截图最顶部的标题位置直接露出一段未替换的模板代码 '{{ $__dataModel.antiAddiction.title'，非常刺眼且显得卡片处于'开发态'，整体观感一下子被打回低分；其余层级（主标题 16/700、副信息 10/400+600、正文 14/600）字重阶梯合理，但唯一的强字重让位给了一个本应是数据值的标题。",
+    "layout": "从截图看，Column 内四行（标题、进度条、参数行、按钮）纵向排布整齐，无元素相互堆叠遮挡，进度条在 276 宽容器内蓝 213 + 橙 63 的比例与 77%/23% 数据吻合且未越界，参数行左右两组文本清晰分隔、按钮位于左下且未贴底边（留白合理）。唯一可见的'溢出'是标题文本被右侧裁掉（看到 '{{ $__dataModel.antiAddiction.title' 即被截断），这是因为该字段未求值导致原文过长触发了容器 clip，但本质上属于内容/绑定问题而非纯排版错误，因此 D3 给予较高分但仍因视觉上的标题截断适度扣分。"
+  },
+  "issues": [
+    "顶部标题数据绑定失败：content='{{ $__dataModel.antiAddiction.title }}（{{ $__dataModel.antiAddiction.appName }}）' 在一个字段中嵌套两个 {{ }} 表达式并夹杂中文全角括号，渲染器未正确求值，截图中直接显示原始模板字符串 '{{ $__dataModel.antiAddiction.title' 并被裁切",
+    "标题被容器 clip 截断：未求值后的原始字符串宽度超过 width:276，文本被裁切，受保护的标题信息缺失",
+    "按钮靠左放置（alignItems:start），与右侧参数区在视觉重心上略偏，建议居中或与参数区右对齐以获得更稳的视觉锚点"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_03_003_anti_addiction\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_03_003_anti_addiction\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_row\",\"progress_track\",\"usage_row\",\"setting_button\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"title_app\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"baseline\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_app\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.appName }}\",\"styles\":{\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFF8800\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_track\",\"component\":\"Row\",\"children\":[\"normal_part\",\"over_part\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":16,\"padding\":0,\"borderRadius\":8,\"clip\":true,\"backgroundColor\":\"#FFE5EAF0\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"normal_part\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.antiAddiction.normalRatio }}\",\"total\":100,\"styles\":{\"width\":213,\"height\":16,\"type\":\"linear\",\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#FF0A59F7\",\"borderRadius\":0}},{\"id\":\"over_part\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.antiAddiction.overRatio }}\",\"total\":100,\"styles\":{\"width\":63,\"height\":16,\"type\":\"linear\",\"color\":\"#FFFF8800\",\"backgroundColor\":\"#FFFF8800\",\"borderRadius\":0}},{\"id\":\"usage_row\",\"component\":\"Row\",\"children\":[\"today_usage\",\"limit_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"today_usage\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.todayUsageText }}\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"limit_col\",\"component\":\"Column\",\"children\":[\"daily_limit\",\"over_limit\"],\"itemMargin\":2,\"styles\":{\"width\":132,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"daily_limit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.dailyLimitText }}\",\"styles\":{\"width\":132,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"over_limit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.overLimitText }}\",\"styles\":{\"width\":132,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFF8800\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":276,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_03_003_anti_addiction\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"应用使用时长监控\",\"appName\":\"抖音\",\"todayUsageText\":\"今日已用 2小时35分\",\"dailyLimitText\":\"每日上限 2小时\",\"overLimitText\":\"已超出 35分钟\",\"normalRatio\":77,\"overRatio\":23,\"actionText\":\"重新设置上限\"}}}}"
+  ]
+}
