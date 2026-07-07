@@ -121,3 +121,30 @@ python validate_generated_card.py --response response.json --spec examples\paren
 ```
 
 `validate_generated_card.py` 会拒绝 `cardspec` 代码块，提取唯一 `genui` 代码块，并校验 JSONL 行数、组件引用、root 尺寸、DataModel 一致性和表达式/绑定路径。
+
+
+## 常用命令
+
+1. 数据集dsl抽取到指定目录
+```bash
+rm -rf /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases/*
+bash scripts/flatten_cards.sh -o /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases -i datasets/cases-600-mix-codex-gpt-5.5-high/ 
+```
+
+2. 从模拟器中获取渲染结果
+```powershell
+mkdir D:\tmp\a2ui\
+hdc file recv /data/app/el2/100/base/com.example.a2ui/haps/entry/files/a2ui-render-shots D:\tmp\a2ui\
+python scripts/restore_cards.py -i D:\tmp\a2ui\a2ui-render-shots\ -o datasets/cases-600-mix-codex-gpt-5.5-high/
+Remove-Item -Recurse -Path "D:\tmp\a2ui\a2ui-render-shots\"
+```
+
+3. 使用大模型对结果进行打分，同时反思迭代
+```shell
+python scripts/build_score.py -d datasets/cases-600-mix-codex-gpt-5.5-high/ -v datasets/cases-600-mix-codex-gpt-5.5-high-v1/ -j 10
+```
+
+4. 输出分数报告
+```
+python scripts/build_score.py -d datasets/cases-100/codex-gpt-5.5/ -x datasets/cases-100/codex-gpt-5.5/report.xlsx
+```
