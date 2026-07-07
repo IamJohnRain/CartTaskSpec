@@ -428,24 +428,24 @@ def _normalize_improved_dsl(improved) -> list[str]:
     return lines
 
 
-def next_version_dir(case_dir: Path, dataset_root: Path) -> Path:
-    """在数据集根目录下查找 {case_name}-vN 的最大版本号，返回 v(N+1) 目录。"""
+def next_version_dir(case_dir: Path, version_root: Path) -> Path:
+    """在版本输出根目录下查找 {case_name}-vN 的最大版本号，返回 v(N+1) 目录。"""
     name = case_dir.name
     pattern = re.compile(rf"^{re.escape(name)}-v(\d+)$")
     max_v = 0
-    for d in dataset_root.iterdir():
+    for d in version_root.iterdir():
         if d.is_dir():
             m = pattern.match(d.name)
             if m:
                 max_v = max(max_v, int(m.group(1)))
-    return dataset_root / f"{name}-v{max_v + 1}"
+    return version_root / f"{name}-v{max_v + 1}"
 
 
-def create_version_dir(case_dir: Path, dataset_root: Path,
+def create_version_dir(case_dir: Path, version_root: Path,
                        result: dict) -> str:
     """把 improved_dsl 写入新版本目录并复制伴随文件；返回版本目录名。"""
     lines = _normalize_improved_dsl(result.get("improved_dsl"))
-    target = next_version_dir(case_dir, dataset_root)
+    target = next_version_dir(case_dir, version_root)
     target.mkdir(parents=True, exist_ok=False)
     (target / DSL_NAME).write_text("\n".join(lines) + "\n", encoding="utf-8")
     for fn in VERSION_COPY_FILES:
@@ -458,7 +458,7 @@ def create_version_dir(case_dir: Path, dataset_root: Path,
 # --------------------------------------------------------------------------- #
 # 单 case 的 API 评分流水
 # --------------------------------------------------------------------------- #
-def process_case_call_api(case_dir: Path, dataset_root: Path, cfg: dict,
+def process_case_call_api(case_dir: Path, version_root: Path, cfg: dict,
                           index: int, total: int, overwrite: bool,
                           retries: int, timeout: int) -> str:
     name = case_dir.name
@@ -489,7 +489,7 @@ def process_case_call_api(case_dir: Path, dataset_root: Path, cfg: dict,
     wt_str = f"{wt}" if isinstance(wt, (int, float)) else "?"
     vtag = ""
     try:
-        vtag = create_version_dir(case_dir, dataset_root, result)
+        vtag = create_version_dir(case_dir, version_root, result)
     except Exception as e:  # noqa: BLE001
         log.warning(f"{lp} WARN  {name} | improved_dsl/版本目录失败: {e}")
     log.info(
@@ -501,11 +501,14 @@ def process_case_call_api(case_dir: Path, dataset_root: Path, cfg: dict,
 
 def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
     cfg = load_minimax_config(args.env)
+    version_root = args.version_out or args.dataset
+    version_root.mkdir(parents=True, exist_ok=True)
     log.info(
         f"API: {cfg['url']} | model={cfg['model']} "
         f"| concurrency={args.concurrency} | retries={args.retries} "
         f"| timeout={args.timeout}s"
     )
+    log.info(f"版本输出目录: {version_root}")
     log.info(f"待处理 case: {len(case_dirs)} 个")
 
     total = len(case_dirs)
@@ -516,7 +519,7 @@ def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
         try:
             return process_case_call_api(
                 case_dir=d,
-                dataset_root=args.dataset,
+                version_root=version_root,
                 cfg=cfg,
                 index=i + 1,
                 total=total,
@@ -544,7 +547,8 @@ def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="为每个 case 目录生成 VLM 评分请求体 score.request.json。"
+        description="为每个 case 目录生成 VLM 评分请求体 requestbody.json，"
+                    "默认并发调用 MiniMax 评分 API。"
     )
     parser.add_argument("-d", "--dataset", type=Path, default=Path("datasets/cases-600-mix"),
                         help="数据集根目录（其下每个子目录为一个 case）。")
@@ -569,22 +573,28 @@ def main() -> int:
                              "间隔），默认 300（5 分钟）。")
     parser.add_argument("-e", "--env", type=Path, default=None,
                         help=".env 文件路径，默认仓库根目录下的 .env。")
+    parser.add_argument("-v", "--version-out", type=Path, default=None,
+                        help="改进版 -vN case 的输出根目录；不传则默认与"
+                             "数据集同目录（-v 指定的目录不存在会自动创建）。")
     parser.epilog = (
         "示例:\n"
         "  # 默认:生成请求体 + 调用 API 评分 + 提取改进 DSL 到 -vN 目录\n"
-        "  python scripts/build_score_requests.py -d datasets/cases-600-mix\n"
-        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "  python scripts/build_score.py -d datasets/cases-600-mix\n"
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
         "-c Case-007-01-low-power-007\n"
-        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
         "-n 5 -j 5\n\n"
+        "  # 把改进版 case 输出到独立目录(不污染原数据集,目录不存在自动创建)\n"
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
+        "-v datasets/cases-600-mix-iter1\n\n"
         "  # 只生成请求体,不调用 API\n"
-        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
         "--disable-call-api\n\n"
         "  # 全量评分,并发 10,覆盖已有结果\n"
-        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
         "-j 10 --overwrite\n\n"
         "  # 调试单 case(单线程)\n"
-        "  python scripts/build_score_requests.py -d datasets/cases-600-mix "
+        "  python scripts/build_score.py -d datasets/cases-600-mix "
         "-c Case-007-01-low-power-007 -j 1"
     )
     parser.formatter_class = argparse.RawDescriptionHelpFormatter
