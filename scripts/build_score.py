@@ -84,6 +84,14 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深评审专家�
 
 你的评审依据是协议 .agents/skills/harmony-card-generation-datamodel-first 与 TaskSpec 协议。下文给出关键约束，必须严格据此判断。
 
+=== 评分核心原则（最高优先级，凌驾于一切之上） ===
+1. 所有分数必须以渲染截图（card.dsl.png）为唯一且最终的依据。
+2. 你必须先认真看图、根据图中实际呈现的效果打分；DSL 与下面的布局公式仅用于"协议合规性"检查与"改进版 DSL"的撰写，绝不能仅凭 DSL 文本/数值就给分。
+3. 【排版布局 D3】必须从截图中观察并描述：是否有元素堆叠重叠、文字被裁切/截断（尤其标题、状态、CTA、主数值）、组件溢出卡片边界、Stack 层叠遮挡关键内容。看不到截图中的问题就等于没有问题；反之，只要截图里能看出堆叠/截断，就必须扣分。
+4. 【样式美观 D2】必须从截图中判断：配色是否和谐、前景文字在背景上是否清晰可读、留白密度是否舒适、对齐是否统一。不要脱离截图空谈 DSL 里的颜色值或字号。
+5. 【指令遵从 D1】参考截图确认信息是否真实、完整地呈现给了用户（而不是只在 DSL 里写了却渲染不出来或被遮挡）。
+6. 简言之："截图里看到什么，就评什么。" DSL 只回答"协议是否合法"和"如何改进"。
+
 === 一、尺寸与 root shell（硬约束） ===
 - size 只能是 2x2 或 2x4。
 - 2x2：createSurface/root width:140、height:140，root borderRadius:18，clip:true，默认 padding:12，内容区约 116x116。
@@ -102,11 +110,12 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深评审专家�
 - onClick[].call 与 onClick[].args 必须原样来自 TaskSpec.eventCandidates，不得发明新事件或新参数。
 - Image.src / backgroundImage 只能来自 TaskSpec.assetCandidates 或用户明确提供的本地/资源路径。
 
-=== 四、布局预算公式（必须据此检测堆叠/溢出/文字截断） ===
-对每个 Row/Column，按下式计算并比较：
+=== 四、布局诊断参考（辅助交叉验证，不替代看图） ===
+注意：本节公式仅用于在截图里发现疑似问题后做交叉验证，或用于撰写改进版 DSL；打分必须以截图为准。当截图与公式结论冲突时，以截图为准。
+对每个 Row/Column，可按下式计算并比较：
   - Row 横向占用 = 父 padding.left + 父 padding.right + itemMargin * (子项数 - 1) + Σ(子项 width + 子项 margin.left + 子项 margin.right)
   - Column 纵向占用 = 父 padding.top + 父 padding.bottom + itemMargin * (子项数 - 1) + Σ(子项 height + 子项 margin.top + 子项 margin.bottom)
-  - 当「占用 > 父容器 width/height」时判定为溢出（会导致子项被挤压、重叠、裁剪）。
+  - 当「占用 > 父容器 width/height」时判定为潜在溢出（需回到截图确认是否真的出现挤压/重叠/裁剪）。
   - 子项无 width/height 时按估算：文本宽度 ≈ Σ 字符宽度，中文 ≈ fontSize，英文/数字 ≈ 0.6*fontSize，空格/标点 ≈ 0.4*fontSize。
   - 受保护文本（标题、状态、CTA、主指标、用户明确要求字段）不得依赖 ellipsis/clip/marquee 隐藏；放不下应缩字、删弱信息或换尺寸。
   - Stack 叠层不得覆盖受保护文本/CTA/点击元素/进度主值；背景在底层，信息在上层。
@@ -116,25 +125,25 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深评审专家�
 
 === 五、评分维度（每项 0-10，给分到小数点后 1 位） ===
 
-D1 指令遵从（权重 0.4）：是否满足 userQuery 的明确诉求。
-  - 信息是否齐全：用户明确点名要显示的字段/对象是否都体现了。
+D1 指令遵从（权重 0.4）：是否满足 userQuery 的明确诉求（务必结合截图确认信息真实呈现）。
+  - 信息是否齐全：用户明确点名要显示的字段/对象是否都在截图里可见且完整。
   - 事件是否落实：userQuery 要求的动作是否转换成 onClick，且 call/args 原样来自 eventCandidates。
   - 素材是否正确：assetCandidates 是否按语义正确使用（背景/图标/插图）。
   - 尺寸与协议：size/root shell/catalogId/version/updateDataModel 等硬约束是否满足。
   - 评分基准：10=全部精准落实且无多余；7-8=主要诉求满足、有轻微瑕疵；4-6=有遗漏或轻微违反协议；1-3=关键诉求缺失或协议违规；0=与指令几乎无关。
 
-D2 样式美观（权重 0.2）：视觉质量。
-  - 配色来源是否合法、和谐（渐变 stop/颜色 token），前景文字在背景上是否清晰可读。
-  - 字号/字重/间距是否在阶梯上，层级是否清晰，是否只有一个最强字重。
-  - 留白与密度是否合理（无明显空洞、无过密），对齐是否统一。
-  - 评分基准：10=优秀、克制、专业；7-8=良好；4-6=可用但有明显土气或不统一；1-3=丑陋或不可读；0=无法入目。
+D2 样式美观（权重 0.2）：视觉质量，必须基于截图判断。
+  - 从截图判断配色是否和谐、渐变是否自然，前景文字在背景上是否清晰可读。
+  - 从截图判断字号/字重层级是否清晰、是否只有一个最强字重、间距是否舒适。
+  - 从截图判断留白密度是否合理（无明显空洞、无过密），对齐是否统一。
+  - 评分基准：10=截图观感优秀、克制、专业；7-8=良好；4-6=可用但有明显土气或不统一；1-3=丑陋或不可读；0=无法入目。
 
-D3 排版布局（权重 0.4）：堆叠、溢出、文字截断（核心排查项）。
-  - 用上面公式逐一核算每个 Row/Column 是否溢出；任一溢出即扣重分。
-  - 检查 Stack 层叠是否遮盖关键文本/CTA/进度值。
-  - 检查受保护文本是否会被截断（结合渲染截图佐证）。
-  - 检查按钮热区、底部锚定、左右边界共享。
-  - 评分基准：10=全部预算成立、无任何堆叠/截断；7-8=基本成立、个别小瑕疵；4-6=存在溢出或局部截断；1-3=多处堆叠/文字被裁/CTA 不可用；0=布局崩溃。
+D3 排版布局（权重 0.4）：堆叠、溢出、文字截断（核心排查项，必须基于截图）。
+  - 必须从截图中逐一观察：是否存在元素堆叠重叠、文字被裁切/截断、组件溢出卡片边界。
+  - 截图中若 Stack 层叠遮盖关键文本/CTA/进度值，即扣重分。
+  - 公式核算仅用于交叉验证：若截图显示溢出但公式算不出，仍以截图为准扣分。
+  - 检查按钮热区、底部锚定、左右边界共享（均以截图观感为准）。
+  - 评分基准：10=截图无任何堆叠/截断，布局干净；7-8=基本成立、个别小瑕疵；4-6=截图存在溢出或局部截断；1-3=截图多处堆叠/文字被裁/CTA 不可用；0=布局崩溃。
 
 加权总分 = D1*0.4 + D2*0.2 + D3*0.4（保留 1 位小数）。
 
@@ -149,9 +158,9 @@ D3 排版布局（权重 0.4）：堆叠、溢出、文字截断（核心排查�
   },
   "weighted_total": 0-10 数字,
   "reasons": {
-    "instruction": "中文，具体说明指令落实情况与扣分点",
-    "aesthetic": "中文，具体说明美观问题与扣分点",
-    "layout": "中文，必须引用预算计算结果，例如 'content Column 子项占高 126 > 可用 116，溢出 10'"
+    "instruction": "中文，具体说明指令落实情况与扣分点（结合截图）",
+    "aesthetic": "中文，必须基于截图描述美观问题与扣分点",
+    "layout": "中文，必须基于截图描述观察到的具体视觉问题，例如'截图中底部按钮文字\"开启省电\"底边被裁切'，而非仅引用 DSL 数值"
   },
   "issues": ["中文具体问题清单，逐条列出"],
   "improved_dsl": [
@@ -204,10 +213,12 @@ def build_user_text(case_id: str, query: str, taskspec_pretty: str, dsl_lines: l
         f"=== 用户原始指令 (query.txt) ===\n{query}\n\n"
         f"=== TaskSpec 契约 (task.taskSpec.json) ===\n{taskspec_pretty}\n\n"
         f"=== 待评审 DSL (card.dsl.jsonl，共 {len(dsl_lines)} 行) ===\n{dsl_block}\n\n"
-        f"=== 渲染截图 ===\n请结合随附的 card.dsl.png 渲染截图，并按 system 中给出的布局预算公式"
-        f"对每个 Row/Column 做数值核算，综合视觉与数值给出分数。\n\n"
+        f"=== 渲染截图 ===\n⚠️ 本评分以随附的 card.dsl.png 渲染截图为唯一且最终的依据。"
+        f"请务必先认真看图，根据图中实际呈现的效果打分；"
+        f"上面的 DSL 与 system 中的布局公式仅用于协议合规性检查与改进版 DSL 的撰写，"
+        f"绝不能仅凭 DSL 文本/数值给分。排版与美观问题以截图为准。\n\n"
         f"输出要求：严格按 system 中规定的 JSON schema 输出单个 JSON 对象，"
-        f"reasons.layout 必须引用具体预算计算结果，improved_dsl 为 3 行合法 JSONL。"
+        f"reasons 必须基于截图描述具体视觉现象，improved_dsl 为 3 行合法 JSONL。"
     )
 
 
@@ -235,11 +246,22 @@ def build_request(case_id: str, query: str, taskspec_pretty: str,
 # --------------------------------------------------------------------------- #
 # 主流程
 # --------------------------------------------------------------------------- #
-def find_case_dirs(dataset: Path) -> list[Path]:
-    return sorted(
-        d for d in dataset.iterdir()
-        if d.is_dir() and all((d / f).is_file() for f in CASE_REQUIRED_FILES)
-    )
+def find_case_dirs(dataset: Path, require_all_files: bool = True) -> list[Path]:
+    """列出数据集下的 case 目录。
+
+    require_all_files=True（默认，用于 API/请求体模式）：必须含
+      query/taskspec/dsl/png 全部文件才算合法 case。
+    require_all_files=False（用于 --excel 汇总模式）：只要目录名以 'Case-'
+      开头即视为 case，允许缺 png/score，便于无评分数据集也入表。
+    """
+    def _is_case(d: Path) -> bool:
+        if not d.is_dir():
+            return False
+        if require_all_files:
+            return all((d / f).is_file() for f in CASE_REQUIRED_FILES)
+        return d.name.startswith("Case-")
+
+    return sorted(d for d in dataset.iterdir() if _is_case(d))
 
 
 def process_case(case_dir: Path, output_name: str, no_image: bool, overwrite: bool) -> str:
@@ -471,8 +493,20 @@ def create_version_dir(case_dir: Path, version_root: Path,
 
 
 # --------------------------------------------------------------------------- #
-# 单 case 的 API 评分流水
+# 单 case 的 API 评分流水（带重试：网络 + 响应解析 + improved_dsl 校验）
 # --------------------------------------------------------------------------- #
+def _classify_err(e: Exception) -> str:
+    """把异常归类成简短中文标签，便于 RETRY 日志分类统计。"""
+    msg = str(e)
+    if "网络" in msg or "network" in msg.lower() or "http " in msg.lower():
+        return "网络"
+    if "未找到可解析的 JSON" in msg or "JSONDecodeError" in repr(type(e)):
+        return "响应解析"
+    if "improved_dsl" in msg or "应为 3 行" in msg or "updateComponents" in msg:
+        return "improved_dsl非法"
+    return "其它"
+
+
 def process_case_call_api(case_dir: Path, version_root: Path, cfg: dict,
                           index: int, total: int, overwrite: bool,
                           retries: int, timeout: int) -> str:
@@ -491,22 +525,64 @@ def process_case_call_api(case_dir: Path, version_root: Path, cfg: dict,
             return "fail"
     body = json.loads(body_path.read_text(encoding="utf-8"))
     log.info(f"{lp} START {name}")
-    try:
-        content, elapsed = call_minimax(cfg, body, timeout, retries)
-        result = strip_think_and_parse_json(content)
-    except Exception as e:  # noqa: BLE001
-        log.error(f"{lp} FAIL  {name} | {e}")
+
+    # ---- 外层重试：覆盖 网络 / 响应解析 / improved_dsl非法 三类失败 ----
+    result: dict | None = None
+    elapsed = 0.0
+    dsl_ok = False
+    dsl_lines: list[str] | None = None
+    last_err: Exception | None = None
+    for attempt in range(1, retries + 1):
+        try:
+            # 传 retries=1 给网络层，避免 × 倍数爆炸；总尝试上限 = 本函数 retries
+            content, elapsed = call_minimax(cfg, body, timeout, retries=1)
+            result = strip_think_and_parse_json(content)
+            # 预校验 improved_dsl（不写盘），合法才视为成功
+            dsl_lines = _normalize_improved_dsl(result.get("improved_dsl"))
+            dsl_ok = True
+            last_err = None
+            break
+        except Exception as e:  # noqa: BLE001
+            last_err = e
+            kind = _classify_err(e)
+            if attempt < retries:
+                backoff = 2 ** attempt
+                log.info(
+                    f"{lp} RETRY {name} | {attempt}/{retries}次({kind}): "
+                    f"{e} | {backoff}s后重试"
+                )
+                time.sleep(backoff)
+            else:
+                log.warning(
+                    f"{lp} RETRY {name} | {attempt}/{retries}次({kind})"
+                    f" 已用尽: {e}"
+                )
+
+    # ---- 降级判断 ----
+    # 1) result 从未解析成功 → 彻底失败（不落盘）
+    if result is None:
+        log.error(f"{lp} FAIL  {name} | 重试{retries}次仍失败: {last_err}")
         return "fail"
+
+    # 2) 保存评分（即使 dsl 非法也要留下分数）
     score_path.write_text(
         json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     wt = result.get("weighted_total")
     wt_str = f"{wt}" if isinstance(wt, (int, float)) else "?"
+
+    # 3) improved_dsl 合法 → 写版本目录；非法 → WARN 但保留分数
     vtag = ""
-    try:
-        vtag = create_version_dir(case_dir, version_root, result)
-    except Exception as e:  # noqa: BLE001
-        log.warning(f"{lp} WARN  {name} | improved_dsl/版本目录失败: {e}")
+    if dsl_ok and dsl_lines is not None:
+        try:
+            vtag = create_version_dir(case_dir, version_root, result)
+        except Exception as e:  # noqa: BLE001
+            log.warning(f"{lp} WARN  {name} | 版本目录创建失败: {e}")
+    else:
+        log.warning(
+            f"{lp} WARN  {name} | improved_dsl 重试{retries}次仍非法，"
+            f"已保留分数但不生成版本目录"
+        )
     log.info(
         f"{lp} OK    {name} | {elapsed:.1f}s | total={wt_str} "
         f"| -> {vtag or '(无版本目录)'}"
@@ -563,7 +639,8 @@ def run_api_batch(case_dirs: list[Path], args: argparse.Namespace) -> int:
 # --------------------------------------------------------------------------- #
 # Excel 分数汇总（只读 score.result.json，绝不调 API）
 # --------------------------------------------------------------------------- #
-THUMB_MAX = (130, 260)  # 缩略图最大宽高（px），保持原始比例
+THUMB_PIXEL_MAX = (600, 1100)  # PNG 真实像素上限（决定清晰度）
+DISPLAY_WIDTH_PX = 150         # Excel 内显示宽度 px（决定单元格占用）
 
 # 条件着色：分数低 → 红，中 → 黄，高 → 绿
 _FILL_RED = PatternFill(start_color="FFFFC7CE", end_color="FFFFC7CE",
@@ -595,21 +672,46 @@ def _load_score(case_dir: Path) -> dict | None:
         return None
 
 
-def _make_thumb_bytes(png_path: Path):
-    """返回 (XLImage, width_pt, height_pt)；无 PNG 或无 PIL 返回 (None, 0, 0)。"""
+def _make_thumb_bytes(png_path: Path, row_idx: int):
+    """返回 (XLImage, disp_w, disp_h)；无 PNG 或无 PIL 返回 (None, 0, 0)。
+
+    只保留原图上 1/3（长截图的最上方卡片区域）。
+    像素分辨率与 Excel 显示尺寸解耦：PNG 保留高像素(≤THUMB_PIXEL_MAX)
+    以保证清晰度，显示尺寸固定按 DISPLAY_WIDTH_PX 等比缩放。
+    通过 OneCellAnchor + 显式 ext(EMU) 强制显示尺寸，避免 openpyxl 按
+    图片 DPI 重算导致图片被画得过大。
+    """
     if PILImage is None or not png_path.is_file():
         return None, 0, 0
     try:
         im = PILImage.open(png_path)
         im = im.convert("RGBA")
-        im.thumbnail(THUMB_MAX)
+        # 先裁剪：从顶部保留 1/3 高度
+        im = im.crop((0, 0, im.width, max(1, im.height // 3)))
+        # 像素分辨率：保留到 THUMB_PIXEL_MAX（清晰度来源）
+        im.thumbnail(THUMB_PIXEL_MAX)
         buf = io.BytesIO()
         im.save(buf, format="PNG")
         buf.seek(0)
+        # 显示尺寸：与像素解耦，固定显示宽度等比缩放
+        disp_w = DISPLAY_WIDTH_PX
+        disp_h = round(disp_w * im.height / im.width)
         img = XLImage(buf)
-        img.width = im.width
-        img.height = im.height
-        return img, im.width, im.height
+        # 用 OneCellAnchor 显式指定锚点(C 列 = col index 2)与显示尺寸(EMU)。
+        # 1 px @ 96 DPI = 9525 EMU
+        from openpyxl.drawing.spreadsheet_drawing import (
+            OneCellAnchor, AnchorMarker,
+        )
+        from openpyxl.drawing.xdr import XDRPositiveSize2D
+        _from = AnchorMarker(col=2, colOff=0,
+                             row=row_idx - 1, rowOff=0)  # row 0-based
+        ext = XDRPositiveSize2D(cx=disp_w * 9525, cy=disp_h * 9525)
+        anchor = OneCellAnchor(_from=_from, ext=ext)
+        img.anchor = anchor
+        return img, disp_w, disp_h
+    except Exception as e:  # noqa: BLE001
+        log.warning(f"{png_path.parent.name}: 嵌图失败: {e}")
+        return None, 0, 0
     except Exception as e:  # noqa: BLE001
         log.warning(f"{png_path.parent.name}: 嵌图失败: {e}")
         return None, 0, 0
@@ -633,7 +735,7 @@ def export_excel(case_dirs: list[Path], dataset: Path,
     ws.title = "score summary"
 
     headers = [
-        "case_id", "渲染图", "加权总分",
+        "case_id", "用户指令", "渲染图", "加权总分",
         "指令遵从(0.4)", "样式美观(0.2)", "排版布局(0.4)",
         "问题数", "问题清单", "排版原因", "指令原因", "美观原因",
     ]
@@ -652,68 +754,75 @@ def export_excel(case_dirs: list[Path], dataset: Path,
 
     wrap_align = Alignment(wrap_text=True, vertical="top")
     center_align = Alignment(horizontal="center", vertical="center")
-    # 列宽
-    col_widths = [32, 24, 11, 13, 13, 13, 8, 50, 50, 45, 45]
+    # 列宽（与 headers 一一对应：用户指令列较宽）
+    col_widths = [32, 50, 24, 11, 13, 13, 13, 8, 50, 50, 45, 45]
     for i, w in enumerate(col_widths, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
 
     written = 0
-    skipped = 0
+    no_score = 0
     for case_dir in case_dirs:
         result = _load_score(case_dir)
-        if result is None:
-            skipped += 1
-            continue
-
-        scores = result.get("scores", {}) or {}
+        has_score = result is not None
+        if not has_score:
+            no_score += 1
+        scores = (result.get("scores", {}) if has_score else {}) or {}
         ins = scores.get("instruction", {}) or {}
         aes = scores.get("aesthetic", {}) or {}
         lay = scores.get("layout", {}) or {}
-        wt = result.get("weighted_total")
-        issues = result.get("issues", []) or []
-        reasons = result.get("reasons", {}) or {}
+        wt = result.get("weighted_total") if has_score else None
+        issues = (result.get("issues", []) if has_score else []) or []
+        reasons = (result.get("reasons", {}) if has_score else {}) or {}
         row_idx = ws.max_row + 1
 
-        ws.cell(row=row_idx, column=1, value=case_dir.name).alignment = wrap_align
-        ws.cell(row=row_idx, column=3, value=wt).alignment = center_align
-        ws.cell(row=row_idx, column=4,
-                value=ins.get("score")).alignment = center_align
-        ws.cell(row=row_idx, column=5,
-                value=aes.get("score")).alignment = center_align
-        ws.cell(row=row_idx, column=6,
-                value=lay.get("score")).alignment = center_align
-        ws.cell(row=row_idx, column=7,
-                value=len(issues)).alignment = center_align
-        ws.cell(row=row_idx, column=8,
-                value="\n".join(f"· {x}" for x in issues)).alignment = wrap_align
-        ws.cell(row=row_idx, column=9,
-                value=reasons.get("layout", "")).alignment = wrap_align
-        ws.cell(row=row_idx, column=10,
-                value=reasons.get("instruction", "")).alignment = wrap_align
-        ws.cell(row=row_idx, column=11,
-                value=reasons.get("aesthetic", "")).alignment = wrap_align
+        # 读取用户原始 query（容错缺失）
+        query_path = case_dir / QUERY_NAME
+        query_text = (query_path.read_text(encoding="utf-8").strip()
+                      if query_path.is_file() else "")
 
-        # 条件着色（总分与三个分维度）
-        for col, val in ((3, wt), (4, ins.get("score")),
-                         (5, aes.get("score")), (6, lay.get("score"))):
+        ws.cell(row=row_idx, column=1, value=case_dir.name).alignment = wrap_align
+        ws.cell(row=row_idx, column=2, value=query_text).alignment = wrap_align
+        ws.cell(row=row_idx, column=4, value=wt).alignment = center_align
+        ws.cell(row=row_idx, column=5,
+                value=ins.get("score")).alignment = center_align
+        ws.cell(row=row_idx, column=6,
+                value=aes.get("score")).alignment = center_align
+        ws.cell(row=row_idx, column=7,
+                value=lay.get("score")).alignment = center_align
+        ws.cell(row=row_idx, column=8,
+                value=len(issues) if has_score else None).alignment = center_align
+        ws.cell(row=row_idx, column=9,
+                value=("\n".join(f"· {x}" for x in issues)
+                       if has_score else None)).alignment = wrap_align
+        ws.cell(row=row_idx, column=10,
+                value=(reasons.get("layout") or None)).alignment = wrap_align
+        ws.cell(row=row_idx, column=11,
+                value=(reasons.get("instruction") or None)).alignment = wrap_align
+        ws.cell(row=row_idx, column=12,
+                value=(reasons.get("aesthetic") or None)).alignment = wrap_align
+
+        # 条件着色（总分与三个分维度，列号随插入用户指令列后 +1）
+        for col, val in ((4, wt), (5, ins.get("score")),
+                         (6, aes.get("score")), (7, lay.get("score"))):
             fill = _score_fill(val)
             if fill:
                 ws.cell(row=row_idx, column=col).fill = fill
 
-        # 嵌入缩略图
-        img, w_px, h_px = _make_thumb_bytes(case_dir / PNG_NAME)
+        # 嵌入缩略图（C 列，显示尺寸由 _make_thumb_bytes 内的 OneCellAnchor 决定）
+        img, w_px, h_px = _make_thumb_bytes(case_dir / PNG_NAME, row_idx)
         if img is not None:
-            ws.add_image(img, f"B{row_idx}")
-            # 行高按缩略图（1pt ≈ 1.333px）
+            ws.add_image(img)  # anchor 已在 _make_thumb_bytes 内预设
+            # 行高按缩略图显示高度（1pt ≈ 1.333px）
             ws.row_dimensions[row_idx].height = max(28, h_px / 1.333 + 4)
         else:
-            ws.cell(row=row_idx, column=2, value="(无图)").alignment = center_align
+            ws.cell(row=row_idx, column=3, value="(无图)").alignment = center_align
             ws.row_dimensions[row_idx].height = 28
 
         written += 1
 
     wb.save(out_path)
-    print(f"已生成 Excel: {out_path} | 数据行 {written} | 跳过(无评分) {skipped}")
+    print(f"已生成 Excel: {out_path} | 总行 {written} "
+          f"| 其中无评分(留空) {no_score}")
     return 0
 
 
@@ -739,7 +848,8 @@ def main() -> int:
     parser.add_argument("-j", "--concurrency", type=int, default=5,
                         help="调用 API 时的并发 case 数，默认 5。")
     parser.add_argument("-r", "--retries", type=int, default=3,
-                        help="单 case API 调用失败的重试次数，默认 3。")
+                        help="单 case 失败（网络/响应解析/improved_dsl非法）的"
+                             "总重试次数，默认 3。")
     parser.add_argument("-t", "--timeout", type=int, default=300,
                         help="单次 API 请求超时秒数（流式模式下为块间最大"
                              "间隔），默认 300（5 分钟）。")
@@ -795,7 +905,7 @@ def main() -> int:
         print(f"error: 数据集目录不存在: {args.dataset}", file=sys.stderr)
         return 1
 
-    case_dirs = find_case_dirs(args.dataset)
+    case_dirs = find_case_dirs(args.dataset, require_all_files=not excel_mode)
     if args.case:
         case_dirs = [d for d in case_dirs if args.case in d.name]
     if args.limit is not None:
