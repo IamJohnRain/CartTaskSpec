@@ -1,0 +1,81 @@
+{
+  "userQuery": "我家神兽放寒假天天玩游戏，做个硬核点的管控卡片吧。最上面用大号字体显示今日游戏可用时间，背景弄成深蓝色的睡眠环境渐变，上面叠加一层半透明的云朵图案。中间用环形进度条，圆环正中心叠加大号红字显示“已超限20%”。环形外面横向排开好几个小方块，分别是王者、吃鸡等游戏图标，右上角都带个红圈代表超限禁止状态。底下放个勾选框问我是否“立即开启严格锁屏”，勾选后旁边显示“已锁定”，并能点击直接跳转到系统应用时长设置。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "application_time_management"
+      }
+    }
+  ],
+  "dataModel": {
+    "value": {
+      "antiAddiction": {
+        "title": "寒假游戏管控",
+        "availableText": "今日可用 0 分钟",
+        "statusText": "已超限20%",
+        "progress": 1,
+        "lockQuestion": "立即开启严格锁屏",
+        "lockSelected": true,
+        "lockState": "已锁定",
+        "actionText": "应用时长设置",
+        "games": [
+          {
+            "name": "王者",
+            "icon": "resources/base/media/icon_game_king.png"
+          },
+          {
+            "name": "吃鸡",
+            "icon": "resources/base/media/icon_game_battle.png"
+          },
+          {
+            "name": "原神",
+            "icon": "resources/base/media/icon_game_rpg.png"
+          }
+        ]
+      },
+      "asset": {
+        "cloudPattern": "resources/base/media/icon_cloud_pattern.png"
+      },
+      "state": {
+        "staticMock": true,
+        "limitMinutes": 120,
+        "usedMinutes": 144,
+        "overPercent": 20
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "assetRef": "cloud_pattern",
+      "src": "resources/base/media/icon_cloud_pattern.png",
+      "use": "sleep ambient cloud pattern",
+      "description": "半透明云朵纹理，用于深蓝睡眠环境背景的弱装饰层。",
+      "bindTo": "/asset/cloudPattern"
+    },
+    {
+      "assetRef": "game_king_icon",
+      "src": "resources/base/media/icon_game_king.png",
+      "use": "blocked game icon",
+      "description": "王者类游戏本地图标，用于展示被禁止的游戏入口。",
+      "bindTo": "/antiAddiction/games/0/icon"
+    },
+    {
+      "assetRef": "game_battle_icon",
+      "src": "resources/base/media/icon_game_battle.png",
+      "use": "blocked game icon",
+      "description": "吃鸡类游戏本地图标，用于展示被禁止的游戏入口。",
+      "bindTo": "/antiAddiction/games/1/icon"
+    },
+    {
+      "assetRef": "game_rpg_icon",
+      "src": "resources/base/media/icon_game_rpg.png",
+      "use": "blocked game icon",
+      "description": "角色扮演游戏本地图标，用于展示被禁止的游戏入口。",
+      "bindTo": "/antiAddiction/games/2/icon"
+    }
+  ]
+}

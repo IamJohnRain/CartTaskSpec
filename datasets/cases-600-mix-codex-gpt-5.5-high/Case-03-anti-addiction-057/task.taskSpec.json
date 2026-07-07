@@ -1,0 +1,95 @@
+{
+  "userQuery": "帮我做个浅色底面的时长监控卡片，中间弄个环形仪表盘，环形的中心叠加上前景文字显示“超限警报：已用120%”。不用渐变色，外面今天刮大风，得读取一下天气把大风预警也放在里面。把微信、抖音和游戏这三项的占用比例横向排开重复展示一下，每一项超额了都显示红色的危险告警状态，旁边配上对应的语义图标，点一下能直接进系统设置改应用时长限制。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "settings://digitalBalance"
+      }
+    }
+  ],
+  "dataModel": {
+    "value": {
+      "antiAddiction": {
+        "meterText": "超限警报：已用120%",
+        "meterValue": 120,
+        "meterTotal": 100,
+        "actionText": "改限制",
+        "apps": [
+          {
+            "name": "微信",
+            "ratioText": "42%",
+            "status": "危险",
+            "icon": "resources/base/media/icon_timing.png"
+          },
+          {
+            "name": "抖音",
+            "ratioText": "38%",
+            "status": "危险",
+            "icon": "resources/base/media/icon_music.png"
+          },
+          {
+            "name": "游戏",
+            "ratioText": "40%",
+            "status": "危险",
+            "icon": "resources/base/media/icon_game_king.png"
+          }
+        ]
+      },
+      "weather": {
+        "condition": "大风",
+        "warning": "大风预警",
+        "windLevel": "7级阵风",
+        "icon": "resources/base/media/icon_weather.png"
+      },
+      "assets": {
+        "warningIcon": "resources/base/media/icon_warning.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "assetRef": "wechat_time_icon",
+      "src": "resources/base/media/icon_timing.png",
+      "use": "icon",
+      "description": "计时语义图标，用于微信应用时长占比的防沉迷监控提示。",
+      "bindTo": "/antiAddiction/apps/0/icon",
+      "static": true
+    },
+    {
+      "assetRef": "douyin_media_icon",
+      "src": "resources/base/media/icon_music.png",
+      "use": "icon",
+      "description": "影音媒体语义图标，用于抖音类短视频占比提示。",
+      "bindTo": "/antiAddiction/apps/1/icon",
+      "static": true
+    },
+    {
+      "assetRef": "game_icon",
+      "src": "resources/base/media/icon_game_king.png",
+      "use": "icon",
+      "description": "游戏语义图标，用于游戏应用占比和超额状态提示。",
+      "bindTo": "/antiAddiction/apps/2/icon",
+      "static": true
+    },
+    {
+      "assetRef": "weather_icon",
+      "src": "resources/base/media/icon_weather.png",
+      "use": "icon",
+      "description": "天气语义图标，用于展示外部大风天气预警。",
+      "bindTo": "/weather/icon",
+      "static": true
+    },
+    {
+      "assetRef": "warning_icon",
+      "src": "resources/base/media/icon_warning.png",
+      "use": "icon",
+      "description": "红色告警语义图标，用于超限和危险状态的视觉识别。",
+      "bindTo": "/assets/warningIcon",
+      "static": true
+    }
+  ]
+}
