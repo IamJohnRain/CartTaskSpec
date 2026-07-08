@@ -13,11 +13,11 @@ TaskSpec 是给 A2UI 模型的候选约束输入，只携带生成 DSL 必要的
 
 - `size`：目标尺寸，取值为 `2x2` 或 `2x4`。
 - `eventCandidates`：候选事件能力，只包含 `call/args`；最终 DSL 才生成 `onClick`。
-- A2UI 模型必须原样写入 `updateDataModel.value` 的 `dataModel.value`。
-- `assetCandidates`：允许使用的素材候选白名单，必须描述素材内容和适用场景，便于 A2UI 模型判断是否使用。
+- `dataModelSchema`：传给 A2UI 模型的参考数据结构，是 DSL 动态绑定路径的验证来源。每个字段节点包含 `type`、`description`、`sampleValue`，字段路径来自微服务校验后的能力 `outputSchema` 投影。
+- `assetCandidates`：允许使用的素材候选白名单，每项包含 `src` 和 `description`（说明内容、视觉语义、适用场景与主配色），便于 A2UI 模型判断是否使用。
 
 DSL 硬规则集中放在 `taskspec_to_chat_completions.py` 生成的 system prompt 中。TaskSpec 本身不描述组件树、布局区域、字号、颜色或组件类型。
-A2UI 模型根据 `userQuery`、`dataModel.value` 和 system prompt 中的 skill 摘要规则自行决定展示内容、组件组织和视觉表达。
+A2UI 模型根据 `userQuery`、`dataModelSchema` 和 system prompt 中的规则自行决定展示内容、组件组织和视觉表达。
 
 ---
 
@@ -26,8 +26,8 @@ A2UI 模型根据 `userQuery`、`dataModel.value` 和 system prompt 中的 skill
 1. **候选约束，而不是半成品 DSL**  
    TaskSpec 只抽取内容、事件、素材、数据和目标约束。
 
-2. **DataModel-first**  
-   新 skill 优先使用完整表达式 `{{ ... }}` 读取 DataModel，`{"path":"/..."}` / `formatString` 只作为模板相对路径、双向绑定或端侧对象绑定的兜底。
+2. **Schema-first 绑定**  
+   展示值优先使用完整表达式 `{{ ... }}` 绑定动态数据路径，路径必须可从 `dataModelSchema`、最终 CardSpec 或能力 `outputSchema` 推导。`{"path":"/..."}` / `formatString` 只作为模板相对路径、双向绑定或端侧对象绑定的兜底。
 
 3. **DSL-only**  
    交付物是 `genui` DSL。
@@ -52,7 +52,7 @@ CartTaskSpec/
 │   ├── parent-care.taskspec.json
 │   └── freeclip2-earbuds.taskspec.json
 ├── references/
-└── .agents/skills/harmony-card-generation-datamodel-first/  外部只读 skill，禁止修改
+└── .agents/skills/                                         外部只读 skill，禁止修改
 ```
 
 ---
@@ -60,10 +60,10 @@ CartTaskSpec/
 ## 作业流
 
 1. **大模型 Agent：用户 Query -> TaskSpec**  
-   输出轻量 TaskSpec。TaskSpec 包含 `size`、`eventCandidates`、`dataModel` 和 `assetCandidates`；事件只提供候选 `call/args`。
+   输出轻量 TaskSpec。TaskSpec 包含 `size`、`eventCandidates`、`dataModelSchema` 和 `assetCandidates`；事件只提供候选 `call/args`。
 
 2. **转换脚本：TaskSpec -> API request body**  
-   `taskspec_to_chat_completions.py` 读取 TaskSpec，把 DataModel-first DSL 规则写入 `system` prompt，并把完整 TaskSpec 放入 `user` 消息。
+   `taskspec_to_chat_completions.py` 读取 TaskSpec，把 Schema-first DSL 规则写入 `system` prompt，并把完整 TaskSpec 放入 `user` 消息。
 
 3. **A2UI 模型 API：API request body -> DSL**  
    A2UI 模型输出一个 `genui` 代码块，内容恰好 3 行 JSONL。
@@ -120,7 +120,7 @@ python validate_project_constraints.py
 python validate_generated_card.py --response response.json --spec examples\parent-care.taskspec.json --out-dir generated --name parent-care
 ```
 
-`validate_generated_card.py` 会拒绝 `cardspec` 代码块，提取唯一 `genui` 代码块，并校验 JSONL 行数、组件引用、root 尺寸、DataModel 一致性和表达式/绑定路径。
+`validate_generated_card.py` 会拒绝 `cardspec` 代码块，提取唯一 `genui` 代码块，并校验 JSONL 行数、组件引用、root 尺寸、绑定路径可推导性和 `updateDataModel.value` 约束。
 
 
 ## 常用命令
@@ -135,7 +135,7 @@ bash scripts/flatten_cards.sh -o /d/code/A2UI/a2uiRender/entry/src/main/resource
 ```powershell
 mkdir D:\tmp\a2ui\
 hdc file recv /data/app/el2/100/base/com.example.a2ui/haps/entry/files/a2ui-render-shots D:\tmp\a2ui\
-python scripts/restore_cards.py -i D:\tmp\a2ui\a2ui-render-shots\ -o datasets/cases-600-mix-codex-gpt-5.5-high/
+python scripts/restore_cards.py -i D:\tmp\a2ui\a2ui-render-shots\ -o datasets/cases-600-mix-codex-gpt-5.5-high-v1/
 Remove-Item -Recurse -Path "D:\tmp\a2ui\a2ui-render-shots\"
 ```
 
@@ -146,5 +146,5 @@ python scripts/build_score.py -d datasets/cases-600-mix-codex-gpt-5.5-high/ -v d
 
 4. 输出分数报告
 ```
-python scripts/build_score.py -d datasets/cases-100/codex-gpt-5.5/ -x datasets/cases-100/codex-gpt-5.5/report.xlsx
+python scripts/build_score.py -d datasets/cases-600-mix-codex-gpt-5.5-high/ -x datasets/cases-600-mix-codex-gpt-5.5-high/cases-600-mix-codex-gpt-5.5-high.xlsx
 ```

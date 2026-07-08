@@ -342,8 +342,8 @@
             <tr><td>userQuery</td><td><span class="badge required">必须</span></td><td>原始用户需求，保留语义来源。</td><td><code>"显示深圳温度并给我爸打电话"</code></td></tr>
             <tr><td>size</td><td><span class="badge required">必须</span></td><td>目标尺寸，取值为 2x2 或 2x4。</td><td><code>"2x4"</code></td></tr>
             <tr><td>eventCandidates</td><td><span class="badge required">必须</span></td><td>候选事件能力，只包含 call/args；最终 DSL 才生成 onClick。</td><td><code>[{"call":"clickToDeeplink"}]</code></td></tr>
-            <tr><td>dataModel</td><td><span class="badge required">必须</span></td><td>A2UI 模型第 3 行 updateDataModel.value 必须原样使用的数据。</td><td><code>{"value":{"device":{...}}}</code></td></tr>
-            <tr><td>assetCandidates</td><td><span class="badge required">必须</span></td><td>素材候选白名单；description 说明素材内容和适用场景。</td><td><code>[]</code></td></tr>
+            <tr><td>dataModelSchema</td><td><span class="badge required">必须</span></td><td>传给 A2UI 模型的参考数据结构，DSL 动态绑定路径的验证来源；字段节点含 type/description/sampleValue。</td><td><code>{"data":{"weather":{...}}}</code></td></tr>
+            <tr><td>assetCandidates</td><td><span class="badge required">必须</span></td><td>素材候选白名单；每项含 src 与 description（说明内容、视觉语义、适用场景与主配色）。</td><td><code>[]</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -369,15 +369,24 @@
             </div>
           </article>
           <article class="module">
-            <div class="module-side"><small>MODULE 02</small><h3>dataModel</h3><p>表达式和绑定的唯一数据源</p></div>
+            <div class="module-side"><small>MODULE 02</small><h3>dataModelSchema</h3><p>参考数据结构与绑定验证来源</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> `dataModel.value` 必须被 A2UI 模型原样写入 `updateDataModel.value`。</p>
+              <p><span class="badge required">必须</span> 传给 A2UI 模型的参考数据结构，不是真实运行时数据。字段路径来自微服务校验后的能力 `outputSchema` 投影，每个字段节点必须包含 `type`、`description`、`sampleValue`。</p>
               <details class="example" open><summary>示例</summary><pre>{
-  "value": {
-    "device": {
-      "name": "Free Clip 2",
-      "leftBatteryText": "左耳 47%",
-      "rightBatteryText": "右耳 95%"
+  "data": {
+    "weather": {
+      "current": {
+        "temperatureText": {
+          "type": "string",
+          "description": "当前温度展示文本",
+          "sampleValue": "26℃"
+        },
+        "weatherText": {
+          "type": "string",
+          "description": "当前天气现象",
+          "sampleValue": "多云"
+        }
+      }
     }
   }
 }</pre></details>
@@ -386,9 +395,10 @@
           <article class="module">
             <div class="module-side"><small>MODULE 03</small><h3>assetCandidates</h3><p>素材候选白名单</p></div>
             <div class="module-body">
-              <p><span class="badge required">必须</span> 没有素材时写 `[]`。素材项必须包含 description，说明素材内容、视觉语义和适用场景。</p>
+              <p><span class="badge required">必须</span> 没有素材时写 `[]`。每项包含 `src` 和 `description`；description 说明素材内容、视觉语义、适用场景以及主配色（svg 后续可支持自定义颜色，png 颜色固定）。</p>
               <details class="example" open><summary>示例</summary><pre>[
-  { "assetRef": "earbuds_icon", "src": "assets/freeclip2-earbuds.png", "use": "device illustration", "description": "Free Clip 2 耳机图形素材，适合用于设备识别或轻量装饰。", "static": true }
+  { "src": "assets/freeclip2-earbuds.png", "description": "Free Clip 2 耳机图形素材，适合用于设备识别或轻量装饰，主配色银白。" },
+  { "src": "/music/cover.png", "description": "音乐封面图，可用于表达当前播放内容，主配色深蓝。" }
 ]</pre></details>
             </div>
           </article>
@@ -417,58 +427,103 @@
             <ul>
               <li>`size=2x2` 对应 140x140，`2x4` 对应 300x140。</li>
               <li>只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。</li>
-              <li>展示值优先使用完整表达式读取 DataModel。</li>
+              <li>Schema-first 绑定：展示值优先用完整表达式 `{{ ... }}` 绑定动态路径，路径必须可从 `dataModelSchema`、最终 CardSpec 或能力 `outputSchema` 推导。</li>
               <li>最终 DSL 的 onClick 只能由 eventCandidates 转换而来，图片只能来自 assetCandidates 或明确本地资源。</li>
             </ul>
           </div>
         </div>
-<details class="example" open style="margin-top:14px"><summary>完整 system prompt</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。
-你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、DataModel、可点击事件候选和素材候选；它不是卡片布局方案，也不预先列出展示内容清单。具体信息取舍、组件组织、视觉设计和绑定写法由你完成。
-请从 userQuery 和 dataModel.value 中判断用户真正要求展示的字段；从 eventCandidates 中选择可触发事件；从 assetCandidates 中选择语义匹配的素材。
-eventCandidates 只是候选事件能力列表，每一项只包含 call 和 args；它不是 DSL onClick，也不是按钮、入口、文案、位置或样式说明。
-如果使用某个事件候选，必须在最终 DSL 中把它转换为组件 onClick 数组项，且 onClick[].call 和 onClick[].args 必须原样来自 eventCandidates。
-多个事件候选时，根据 userQuery 的自然语言意图、顺序和事件参数进行匹配；用户明确要求的动作应尽量体现，无法确定合适入口的事件可以不使用。
-assetCandidates 是用户 query 中抽取出的素材约束，不是 DSL 组件候选；asset.description 用于理解素材内容和适用场景，不是必须完整显示的 UI 文案，也不是布局、字号或组件类型指令。
+<details class="example" open style="margin-top:14px"><summary>完整 system prompt</summary><pre>你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的当前 Form 协议、设计规范和 TaskSpec 约束生成 HarmonyOS A2UI Form 卡片 genui DSL。
+你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、DataModel、可点击事件候选和素材候选；它不是卡片布局方案，也不预先列出展示内容清单。具体信息取舍、组件组织、视觉设计、绑定写法和安全降级由你完成。
+
+本脚本只请求 genui 交付物：不要输出 cardspec。完整 skill 中关于 cardspec 的要求在本脚本场景下由外部流程处理。
 
 输出契约：
-- 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。
-- 虽然原始 skill 支持 genui + cardspec 两个代码块，但本项目只让 A2UI 模型生成 DSL；不要生成、补全、推断或输出 CardSpec。
-- genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。
-- 每行必须包含 version:&quot;v0.9&quot;；createSurface.catalogId 必须是 &quot;ohos.a2ui.extended.catalog&quot;。
-- updateDataModel.path 必须是 &quot;/&quot;，value 必须原样等于 TaskSpec.dataModel.value。
-- updateComponents.root 必须引用 components 中已存在的 root 组件；components 必须是扁平组件数组，每个组件有 id 和 component。
+- 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结、校验日志或 ```cardspec``` 代码块。
+- genui 代码块内部必须恰好 3 行 JSONL，顺序固定为 createSurface、updateComponents、updateDataModel。
+- 每行必须是单行合法 JSON 对象，并包含 "version":"v0.9"。
+- createSurface.catalogId 必须是 "ohos.a2ui.extended.catalog"。
+- 三行 surfaceId 必须一致；updateComponents.root 必须引用 components 中已存在的 root 组件。
+- updateDataModel.path 必须是 "/"，updateDataModel.value 必须原样等于 TaskSpec.dataModel.value，不能新增、删除或改写 DataModel 字段和值。
+- components 必须是扁平组件数组；每个组件必须有 id 和 component。
 
-尺寸与 root shell：
-- size 只能是 2x2 或 2x4。
-- 2x2 使用 createSurface/root width:140、height:140，root borderRadius:18，clip:true。
-- 2x4 使用 createSurface/root width:300、height:140，root borderRadius:22，clip:true。
-- root 是唯一卡片 shell，必须承载 width、height、padding、borderRadius、clip 和至少一种表面样式。
-- 默认 root padding 为 12；2x2 内容区约 116x116，2x4 内容区约 276x116。
+TaskSpec 使用边界：
+- 从 userQuery 和 dataModel.value 判断一个服务对象或主问题，再决定 mustKeep 与 shouldKeep。不要把 DataModel 中所有字段都塞进卡片。
+- size 只能是 2x2 或 2x4；若 TaskSpec 未指定或给出非法尺寸，按最接近可用尺寸处理，优先 2x2。
+- eventCandidates 只是候选事件能力列表，不是按钮、入口、文案、位置或样式说明。只有最终 DSL 组件上才生成 onClick。
+- 如果使用某个事件候选，onClick[].call 和 onClick[].args 必须原样来自 TaskSpec.eventCandidates；不要发明新 call、新 args 字段或新参数值。
+- 多个事件候选时，根据 userQuery 的自然语言意图、候选顺序和参数语义匹配；动作入口不确定时宁可不点击，把动作降级为非误导支撑信息。
+- assetCandidates 是素材约束或已声明素材来源，不是 DSL 组件候选。asset.description 只用于理解内容和适用场景，不要当作必须显示的 UI 文案。
 
-组件与协议范围：
+Surface、尺寸与 root shell：
+- 2x2 逻辑画布按 140x140vp 预算，内容区约 116x116vp；root borderRadius 18，clip true。
+- 2x4 逻辑画布按 300x140vp 预算，内容区约 276x116vp；root borderRadius 22，clip true。
+- 为兼容当前 TaskSpec 评测输出，createSurface.width/height 与 root.styles.width/height 使用对应基准数值：2x2 为 140/140，2x4 为 300/140。内部布局仍按上述逻辑画布预算计算。
+- root 是唯一卡片 shell，必须承载 width、height、padding、borderRadius、clip 和背景/表面样式；默认 padding 为 12。
+- 背景样式写在 root.styles 或 root 下真实背景组件；不要把 backgroundColor、linearGradient、backgroundImage 写进 createSurface.styles。
+- createSurface 默认只写 surfaceId、catalogId、width、height；不要写 theme。除 createSurface 和 root shell 外，普通组件不得使用 "matchParent" 作为 width/height。
+
+组件与字段范围：
 - 只能使用 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
-- 使用 Text.content、Image.src、Button.label；不要使用 Text.text、Image.url、Button.action。
-- 不要使用 TextInput、Toggle、Radio、CheckboxGroup、Select、NavContainer、Tabs、TabContent、Web、Grid、If、theme、非 onClick 事件、网络图、SVG、emoji、占位图。
-- children 只能是组件 id 数组；模板循环只允许 Row/Column/List 使用 {&quot;componentId&quot;:&quot;...&quot;,&quot;path&quot;:&quot;/...&quot;}。
+- 禁用 TextInput、Toggle、Radio、CheckboxGroup、Select、NavContainer、Tabs、TabContent、Web、Grid、If、自定义组件、theme、Button.action、非 onClick 事件、setDataModel、setAttributes、navigate、scrollTo、sendToAssistant。
+- Text 使用顶层 content；Image 使用顶层 src；Button 使用顶层 label 和 onClick；不要使用 Text.text、Image.url、Button.action。
+- Row/Column/Stack/List 的 children 普通形态只能是组件 id 字符串数组。模板循环对象只允许用于 Row、Column、List.children，形态固定为 {"componentId":"...","path":"/items"}；Stack.children 不使用模板循环。
+- 容器结构字段 children、itemMargin、wrap、space 写顶层；justifyContent、alignItems、alignContent、listDirection、scrollBar 写 styles。
+- Text 的 fontSize、fontWeight、fontColor、maxLines、textAlign、textOverflow 写 styles。
+- Image 必须写明确 width、height 和 objectFit:"contain" 或其它合法 objectFit。
+- Progress 的 value、total 写顶层；type、color、width、height 写 styles。
+- Button 的 label、enabled、onClick 写顶层；fontSize、fontWeight、fontColor、backgroundColor、borderRadius 写 styles。
 
-DataModel 与绑定：
-- 展示值优先使用完整表达式 {{ ... }} 读取 DataModel，例如 &quot;{{ $__dataModel.device.name }}&quot; 或 &quot;{{ ${/device/name} }}&quot;。
-- {&quot;path&quot;:&quot;/...&quot;}、模板相对 path 和 formatString 只在表达式不适合、模板相对路径、双向绑定或端侧要求对象绑定时兜底。
-- 可见表达式引用、原生绑定路径和 formatString 路径必须能从 TaskSpec.dataModel.value 推导；模板相对路径除外。
-- 表达式必须是完整字符串；一个字符串中只能有一对 {{ ... }}；不要在 id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 或整个 styles 对象上使用表达式。
+DataModel 与表达式：
+- 动态展示值、样式动态值和事件参数都使用静态 JSON 值或完整 "{{ ... }}" 表达式。
+- 优先使用 JSON Pointer 表达式，例如 "{{ ${/meeting/title} }}"；同一卡片内尽量统一为 ${/json/pointer} 写法。
+- 静态文本和变量拼接也必须是完整表达式，例如 "{{ ${/meeting/time} + ' 开始' }}"；不要写 "会议 {{ ${/meeting/time} }}"。
+- 本版本不使用 {"path":"/..."} 或 formatString 作为组件值绑定、样式动态值或事件参数绑定。
+- updateDataModel.path、CardSpec writeResultTo、模板 children.path 是结构 JSON Pointer，不属于值绑定；模板项内字段读取仍用表达式，例如 "{{ ${name} }}"。
+- 表达式必须是完整字符串；一个字符串中只能有一对 "{{ ... }}"；表达式内字符串使用单引号，内置函数仅使用 size()。
+- id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 和整个 styles 对象不能写表达式。
+- 可见表达式引用必须能从 TaskSpec.dataModel.value 或模板当前项推导；无法推导时删除该展示或改用 DataModel 中已有的预计算字段。
 
-动作与素材：
-- eventCandidates 不是 onClick；只有最终 DSL 组件上才生成 onClick。
-- 点击只写 DSL onClick，且 onClick[].call/onClick[].args 只能来自 TaskSpec.eventCandidates；不要发明新事件能力或参数。
-- assetCandidates 的 description 用于理解素材内容和适用场景；只有素材语义匹配时才使用。
-- Image.src 和 backgroundImage 只使用 TaskSpec.assetCandidates 声明或用户明确提供的本地/资源路径。
+事件与点击：
+- Form 只支持 onClick，且 onClick 必须是 EventHandler 数组。
+- 可点击 UI 必须有真实 onClick；没有已声明事件能力时，不要做成按钮、链接或可点击行。
+- 每个 Button 或可点击视觉元素不小于 24vp，优先接近 40vp 热区目标；CTA 文案优先 2-6 个中文字并完整显示。
+- 事件 args 中如果候选已经包含表达式，保持原样；不要复制 schema 的 type、description 等元数据。
+
+素材与媒体：
+- Image.src 和 styles.backgroundImage 只使用 TaskSpec.assetCandidates 明确声明、用户明确提供、或已声明本地素材库中的资源路径。
+- 允许已声明的本地 SVG/PNG 资源；禁止网络图片、内联/base64 SVG、未声明 SVG、data:image/svg+xml、emoji、占位图和相似路径猜测。
+- 若 assetCandidates 没有提供可用 src/path，不要凭记忆编造资源路径；改用合法颜色、Progress、Divider 或文本承载信息。
+- 使用 Image 时必须保证它承担识别、状态、动作、主媒体或视觉锚点职责；不能挤压标题、状态、CTA、主指标或用户要求显示的字段。
+
+颜色与表面：
+- 最终 DSL 颜色只输出 #RRGGBB 或 #AARRGGBB，不输出 token 名、ohos_id_color_*、multi_color_* 或 multi_color_aux_* 字符串。
+- 颜色需能回溯到 HarmonyOS 语义 token、多彩色或合规场景拓展色；无法说明来源和用途时改用中性 token 映射或删除该颜色。
+- 常用 light hex：font_primary #e5000000，font_secondary #99000000，font_tertiary #66000000，font_on_primary #ffffffff，background_primary #ffffffff，background_secondary #fff1f3f5，comp_background_secondary #19000000，comp_background_tertiary #0c000000，comp_divider #33000000，brand #ff0a59f7，confirm #ff64bb5c，warning #ffe84026，alert #ffed6f21。
+- 状态色只服务真实状态；普通提醒或轻建议不要自动用 warning/alert。按钮默认可使用中性或低强调材质，只有确认、连接、拨打、清理、导航、入会等明确动作才使用实色。
+- 2x2 最多一个场景色信号、一个状态/动作信号和中性文字；2x4 最多一个场景色信号、一个中性支撑表面和一个状态/动作信号。
+- linearGradient 只能是线性渐变，写作 {"direction":"RightBottom","colors":[["#RRGGBB",0],["#RRGGBB",1]]}；不要使用径向装饰、orb、bokeh、无来源手调色或 color-mix。
 
 布局质量：
-- 先从 userQuery 和 dataModel 中确定一个主答案；最多展示 4 项用户字段、2 条支撑事实和 1 个主动作。用户明确要求多个入口时，在 2x4 内可最多 2 个动作区。
-- 可见组件的信息职责必须互斥，同一事实不要重复展示。
-- 受保护文本必须完整显示：标题、状态、CTA、主指标、用户要求显示的字段。不要依赖 ellipsis、clip 或 marquee 隐藏关键信息。
+- 先确定主显示组、支撑组和动作组；同一张卡只保留一个最强主显示组。
+- 2x2 非模板默认最多 3 个主区域和 1 个显式动作；2x4 最多 4 个主区域和 2 个动作区，但仍只服务一个主对象。
+- 最多展示 4 项用户字段、2 条支撑事实和 1 个主动作；用户明确要求多个入口时，2x4 内最多 2 个动作区。
+- 可见组件的信息职责必须互斥；同一事实不要重复展示。
+- 受保护文本必须完整显示：标题、日期、时间、状态、CTA、主指标、价格/数量、倒计时和用户要求显示的字段。不要依赖 ellipsis、clip 或 marquee 隐藏关键信息。
+- 固定间距只使用 2/4/6/8/10/12/14/16，优先 4/8/12/16；字号只使用 10/12/14/16/18/20/32/40，同一卡片控制在 3 档以内。
 - Row/Column 宽高预算必须成立；Row 内 Text + Button 并排时，父 Row、Text、Button 都要有明确宽高预算。
-- 间距优先使用 4/8/12/16，字号优先使用 10/12/14/16/18/20/32/40。
+- Stack 只用于背景层、信息层、角标或明确叠加；不得覆盖受保护文本、CTA、点击视觉元素或主数值。
+- List 只用于少量真实重复项；避免滚动、长列表、表格、按钮网格和密集多面板。
+- 布局失败时按顺序降级：缩短弱文本 -&gt; 删除 shouldKeep 或可选槽位 -&gt; 降低到批准字号阶梯 -&gt; 拆行/改 Column -&gt; 放弃复杂视觉/模板 -&gt; 升级 2x4 -&gt; 删除不确定能力。
+
+ID 与结构：
+- 非模板生成时使用稳定语义 id，例如 surface_card、root、header_row、title_text、primary_value、primary_caption、support_row、action_button、asset_image。
+- updateComponents.root 一般使用 "root"；components 中必须包含 id 为 "root" 的 root 组件。
+- 三行 JSONL 中不要把 surfaceId 放在消息顶层；只放在 createSurface/updateComponents/updateDataModel 对象内。
+
+TaskSpec内容：
+{{TASK_SPEC_JSON}}
+
+请基于上面的 TaskSpec 内容和用户输入，生成一个 ```genui``` 代码块，代码块内严格只有 3 行 JSONL。严格遵循上述契约和规则。
 </pre></details>
       </div>
     </section>
@@ -484,18 +539,21 @@ DataModel 与绑定：
             <h3>发送给 A2UI 模型前</h3>
             <ul>
               <li>JSON 结构符合 `taskspec.schema.json`。</li>
-              <li>`eventCandidates[].call/args` 必须合法。</li>
-              <li>`eventCandidates[]` 不允许出现 id、label、description、required 或 onClick。</li>
-              <li>`assetCandidates[].description` 必须非空。</li>
+              <li>不允许出现 `displayCandidates`、`role`、`cardSpec`、`rules`、`dataModel` 等非当前协议字段。</li>
+              <li>`dataModelSchema` 字段必须来自微服务校验后的能力输出字段投影，节点必须含 `type`、`description`、`sampleValue`。</li>
+              <li>`sampleValue` 不得使用未脱敏的真实用户隐私数据。</li>
+              <li>`eventCandidates[].call/args` 必须合法，且不允许出现 `id`、`label`、`description`、`required` 或 `onClick`。</li>
+              <li>`assetCandidates[].description` 必须非空；`assetCandidates[].bindTo` 必须能从 CardSpec、`outputSchema` 或 `dataModelSchema` 推导。</li>
             </ul>
           </div>
           <div class="check">
             <h3>模型输出后</h3>
             <ul>
-              <li>包含一个 `genui` 代码块。</li>
-              <li>genui 恰好 3 行 JSONL。</li>
-              <li>`updateDataModel.value` 等于 `TaskSpec.dataModel.value`。</li>
-              <li>root 尺寸为 140x140 或 300x140。</li>
+              <li>包含一个 `genui` 代码块，恰好 3 行 JSONL。</li>
+              <li>第 1 行 `createSurface`，第 2 行 `updateComponents`，第 3 行 `updateDataModel`。</li>
+              <li>`updateDataModel.value` 不要求等于 `dataModelSchema`；只能含受控静态辅助字段、加载态或空态字段。</li>
+              <li>DSL 绑定路径必须能从 `dataModelSchema`、最终 CardSpec 或能力 `outputSchema` 推导。</li>
+              <li>root 尺寸为 140x140（2x2）或 300x140（2x4）。</li>
             </ul>
           </div>
         </div>
@@ -533,54 +591,64 @@ DataModel 与绑定：
       "userQuery": "创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能",
       "size": "2x2",
       "eventCandidates": [
-            {
-                  "call": "clickToCallPhone",
-                  "args": {
-                        "phonenumber": "15012345678"
-                  }
-            }
+        {
+          "call": "clickToCallPhone",
+          "args": { "phonenumber": "15012345678" }
+        }
       ],
-      "dataModel": {
-            "value": {
-                  "data": {
-                        "weather": {
-                              "items": {
-                                    "cityInfo": {
-                                          "districtName": "深圳",
-                                          "prefectureName": "深圳"
-                                    },
-                                    "weatherData": {
-                                          "temperatureText": "--°",
-                                          "temperature": 0,
-                                          "weather_icon": "加载中",
-                                          "coldLevel": "加载中"
-                                    },
-                                    "weatherDailyData": [],
-                                    "weatherHoursData": []
-                              }
-                        }
-                  },
-                  "state": {
-                        "loading": true
-                  }
+      "dataModelSchema": {
+        "data": {
+          "weather": {
+            "location": {
+              "name": { "type": "string", "description": "城市或区县名称", "sampleValue": "深圳" }
+            },
+            "current": {
+              "temperatureText": { "type": "string", "description": "当前温度展示文本", "sampleValue": "26℃" },
+              "weatherText": { "type": "string", "description": "当前天气现象", "sampleValue": "多云" },
+              "coldLevel": { "type": "string", "description": "感冒指数等级", "sampleValue": "少发" }
             }
+          }
+        }
       },
       "assetCandidates": []
-};
+    };
+
+    const sampleSpecJson = JSON.stringify(sampleSpec, null, 2);
+
+    const systemContent = "你是 A2UI 模型，负责依据 harmony-card-generation-NewSkill 的协议生成 HarmonyOS A2UI Form 卡片 DSL。\n" +
+      "你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、dataModelSchema、可点击事件候选和素材候选；它不是卡片布局方案，也不预先列出展示内容清单。\n" +
+      "请从 userQuery 和 dataModelSchema 中判断用户真正要求展示的字段；从 eventCandidates 中选择可触发事件；从 assetCandidates 中选择语义匹配的素材。\n" +
+      "eventCandidates 只是候选事件能力列表，每一项只包含 call 和 args；它不是 DSL onClick。\n" +
+      "输出契约：只输出一个 genui 代码块，恰好 3 行 JSONL（createSurface、updateComponents、updateDataModel）。\n" +
+      "updateDataModel.path 必须是 \"/\"；value 不要求等于 dataModelSchema，只能含受控静态辅助字段、加载态或空态字段。\n" +
+      "Schema-first 绑定：展示值优先用完整表达式 {{ ... }} 绑定动态路径，路径必须可从 dataModelSchema、最终 CardSpec 或能力 outputSchema 推导。\n" +
+      "动作：最终 DSL 的 onClick 只能由 eventCandidates 转换而来，原样使用 call/args。\n\n" +
+      "TaskSpec内容：\n" + sampleSpecJson + "\n\n请基于上面的 TaskSpec 内容生成一个 genui 代码块。";
+
+    const userContent = "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。\n" +
+      "从 userQuery 和 dataModelSchema 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。\n" +
+      "只输出 genui 一个代码块，恰好 3 行 JSONL。\n\n" + sampleSpecJson;
+
     const sampleRequest = {
       "model": "glm-5.2",
       "messages": [
-            {
-                  "role": "system",
-                  "content": "你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的协议生成 HarmonyOS A2UI Form 卡片 DSL。\n你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、DataModel、可点击事件候选和素材候选；它不是卡片布局方案，也不预先列出展示内容清单。具体信息取舍、组件组织、视觉设计和绑定写法由你完成。\n请从 userQuery 和 dataModel.value 中判断用户真正要求展示的字段；从 eventCandidates 中选择可触发事件；从 assetCandidates 中选择语义匹配的素材。\neventCandidates 只是候选事件能力列表，每一项只包含 call 和 args；它不是 DSL onClick，也不是按钮、入口、文案、位置或样式说明。\n如果使用某个事件候选，必须在最终 DSL 中把它转换为组件 onClick 数组项，且 onClick[].call 和 onClick[].args 必须原样来自 eventCandidates。\n多个事件候选时，根据 userQuery 的自然语言意图、顺序和事件参数进行匹配；用户明确要求的动作应尽量体现，无法确定合适入口的事件可以不使用。\nassetCandidates 是用户 query 中抽取出的素材约束，不是 DSL 组件候选；asset.description 用于理解素材内容和适用场景，不是必须完整显示的 UI 文案，也不是布局、字号或组件类型指令。\n\n输出契约：\n- 只输出一个 ```genui``` 代码块，不输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n- 虽然原始 skill 支持 genui + cardspec 两个代码块，但本项目只让 A2UI 模型生成 DSL；不要生成、补全、推断或输出 CardSpec。\n- genui 必须恰好 3 行 JSONL，顺序是 createSurface、updateComponents、updateDataModel。\n- 每行必须包含 version:\"v0.9\"；createSurface.catalogId 必须是 \"ohos.a2ui.extended.catalog\"。\n- updateDataModel.path 必须是 \"/\"，value 必须原样等于 TaskSpec.dataModel.value。\n- updateComponents.root 必须引用 components 中已存在的 root 组件；components 必须是扁平组件数组，每个组件有 id 和 component。\n\n尺寸与 root shell：\n- size 只能是 2x2 或 2x4。\n- 2x2 使用 createSurface/root width:140、height:140，root borderRadius:18，clip:true。\n- 2x4 使用 createSurface/root width:300、height:140，root borderRadius:22，clip:true。\n- root 是唯一卡片 shell，必须承载 width、height、padding、borderRadius、clip 和至少一种表面样式。\n- 默认 root padding 为 12；2x2 内容区约 116x116，2x4 内容区约 276x116。\n\n组件与协议范围：\n- 只能使用 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。\n- 使用 Text.content、Image.src、Button.label；不要使用 Text.text、Image.url、Button.action。\n- 不要使用 TextInput、Toggle、Radio、CheckboxGroup、Select、NavContainer、Tabs、TabContent、Web、Grid、If、theme、非 onClick 事件、网络图、SVG、emoji、占位图。\n- children 只能是组件 id 数组；模板循环只允许 Row/Column/List 使用 {\"componentId\":\"...\",\"path\":\"/...\"}。\n\nDataModel 与绑定：\n- 展示值优先使用完整表达式 {{ ... }} 读取 DataModel，例如 \"{{ $__dataModel.device.name }}\" 或 \"{{ ${/device/name} }}\"。\n- {\"path\":\"/...\"}、模板相对 path 和 formatString 只在表达式不适合、模板相对路径、双向绑定或端侧要求对象绑定时兜底。\n- 可见表达式引用、原生绑定路径和 formatString 路径必须能从 TaskSpec.dataModel.value 推导；模板相对路径除外。\n- 表达式必须是完整字符串；一个字符串中只能有一对 {{ ... }}；不要在 id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 或整个 styles 对象上使用表达式。\n\n动作与素材：\n- eventCandidates 不是 onClick；只有最终 DSL 组件上才生成 onClick。\n- 点击只写 DSL onClick，且 onClick[].call/onClick[].args 只能来自 TaskSpec.eventCandidates；不要发明新事件能力或参数。\n- assetCandidates 的 description 用于理解素材内容和适用场景；只有素材语义匹配时才使用。\n- Image.src 和 backgroundImage 只使用 TaskSpec.assetCandidates 声明或用户明确提供的本地/资源路径。\n\n布局质量：\n- 先从 userQuery 和 dataModel 中确定一个主答案；最多展示 4 项用户字段、2 条支撑事实和 1 个主动作。用户明确要求多个入口时，在 2x4 内可最多 2 个动作区。\n- 可见组件的信息职责必须互斥，同一事实不要重复展示。\n- 受保护文本必须完整显示：标题、状态、CTA、主指标、用户要求显示的字段。不要依赖 ellipsis、clip 或 marquee 隐藏关键信息。\n- Row/Column 宽高预算必须成立；Row 内 Text + Button 并排时，父 Row、Text、Button 都要有明确宽高预算。\n- 间距优先使用 4/8/12/16，字号优先使用 10/12/14/16/18/20/32/40。\n"
-            },
-            {
-                  "role": "user",
-                  "content": "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。\nTaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。\n请从 userQuery 和 dataModel.value 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。\n只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\ngenui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：\n{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按size选择\",\"height\":140}}\n{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card\",\"root\":\"root\",\"components\":[...]}}\n{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card\",\"path\":\"/\",\"value\":{...}}}\n不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。\n\n{\n  \"userQuery\": \"创建一个父母关怀卡片，显示深圳的温度与感冒指数，并支持一键给我爸（15012345678）打电话，使用CreateMyCard技能\",\n  \"size\": \"2x2\",\n  \"eventCandidates\": [\n    {\n      \"call\": \"clickToCallPhone\",\n      \"args\": {\n        \"phonenumber\": \"15012345678\"\n      }\n    }\n  ],\n  \"dataModel\": {\n    \"value\": {\n      \"data\": {\n        \"weather\": {\n          \"items\": {\n            \"cityInfo\": {\n              \"districtName\": \"深圳\",\n              \"prefectureName\": \"深圳\"\n            },\n            \"weatherData\": {\n              \"temperatureText\": \"--°\",\n              \"temperature\": 0,\n              \"weather_icon\": \"加载中\",\n              \"coldLevel\": \"加载中\"\n            },\n            \"weatherDailyData\": [],\n            \"weatherHoursData\": []\n          }\n        }\n      },\n      \"state\": {\n        \"loading\": true\n      }\n    }\n  },\n  \"assetCandidates\": []\n}"
-            }
+        { "role": "system", "content": systemContent },
+        { "role": "user", "content": userContent }
       ]
-};
-    const sampleDsl = "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}\n{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"temperature\",\"cold_row\",\"call_dad\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FF5BA88A\",\"itemMargin\":6}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"city\",\"weather_status\"],\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"city\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.items.cityInfo.prefectureName }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":12,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"weather_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.items.weatherData.weather_icon }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":12,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textAlign\":\"right\"}},{\"id\":\"temperature\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.items.weatherData.temperatureText }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"cold_row\",\"component\":\"Row\",\"children\":[\"cold_label\",\"cold_value\"],\"styles\":{\"width\":116,\"height\":18,\"itemMargin\":4,\"alignItems\":\"center\"}},{\"id\":\"cold_label\",\"component\":\"Text\",\"content\":\"????\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":10,\"fontColor\":\"#D9FFFFFF\",\"maxLines\":1}},{\"id\":\"cold_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.items.weatherData.coldLevel }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":10,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"call_dad\",\"component\":\"Button\",\"label\":\"?????\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"15012345678\"}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"fontSize\":12,\"fontColor\":\"#FF1A5642\",\"backgroundColor\":\"#FFFFFFFF\"}}]}}\n{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"items\":{\"cityInfo\":{\"districtName\":\"深圳\",\"prefectureName\":\"深圳\"},\"weatherData\":{\"temperatureText\":\"--°\",\"temperature\":0,\"weather_icon\":\"加载中\",\"coldLevel\":\"加载中\"},\"weatherDailyData\":[],\"weatherHoursData\":[]}}},\"state\":{\"loading\":true}}}}";
+    };
+
+    const sampleDsl = '{"version":"v0.9","createSurface":{"surfaceId":"card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}\n' +
+      '{"version":"v0.9","updateComponents":{"surfaceId":"card","root":"root","components":[' +
+      '{"id":"root","component":"Column","children":["top_row","temperature","cold_row","call_btn"],"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"backgroundColor":"#FF5BA88A","itemMargin":6}},' +
+      '{"id":"top_row","component":"Row","children":["city"],"styles":{"width":116,"height":18,"justifyContent":"spaceBetween","alignItems":"center"}},' +
+      '{"id":"city","component":"Text","content":"{{ $__dataModel.data.weather.location.name }}","styles":{"width":116,"height":18,"fontSize":12,"fontColor":"#FFFFFFFF","maxLines":1}},' +
+      '{"id":"temperature","component":"Text","content":"{{ $__dataModel.data.weather.current.temperatureText }}","styles":{"width":116,"height":40,"fontSize":32,"fontWeight":700,"fontColor":"#FFFFFFFF","maxLines":1}},' +
+      '{"id":"cold_row","component":"Row","children":["cold_label","cold_value"],"styles":{"width":116,"height":18,"itemMargin":4,"alignItems":"center"}},' +
+      '{"id":"cold_label","component":"Text","content":"感冒指数","styles":{"width":48,"height":18,"fontSize":10,"fontColor":"#D9FFFFFF","maxLines":1}},' +
+      '{"id":"cold_value","component":"Text","content":"{{ $__dataModel.data.weather.current.coldLevel }}","styles":{"width":64,"height":18,"fontSize":10,"fontColor":"#FFFFFFFF","maxLines":1}},' +
+      '{"id":"call_btn","component":"Button","label":"给我爸打电话","onClick":[{"call":"clickToCallPhone","args":{"phonenumber":"15012345678"}}],"styles":{"width":116,"height":32,"fontSize":12,"fontWeight":700,"fontColor":"#FFFFFFFF","backgroundColor":"#FF2E7D6A","borderRadius":16}}' +
+      ']}}\n' +
+      '{"version":"v0.9","updateDataModel":{"surfaceId":"card","path":"/","value":{"state":{"loading":true}}}}';
 
     function highlight(json) {
       return JSON.stringify(json, null, 2)
