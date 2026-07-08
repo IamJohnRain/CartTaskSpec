@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-588",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户原话明确要求'粮少红色提醒'，但截图中'余粮偏少'文字呈橙色（#FFED6F21），并未使用红色，违反用户对颜色的强诉求，是关键扣分项。其余诉求均已落实：'出粮卡'整体展示'自动喂食'标题与'28g'大数字、'点跳App'对应'打开天气'按钮且 onClick.call/args 原样来自 eventCandidates、'看天气'对应 weather_icon 与'同步中'condition。size=2x4、catalogId/version/updateDataModel 协议硬约束均满足。",
+    "aesthetic": "截图中卡片整体观感简洁克制：白底配深灰描边面板的配色干净和谐，'28g'主指标字号 40 形成清晰视觉重心，标题与状态形成良好层级。但'余粮偏少'用橙色而非用户要求的红色，色彩语义与用户期待不一致，影响专业感。'建议补粮'灰色字在浅灰胶囊上的对比度偏弱，可读性略有损失。留白与对齐尚可，未出现错位。",
+    "layout": "从截图中观察，根容器 300x140 范围内无元素溢出边界，main_row 中 feed_panel(176) + itemMargin(12) + side_panel(88) = 276 与父内宽一致。左侧'自动喂食'标题、'28g'主数值、状态胶囊三行纵向排布无重叠截断。右侧天气胶囊与'打开天气'按钮上下排列，按钮未贴边、距底部约 10vp 在合理范围。状态胶囊内'余粮偏少'+'建议补粮'两段文字均完整显示，无裁切。Stack 未出现遮挡关键文本的情况。底部按钮热区充足。"
+  },
+  "issues": [
+    "用户明确要求'粮少红色提醒'，但 status_text 实际使用橙色 #FFED6F21，未满足颜色诉求",
+    "主面板与右侧天气模块整体高度利用率偏低（约 116 中内容仅占顶部 70vp），下方留白较大但仍属可接受",
+    "建议补粮文字（#99000000）在浅灰胶囊底色上对比度偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"pet_feeder_588\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"pet_feeder_588\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"itemMargin\":0,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"feed_panel\",\"side_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"feed_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"amount_text\",\"status_row\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#0C000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.title }}\",\"styles\":{\"width\":156,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.amountText }}\",\"styles\":{\"width\":156,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"hint_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#1AE53935\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.status }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.hint }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5393535\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"weather_group\",\"weather_button\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"weather_group\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"weather_line\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":64,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#FFF1F3F5\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/weatherIcon\"},\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"打开天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"pet_feeder_588\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"自动喂食\",\"amountText\":\"28g\",\"status\":\"余粮偏少\",\"hint\":\"建议补粮\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"\",\"prefectureName\":\"\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"\",\"condition\":\"同步中\",\"airQuality\":\"\",\"humidityPercent\":0,\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true},\"asset\":{\"weatherIcon\":\"resources/base/media/icon_weather1.png\"}}}}"
+  ]
+}

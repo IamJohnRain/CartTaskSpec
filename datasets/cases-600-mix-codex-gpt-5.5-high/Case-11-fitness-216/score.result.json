@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-216",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.6,
+  "reasons": {
+    "instruction": "用户要求的大多数元素都已落实：'开始训练'按钮、环形完成度72%、横排三项统计、主题色绿色、运动感渐变、日历状态（今晚空档）、onClick跳转健康deeplink均存在。但截图显示多处关键文字被截断——标题'下班开练'渲染为'下班开'、按钮文字'开始训练'渲染为'开始...'、'步数 6200'仅显示'步数'、'186千卡'仅显示'186千'，核心数据未完整呈现给用户，指令遵从度严重受损。",
+    "aesthetic": "从截图看，配色方案（绿→青绿渐变）契合运动主题且和谐，白色按钮在绿色背景上对比度高、可读性好；'今晚空档'徽章的半透明白底处理精致；环形进度与72%居中叠层清晰；整体留白合理、对齐统一。唯一影响美感的是多处文字截断造成的'未完成感'。",
+    "layout": "截图中存在4处明显文字截断：(1) 顶部标题'下班开练'被截为'下班开'（title_text宽48装不下4个14px汉字）；(2) 中部白色按钮'开始训练'被截为'开始...'（按钮宽70、fontSize 14，按钮内边距挤掉了文字空间）；(3) 底部'步数 6200'仅显示'步数'（width 34远小于约66px内容宽）；(4) '186千卡'仅显示'186千'。这是典型的宽度计算严重不足导致的受保护文本丢失，布局核心功能未达标。"
+  },
+  "issues": [
+    "标题'title_text'宽度48不够容纳'下班开练'(4个14px汉字≈56px)，渲染为'下班开'",
+    "按钮'start_button'宽度70+fontSize 14，但按钮内边距导致可绘文字区仅约38px，'开始训练'被截为'开始...'",
+    "统计'steps_text'宽度34不够容纳'步数 6200'(约66px @fontSize 10)，渲染为'步数'",
+    "统计'calories_text'宽度34不够容纳'186千卡'(约38px @fontSize 10)，'卡'字被截",
+    "整体未对2x2空间紧张做足够压缩（fontSize偏大、宽度未联动核算）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_216\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_216\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"hero_row\",\"stats_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff3aa05a\",0],[\"#ff8ed7c9\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"calendar_status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":58,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.count > 0 ? $__dataModel.fitness.busyText : $__dataModel.fitness.freeText }}\",\"styles\":{\"width\":60,\"height\":16,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"start_button\",\"meter_stack\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":62,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"start_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":84,\"height\":48,\"borderRadius\":24,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff3aa05a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"completion_progress\",\"completion_text\"],\"styles\":{\"width\":36,\"height\":36,\"alignContent\":\"center\"}},{\"id\":\"completion_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.fitness.completion.value }}\",\"total\":\"{{ $__dataModel.fitness.completion.total }}\",\"styles\":{\"type\":\"ring\",\"width\":36,\"height\":36,\"color\":\"#ffffffff\"}},{\"id\":\"completion_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.completion.label }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stats_row\",\"component\":\"Row\",\"children\":[\"steps_text\",\"calories_text\",\"duration_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":20,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.stats.steps }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":8,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calories_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.stats.calories }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":8,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.stats.duration }}\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":8,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_216\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"下班开练\",\"actionText\":\"开始训练\",\"busyText\":\"今晚有约\",\"freeText\":\"今晚空档\",\"completion\":{\"value\":72,\"total\":100,\"label\":\"72%\"},\"stats\":{\"steps\":\"步数 6200\",\"calories\":\"186千卡\",\"duration\":\"35分\"}},\"data\":{\"calendar\":{\"count\":0,\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

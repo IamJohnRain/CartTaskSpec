@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-03-anti-addiction-054",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.9,
+  "reasons": {
+    "instruction": "截图中可看到：1) 顶部红橙渐变背景已落实，2) 告警文字'今日时长已超限45%'以两行白色粗体显示已落实，3) 底部'确认'按钮及 clickToDeeplink 事件（带 bundleName/abilityName/uri）已落实。但用户明确要求的'底部横排几个游戏应用的复选框任务'在截图中完全不可见——hero 文本与确认按钮之间是大段空白区域，taskRow 模板（appCheckTpl）未能渲染出任何 Checkbox，导致最核心的'选今天禁用哪些游戏'交互完全缺失，属于关键诉求未落实，应大幅扣分。警告图标实际渲染为时钟/计时图标（icon_timing.png），并非用户期望的'带感叹号'图标，但该素材是 TaskSpec 中唯一提供的资产，DSL 用法无误，仅轻微扣分。",
+    "aesthetic": "截图中可见：红→橙的对角渐变（135°）颜色饱和、有紧迫感，视觉风格符合'红橙告警'主题。白色文字在深红渐变上对比度足够，可读性良好。白色'确认'按钮配橙色文字形成清爽反白，CTA 视觉锚点清晰。字体层级上 status 16pt 加粗为最强字重、按钮 14pt 中等次之，整体层级唯一。扣分点：hero 与确认按钮之间留有约 30-40px 的大段空白，画面明显失衡、留白分布不均，给人'未完成'的观感。",
+    "layout": "截图中可见的具体问题：1) 在 140x140 内容高度（实际约 116）的卡片中，hero（约 36px 高）下方到 confirm 按钮之间存在约 30-40px 的完全空白区，没有任何 checkbox 渲染出来；2) 此空白不是设计留白，而是 taskRow 模板组件未渲染导致的内容缺失（按 DSL 公式核算 2 个 width:56 + itemMargin:4 = 116 应可容纳 2 个 Checkbox）；3) 由于中间区缺失，整体 Column 被 spaceBetween 摊开，hero 被顶上、confirm 贴底，中间形成视觉空洞；4) status 文本 '今日时长已超限45%' 在 width:86 内折行为 '今日时长已 / 超限45%' 两行，文字未被截断但字符排布稍密；5) 没有出现文字裁切、组件溢出卡片边界、CTA 被遮挡等硬伤，但中间内容缺失构成显著布局缺陷。"
+  },
+  "issues": [
+    "截图中底部 taskRow 区域（应显示 2 个游戏 Checkbox）完全为空白，模板 appCheckTpl 未渲染出任何 Checkbox，导致用户最核心的'勾选禁用游戏'诉求在视觉上完全不可见",
+    "Column 中部因 taskRow 缺失产生约 30-40px 视觉空洞，hero 顶置、confirm 贴底、中间无内容，spaceBetween 摊开导致整体失衡",
+    "警告图标为时钟/计时样式而非用户期望的'带感叹号'告警图标（受 TaskSpec 资产限制，DSL 已使用唯一可用资产）",
+    "status 文本在 86px 宽度内强制折行，'今日时长已 / 超限45%' 折行点稍不自然但未被截断",
+    "taskRow 高度 26 与 hero 高度 36 + confirm 36 之和 98，加上 itemMargin 12 + padding 24 = 134，已逼近 140 上限，给中间留白让出空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_054\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_054\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"taskRow\",\"confirm\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffe84026\",0],[\"#ffff8a00\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"warnIcon\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"warnIcon\",\"component\":\"Image\",\"src\":{\"path\":\"/antiAddiction/warningIcon\"},\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.status }}\",\"styles\":{\"width\":88,\"height\":30,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"lineHeight\":16,\"textOverflow\":\"none\"}},{\"id\":\"taskRow\",\"component\":\"Row\",\"children\":{\"componentId\":\"appCheckTpl\",\"path\":\"/antiAddiction/apps\"},\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"appCheckTpl\",\"component\":\"Checkbox\",\"label\":\"{{ $item.name }}\",\"select\":\"{{ $item.disabledToday }}\",\"styles\":{\"width\":55,\"height\":24,\"fontSize\":12,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffe84026\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"confirm\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffe84026\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_054\",\"value\":{\"antiAddiction\":{\"status\":\"今日时长已超限45%\",\"actionText\":\"确认\",\"warningIcon\":\"resources/base/media/icon_timing.png\",\"apps\":[{\"name\":\"星战\",\"disabledToday\":true},{\"name\":\"竞速\",\"disabledToday\":false}]}}}}"
+  ]
+}

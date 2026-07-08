@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "用户诉求覆盖完整：标题'昨晚睡眠报告'、入睡-醒来'23:42-06:18'、打呼噜时长、呼吸暂停次数、风险等级与就医提示、查看详情按钮均已呈现；点击事件 clickToDeeplink 原样使用 TaskSpec 候选，uri 正确；2x4 尺寸/catalogId/version/updateDataModel 全部合规；轻微扣分点：'风险高就标红'的视觉表达依赖于右上角 risk_badge，但该 Text 上的 backgroundColor 绑定未实际渲染为红色（截图中文本几乎透明），仅靠底部 alert_text 红色兜底，强调不足。",
+    "aesthetic": "整体配色（浅灰卡底 + 白面板 + 红警示 + 蓝主按钮）克制专业，留白与对齐较统一；问题在于：右上 risk_badge 在 Text 组件上的 backgroundColor 几乎失效，白字直接落在浅卡底上导致'高风险'标识几乎不可见，破坏了信息层级和警示性；其余文字色阶与圆角节奏良好，按钮主色突出。",
+    "layout": "按预算公式核算：① root Column 纵向可用 140-24=116，子项 28+8+48+8+32=124，溢出 8（导致 bottom_row 底到卡底仅 4vp，远离 2x4 规范的 10-14vp 锚定区间）；② metric_row 横向 118+10+148=276 正好等于 276，无横向溢出；③ sleep_time_panel Column 内 content 区 48-16=32，子项 14+3+18=35，溢出 3；④ breath_panel Column 内 content 区 32，子项 16+4+16=36，溢出 4；底部按钮热区 86x32 ≥ 24vp 合格；总体数学上 root 8px 与面板内 3-4px 共三处溢出，扣重分。"
+  },
+  "issues": [
+    "root Column 纵向子项 124 超出可用 116，溢出 8px，bottom_row 距卡底 4vp 偏近",
+    "sleep_time_panel 内 Column 14+3+18=35 超出 32，溢出 3px",
+    "breath_panel 内 Column 16+4+16=36 超出 32，溢出 4px",
+    "risk_badge 在 Text 组件上设置 backgroundColor 实际未渲染为红色，截图中文本几乎不可见",
+    "全卡有 title/time_value/risk_badge/alert_text 共 4 处 fontWeight 700，最强字重冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_08_005_sleep_risk_report\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_08_005_sleep_risk_report\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"metric_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"risk_badge_box\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk_badge_box\",\"component\":\"Column\",\"children\":[\"risk_badge_text\"],\"styles\":{\"width\":68,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"{{ $__dataModel.sleep.riskColor }}\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"risk_badge_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.riskLevel }}\",\"styles\":{\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"sleep_time_panel\",\"breath_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_time_panel\",\"component\":\"Column\",\"children\":[\"time_label\",\"time_value\"],\"itemMargin\":4,\"styles\":{\"width\":118,\"height\":48,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"time_label\",\"component\":\"Text\",\"content\":\"入睡-醒来\",\"styles\":{\"width\":106,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.sleepRangeText }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"breath_panel\",\"component\":\"Column\",\"children\":[\"snore_text\",\"apnea_text\"],\"itemMargin\":4,\"styles\":{\"width\":148,\"height\":48,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"snore_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.snoreText }}\",\"styles\":{\"width\":136,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"apnea_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.apneaText }}\",\"styles\":{\"width\":136,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"alert_text\",\"detail_button\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.riskAlertText }}\",\"styles\":{\"width\":170,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.sleep.riskColor }}\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"huaweischeme://healthapp/sleep/detail\"}}],\"styles\":{\"width\":90,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_08_005_sleep_risk_report\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"昨晚睡眠报告\",\"sleepRangeText\":\"23:42-06:18\",\"snoreText\":\"打呼噜 1小时36分\",\"apneaText\":\"呼吸暂停 8次\",\"riskLevel\":\"高风险\",\"riskColor\":\"#D92D20\",\"riskAlertText\":\"风险偏高，建议就医\",\"buttonLabel\":\"查看详情\"}}}}"
+  ]
+}

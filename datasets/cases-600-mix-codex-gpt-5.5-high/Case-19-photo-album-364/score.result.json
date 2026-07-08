@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-364",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户明确要求四点：①可打勾（Checkbox 已勾选 ✓），②点进相册/日历拿日程（calendar.summary 与 items[0].title 已渲染出'整理相册 20:30'与'整理相册'），③红色'快满了'提醒（红色 pill'快满了'+大号红色'已用 92%'已呈现），④'去清理'动作（Button 配 clickToDeeplink 跳转 storage_settings 完整落地）。size=2x4、catalogId/version/updateDataModel 均合规。仅微扣分：calendar_text 与 event_title 重复展示了'整理相册'信息略有冗余，但不影响指令遵从。",
+    "aesthetic": "整体红色调统一（背景 #fff8f1f0 + 主题色 #d94838），标题/副标题/主指标字号阶梯（16/10/32）合理，主指标字重最强且唯一。但截图中 Progress 环形进度条背后露出一块浅粉/淡红色矩形色块（#22d94838 背景被以矩形区域渲染出来），与圆形 ring 形状不协调，是明显的视觉瑕疵，严重影响卡片观感，扣分明显。",
+    "layout": "截图中可观察到两处问题：①中间右侧 Progress 环形进度条背后有可见的浅红色方形背景块（圆环未将背景裁成圆形），造成圆环与方形并存的不协调视觉；②按布局公式核算：root 内容区 116，三行固定高 34+42+34=110、itemMargin 8*2=16，总 126 > 116，潜在溢出 10px（虽然截图中内容勉强呈现，但 meter_row 与 bottom_row 间距被挤压）。底部按钮'去清理'底边距卡片底边约 10vp，热区与边界基本合规。其余三行内容在水平方向排布整齐，无截断。"
+  },
+  "issues": [
+    "Progress 环形进度条背后露出浅红色方形背景块，与圆形 ring 不协调，视觉上像渲染 bug",
+    "三行固定高度合计 126 + 边距 16 = 超出 root 内容区 116，潜在纵向溢出 10px",
+    "calendar_text（整理相册 20:30）与 event_title（整理相册）信息重复展示，用户读到两次相同关键词",
+    "Progress 的 backgroundColor #22d94838 在 ring 模式下以矩形区域渲染，未与圆形裁剪对齐"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_364\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_364\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"meter_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff8f1f0\",\"borderWidth\":1,\"borderColor\":\"#33d94838\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"check\",\"title_col\",\"status\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"check\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":\"{{ $__dataModel.album.checked }}\",\"styles\":{\"width\":24,\"height\":24,\"selectedColor\":\"#ffd94838\",\"unSelectedColor\":\"#66d94838\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\"],\"itemMargin\":0,\"styles\":{\"width\":170,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.title }} \\u00b7 {{ $__dataModel.data.calendar.summary }}\",\"styles\":{\"width\":170,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.statusText }}\",\"styles\":{\"width\":60,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#ffd94838\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"usage\",\"progress\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"usage\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.album.usageText }}\",\"styles\":{\"width\":210,\"height\":36,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress\",\"component\":\"Progress\",\"value\":92,\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":36,\"height\":36,\"color\":\"#ffd94838\",\"strokeWidth\":4}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"event_title\",\"action\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }} \\u00b7 {{ $__dataModel.data.calendar.items[0].eventLocation }}\",\"styles\":{\"width\":170,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#cc182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.album.actionText }}\",\"styles\":{\"width\":90,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffd94838\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_364\",\"path\":\"/\",\"value\":{\"album\":{\"title\":\"相册空间提醒\",\"statusText\":\"快满了\",\"usageText\":\"已用 92%\",\"actionText\":\"去清理\",\"checked\":true},\"data\":{\"calendar\":{\"summary\":\"整理相册 20:30\",\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-photo-album-364\",\"title\":\"整理相册\",\"dtStart\":\"20:30\",\"dtEnd\":\"21:00\",\"eventLocation\":\"手机日历\"}]}}}}}"
+  ]
+}

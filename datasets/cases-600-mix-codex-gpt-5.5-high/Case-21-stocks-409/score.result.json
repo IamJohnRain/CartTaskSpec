@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-21-stocks-409",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.8,
+  "reasons": {
+    "instruction": "截图显示卡片仅渲染了顶部标题区与左侧白色面板（持仓金额/--/打开App），用户明确要求的'持仓列表'未出现（holding_list 未渲染出任何条目）、'金额实时会动'的 change 字段'实时刷新'不可见、'日历拉出来看'的 calendar_list 同样空白、'跌太多红字提醒'被实现为橙色徽标（#ffed6f21）而非红字。事件 clickToDeeplink 已挂到按钮，但 clickToIntent/ViewCalendarEvent 因 List 模板未渲染而完全失效。size 2x4、catalogId、version、updateDataModel 等硬约束虽满足，但 5 项核心诉求中 4 项未真正落地。",
+    "aesthetic": "截图整体观感残缺：浅灰渐变背景尚可，标题与徽标配色尚可阅读，但卡片右半区与底部大半区为空白底色，白色左卡孤悬在左上角，没有形成任何主次层级或视觉锚点，给人'渲染中断/数据未到达'的破图感，远未达到克制专业的设计水准。",
+    "layout": "截图最显著的问题是右侧 150×80 区域完全空置，且卡片整体下半部 12vp 底 padding 上方几乎全为空白——这意味着 body 行高 80 中只有左侧 116 宽被填充，右半区 content=0。List+模板子项的 holding_list/calendar_list 均未渲染，导致核心信息缺席。底部 '打开App' 按钮文字最右的 'p' 略被切到边沿，CTA 热区虽够但与底边距较松散。综合属于明显的布局崩溃。",
+    "issues": [
+      "截图右侧 holding_list 区域完全空白，'自选持仓/--/实时刷新' 列表项不可见",
+      "截图右侧 calendar_list 区域完全空白，日历拉出提示不可见",
+      "底部 '打开App' 按钮文字最右 'p' 接近卡片右边缘，存在轻微裁切风险",
+      "风险徽标使用 #ffed6f21（橙色），与用户'红字提醒'诉求不符",
+      "body 行下方至卡片底边出现大段空白（近 20vp），布局未填满",
+      "calendar onClick clickToIntent 因 List 未渲染而无法触达"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_21_stocks_409\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_21_stocks_409\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"holdings\",\"calendar\",\"bottom\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":8,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#fffafbfc\",0],[\"#ffe8eaef\",1]]}}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"title_g\",\"badge\"],\"styles\":{\"width\":284,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_g\",\"component\":\"Row\",\"children\":[\"glyph\",\"title\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/glyph\"},\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":130,\"height\":22,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ff1a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.riskText }}\",\"styles\":{\"width\":100,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#ffd32f2f\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"holdings\",\"component\":\"Row\",\"children\":[\"h_name\",\"h_amount\",\"h_change\"],\"itemMargin\":4,\"styles\":{\"width\":284,\"height\":28,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"h_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.holdings.0.name }}\",\"styles\":{\"width\":110,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff1a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"h_amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.holdings.0.amount }}\",\"styles\":{\"width\":50,\"height\":20,\"fontSize\":12,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"h_change\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.holdings.0.change }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"calendar\",\"component\":\"Row\",\"children\":[\"cal_glyph\",\"cal_text\"],\"itemMargin\":6,\"styles\":{\"width\":284,\"height\":22,\"padding\":{\"left\":10,\"right\":10,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#1a000000\",\"alignItems\":\"center\"}},{\"id\":\"cal_glyph\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/glyph\"},\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"cal_text\",\"component\":\"Text\",\"content\":\"从日历拉取提醒 · 0 条\",\"styles\":{\"width\":240,\"height\":16,\"fontSize\":11,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"amt\",\"btn\"],\"styles\":{\"width\":284,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"amt\",\"component\":\"Column\",\"children\":[\"amt_lbl\",\"amt_val\"],\"itemMargin\":1,\"styles\":{\"width\":160,\"height\":32}},{\"id\":\"amt_lbl\",\"component\":\"Text\",\"content\":\"持仓总额(实时)\",\"styles\":{\"width\":160,\"height\":13,\"fontSize\":10,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amt_val\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.totalAmount }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff1a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":100,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_21_stocks_409\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"持仓提醒\",\"totalAmount\":\"--\",\"riskText\":\"跌幅过大标红\",\"actionLabel\":\"打开App\"},\"holdings\":[{\"name\":\"自选持仓\",\"amount\":\"--\",\"change\":\"实时刷新\",\"isAlert\":true}],\"asset\":{\"glyph\":\"resources/base/media/icon_schedule.png\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-06-004-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "用户要求'界面上方是环形进度条，右侧是清理按钮'。截图中可见左侧有环形进度条(68% 蓝色弧)，右侧有蓝色'去清理'按钮，标题'内存清理'、副标'清理进度'、底部'已扫描可清理 1.8GB'均按数据模型正确呈现。按钮 onClick 使用了 clickToDeeplink 且 args 原样来自 eventCandidates，尺寸为 2x4，root shell/catalogId/version/updateDataModel 均符合协议。轻微扣分点：环形进度条出现明显的方形/矩形浅色底板，与'环形'语义略冲突。",
+    "aesthetic": "整体配色（#0A59F7 蓝 + #F7FAFF 浅蓝白底 + #182431 深灰文字）和谐统一，主次字重区分清晰（18px 粗标题 / 14px 中等按钮 / 12px 浅灰副文 / 20px 进度数值），留白与对齐良好。但环形进度条外围出现一个方形浅蓝底板（应为 Stack/progress_ring 的背景渲染痕迹），破坏环形视觉的纯粹感，使该区域显得有些'贴片'感，扣 0.5-1 分。",
+    "layout": "从截图看：卡片四边留白对称；左上环形进度条(80x80)与右侧 Column(80高)水平基线对齐良好；右侧 Column 内三行(标题24 + 副标18 + 按钮30 + 8 margin=80)正好填满，无溢出；底部 detail_text 紧贴但未被裁切，所有受保护文本（标题、按钮、主数值）完整可读；按钮热区 80x30 偏小但仍 ≥24vp。无元素堆叠遮挡问题。唯一小瑕疵是 Stack 区域出现的方形浅色底板，可视为轻微视觉违和。"
+  },
+  "issues": [
+    "环形进度条外侧出现明显方形/矩形浅蓝色底板（Stack 容器或 Progress 背景色渲染痕迹），与'环形'语义不符，破坏视觉纯粹性",
+    "按钮热区 80x30 略偏小，理想更接近 40vp 高以提升可点击体验"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_06_004_memory_clean\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_06_004_memory_clean\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"detail_text\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":14,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F7FAFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"progress_stack\",\"right_col\"],\"itemMargin\":18,\"wrap\":\"noWrap\",\"styles\":{\"width\":272,\"height\":78,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"progress_stack\",\"component\":\"Stack\",\"children\":[\"progress_ring\",\"percent_text\"],\"styles\":{\"width\":78,\"height\":78,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.memoryClean.progressValue }}\",\"total\":\"{{ $__dataModel.data.memoryClean.progressTotal }}\",\"styles\":{\"type\":\"ring\",\"width\":78,\"height\":78,\"color\":\"#0A59F7\",\"backgroundColor\":\"#E8F0FE\"}},{\"id\":\"percent_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.memoryClean.percentText }}\",\"styles\":{\"width\":56,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"progress_label\",\"clean_button\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":78,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.memoryClean.title }}\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":17,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.memoryClean.progressText }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"clean_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.memoryClean.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":88,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#0A59F7\",\"borderRadius\":16,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.memoryClean.detailText }}\",\"styles\":{\"width\":272,\"height\":20,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_06_004_memory_clean\",\"path\":\"/\",\"value\":{\"data\":{\"memoryClean\":{\"title\":\"内存清理\",\"progressValue\":68,\"progressTotal\":100,\"percentText\":\"68%\",\"progressText\":\"清理进度\",\"detailText\":\"已扫描可清理 1.8GB\",\"buttonText\":\"去清理\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

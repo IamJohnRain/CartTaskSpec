@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-15-smart-home-297",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.0,
+  "reasons": {
+    "instruction": "截图中卡片仅显示顶部标题'今日家居任务 5/8 已完成'与底部'天'+截断的'调...'按钮，核心诉求'下面竖着重复排勾选项'完全没有渲染出来（任务列表区域是大片空白），天气只显示孤零零的'天'字（condition/temperatureText 为空导致内容丢失），'调整设置'按钮被截断为'调...'。仅标题和深绿渐变背景落实，任务清单、天气数据、按钮文案三项关键诉求均未正确呈现。",
+    "aesthetic": "深绿渐变背景配色尚可，标题白色加粗在深绿上清晰可读。但卡片中部出现大面积空白（任务列表缺失导致），底部'调...'按钮的截断视觉非常突兀，天气只显示'天'一个字显得残缺，整体观感非常不完整、不专业。",
+    "layout": "截图中最严重的布局问题是：(1) 任务列表 Checkbox 模板未渲染，卡片中部留出约 50px 高的纯色空白；(2) 底部'调整设置'按钮文字被截断为'调…'，热区宽度 52vp 不足以容纳 4 个 12pt 汉字；(3) 天气 Text 宽度 58vp 只能显示'天'，condition 与 temperatureText 因数据为空导致整段内容塌缩；(4) 整体内容垂直分布严重失衡——顶部标题贴顶、底部贴底、中间空洞。"
+  },
+  "issues": [
+    "Checkbox 模板循环未渲染，3 个任务项在截图中完全不可见",
+    "天气 Text 因 condition/temperatureText 为空字符串，仅渲染出'天'一个字",
+    "'调整设置'按钮 width:52 在 12pt 字号下被截断为'调…'，CTA 不可用",
+    "卡片中部出现大面积空白（任务列表缺失），垂直空间浪费",
+    "dataModel 中天气数据为空但用户明确要求'要显示天气'，未做兜底占位"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_297\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_297\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"task_list\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff163f2e\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff163f2e\",0],[\"#ff2f6b45\",0.65],[\"#ff5ba854\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":120,\"height\":28,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"wordBreak\":\"breakAll\"}},{\"id\":\"task_list\",\"component\":\"Column\",\"children\":[\"task1\",\"task2\",\"task3\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"task1\",\"component\":\"Row\",\"children\":[\"c1\",\"t1\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"c1\",\"component\":\"Text\",\"content\":\"✓\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\"}},{\"id\":\"t1\",\"component\":\"Text\",\"content\":\"擦窗 - 进度 60%\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontColor\":\"#e5ffffff\"}},{\"id\":\"task2\",\"component\":\"Row\",\"children\":[\"c2\",\"t2\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"c2\",\"component\":\"Text\",\"content\":\"✓\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\"}},{\"id\":\"t2\",\"component\":\"Text\",\"content\":\"浇花 - 进度 80%\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontColor\":\"#e5ffffff\"}},{\"id\":\"task3\",\"component\":\"Row\",\"children\":[\"c3\",\"t3\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"c3\",\"component\":\"Text\",\"content\":\"○\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"}},{\"id\":\"t3\",\"component\":\"Text\",\"content\":\"空气净化 - 进度 40%\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontColor\":\"#ccffffff\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"weather\",\"settings_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"天气 · 晴 25°\",\"styles\":{\"width\":60,\"height\":26,\"fontSize\":10,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"settings_btn\",\"component\":\"Button\",\"label\":\"调整设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":58,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#33ffffff\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_297\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"今日家居任务 5/8 已完成\"},\"tasks\":[{\"name\":\"擦窗\",\"progressText\":\"60%\",\"done\":true},{\"name\":\"浇花\",\"progressText\":\"80%\",\"done\":true},{\"name\":\"空气净化\",\"progressText\":\"40%\",\"done\":false}],\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"晴\",\"temperatureText\":\"25°\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-18-carpool-347",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户要求的拼车卡片、点击跳转到打车应用、明早8点上班日程三大核心诉求都已在卡片中体现：title='明早拼车'、calendar_text='明早 08:00 · 上班'引用了日程条目、Button.onClick 正确绑定了 clickToDeeplink 事件（call/args 原样来自 eventCandidates）。size=2x4、root 300x140、catalogId='ohos.a2ui.extended.catalog'、三行 version='v0.9'、updateDataModel.path='/'、value 与 TaskSpec.dataModel.value 一致等硬约束均满足。dataModel 中 carpool.* 全部字段都被引用，无多余字段。扣分点：CTA 按钮的 label 在截图中被截断为'打开...'，用户能看到但无法读全，受保护文本呈现不完整。",
+    "aesthetic": "整体配色（浅灰底+白色卡片+蓝色主调+绿色省钱点缀）较为和谐，信息层级也基本清晰（最大字重给了 title 和 meter_value）。但截图中存在几个明显的美观缺陷：1) 中间圆环外露一个白色方形底，圆环与方形叠加看起来像贴纸没贴好；2) 右侧'去公司上班'挤成两行（'去公司上'/'班'），节奏很碎；3) 底部蓝色按钮文字被截成'打开...'，比正常按钮更难看。综合属于'可用但不精致'的水准。",
+    "layout": "截图可观察到三处明显布局问题：1) 右侧蓝色 Button 的 label '打开打车' 被截断为 '打开...'——这是受保护的 CTA 文字，因 button 宽度 66 装不下 4 个 12 号中文字而被强行省略，CTA 实际不可用；2) 右栏 route_text '去公司上班' 宽度仅 66，在 14 号字下被强制折行成 '去公司上'/'班'，单列被压成 2 行小字，视觉割裂；3) meter_panel 用了 Stack 套 Progress，Stack 设置了 backgroundColor=#ffffffff 形成白色方框，而 Progress 是环形组件，圆形之外的四个角透出白色方块，'方形白底+圆形蓝环'叠层观感很差。三栏宽度分配 126/68/66 也导致右栏明显被挤。按公式交叉验证：右栏 width=66、button 66×30 装 4×12=48px 文本（含默认内边距后文本区≈42px），必截；Stack 68×68 套 ring type Progress，方形背景外溢是必然。整体排版有不可忽视的溢出/截断问题。"
+  },
+  "issues": [
+    "右侧 Button 文本 '打开打车' 被截断为 '打开...'，CTA 受保护文字被裁切，交互意图不完整",
+    "route_text '去公司上班' 在 66px 列宽下被强制换行成两行，文字节奏破碎",
+    "meter_panel 的 Stack 设置了白色背景，与环形 Progress 叠加后形成白色方形底，与圆形环视觉冲突",
+    "三栏宽度 126/68/66 分配不均，右栏明显被挤压，密度失衡",
+    "meter_value 文字 margin=(8,16) 配合 68x68 Stack 使 '2/3' 略偏上居中，可读性尚可但不够精准"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_347\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_347\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"middle_col\",\"right_panel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title\",\"calendar_text\",\"pickup_text\"],\"itemMargin\":8,\"styles\":{\"width\":126,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.title }}\",\"styles\":{\"width\":106,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.timeText + ' · ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pickup_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.pickupText }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"middle_col\",\"component\":\"Column\",\"children\":[\"meter_panel\",\"meter_caption\"],\"itemMargin\":8,\"styles\":{\"width\":60,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"meter_panel\",\"component\":\"Stack\",\"children\":[\"meter_ring\",\"meter_value\"],\"styles\":{\"width\":60,\"height\":60,\"borderRadius\":30,\"backgroundColor\":\"#fff1f3f5\",\"alignContent\":\"center\"}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.carpool.meterValue }}\",\"total\":\"{{ $__dataModel.carpool.meterTotal }}\",\"styles\":{\"type\":\"ring\",\"width\":60,\"height\":60,\"color\":\"#ff0a59f7\",\"backgroundColor\":\"#190a59f7\"}},{\"id\":\"meter_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.meterLabel }}\",\"styles\":{\"width\":44,\"height\":24,\"margin\":{\"left\":8,\"top\":18},\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_caption\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.peopleText }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"route_text\",\"saving_text\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":74,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"route_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.routeText }}\",\"styles\":{\"width\":74,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"saving_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.savingText }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.actionText }}\",\"styles\":{\"width\":74,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_347\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"明早拼车\",\"timeText\":\"明早 08:00\",\"routeText\":\"去公司上班\",\"pickupText\":\"07:35 小区北门\",\"peopleText\":\"同行2人\",\"savingText\":\"预计省18元\",\"meterValue\":2,\"meterTotal\":3,\"meterLabel\":\"2/3\",\"actionText\":\"打开打车\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"work-20260706-0800\",\"title\":\"上班\",\"dtStart\":\"08:00\",\"dtEnd\":\"08:30\",\"eventLocation\":\"公司\",\"description\":\"明早通勤日程\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

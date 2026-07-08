@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-09-weather-care-165",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.9,
+  "reasons": {
+    "instruction": "用户明确要求'能读天气'和'数字会变'，但截图上方三行核心信息（城市、天气状况、温度）均未渲染出实际值，而是以原始模板字符串 `{{ $__dataModel.we`、`{{ $__dataModel.weather.co`、`{{ $...` 的字面形式被截断显示，等于城市名/天气/温度完全无法读出。红色危险提示框（'红色高温预警 / 体感闷热 注意防暑'）与右下角'看天气'按钮以及 onClick 跳转配置落实。背景图在截图中未能看到实际图样（仅显示深灰渐变底色），'文字叠背景图'诉求只完成一半。整体核心信息（城市/温度）完全不可读，指令遵从严重不足。",
+    "aesthetic": "截图中红色预警胶囊与白色'看天气'按钮配色尚可，对齐也整齐，这两个元素在视觉上可用。但上半部分因数据未求值而呈现为破损的模板字符串，视觉观感极差；背景图未渲染，只能看到单调的深蓝灰渐变，'雷雨云层'氛围全无。整体无法体现天气卡片的视觉设计意图，层次和氛围都打了折扣。",
+    "layout": "截图中上半区明显出现严重截断：城市行显示为 `{{ $__dataModel.we`（`}}天气` 被裁掉），状况行显示为 `{{ $__dataModel.weather.co`（剩余也被裁），温度行只显示 `{{ $` 与一个孤立的 `}_` 字符。说明 Text 节点的 maxLines:1 + textOverflow:none + 固定 width 组合下，渲染引擎把整段未求值的模板字符串作为字面量排出，超出容器宽度后被截切。下半区的红色 alert 胶囊和'看天气'按钮位置正确、对齐整齐，未见溢出或堆叠，问题集中在顶部三块受保护文本全部被裁切。底部'看天气'按钮底边距卡片底边约 8-10vp，符合锚定要求。",
+    "improved_dsl_summary": "将 data binding 表达式由 `{{ $__dataModel.weather.xxx }}` 改为更通用的 `{{ weather.xxx }}` 形式，并对城市/状况/温度的 Text 容器宽度与 fontSize 重新校核，确保在 268px 内容宽度内能完整显示 '深圳天气'（64px）/ '雷阵雨 · 16:20'（约 90px）/ '33°C'（约 50px）。"
+  },
+  "issues": [
+    "截图中城市 Text 显示为字面 `{{ $__dataModel.we`，'}}天气'被截断，等于城市名不可读",
+    "截图中部状况行显示为 `{{ $__dataModel.weather.co`，'雷阵雨 · 16:20 更新'被裁掉，状况与更新时间均不可读",
+    "截图右侧温度区显示 `{{ $` 与孤立 `}_`，'33°C' 主数值完全丢失",
+    "数据绑定表达式 `{{ $__dataModel.weather.x }}` 形式未被渲染引擎正确求值",
+    "背景图 assets/weather-storm-band.png 在截图中未呈现，仅有深灰渐变底色",
+    "顶部受保护文本（标题、状况、主指标）全部因模板字面量被裁切，违反'受保护文本不得依赖截断'的硬规则"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_165\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_165\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"shade\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff1b2a3a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"bg\",\"component\":\"Image\",\"src\":\"assets/weather-storm-band.png\",\"styles\":{\"width\":300,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#cc0d1b2e\",0],[\"#661b2a3a\",0.6],[\"#331b2a3a\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"bottom\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":16,\"right\":16,\"top\":12,\"bottom\":12},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"weatherInfo\",\"temp\"],\"itemMargin\":8,\"styles\":{\"width\":268,\"height\":52,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weatherInfo\",\"component\":\"Column\",\"children\":[\"city\",\"condition\"],\"itemMargin\":4,\"styles\":{\"width\":168,\"height\":52,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"city\",\"component\":\"Text\",\"content\":\"{{ weather.city }}天气\",\"styles\":{\"width\":168,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ weather.condition }} · {{ weather.updatedAt }} 更新\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp\",\"component\":\"Text\",\"content\":\"{{ weather.temperature }}°{{ weather.unit }}\",\"styles\":{\"width\":88,\"height\":52,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"alertBox\",\"openBtn\"],\"itemMargin\":8,\"styles\":{\"width\":268,\"height\":40,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"alertBox\",\"component\":\"Column\",\"children\":[\"alert\",\"detail\"],\"itemMargin\":2,\"styles\":{\"width\":172,\"height\":40,\"padding\":{\"left\":10,\"right\":10,\"top\":5,\"bottom\":5},\"borderRadius\":10,\"backgroundColor\":\"#ffe84026\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ weather.alert }}\",\"styles\":{\"width\":152,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail\",\"component\":\"Text\",\"content\":\"{{ weather.detail }}\",\"styles\":{\"width\":152,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ffffe7e2\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openBtn\",\"component\":\"Button\",\"label\":\"看天气\",\"styles\":{\"width\":80,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffe84026\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_165\",\"value\":{\"weather\":{\"city\":\"深圳\",\"condition\":\"雷阵雨\",\"temperature\":33,\"unit\":\"C\",\"alert\":\"红色高温预警\",\"detail\":\"体感闷热 注意防暑\",\"updatedAt\":\"16:20\"}}}}"
+  ]
+}

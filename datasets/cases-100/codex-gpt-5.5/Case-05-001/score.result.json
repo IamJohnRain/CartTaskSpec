@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-05-001",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户明确要求显示会议时间、ID、共享和聊天四类信息，卡片结构上均已映射（dtStart-dtEnd、meetingId、shareSummary、chatSummary），title、detailButton、eventCandidates 也都正确落地。但会议ID字段 '863 245 901'（11字符，估算宽 74.4vp）被分配到 width:70 的 id_value 容器中，渲染时被截断为 '863 245'，用户明确要求展示的ID信息不完整，属于关键诉求落实不完整，扣分明显。",
+    "aesthetic": "配色采用浅蓝渐层（#F7FAFF / #EAF2FF）+ 白色卡片 + 蓝色 CTA，整体协调，CTA 文字白色在 #0A59F7 上对比清晰。但全卡有 5 个文本/摘要元素使用 fontWeight:700（title、time、id_value、share_summary、chat_summary），违反'同一卡片只保留一个最强字重'的约束，视觉层级显得'处处都重'，主次不够分明，扣分。",
+    "layout": "预算核算：(1) main_col(w140→h116,padding10) 纵向 = 10+10 + 6*3 + 20+22+18+28 = 126，可用 116，溢出 10vp；(2) share_box(h50,padding8) 纵向 = 8+8 + 4*1 + 16+18 = 54，可用 50，溢出 4vp；(3) chat_box(h50,padding8) 纵向 = 54 > 50，溢出 4vp；(4) id_value w70 装 '863 245 901'(估算 74.4vp)，maxLines:1 触发截断，'901' 被切掉，受保护字段不可见；(5) 5 处 fontWeight:700 违反单一最强字重规则。底部 main_col 距卡片底 12vp 在 10-14vp 范围，按钮热区 28vp ≥24vp，OK。整体多列均出现纵向溢出 + 关键ID被裁，布局不可用。"
+  },
+  "issues": [
+    "main_col 内容 Column 高度 126vp > 可用 116vp，溢出 10vp",
+    "share_box 内容 54vp > 容器 50vp，溢出 4vp",
+    "chat_box 内容 54vp > 容器 50vp，溢出 4vp",
+    "id_value 宽度 70vp 装不下 '863 245 901'（估算 74.4vp），导致 '901' 被截断",
+    "全卡 5 处元素使用 fontWeight:700，违反'只保留一个最强字重'规则",
+    "id_label 宽度 42vp 偏紧，'会议ID' 12pt 估算 36vp，几无富余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"meeting_join_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"meeting_join_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"summary_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F7FAFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"time_text\",\"id_row\",\"detail_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#EAF2FF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":124,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":124,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"id_row\",\"component\":\"Row\",\"children\":[\"id_label\",\"id_value\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"id_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.idLabel }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"id_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.meetingId }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.meeting.detailLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":92,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"summary_col\",\"component\":\"Column\",\"children\":[\"share_box\",\"chat_box\"],\"itemMargin\":8,\"styles\":{\"width\":130,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"share_box\",\"component\":\"Column\",\"children\":[\"share_label\",\"share_summary\"],\"itemMargin\":2,\"styles\":{\"width\":130,\"height\":52,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"share_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.shareLabel }}\",\"styles\":{\"width\":118,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"share_summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.shareSummary }}\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"chat_box\",\"component\":\"Column\",\"children\":[\"chat_label\",\"chat_summary\"],\"itemMargin\":2,\"styles\":{\"width\":130,\"height\":52,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"chat_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.chatLabel }}\",\"styles\":{\"width\":118,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"chat_summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.chatSummary }}\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"meeting_join_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-meeting-05001\",\"title\":\"产品评审会\",\"eventLocation\":\"线上会议\",\"description\":\"会议ID 863 245 901\",\"dtStart\":\"14:30\",\"dtEnd\":\"15:15\"}]},\"meeting\":{\"idLabel\":\"会议ID\",\"meetingId\":\"863 245 901\",\"shareLabel\":\"共享摘要\",\"shareSummary\":\"方案首页\",\"chatLabel\":\"聊天摘要\",\"chatSummary\":\"3条新消息\",\"detailLabel\":\"日程详情\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-008-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图中可清晰看到12%电量、低电预警标题、'低于15%建议省电'规则、'可开启省电模式'提示、附近充电宝（星河便利店 320m · 可借6个），以及开启省电与去充电两个动作按钮，主要信息齐全且数据绑定准确；两个onClick的call/args均原样来自eventCandidates；尺寸2x4、catalogId/version/updateDataModel等硬约束均满足。但用户明确说'自动省电、关后台'，卡片只能提供按钮让用户手动点击，未能传达'自动触发'语义；同时'关后台'这一具体动作在卡片文本中未显式体现（仅靠系统级battery_saving_mode隐含），扣分。",
+    "aesthetic": "截图整体观感优秀：暖米色背景（#FFF7E8）与橙色主色（#D76000）形成温暖低电预警氛围，色彩协调；'12%'为视觉焦点（32号粗体），与右侧标题16号、规则14号、提示12号形成清晰的字号阶梯，只有一个最强字重；左侧电量块用更浅的#FFFFF7形成柔和分组；橙色主按钮与深色次按钮区分明确，文字在背景上清晰可读；底部店铺名与距离/可用数上下排版工整，留白密度舒适，对齐统一。",
+    "layout": "截图未观察到任何堆叠、重叠、文字截断或组件溢出：12%与进度条在左侧电量块内居中显示完整；右侧'低电预警/低于15%建议省电/可开启省电模式'三行纵向排列无截断；底部'星河便利店 320m · 可借6个'与两个按钮（开启省电84x32、去充电72x32）在一行内整齐呈现，热区充足；所有内容均在卡片300x140内边距内，无超出边界。布局均衡、信息分区明确。"
+  },
+  "issues": [
+    "用户明确要求'关后台'，但卡片文本中未显式提及此动作，仅依赖系统级battery_saving_mode隐含",
+    "用户说'自动省电'，但卡片只能提供按钮让用户手动点击，未能传达'自动触发'的语义",
+    "原按钮label'开启省电'未能直接呼应用户'关后台'诉求，可优化文案以更贴合用户意图"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_01_008_low_battery\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_01_008_low_battery\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7E8\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"level_col\",\"status_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":62,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"level_col\",\"component\":\"Column\",\"children\":[\"level_text\",\"progress_bar\"],\"itemMargin\":4,\"styles\":{\"width\":88,\"height\":62,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#FFFFF7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.levelText }}\",\"styles\":{\"width\":72,\"height\":32,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#D76000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.battery.level }}\",\"total\":100,\"styles\":{\"width\":72,\"height\":8,\"type\":\"linear\",\"color\":\"#D76000\",\"backgroundColor\":\"#FFE0B8\",\"borderRadius\":4}},{\"id\":\"status_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"rule_text\",\"mode_text\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":62,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.statusText }}\",\"styles\":{\"width\":176,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rule_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.ruleText }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#5C3B00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.saveModeText }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"place_col\",\"save_button\",\"nav_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"place_col\",\"component\":\"Column\",\"children\":[\"place_name\",\"place_meta\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"place_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.powerBank.name }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_meta\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.powerBank.distanceText + ' · ' + $__dataModel.powerBank.availableText }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"save_button\",\"component\":\"Button\",\"label\":\"一键省电\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#D76000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"去充电\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.319304\",\"longitude\":\"114.169361\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":72,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#262626\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_01_008_low_battery\",\"path\":\"/\",\"value\":{\"battery\":{\"level\":12,\"levelText\":\"12%\",\"statusText\":\"低电预警\",\"ruleText\":\"低于15%建议省电\",\"saveModeText\":\"可开启省电模式\"},\"powerBank\":{\"name\":\"星河便利店\",\"distanceText\":\"320m\",\"availableText\":\"可借6个\"}}}}"
+  ]
+}

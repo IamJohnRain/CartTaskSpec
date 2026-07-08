@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-010",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户所有明确字段（title、statusText、lastFeedText、missedAlertText、binRemainText、daysLeftText、feedProgress、buttonText、statusColor、progressColor）均通过 {{ }} 表达式从 DataModel 读取，补喂按钮 onClick 完整照搬 eventCandidates 的 clickToDeeplink/deeplink URI，createSurface 尺寸 300x140、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 与 value 原样对齐 TaskSpec。但用户最关心的'告警提醒我手动补喂'文案 missedAlertText 在视觉上被截断为'该手动补'，关键信息丢失 1 字，扣分；标题写'喂食器看护'与用户说的'宠物喂食卡片'略有不符但语义一致，不另扣。",
+    "aesthetic": "配色（暖米 #FFFFF7F0 + 白卡 + 红色警示 #FFE64545 + 绿色余量 #FF0A8F6A）协调，渐变语义清晰。但全卡片 fontWeight=700 在 title、status、alert、remain_text、days_text 五处重复使用，违反'同一卡片只保留一个最强字重'阶梯规则，层级辨识度被稀释；alert_text 被裁导致视觉未完成感；按钮宽度 52 与 alert 宽度 52 二等分过挤，缺少呼吸感。",
+    "layout": "预算核算：root Row 宽 = 12+12+12+132+132 = 300 ✓；left_panel Column 纵向占用 = padding.top(10) + padding.bottom(10) + itemMargin(6)×3 + Σchildren(18+20+18+32) = 10+10+18+88 = 126 > 可用 116，溢出 10vp（且 action_row 内 alert_text 宽 52 不足以容纳 5 个中文 12px 字符的 '该手动补喂' 约 60px，导致末字'喂'被裁，与截图一致）；right_panel Column = 10+10+8×3+(16+24+20+8) = 112 ≤ 116 ✓；action_row 宽 = 52+8+52 = 112 ≤ 116 ✓，但 alert_text 内部宽度不够；按钮热区 52×32 ≥ 24vp ✓；底部动作区底边到卡片底边距离 12vp ≤ 16vp ✓。核心问题在于 left_panel 高度溢出 10vp 与 alert_text 横向宽度不足导致受保护文本被截。"
+  },
+  "issues": [
+    "left_panel Column 高度溢出 10vp（126 > 116），导致 action_row 底缘被裁",
+    "alert_text 宽 52 不足以容纳 5 个 fontSize=12 中文（需 ~60），末字'喂'被裁断，丢失用户最关心的告警信息",
+    "fontWeight=700 在 5 处使用（title/status/alert/remain/days），违反'同一卡片只保留一个最强字重'规则",
+    "left_panel padding(10) 与 itemMargin(6) 偏大，挤压垂直空间",
+    "action_row 中 alert_text(52) + button(52) 等宽分配，缺少主次呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_11_010_pet_feeder_status\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_11_010_pet_feeder_status\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFF7F0\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"last_feed_text\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.statusText }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"{{ $__dataModel.data.feeder.statusColor }}\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"last_feed_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.lastFeedText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"alert_text\",\"feed_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.missedAlertText }}\",\"styles\":{\"width\":64,\"height\":32,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFE64545\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"feed_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.feeder.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://petfeeder/home/manual-feed\"}}],\"styles\":{\"width\":44,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFE64545\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"remain_label\",\"remain_text\",\"days_row\",\"food_progress\"],\"itemMargin\":8,\"styles\":{\"width\":132,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"remain_label\",\"component\":\"Text\",\"content\":\"猫粮桶\",\"styles\":{\"width\":112,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remain_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.binRemainText }}\",\"styles\":{\"width\":112,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_row\",\"component\":\"Row\",\"children\":[\"days_label\",\"days_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":112,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"days_label\",\"component\":\"Text\",\"content\":\"还能喂\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.daysLeftText }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FF0A8F6A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"food_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.feeder.feedProgress }}\",\"total\":100,\"styles\":{\"width\":112,\"height\":10,\"type\":\"linear\",\"color\":\"{{ $__dataModel.data.feeder.progressColor }}\",\"backgroundColor\":\"#FFDCEFE8\",\"strokeWidth\":10}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_11_010_pet_feeder_status\",\"path\":\"/\",\"value\":{\"data\":{\"feeder\":{\"title\":\"喂食器看护\",\"statusText\":\"08:00未出粮\",\"statusColor\":\"#FFE64545\",\"lastFeedText\":\"07:58出粮18g\",\"missedAlertText\":\"该手动补喂\",\"binRemainText\":\"余粮1.2kg\",\"daysLeftText\":\"约6天\",\"feedProgress\":60,\"progressColor\":\"#FF0A8F6A\",\"buttonText\":\"补喂\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

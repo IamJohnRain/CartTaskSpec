@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-21-stocks-413",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "用户明确要求'下面横向排三只基金的收益数据,固定文字加动态百分比'，但截图中卡片底部三只基金（固收A/均衡B/成长C 及其收益）完全不可见，仅在上半部呈现了'组合年化+8.2%'、'稳健组/进取组'分隔块和右上角日历面板，关键信息缺失严重。其余要点（暗色风格、绿色'已连接'、分隔线分组）基本落实，onClick 事件也按 eventCandidates 设置了 clickToIntent/rebalance_next。尺寸 2x4、catalogId、version、updateDataModel 等硬约束均合规。",
+    "aesthetic": "截图中暗紫蓝渐变观感尚可接受，配色和谐度一般。前景白色文字在深色背景上清晰可读，但日历胶囊内'已连接'被截断为'已连'造成视觉瑕疵；卡片下半部因基金行未渲染出现明显的暗色空洞，破坏了整体留白节奏；两组胶囊采用相同灰白底色，区分度不足。",
+    "layout": "截图中最严重的布局问题是底部 fundRow（高 32vp）完全缺失渲染，导致卡片下沿约 30% 区域为纯渐变空区。其次日历胶囊内部溢出：calendarPanel 宽 98 + padding 16 + itemMargin 6 + calendarText 58 + statusText 28 = 108 > 98，迫使'已连接'被截断为'已连'。groupRow 内 stableBox(128) + 分隔线 + activeBox(128) = 256+margin ≤ 276 未溢出但偏紧。按钮热区尚可，底部锚定正常。"
+  },
+  "issues": [
+    "fundRow 模板循环在渲染中未生效，三只基金（固收A/均衡B/成长C）及其收益完全不可见，违反用户核心诉求",
+    "日历胶囊内'已连接'被截断为'已连'，calendarPanel 宽 98 不足以容纳 padding+text+status",
+    "fundRow 缺失导致卡片下半部出现大面积暗色空洞，破坏留白节奏",
+    "stableBox/activeBox 使用相同背景色，'稳健/进取'两组的视觉区分度不足",
+    "渐变起色 #ff202224→#5550a6 偏紫红，与'月光渐变'的冷蓝意象略有偏离"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"stocks413\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"stocks413\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"heroRow\",\"groupRow\",\"fundRow\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":115,\"colors\":[[\"#ff0f1430\",0],[\"#ff4a5a8c\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"heroRow\",\"component\":\"Row\",\"children\":[\"heroText\",\"calendarPanel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":40,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"heroText\",\"component\":\"Column\",\"children\":[\"title\",\"annual\"],\"itemMargin\":2,\"styles\":{\"width\":132,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.title }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"annual\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.annualReturn }}\",\"styles\":{\"width\":110,\"height\":26,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendarPanel\",\"component\":\"Row\",\"children\":[\"calendarText\",\"statusText\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"rebalance_next\"}}}],\"styles\":{\"width\":136,\"height\":36,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":18,\"backgroundColor\":\"#26ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"calendarText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/portfolio/nextRebalanceLabel} ${/portfolio/nextRebalanceDate}\"}},\"styles\":{\"width\":72,\"height\":26,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.calendarStatus }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"groupRow\",\"component\":\"Row\",\"children\":[\"stableBox\",\"groupDivider\",\"activeBox\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"stableBox\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.stableGroup }}\",\"styles\":{\"width\":120,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33a8d4ff\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"groupDivider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"color\":\"#4dffffff\",\"height\":20}},{\"id\":\"activeBox\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.activeGroup }}\",\"styles\":{\"width\":120,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ff8a5c\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"fundRow\",\"component\":\"Row\",\"children\":{\"componentId\":\"fundTpl\",\"path\":\"/portfolio/funds\"},\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"fundTpl\",\"component\":\"Column\",\"children\":[\"fundName\",\"fundReturn\"],\"itemMargin\":1,\"styles\":{\"width\":88,\"height\":34,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"fundName\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":76,\"height\":13,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"fundReturn\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"收益 ${return}\"}},\"styles\":{\"width\":76,\"height\":15,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"stocks413\",\"path\":\"/\",\"value\":{\"portfolio\":{\"title\":\"组合年化\",\"annualReturn\":\"+8.2%\",\"stableGroup\":\"稳健组\",\"activeGroup\":\"进取组\",\"calendarStatus\":\"已连接\",\"nextRebalanceLabel\":\"下次调仓\",\"nextRebalanceDate\":\"周五 14:00\",\"funds\":[{\"name\":\"固收A\",\"return\":\"+3.6%\"},{\"name\":\"均衡B\",\"return\":\"+7.4%\"},{\"name\":\"成长C\",\"return\":\"+12.9%\"}]},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"rebalance_next\",\"title\":\"下次调仓\",\"dtStart\":\"周五 14:00\",\"dtEnd\":\"15:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

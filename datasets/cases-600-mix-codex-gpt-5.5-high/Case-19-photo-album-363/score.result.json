@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-19-photo-album-363",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求'点一下能导航到拍照的地、读天气、提醒快不行了'，截图中：①按钮'去拍照地'完整呈现且 onClick 携带了 StartNavigate 与坐标参数 22.281900/114.159900，事件落实；②天气行显示'读取中'+'待更新'（当前为 loading 初始态，属数据语义正常）；③警告'快不行了'用红色突出呈现。协议层面 size 2x2、catalogId、version、updateDataModel.path='/' 均合规。轻微扣分点：dataModel 中明确给出的拍照地点'中环海滨'未在卡片上展示，用户对'导航到拍照的地'的位置感知略有缺失。",
+    "aesthetic": "截图中卡片采用淡蓝→灰白对角线渐变作为背景，浅色背景上黑色标题(#e5000000)、红色警告(#ffe84026)、灰次级文字(#99000000)对比清晰可读；蓝色实心按钮(#0a59f7)与白色文字形成强 CTA 视觉锚点。字重层级分明：标题 16pt/700 为最强字重，温度 14pt/700 次之，警告 12pt/500 与条件 12pt/400 较弱，按钮 14pt 居中。整体克制专业，仅底部略感留白稍多(可再加一行位置信息以平衡)。",
+    "layout": "截图中所有元素均位于卡片圆角矩形内部，无任何溢出、堆叠或被裁切。顶部 Column(高度 40)内含标题(20)+警告(16)各完整一行；天气行 Row(高度 18)左右铺满 116 宽度无折行；分割线与按钮(32 高)依次到底。按钮热区 116×32 满足 ≥24vp 的可点击区要求；底边到卡片底边约 12vp，在 2x2 推荐的 8-12vp 范围内，无 >16vp 违规。改进空间：可考虑在警告与天气行之间增加一行小字位置标签以提升信息密度并平衡底部留白。"
+  },
+  "issues": [
+    "dataModel 中的拍照地点'中环海滨'未在卡片任何位置展示，用户对'去拍照地'具体指哪里缺乏直观确认",
+    "卡片底部按钮到卡片底边的留白视觉上略大于顶部，内容整体偏上、底部稍空，密度可再增一行以平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_363\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_363\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"loc_name\",\"weather_line\",\"divider\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#86c5e3\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.281900\",\"longitude\":\"114.159900\"},\"trafficpe\":\"Walk\"}}}]},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"warning\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.photoTrip.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.photoTrip.warning }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"loc_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.photoTrip.location }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_line\",\"component\":\"Row\",\"children\":[\"weather_temp\",\"weather_condition\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":{\"path\":\"/data/weather/current/temperatureText\"},\"styles\":{\"width\":44,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.photoTrip.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.281900\",\"longitude\":\"114.159900\"},\"trafficpe\":\"Walk\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_363\",\"path\":\"/\",\"value\":{\"photoTrip\":{\"title\":\"拍照点天气\",\"warning\":\"快不行了\",\"actionText\":\"去拍照地\",\"location\":\"中环海滨\",\"weatherNote\":\"天气读取中\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"中西区\",\"prefectureName\":\"香港\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"读取中\",\"condition\":\"待更新\",\"alertLevel\":\"无\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

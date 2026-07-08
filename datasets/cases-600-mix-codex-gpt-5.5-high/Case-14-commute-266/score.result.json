@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-14-commute-266",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "截图中可见：左上面是汽车图标+'通勤去公司'标题，左中显示'--° 读取中'主天气值，左下是'外面天气·待更新'提示；右上是'已连接'状态胶囊，右中是'公司'目的地名称，右下是绿色'去公司'按钮。四项用户诉求（通勤卡、点一下导航、读天气、连接状态）均在截图中真实呈现。onClick 的 clickToIntent/StartNavigate 来自 eventCandidates，icon_car.png 来自 assetCandidates，dataModel 完整对齐，size/catalogId/version/path 等硬约束全部满足，扣 1 分因为状态胶囊在浅色渐变区可读性略弱。",
+    "aesthetic": "截图整体观感专业：深蓝到浅蓝的对角渐变和谐，白色文字在主色上清晰；主天气值 20px ExtraBold 构成视觉焦点，标题 16px Bold、提示 12px 中等字重形成清晰层级；绿色 CTA 与蓝色背景形成良好对比。仅在右上面'已连接'胶囊位置，胶囊底色（#33ffffff 约 20% 白）落在了渐变最浅的右上区，胶囊与背景区分度不足，略显发灰。",
+    "layout": "截图显示卡片为 2x4 横版，左右双栏用细分隔线分开，元素无堆叠、无截断、无溢出：标题行、车图标、天气值、提示行在左栏纵向留白舒适；右栏 status_pill、公司名、按钮三段以 spaceBetween 分布均匀。按钮高 34vp 热区合格，按钮底到卡片底约 8-10vp 在 2x4 容许区间内。唯一可改进点是右栏上方'已连接'胶囊与渐变最浅处对比度偏低，但不构成堆叠或截断。"
+  },
+  "issues": [
+    "右上'已连接'胶囊背景 #33ffffff（20% 白）落在渐变最浅区域，对比度不足，视觉上略发灰",
+    "左下'外面天气·待更新'提示文字 opacity #ccffffff 略低，可略提亮以与主信息区分更清晰",
+    "右栏 destinationName'公司'与下方按钮之间间距由 spaceBetween 自动分配，但状态胶囊与文字之间无明确视觉关联，可考虑在按钮上方补充一行微注释（如经纬度或简短副信息）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_266\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_266\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"mid_divider\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a59f7\",0],[\"#ff86c5e3\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"weather_value\",\"weather_hint\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"commute_icon\",\"title_text\"],\"itemMargin\":8,\"styles\":{\"width\":160,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"commute_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.title }}\",\"styles\":{\"width\":124,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText + ' ' + $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":160,\"height\":30,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.weatherLabel + ' · ' + $__dataModel.data.weather.current.airQuality }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mid_divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"height\":80,\"color\":\"#55ffffff\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_pill\",\"company_line\",\"nav_button\"],\"itemMargin\":8,\"styles\":{\"width\":96,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_dot\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":84,\"height\":26,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#80ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_dot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":10,\"height\":16,\"fontSize\":10,\"fontColor\":\"#ff3ddc84\",\"textAlign\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.connection.statusText }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"company_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.destinationName }}\",\"styles\":{\"width\":96,\"height\":22,\"fontSize\":15,\"fontWeight\":600,\"fontColor\":\"#f2ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"去公司\",\"styles\":{\"width\":96,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff4caf50\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ $__dataModel.commute.destination.latitude }}\",\"longitude\":\"{{ $__dataModel.commute.destination.longitude }}\"},\"trafficpe\":\"Drive\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_266\",\"path\":\"/\",\"value\":{\"commute\":{\"title\":\"通勤去公司\",\"weatherLabel\":\"外面天气\",\"destinationName\":\"公司\",\"destination\":{\"latitude\":\"22.279327\",\"longitude\":\"114.162813\"}},\"connection\":{\"statusText\":\"已连接\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"\",\"prefectureName\":\"\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"读取中\",\"airQuality\":\"待更新\",\"humidityPercent\":0,\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

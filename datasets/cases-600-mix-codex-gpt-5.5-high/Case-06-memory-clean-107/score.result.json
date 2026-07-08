@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-06-memory-clean-107",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中完整呈现了用户要求的一键清理卡片：标题'内存清理'、副提示'释放缓存与后台占用'、按钮'一键清理'均清晰可见；根容器与按钮均挂载了原样来自 eventCandidates 的 clickToDeeplink 事件（bundleName/abilityName/uri 完全一致），点击整张卡或按钮均可触发跳转；尺寸 2x2、root shell（width 140 / height 140 / borderRadius 18 / clip true）、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path '/' 与 value 与 TaskSpec 一致，协议合规。微小瑕疵：未使用任何 assetCandidates（TaskSpec 中该数组为空，合理），但缺少装饰性元素让视觉略单调。",
+    "aesthetic": "截图整体观感良好：蓝→青（#0a59f7→#00bcd4）135° 渐变自然协调，白色加粗标题与半透明白色副提示层级清晰，白底圆角胶囊按钮配蓝色加粗文字形成强对比焦点；padding 12、divider 留白与 hero / action 之间的间距比例舒适。扣分点：缺少图标或进度环等点缀元素（assetCandidates 为空所以合理），标题字重 700 与按钮 fontWeight medium 共存略有多重字重（按钮 fontWeight 严格意义上不是受支持的标准字重枚举，存在合规风险），整体偏简约但略显空旷。",
+    "layout": "截图中各元素布局干净：标题与副提示在 hero Column 中左对齐、未出现堆叠或裁切；divider 横贯内容区宽度内；按钮宽 116、高 40，圆角 14，热区充足；按钮底边到卡片底边的视觉间距约 14vp，处于 2x2 推荐 8–12vp 范围边缘但未超过 16vp 上限。Column 纵向占用核算：12(顶 padding)+50(hero)+8(itemMargin)+1(divider)+8(itemMargin)+40(button)+12(底 padding)=131，140 高度下余 9vp，spaceBetween 合理分配，未观察到溢出或被裁切的文字。唯一可观察的小问题：底部按钮离卡片底边略近，留白略紧。"
+  },
+  "issues": [
+    "底部按钮距卡片底边视觉间距偏紧，建议 padding.bottom 12→14 或 button 高度微调，使热区更宽松",
+    "按钮 fontWeight 用了 'medium'，非标准字重枚举（应为 100/200/300/…/900 或 normal/bold），存在合规风险",
+    "缺少图标/插画等装饰元素，2x2 视觉略显空旷（assetCandidates 为空属合理但可考虑省略文字辅助元素）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_107\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_107\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"divider\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":14,\"bottom\":14},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a59f7\",0],[\"#ff00bcd4\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.systemmanager\",\"abilityName\":\"com.huawei.systemmanager.MainAbility\",\"uri\":\"systemmanager://cleanup\"}}]},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memoryClean.title }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memoryClean.hint }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.memoryClean.actionText }}\",\"styles\":{\"width\":116,\"height\":38,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.systemmanager\",\"abilityName\":\"com.huawei.systemmanager.MainAbility\",\"uri\":\"systemmanager://cleanup\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_107\",\"value\":{\"memoryClean\":{\"title\":\"内存清理\",\"hint\":\"释放缓存与后台占用\",\"actionText\":\"一键清理\"}}}}"
+  ]
+}

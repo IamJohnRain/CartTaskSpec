@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-003-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图显示卡片完整覆盖了用户所有明确诉求：顶部'应用使用时长监控'标题清晰可见，'抖音'作为应用名以橙色突出；中间进度条横向铺开，蓝色（约77%）与橙色（约23%）两种颜色分段对应'正常'与'超出'，橙色部分语义明确指向超出的35分钟；中间区域展示了'今日已用 2小时35分'主指标、'每日上限 2小时'与'已超出 35分钟'两行参数；底部'重新设置上限'蓝色按钮存在并绑定到 eventCandidates 中的 clickToDeeplink 事件，参数与 TaskSpec 完全一致。尺寸 300x140、catalogId/version/updateDataModel 等硬约束均合规。微扣 1 分因进度条的实现导致视觉表达略有瑕疵（详见 D2）。",
+    "aesthetic": "截图中整体配色和谐：浅灰卡片底 + 蓝色主色 + 橙色警示色构成清晰的语义层级；文字在背景上可读性良好，'今日已用 2小时35分'加粗黑色与右下角灰色小字'每日上限 2小时'形成字重与字号的明确对比；按钮使用纯蓝填充配白色文字，作为最强视觉锚点成立。扣分点：进度条的蓝色段中部出现一条明显更深的色带（可见于图中蓝色条带中段偏右的暗色横纹），应为 Progress 组件 fill 与 track 同色渲染时产生的视觉断层，使进度条看起来像被分成两段而非一段完整的'正常区'，影响观感的专业度。",
+    "layout": "截图中各组件均落在卡片边界内，未观察到文字被裁切/截断、组件溢出或堆叠遮挡关键内容的情况：标题行'应用使用时长监控 抖音'完整；进度条两段蓝/橙衔接干净、总宽填满内容区；中间参数区左侧'今日已用 2小时35分'、右侧两行参数均完整显示无截断；底部'重新设置上限'按钮居中铺满、白色文字居中显示。高度核算 12+22+8+16+8+24+8+30+12=140，与卡片高度完全吻合，无溢出。按钮热区 276x30 满足 ≥24vp 要求，底部距卡片底边约 12vp 处于合规区间。整体排版紧凑、层级分明，无明显布局问题。"
+  },
+  "issues": [
+    "进度条蓝色段中部出现一条更深的色带（Progress 组件 value 填充区与同色 track 叠加产生的视觉断层），导致'正常区'看起来像被分成两段，建议改用 Row 内两个子节点配 backgroundColor 的方式实现分段进度条。",
+    "进度条高度 16px 偏细，可读性一般，建议提升至 18-20px 以增强视觉权重。",
+    "按钮高度 30px 虽满足 ≥24vp 热区要求，但对长文本'重新设置上限'的点击舒适度一般，可适度增加至 34-36px。",
+    "标题区将'抖音'作为副标题用橙色小字呈现与主标题同行，视觉上信息层级清晰，但'应用使用时长监控'8 个汉字 + '抖音'2 个汉字共 10 字在 276px 内容区中仍偏左，留白偏多，可考虑将 appName 放到使用参数区附近或用更显眼的标签来增强可识别性。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_03_003_anti_addiction\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_03_003_anti_addiction\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_row\",\"progress_track\",\"usage_row\",\"setting_button\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"title_dot\",\"title_app\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_dot\",\"component\":\"Text\",\"content\":\"·\",\"styles\":{\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFB0B6BE\",\"maxLines\":1}},{\"id\":\"title_app\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.appName }}\",\"styles\":{\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFF8800\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_track\",\"component\":\"Row\",\"children\":[\"normal_part\",\"over_part\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":10,\"padding\":0,\"borderRadius\":5,\"clip\":true,\"backgroundColor\":\"#FFE5EAF0\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"normal_part\",\"component\":\"Column\",\"styles\":{\"width\":213,\"height\":10,\"backgroundColor\":\"#FF0A59F7\"}},{\"id\":\"over_part\",\"component\":\"Column\",\"styles\":{\"width\":63,\"height\":10,\"backgroundColor\":\"#FFFF8800\"}},{\"id\":\"usage_row\",\"component\":\"Row\",\"children\":[\"today_usage\",\"limit_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"today_usage\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.todayUsageText }}\",\"styles\":{\"width\":132,\"height\":24,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"limit_col\",\"component\":\"Column\",\"children\":[\"daily_limit\",\"over_limit\"],\"itemMargin\":2,\"styles\":{\"width\":132,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"daily_limit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.dailyLimitText }}\",\"styles\":{\"width\":132,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"over_limit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.overLimitText }}\",\"styles\":{\"width\":132,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFF8800\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":276,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_03_003_anti_addiction\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"应用使用时长监控\",\"appName\":\"抖音\",\"todayUsageText\":\"今日已用 2小时35分\",\"dailyLimitText\":\"每日上限 2小时\",\"overLimitText\":\"已超出 35分钟\",\"normalRatio\":77,\"overRatio\":23,\"actionText\":\"重新设置上限\"}}}}"
+  ]
+}

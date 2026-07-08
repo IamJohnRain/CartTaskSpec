@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-23-countdown-446",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户明确要求三点：纪念日倒计时卡、显示百分比、点开能进app。截图中可见标题'纪念日倒计时'、大字号'18 天'剩余天数、蓝色进度条及'已走过 72%'百分比文字、目标日期'7月24日'以及蓝色'进App'按钮，核心诉求全部呈现。onClick 的 call/args 与 eventCandidates 完全一致。size=2x4、root 300x140、catalogId 与 version 协议项均合规。扣分点：dataModel 中提供了 eventName='我们的纪念日' 这个个性化字段，但截图中未展示，造成一定信息浪费。",
+    "aesthetic": "截图整体观感良好：左半区采用黄→橙→粉的暖色 linearGradient，配合半透明白色面板营造层次感；右半区纯白卡片+蓝色 CTA 按钮，对比清晰，主题一致。'18 天'采用 32pt 白色加粗，与'天'16pt 形成字号层级，是全卡最强字重，符合'只有一个最强字重'原则。不足之处：左面板上'已走过 72%'为白色文字叠加在带透明度的米黄底色上，对比度略弱，在小尺寸下可读性打折；面板内空白稍多，进度条与百分比之间留白偏大。",
+    "layout": "截图中各元素均无堆叠、无截断、无溢出。root 300x140 内：左 main 列 176 宽，右 side 列 88 宽，中间间距 12，加上 root 自身 padding 12，恰好填满 12+176+12+88+12=300；纵向 main 列 18+6+34+6+28+padding20=112，side 列 48+8+30+padding16=102，均 ≤116 父高，按钮底边距 side 底约 14vp，符合'2x4 底部 10-14vp'锚定要求。蓝色进度条横贯 156 宽，'进App' 按钮 72×30 热区足够。整体排版干净对齐。"
+  },
+  "issues": [
+    "dataModel.countdown.eventName('我们的纪念日') 未在卡片任何位置呈现，浪费了个性化字段",
+    "左面板 '已走过 72%' 白色文字在 #33FFFFFF 半透明白色面板+黄底渐变上对比度偏弱",
+    "main 列内 itemMargin 与 padding 叠加后空白偏多，进度条与百分比行间距略松"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"anniversary_countdown_card_446\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"anniversary_countdown_card_446\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main\",\"side\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F5DC62\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#F5DC62\",0],[\"#F9BC64\",0.55],[\"#E67C92\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"daysRow\",\"progressBlock\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.eventName }}\",\"styles\":{\"width\":156,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"daysRow\",\"component\":\"Row\",\"children\":[\"daysLeft\",\"dayUnit\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":156,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"daysLeft\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.daysLeft }}\",\"styles\":{\"width\":46,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dayUnit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.unit }}\",\"styles\":{\"width\":22,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progressBlock\",\"component\":\"Column\",\"children\":[\"progressBar\",\"progressLabel\"],\"itemMargin\":2,\"styles\":{\"width\":156,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"progressBar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.countdown.progressValue }}\",\"total\":\"{{ $__dataModel.countdown.progressTotal }}\",\"styles\":{\"type\":\"linear\",\"width\":156,\"height\":8,\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":4}},{\"id\":\"progressLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.progressLabel }}\",\"styles\":{\"width\":156,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"datePanel\",\"openButton\"],\"itemMargin\":8,\"styles\":{\"width\":88,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"datePanel\",\"component\":\"Column\",\"children\":[\"dateLabel\",\"targetDate\"],\"itemMargin\":4,\"styles\":{\"width\":72,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"dateLabel\",\"component\":\"Text\",\"content\":\"目标日期\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"targetDate\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.targetDate }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.countdown.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":72,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"anniversary_countdown_card_446\",\"path\":\"/\",\"value\":{\"countdown\":{\"title\":\"纪念日倒计时\",\"eventName\":\"我们的纪念日\",\"daysLeft\":\"18\",\"unit\":\"天\",\"targetDate\":\"7月24日\",\"progressValue\":72,\"progressTotal\":100,\"progressLabel\":\"已走过 72%\",\"actionLabel\":\"进App\"}}}}"
+  ]
+}

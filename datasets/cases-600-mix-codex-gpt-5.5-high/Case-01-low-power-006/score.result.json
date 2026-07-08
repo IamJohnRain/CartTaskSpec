@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-006",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "用户明确要求'一串的'充电站列表，但截图中完全看不到任何充电站条目（银泰快充站、河西充电站均未渲染），仅在中部留有大片空白，这是最核心的诉求缺失，严重扣分。红色危险提示（橙色背景+低电危险标题）和天气风险文字'雨天低电，先找近站'已呈现，电池图标也已绑定。但'点一下跳地图'未在站点上落实——唯一的 onClick 被放在'电池设置'按钮上（且 eventCandidates 也只有 clickToDeeplink 去电池设置，缺少地图跳转事件），按钮的点击事件符合协议。资源 icon 正确使用。尺寸、catalogId、version、updateDataModel 等硬约束均满足。",
+    "aesthetic": "橙红色（#ffed6f21）背景与'低电危险'语义契合，白色主文字在橙底上清晰可读，标题字号 16/700 配 10/500 副文层级合理。但底部 Button 文字'电池设置'在截图中显示异常——字体出现横向贯穿的伪影/重影，看起来像'由油设置'，严重破坏专业感。卡片中部有一大块橙色空旷区域（充电站列表本应在此），整体留白失衡，视觉重心被空块拖累。",
+    "layout": "截图中最突出的布局问题是：List 组件（station_list）占据了 width:120、height:36 的空间，但实际没有任何 Row 子项被渲染出来，导致'雨天低电，先找近站'与底部'电池设置'按钮之间出现约 36px 的纯橙色空白带。List 模板（children: {componentId, path}）未被引擎正确展开，是该 case 的核心布局失败。Button 文字虽有伪影但位置正确、底边距卡片底约 8-10vp 符合 2x2 约束。其余元素（icon+title+level 横向 Row、weather Text 单独一行）排布正常无重叠。"
+  },
+  "issues": [
+    "充电站列表完全未渲染：List 模板 children:{componentId:\"station_row\",path:\"/stations\"} 未生效，截图中看不到任何站点条目，核心需求'一串的'丢失",
+    "底部 Button 文字'电池设置'渲染异常，截图中出现横向贯穿伪影/重影，疑似 fontWeight:'medium'(字符串) 触发了字体回退",
+    "卡片中部约 36-40px 纯橙色空白无内容，视觉留白失衡，重心下坠",
+    "用户要求'点一下跳地图'，但唯一的 eventCandidates 是电池设置 deeplink，站点未挂任何 onClick（受协议约束）",
+    "List 组件未显式设置 itemHeight/space 不一致或模板 id 未注册，模板未匹配到数据数组 /stations"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_006\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_006\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"weather\",\"station1\",\"station2\",\"action\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffed6f21\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"charge_icon\",\"hero_text\"],\"itemMargin\":6,\"styles\":{\"width\":124,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"charge_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.power.icon }}\",\"styles\":{\"width\":26,\"height\":26,\"objectFit\":\"contain\"}},{\"id\":\"hero_text\",\"component\":\"Column\",\"children\":[\"title\",\"level\"],\"itemMargin\":0,\"styles\":{\"width\":92,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"level\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.levelText }}\",\"styles\":{\"width\":92,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.riskText }}\",\"styles\":{\"width\":124,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"station1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stations[0].line }}\",\"styles\":{\"width\":124,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"station2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stations[1].line }}\",\"styles\":{\"width\":124,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":124,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_006\",\"path\":\"/\",\"value\":{\"power\":{\"title\":\"低电危险\",\"levelText\":\"剩余 9%\",\"actionText\":\"电池设置\",\"icon\":\"resources/base/media/icon_charge.png\"},\"weather\":{\"city\":\"深圳\",\"summary\":\"雷阵雨 28°C\",\"riskText\":\"雨天低电，先找近站\"},\"stations\":[{\"name\":\"银泰快充站\",\"distance\":\"0.8km\",\"line\":\"银泰快充站 0.8km\"},{\"name\":\"河西充电站\",\"distance\":\"1.4km\",\"line\":\"河西充电站 1.4km\"}]}}}"
+  ]
+}

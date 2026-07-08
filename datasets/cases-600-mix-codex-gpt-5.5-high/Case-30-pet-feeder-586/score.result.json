@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-30-pet-feeder-586",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户四点诉求在截图中均有对应元素：标题+红色'粮快没了'警示、灰色卡片里的主数值区、底部蓝色'打开应用'按钮(带onClick点击跳app)、以及4根柱状条模拟的喂食记录图表。但截图里主数值区明显存在文本截断：'今日喂食'被截成'今日'，'计划 4 次'被截成'计划 4'（末尾'次'丢失），主数字'0次'的'次'字也几乎看不到、信息不完整；dataModel 中预留的 chartTitle '喂食记录'完全未在截图中呈现，信息齐全度打折。",
+    "aesthetic": "整体配色（蓝主色 + 红色警示 + 浅灰卡片底）还算克制和谐，标题字重、警示字色和正文灰层级有体现。但因关键文本被截断，视觉上明显不完整、像被裁坏；柱状条4根高度接近、几乎无差异，作为'喂食记录'图表辨识度低；卡片整体偏居中靠上、底部留白多，比例略空。",
+    "layout": "截图中可直接观察到三处文本截断：(1) 中部灰卡内'今日喂食'被截断为'今日'，后两字'喂食'缺失；(2) 同一行右侧'计划 4 次'被截断为'计划 4'，末尾'次'字缺失；(3) 大号主数字'0次'的'次'字与右侧countLabel紧贴、视觉上几乎不可见，疑似被裁切。这三处截断都涉及受保护的说明/单位文本，是排版维度的硬伤。柱状条虽未溢出，但4根高度(6/8/12/6)在14px的图表区里差异过小、难以辨识。"
+  },
+  "issues": [
+    "countLabel '今日喂食'(4字)被截断显示为'今日'，宽度22远小于实际所需约40px",
+    "target '计划 4 次'被截断显示为'计划 4'，宽度36不足",
+    "主数字'0次'的'次'字与countLabel相邻，几乎被遮挡/裁切",
+    "dataModel.feeder.chartTitle '喂食记录'在截图中完全未呈现",
+    "柱状图4根Progress高度(6/8/12/6)差异过小，作为记录图表辨识度低",
+    "根容器spaceBetween导致内容上移、底部留白偏多"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_pet_feeder_586\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_pet_feeder_586\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"hero\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"warning\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.title }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.foodWarning }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"topRow\",\"countText\",\"chart\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":64,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"countLabel\",\"target\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":104,\"height\":12,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"countLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.countLabel }}\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"target\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.feeder.targetText }}\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"countText\",\"component\":\"Text\",\"content\":\"{{ size($__dataModel.data.calendar.items) }}次\",\"styles\":{\"width\":104,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"chart\",\"component\":\"Row\",\"children\":[\"b1\",\"b2\",\"b3\",\"b4\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":104,\"height\":12,\"justifyContent\":\"center\",\"alignItems\":\"bottom\"}},{\"id\":\"b1\",\"component\":\"Progress\",\"value\":1,\"total\":4,\"styles\":{\"type\":\"capsule\",\"width\":20,\"height\":4,\"color\":\"#ff0a59f7\",\"backgroundColor\":\"#19000000\"}},{\"id\":\"b2\",\"component\":\"Progress\",\"value\":1,\"total\":4,\"styles\":{\"type\":\"capsule\",\"width\":20,\"height\":7,\"color\":\"#ff0a59f7\",\"backgroundColor\":\"#19000000\"}},{\"id\":\"b3\",\"component\":\"Progress\",\"value\":1,\"total\":4,\"styles\":{\"type\":\"capsule\",\"width\":20,\"height\":10,\"color\":\"#ff0a59f7\",\"backgroundColor\":\"#19000000\"}},{\"id\":\"b4\",\"component\":\"Progress\",\"value\":1,\"total\":4,\"styles\":{\"type\":\"capsule\",\"width\":20,\"height\":5,\"color\":\"#ff0a59f7\",\"backgroundColor\":\"#19000000\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.feeder.actionText }}\",\"styles\":{\"width\":120,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_pet_feeder_586\",\"value\":{\"feeder\":{\"title\":\"宠物喂食\",\"countLabel\":\"今日喂食\",\"targetText\":\"计划 4 次\",\"chartTitle\":\"喂食记录\",\"foodWarning\":\"粮快没了\",\"actionText\":\"打开应用\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

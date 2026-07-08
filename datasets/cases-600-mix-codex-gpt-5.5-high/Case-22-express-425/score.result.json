@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-425",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "用户明确要求'能打勾的卡片'并'显示一行还剩几个没取'且'点了能直接打开快递'。截图中标题'待取快递'与摘要'还剩 3件未取'已正确呈现，图标也正常显示，onClick 事件配置与 eventCandidates 一致。但核心诉求'能打勾'完全未实现——dataModel 中的 3 个取件项（丰巢柜/菜鸟驿站/门卫室）在截图中完全不可见，pickup_list 区域为一片空白，没有任何 Checkbox 渲染出来；底部 CTA 按钮文字被截断为'打开...'，原意'打开快递'未完整呈现，CTA 不可读。任务最关键的清单/勾选能力缺失，扣重分。",
+    "aesthetic": "从截图看整体配色尚可：白底卡片+浅灰内嵌面板+蓝色 CTA 形成清晰的层级，标题加粗、副标题半透明黑也合理。但 pickup_list 整片空白让左半边显得空洞失衡；右侧 76 宽按钮里'打开...'末尾的省略号显得突兀，破坏了按钮的视觉完成度；'整卡可点'提示文字本身可读但与按钮叠加显得信息密度低。整体观感一般化。",
+    "layout": "截图中最严重的布局问题是：1) pickup_list 区域（位于摘要'还剩 3件未取'下方的主面板内）完全空白，3 个 Checkbox 模板条目未渲染，dataModel 里的 items 数组在视觉上为零——这是 Stack/List 模板未正确绑定或 Checkbox 模板未展开的明显渲染失败；2) 右侧蓝色按钮文字被截断成'打开...'而非完整的'打开快递'，受保护的 CTA 文字被截断；3) 大量内容区被空 list 占位，底部按钮距离卡片底边正常（约 12vp），左右两侧无溢出截断，但左侧主面板内的留白比例严重失调。Stack/重叠/越界未发生，但核心内容缺失+CTA 截断是硬伤。"
+  },
+  "issues": [
+    "pickup_list 模板未渲染：3 个 Checkbox 条目在截图中完全不可见，丰巢柜/菜鸟驿站/门卫室三项未显示",
+    "主面板底部 44vp 高度区域为纯空白，未填充任何清单内容，浪费大量内容区",
+    "右侧 CTA 按钮文字被截断为'打开...'，完整文案'打开快递'未能呈现",
+    "按钮宽度 76vp 不足以容纳 4 个 14pt 中文字符 + 内边距，导致文字末尾省略",
+    "原 DSL 使用 List + 模板 + Checkbox 三层组合，可能存在渲染兼容性问题，应改用显式 Checkbox 组件"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_425\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_425\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"action_panel\"],\"itemMargin\":12,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"top_row\",\"summary_text\",\"item1\",\"item2\",\"item3\"],\"itemMargin\":4,\"styles\":{\"width\":180,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#FFF1F3F5\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"icon_box\",\"title\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":20,\"alignItems\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":138,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"还剩 {{ $__dataModel.summary.remainingCount }}{{ $__dataModel.summary.unit }}{{ $__dataModel.summary.suffix }}\",\"styles\":{\"width\":164,\"height\":16,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item1\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[0].name }} · {{ $__dataModel.items[0].location }}\",\"select\":{\"path\":\"/items/0/picked\"},\"styles\":{\"width\":164,\"height\":16,\"fontSize\":11,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"item2\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[1].name }} · {{ $__dataModel.items[1].location }}\",\"select\":{\"path\":\"/items/1/picked\"},\"styles\":{\"width\":164,\"height\":16,\"fontSize\":11,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"item3\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[2].name }} · {{ $__dataModel.items[2].location }}\",\"select\":{\"path\":\"/items/2/picked\"},\"styles\":{\"width\":164,\"height\":16,\"fontSize\":11,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"action_button\"],\"styles\":{\"width\":84,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":84,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_425\",\"path\":\"/\",\"value\":{\"title\":\"待取快递\",\"summary\":{\"remainingCount\":3,\"unit\":\"件\",\"suffix\":\"未取\"},\"items\":[{\"name\":\"丰巢柜\",\"location\":\"3号柜\",\"picked\":false},{\"name\":\"菜鸟驿站\",\"location\":\"货架B2\",\"picked\":false},{\"name\":\"门卫室\",\"location\":\"小件区\",\"picked\":false}],\"actionLabel\":\"打开快递\"}}}"
+  ]
+}

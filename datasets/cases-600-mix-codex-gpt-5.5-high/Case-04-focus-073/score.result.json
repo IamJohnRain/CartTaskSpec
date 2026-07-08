@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-073",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图中可见左边主视觉Zzz大字符、白色圆角面板完整呈现，中间有竖向分隔线，右上为'白噪音时间表'标题加20:00/21:00/22:00三个白色时间胶囊，右中显示'天气 多云 24°C'，右下为深青色'设定闹钟'按钮。所有用户明确要求字段（Zzz主视觉、分隔线、时间表、天气、跳转闹钟）均完整呈现。无渐变色（符合用户'不需要花里胡哨的渐变色'要求），磨砂玻璃质感通过半透明白色面板+淡薄荷绿底色实现。事件call/args与eventCandidates完全一致。protocol合规：size=2x4、catalogId/version正确、updateDataModel.path与value正确。轻微扣分：用户提到'大大'的Zzz，当前32px已经较大但可以更突出；按钮宽度112偏窄，'设定闹钟'左右内边距偏紧。",
+    "aesthetic": "截图整体观感克制专业：薄荷绿底+半透明白色面板的磨砂玻璃效果清晰可读，文字层次分明（Zzz主视觉>标题>时间胶囊>天气>按钮），深青按钮与底色协调。没有使用渐变色，符合用户诉求。留白适中，对齐统一，字号阶梯合理（32/14/12/14）。颜色搭配清新统一，无突兀色块。轻微扣分：左侧Zzz面板和右侧信息区在视觉重量上略不平衡（左侧Zzz面板偏'实'，右侧信息密度高），按钮和天气信息在垂直方向上略可优化间距使整体更松透气。",
+    "layout": "从截图观察：卡片整体居中无裁切，所有文字完整无截断（Zzz、专注、白噪音时间表、20:00/21:00/22:00、天气、多云24°C、设定闹钟均完整）。Zzz面板宽度78、内容左对齐良好；右侧173宽度内三个时间胶囊+天气+按钮均未溢出；分隔线在两栏之间清晰可见。按钮高度28vp，热区充足。根容器clip:true确保内容不超出边界。根节点也带onClick（深链接），符合2x4规范。轻微扣分：右侧Column内部schedule_title→time_row→weather_row→open_button的纵向分布偏紧凑（中上部留白多、下部贴底），可微调使垂直重心居中。分隔线高度92在视觉上略显单薄。整体无堆叠/截断/溢出问题，布局可用。"
+  },
+  "issues": [
+    "右侧Column内部子项纵向排布略不均（标题到时间胶囊紧、时间胶囊到天气行松、按钮贴底），视觉重心偏低",
+    "左侧Zzz字符虽为32px已较大，但'大大的'主观感受上可进一步提升视觉主导地位",
+    "按钮'设定闹钟'宽112、内边距偏紧，左右安全空间略小",
+    "分隔线高度92在两栏间显得略单薄，与左侧Zzz面板的体量不够平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_073\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_073\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"glyph_panel\",\"split_line\",\"right_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffeaf4f2\",\"justifyContent\":\"flexStart\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://alarm\"}}]},{\"id\":\"glyph_panel\",\"component\":\"Column\",\"children\":[\"glyph_text\",\"focus_label\"],\"itemMargin\":6,\"styles\":{\"width\":80,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#d9ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.glyph }}\",\"styles\":{\"width\":64,\"height\":50,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ff1f3f3d\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"focus_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff3f6b67\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"split_line\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":100,\"backgroundColor\":\"#553f6b67\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"schedule_title\",\"time_row\",\"weather_row\",\"open_button\"],\"itemMargin\":6,\"styles\":{\"width\":171,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":2,\"bottom\":4},\"justifyContent\":\"center\",\"alignItems\":\"flexStart\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.scheduleTitle }}\",\"styles\":{\"width\":171,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff23413f\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_row\",\"component\":\"Row\",\"children\":[\"time_1\",\"time_2\",\"time_3\"],\"itemMargin\":6,\"styles\":{\"width\":171,\"height\":26,\"justifyContent\":\"flexStart\",\"alignItems\":\"center\"}},{\"id\":\"time_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.schedule[0] }}\",\"styles\":{\"width\":51,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#d9ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff2f4f4f\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.schedule[1] }}\",\"styles\":{\"width\":51,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#d9ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff2f4f4f\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_3\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.schedule[2] }}\",\"styles\":{\"width\":51,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#d9ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff2f4f4f\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_label\",\"weather_text\"],\"itemMargin\":6,\"styles\":{\"width\":171,\"height\":18,\"justifyContent\":\"flexStart\",\"alignItems\":\"center\"}},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.label }}\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff5b6f6c\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.current }}\",\"styles\":{\"width\":133,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff23413f\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":124,\"height\":30,\"borderRadius\":15,\"padding\":{\"left\":14,\"right\":14},\"backgroundColor\":\"#ff3f6b67\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://alarm\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_073\",\"value\":{\"focus\":{\"glyph\":\"Zzz\",\"title\":\"专注\",\"scheduleTitle\":\"白噪音时间表\",\"schedule\":[\"20:00\",\"21:00\",\"22:00\"],\"actionText\":\"设定闹钟\"},\"weather\":{\"label\":\"天气\",\"current\":\"多云 24°C\"}}}}"
+  ]
+}

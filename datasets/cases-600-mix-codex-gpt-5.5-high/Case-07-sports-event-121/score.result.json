@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-121",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "用户明确要求『整张比赛图当主体』，但截图中本应作为主体的 hero 图片只呈现为一块灰色矩形，看不到任何比赛现场画面，是该卡片最核心诉求的严重缺失；红色危险提示『危险赛点』徽章按要求落地为红底白字；onClick 事件已挂在 root 与 cta 上、call/args 原样来自 eventCandidates，但 CTA 文字被截断为『进系统…』，用户难以识别完整动作。",
+    "aesthetic": "配色（黑底+红警示+白文字）整体克制、对比度强，徽章圆角红底白字识别度高；但主体图缺位导致画面只剩灰底与文字，视觉上明显像未完成的占位卡，留白集中在中下区域显得空洞。",
+    "layout": "截图中最显眼的布局问题是底部 CTA 按钮文字『进系统操作』被裁为『进系统…』，受保护 CTA 文本被截断。核算 content Column 子项：badge 18 + spacer 28 + title 20 + time 16 + cta 28 + itemMargin 4×4=16，合计 126 > 116 的内容区高度，列被强制裁切，按钮被截；Stack 中 shade 颜色 #66000000 加上缺位的图，使中部出现一大块灰白空场；徽章、标题、时间三行层级清晰但底部因溢出破坏整体收口。"
+  },
+  "issues": [
+    "hero 主图未渲染：截图中只看到一块灰色矩形，未呈现任何比赛现场画面，违背『整张比赛图当主体』的明确要求",
+    "content Column 子项总高 126 超过 116 内容区，导致底部 CTA 被裁切",
+    "CTA 按钮文字『进系统操作』被截断显示为『进系统…』，按钮宽 92 在 fontSize 14 下承载 5 个汉字过窄",
+    "shade 层 40% 黑遮罩叠在未加载的图上，使画面中下部出现大块暗灰空场，留白不均",
+    "root 黑色实心背景 + 12 内边距造成一圈过厚的黑色描边，视觉上像带了黑框"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_121\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_121\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"hero\",\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff111418\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/sports-121\"}}]},{\"id\":\"hero\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.match.image }}\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#4d000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"badge\",\"spacer\",\"title\",\"time\",\"cta\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.alert }}\",\"styles\":{\"width\":54,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#fff23030\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"spacer\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":18}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.title }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.time }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":104,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#fff23030\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_121\",\"value\":{\"match\":{\"title\":\"申花 vs 海港\",\"time\":\"今晚 19:35 开赛\",\"alert\":\"危险赛点\",\"actionText\":\"进系统操作\",\"image\":\"assets/sports-match-hero.png\"}}}}"
+  ]
+}

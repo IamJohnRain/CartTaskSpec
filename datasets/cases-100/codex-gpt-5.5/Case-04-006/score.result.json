@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-006",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "数据绑定完整：5 个字段(title/timerText/statusText/restHint/entryLabel)均通过 {{ $__dataModel.focus.* }} 表达式读取；updateDataModel.path='/' 且 value 与 TaskSpec 完全一致；onClick 的 call='clickToDeeplink' 与 args(bundleName/abilityName/uri) 原样来自 eventCandidates；size=2x2、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、root 140x140+borderRadius 18+clip:true 均符合硬约束。扣分点：entry_button 被裁切导致'一键静音'动作热区不完整、CTA 实际不可用；button label='专注入口' 也未直接体现'静音'意图（受 TaskSpec 字段限制）。",
+    "aesthetic": "配色采用浅绿 #F2F7F4 背景配深绿 #0F6B4A 主色，和谐统一，前景文字在背景上对比度足够、可读性好；字号阶梯 32/14/12/10/12 分布合理，timer 32pt 为视觉重心。扣分点：title(14pt/700) 与 timer(32pt/700) 同时使用 fontWeight=700，存在两个最强字重；最关键的是 entry_button 底部被裁切，破坏卡片底部完整性与设计收口。",
+    "layout": "root Column 宽 140 高 140、padding 12，内容可用区 116x116。子项高度合计 = 18(title)+38(timer)+16(status)+14(rest)+24(button) = 110vp，itemMargin=6 产生 4×6=24vp 间距，padding 合计 24vp，纵向总占用 = 24+24+110 = 158vp > 可用 116vp，溢出 42vp。截图可见 entry_button 下半部被卡片底边裁切，'专注入口'文字下沿不可见，CTA 热区不完整、不可点击。Stack 未使用故无层叠遮盖问题。"
+  },
+  "issues": [
+    "Column 纵向总占用 158vp > 内容可用区 116vp，溢出 42vp",
+    "entry_button 被卡片底边裁切，文字'专注入口'下半部不可见、CTA 不可用",
+    "itemMargin=6 在 116vp 可用高度下与 5 个子项叠加后必然溢出",
+    "title_text(14pt/700) 与 timer_text(32pt/700) 同时使用 fontWeight 700，出现两个最强字重",
+    "button label='专注入口' 未直接表达'一键静音'意图（受 TaskSpec 字段限制）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"focus_timer_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"focus_timer_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"timer_text\",\"status_text\",\"rest_text\",\"entry_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#F2F7F4\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#1F3328\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.timerText }}\",\"styles\":{\"width\":116,\"height\":34,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#0F6B4A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#3B5C4A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rest_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.restHint }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66756B\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"entry_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.entryLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":96,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#0F6B4A\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"focus_timer_card\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"timerText\":\"25:00\",\"statusText\":\"通知静音待设置\",\"restHint\":\"到点休息 5 分钟\",\"entryLabel\":\"专注入口\"}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-earphone-music-029",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户要求'歌词卡 文字叠在图上 显示带数字的话 点一下能开蓝牙 能读日程'。从截图看：playlist(今日歌词卡)、lyric(风吹过第29拍)、带数字的 trackCountText(29首)、bluetooth 按钮及正确的 clickToDeeplink 事件都已落实，size/catalogId/version/updateDataModel 协议项均合规。但'能读日程'诉求不完整——截图中日程文字被蓝牙按钮截断为'日程 19:30 声'，丢失了'乐练习'三字，属于关键信息缺失；封面耳塞图标(earphone_icon)在截图中完全看不见，封面语义传达失败；'文字叠在图上'的诉求实现得也较弱，文字是叠在浅色面板上而非真正的图片背景上。",
+    "aesthetic": "截图整体配色（浅蓝到浅绿渐变 + 白底面板 + 蓝色按钮 + 绿色进度条）尚算和谐，但存在明显瑕疵：1) ambient_band 里的 music_icon 渲染得非常淡，几乎不可见，视觉锚点失效；2) cover_panel 的白底与 ambient_band 的白底几乎完全融合，导致 earphone_icon 在截图里看不到，封面区失去层次；3) count_text(29首 歌词)用深绿色并紧贴绿色进度条，色彩相近导致阅读时眼睛很难把文字和进度条分开；4) 整体留白不均，封面区偏空、右侧文字偏挤。",
+    "layout": "截图中最严重的问题是底部蓝牙按钮与日程文字的水平重叠：截图中只能看到'日程 19:30 声'，后半段'乐练习'被右下角的蓝色'开蓝牙'按钮直接遮盖截断，calendar_chip 宽 132 一直延伸到 x≈268，而按钮从 x≈228 起就压在上面，构成关键信息被 CTA 遮挡。次要问题：count_text(29首 歌词)虽然宽度设为 64，但实际渲染时文字溢出到右侧，紧贴甚至压在 meter_bar 绿色进度条左端，读起来费力；earphone_icon 在 cover_panel 中理应可见，但截图中完全没有呈现，疑似被叠在 ambient_band 之下或被白色背景吞掉；封面区两块白色面板嵌套导致层级混乱。按钮底边距卡片底边仅 4vp，处于可接受临界。"
+  },
+  "issues": [
+    "底部蓝牙按钮覆盖日程文字右半部分，导致'日程 19:30 声乐练习'被截断为'日程 19:30 声'，关键信息丢失",
+    "earphone_icon 在截图中完全不可见，cover_panel 与 ambient_band 双白底嵌套导致视觉层级混乱",
+    "music_icon 在 ambient_band 中渲染极淡，作为左侧视觉锚点失效",
+    "count_text(29首 歌词)实际渲染宽度超过 width:64 设定，与左侧 meter_bar 绿色进度条在视觉上粘连，可读性下降",
+    "ambient_band + cover_panel 双层 Column 嵌套在 2x4 卡片中冗余，造成左半部分视觉拥挤且语义不清",
+    "按钮底边距卡片底边仅约 4vp，逼近 2x4 推荐的 10-14vp 下限"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_029\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_029\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"cover_panel\",\"lyrics_col\",\"bluetooth_button\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"bluetooth_entry\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF7FBFF\",0],[\"#FFE8F7F1\",1]]}}},{\"id\":\"cover_panel\",\"component\":\"Column\",\"children\":[\"earphone_icon\",\"count_text\"],\"itemMargin\":6,\"styles\":{\"width\":96,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#E6FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":52,\"height\":52,\"objectFit\":\"contain\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackCountText }}\",\"styles\":{\"width\":76,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF006C5B\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lyrics_col\",\"component\":\"Column\",\"children\":[\"playlist_text\",\"lyric_text\",\"meter_bar\",\"calendar_chip\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":92,\"margin\":{\"left\":120,\"top\":4},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlist }}\",\"styles\":{\"width\":160,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lyric_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.lyric }}\",\"styles\":{\"width\":160,\"height\":20,\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#FF3B4A5A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.music.meter }}\",\"total\":100,\"styles\":{\"width\":160,\"height\":6,\"type\":\"linear\",\"color\":\"#FF00A87E\",\"backgroundColor\":\"#2200A87E\",\"borderRadius\":3}},{\"id\":\"calendar_chip\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"日程 ${/data/calendar/items/0/title}\"}},\"styles\":{\"width\":160,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF5A6A7A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bluetooth_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.device.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"bluetooth_entry\"}}],\"styles\":{\"width\":68,\"height\":28,\"margin\":{\"left\":208,\"top\":100},\"borderRadius\":14,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_029\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeBuds Pro 3\",\"actionText\":\"开蓝牙\"},\"music\":{\"playlist\":\"今日歌词卡\",\"lyric\":\"风吹过第29拍\",\"trackCount\":29,\"trackCountText\":\"29首\",\"meter\":72},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-music-029\",\"title\":\"19:30 声乐练习\",\"dtStart\":\"19:30\",\"dtEnd\":\"20:00\"}]}}}}}"
+  ]
+}

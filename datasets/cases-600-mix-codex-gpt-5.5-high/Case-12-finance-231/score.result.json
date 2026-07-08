@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-12-finance-231",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.3,
+  "reasons": {
+    "instruction": "截图中可见的元素：顶部天气按钮仅显示一个'天'字（因天气数据为空且label含多余空格），左侧环形图内'已用预算 ¥3,200'被截断为'¥3,20'（末位'0'丢失），黄色'!'提醒标记可见但与金额文字位置冲突，右侧标题'月度支出'与下方'快超支'黄色徽章正常显示，分隔线可见。但用户明确要求的'餐饮 ¥1,234''交通 ¥567'两个分类支出块在截图中完全不可见——右侧中部分类区域为空，仅有标题和底部徽章。'背景浅米色底'也未满足，实际是较强的米→黄→紫渐变，紫色占比较大。事件方面天气按钮onClick已正确绑定clickToDeeplink，但整体信息呈现缺失严重。",
+    "aesthetic": "渐变配色有一定设计感（傍晚到深夜氛围），但紫色区域过于饱和抢眼，与'浅米色底'诉求偏离。白色文字在渐变背景上大部分可读，但'¥3,20'被截断严重破坏可读性。右侧因分类块缺失留下明显空洞，留白不均。'!'黄色徽章与环图黄色弧线颜色雷同，缺乏层级。整体字重使用（500/600/700/800）偏多，最强字重不唯一。",
+    "layout": "截图存在多处严重布局问题：1）环形图中心'¥3,200'文字被截断为'¥3,20'，原因是ring_center宽度50px放不下fontSize 12的'¥3,200'（实际需~33px但加上字间距和容器边距后被裁切）；2）警告'!'徽章位置margin left:38、top:18，与环图右侧黄色弧线及金额文字发生重叠遮挡；3）cat_row分类行在截图中完全不可见——cat_item容器宽度仅28px、cat_text宽度仅24px，无法容纳'餐饮 ¥1,234'（约需70px宽度），模板生成的子元素被压缩/裁切至不可见；4）右侧面板title与status_text之间留有大片空白，分类区域形同消失。按钮热区方面天气按钮26h满足≥24vp，但分类块完全缺失使核心信息无法触达。"
+  },
+  "issues": [
+    "环图中心文字'¥3,200'被截断为'¥3,20'，ring_center宽度不足",
+    "分类支出块（餐饮/交通）在截图中完全不可见，cat_text容器24px远小于'餐饮 ¥1,234'所需宽度",
+    "警告'!'徽章与环图金额文字位置重叠，遮挡信息",
+    "背景渐变紫色过强，未满足'浅米色底'诉求",
+    "右侧因分类缺失形成明显空白空洞，布局失衡",
+    "天气按钮label在数据为空时仅显示'天'且带多余空格，视觉信息量不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_231\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_231\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"body_row\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fffaecd0\",0],[\"#fff5c87a\",0.5],[\"#ff7a5af0\",1]]},\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"top_weather\",\"title\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_weather\",\"component\":\"Button\",\"label\":\"天\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":44,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#44ffffff\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":76,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"ring_stack\",\"cat_panel\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":80,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"budget_ring\",\"ring_center\",\"warning_mark\"],\"styles\":{\"width\":52,\"height\":80,\"alignContent\":\"center\"}},{\"id\":\"budget_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.finance.usage }}\",\"total\":\"{{ $__dataModel.finance.total }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#fff7ce00\",\"width\":48,\"height\":48}},{\"id\":\"ring_center\",\"component\":\"Column\",\"children\":[\"used_label\",\"used_amount\"],\"itemMargin\":0,\"styles\":{\"width\":44,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"used_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.usedLabel }}\",\"styles\":{\"width\":44,\"height\":12,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.usedAmount }}\",\"styles\":{\"width\":44,\"height\":16,\"fontSize\":10,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusGlyph }}\",\"styles\":{\"width\":14,\"height\":14,\"margin\":{\"left\":36,\"top\":4},\"borderRadius\":7,\"backgroundColor\":\"#fff7ce00\",\"fontSize\":10,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cat_panel\",\"component\":\"Column\",\"children\":[\"cat_row\"],\"itemMargin\":0,\"styles\":{\"width\":68,\"height\":80,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"cat_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"cat_item\",\"path\":\"/finance/categories\"},\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":68,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"cat_item\",\"component\":\"Column\",\"children\":[\"cat_glyph\",\"cat_amount\"],\"itemMargin\":2,\"styles\":{\"width\":31,\"height\":50,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#44ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"cat_glyph\",\"component\":\"Text\",\"content\":{\"path\":\"glyph\"},\"styles\":{\"width\":18,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cat_amount\",\"component\":\"Text\",\"content\":{\"path\":\"amount\"},\"styles\":{\"width\":27,\"height\":16,\"fontSize\":8,\"minFontSize\":7,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusText }}\",\"styles\":{\"width\":72,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#fff7ce00\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_231\",\"value\":{\"finance\":{\"title\":\"月度支出\",\"usedLabel\":\"已用预算\",\"usedAmount\":\"¥3,200\",\"usedText\":\"已用预算 ¥3,200\",\"usage\":80,\"total\":100,\"statusGlyph\":\"!\",\"statusText\":\"快超支\",\"categories\":[{\"glyph\":\"食\",\"label\":\"餐饮\",\"amount\":\"¥1,234\"},{\"glyph\":\"行\",\"label\":\"交通\",\"amount\":\"¥567\"}],\"actionText\":\"天气\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"\",\"prefectureName\":\"\",\"cityCode\":\"\"},\"current\":{\"temperatureText\":\"\",\"condition\":\"\",\"airQuality\":\"\",\"humidityPercent\":0,\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

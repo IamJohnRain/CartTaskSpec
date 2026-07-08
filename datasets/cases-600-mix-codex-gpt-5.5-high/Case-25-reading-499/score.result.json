@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-25-reading-499",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "用户明确要求'再来个滚动列表放接下来几天的安排'，但截图中底部列表区域为完全空白的三条项目均未渲染，dataModel 中提供 items 数组也未显示，这是关键诉求的严重缺失。左/右分区不同底色（白/淡蓝）落实，'剩余天数 12天'、'会议 09:00'、'今日已同步'信息齐全，天气按钮带 clickToDeeplink 事件参数与 eventCandidates 一致，纯文字+色块无图片渐变的要求也满足。扣分集中在日程列表完全为空。",
+    "aesthetic": "整体配色克制：左白右淡蓝双分区对比清晰，'12天'蓝色主指标突出，'今日已同步'绿色状态点明语义。留白整体合理，但底部大块空白色块缺乏内容，显得空洞且'廉价'；'天气'按钮文字底部紧贴按钮下边缘，字重与色阶层次尚可但按钮内文字垂直居中略偏下。",
+    "layout": "截图可观察到两处明显问题：①右侧'天气'按钮文字'天气'底端被按钮下边缘裁切——right_panel 高度 72vp 容纳不下 meeting_row(18) + sync_text(16) + weather_button(24) + padding(16) + margins(8) = 82vp，溢出 10vp，按钮文字底边被截；②底部 schedule_list 虽保留了 36vp 高度的白色圆角容器，但三条日程数据完全未渲染出现，容器内部为空，列表未起到信息呈现作用。顶部左右并排分区对齐良好，左面板文字未被裁切。"
+  },
+  "issues": [
+    "底部滚动列表 schedule_list 区域完全空白，3 条日程数据均未渲染，违反'滚动列表放接下来几天的安排'的核心要求",
+    "右侧面板 right_panel 高度 72vp 不够，子元素总高约 82vp，溢出 10vp",
+    "'天气'按钮文字底端被按钮下边缘裁切，未能完整居中显示",
+    "底部空白列表区浪费大量卡片纵向空间，视觉上呈现'未完成'状态"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_reading_499\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_reading_499\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"schedule_list\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":82,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"plan_title\",\"days_label\",\"days_value\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":82,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"plan_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.title }}\",\"styles\":{\"width\":112,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.remainingPrefix }}\",\"styles\":{\"width\":112,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.remainingDays }}\",\"styles\":{\"width\":112,\"height\":28,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"meeting_row\",\"sync_text\",\"weather_button\"],\"itemMargin\":2,\"styles\":{\"width\":136,\"height\":82,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#190a59f7\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"meeting_row\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/data/calendar/items/0/title} ${/data/calendar/items/0/dtStart}\"}},\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sync_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.syncStatus }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.reading.weatherAction }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":64,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}},{\"id\":\"schedule_list\",\"component\":\"List\",\"children\":{\"componentId\":\"schedule_item\",\"path\":\"/data/calendar/items\"},\"space\":4,\"styles\":{\"width\":276,\"height\":26,\"listDirection\":\"vertical\",\"scrollBar\":\"off\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":14,\"padding\":{\"left\":10,\"right\":10,\"top\":3,\"bottom\":3},\"clip\":true}},{\"id\":\"schedule_item\",\"component\":\"Row\",\"children\":[\"item_time\",\"item_title\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":256,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_time\",\"component\":\"Text\",\"content\":{\"path\":\"dtStart\"},\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item_title\",\"component\":\"Text\",\"content\":{\"path\":\"title\"},\"styles\":{\"width\":200,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_reading_499\",\"path\":\"/\",\"value\":{\"reading\":{\"title\":\"阅读计划\",\"remainingPrefix\":\"剩余天数\",\"remainingDays\":\"12天\",\"syncStatus\":\"今日已同步\",\"weatherAction\":\"天气\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日历\",\"entityId\":\"calendar-placeholder-1\",\"title\":\"会议\",\"dtStart\":\"09:00\",\"dtEnd\":\"10:00\"},{\"entityName\":\"日历\",\"entityId\":\"calendar-placeholder-2\",\"title\":\"读第 5 章\",\"dtStart\":\"明天\",\"dtEnd\":\"20:30\"},{\"entityName\":\"日历\",\"entityId\":\"calendar-placeholder-3\",\"title\":\"整理笔记\",\"dtStart\":\"周三\",\"dtEnd\":\"21:00\"}]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

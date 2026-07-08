@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-17-queue-329",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户三条诉求均被落实：'文字叠在背景图上'——白色/奶白文字叠在棕橙渐变背景上；'点一下进app'——root 与 button 都绑定了 clickToDeeplink 事件，参数原样来自 eventCandidates；'快不行了提醒我一声'——'前面仅 1 桌' 作为高亮白色 pill 起到提醒作用，'!' 装饰字也呼应提醒语义。dataModel.value 与 TaskSpec 完全一致，size=2x4、catalogId、version、updateDataModel.path 均合规。无 assetCandidates 也未引入非法素材。",
+    "aesthetic": "截图整体观感良好：深棕描边 + 棕橙渐变营造餐厅排队氛围；白色 pill 的 warning 与 button 与背景形成强对比，可读性好；字号层级清晰（20 标题 > 18 编号 > 14 提醒/按钮 > 12 店铺名），最强字重（700）集中在标题与 pill 上。扣分点：右上角 '!' 圆形背景元素出现在 A329 与 '进 App' 按钮后方，作为装饰略显多余且让右侧视觉略乱；整体留白略偏紧，右侧信息堆得较密。",
+    "layout": "截图未发现文字被裁切/截断现象：'云庭小馆'、'排队快到号'、'前面仅 1 桌'、'A329'、'进 App' 全部完整呈现。'进 App' 按钮高度 36vp、热区充足，底部留白正常。主要问题：bg_glyph 的 '!' 圆形（left:206, width:58, 覆盖 x=206~264）与 action 列（位于 x≈196~276）在水平方向重叠，在截图中能看到淡色圆环叠在 A329 与 '进 App' 按钮后方，文字虽未被遮挡，但视觉上形成噪点，干扰了右侧主体信息的纯净度。info 列与 action 列的 Row 实际可用宽度（248）小于 168+16+80=264，存在轻微拥挤风险，但因 justifyContent:spaceBetween 在截图中未造成重叠，仅为潜在风险。"
+  },
+  "issues": [
+    "截图中右上角 '!' 圆形装饰元素（bg_glyph）叠在 A329 与 '进 App' 按钮后方，形成视觉噪点",
+    "info(168) + itemMargin(16) + action(80) = 264 > Row 可用宽度 248，存在潜在溢出风险",
+    "bg_glyph 的 '!' 字符位于装饰圆中央，但因背景色对比度低，在截图中几乎不可辨认其语义价值"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_329\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_329\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_base\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF4E321D\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"bg_base\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF7A3D14\",0],[\"#FFFFB34D\",1]]}}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"info\",\"action\"],\"styles\":{\"width\":276,\"height\":116,\"padding\":{\"left\":16,\"right\":12,\"top\":14,\"bottom\":14},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"place\",\"headline\",\"warning\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":88,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"place\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/placeName\"},\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"headline\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/headline\"},\"styles\":{\"width\":160,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/warningText\"},\"styles\":{\"width\":108,\"height\":26,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF7A3D14\",\"backgroundColor\":\"#FFFFFFFF\",\"borderRadius\":13,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Column\",\"children\":[\"number\",\"button\"],\"itemMargin\":8,\"styles\":{\"width\":76,\"height\":88,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"number\",\"component\":\"Text\",\"content\":{\"path\":\"/queue/numberLabel\"},\"styles\":{\"width\":76,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"button\",\"component\":\"Button\",\"label\":{\"path\":\"/queue/actionText\"},\"styles\":{\"width\":76,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FF7A3D14\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_329\",\"path\":\"/\",\"value\":{\"queue\":{\"placeName\":\"云庭小馆\",\"headline\":\"排队快到号\",\"numberLabel\":\"A329\",\"warningText\":\"前面仅 1 桌\",\"actionText\":\"进 App\"}}}}"
+  ]
+}

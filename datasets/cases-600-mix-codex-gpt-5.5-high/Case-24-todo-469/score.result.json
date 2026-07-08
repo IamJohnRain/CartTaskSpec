@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-24-todo-469",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "用户要求'能打勾的清单'已落实（两个 Checkbox 显示'先撑住'和'开省电'），'点一下能进去操作'已落实（底部蓝色按钮触发 clickToIntent 事件，call 与 args 原样来自 eventCandidates），'提醒说我快不行了'已落实（红色文字'快不行了'显示在面板内）。尺寸 2x2、root 140x140、catalogId、version、updateDataModel.path/value 等硬约束均满足。扣分点：按钮文字在截图中明显被截断/裁切，CTA 未能完整呈现给用户，影响了'点一下能进去操作'这一诉求的可执行性。",
+    "aesthetic": "配色整体克制：浅灰底 + 白卡片 + 蓝色 CTA + 红色警示，对比清晰，警示色使用合理。标题'救命清单'加粗，层级明确。问题在于：截图中蓝色按钮内的'去操作'文字右侧被切掉（最右一字'作'缺笔），破坏视觉完整感；两个 Checkbox 方框与文字之间留白偏小，'先撑住'/'开省电'紧贴方框右侧，略显拥挤。整体观感尚可但 CTA 文字的残缺是明显的美观扣分点。",
+    "layout": "截图可观察到的关键问题：1) 底部蓝色按钮的'去操作'文字最右一字'作'被按钮右边界裁切，肉眼可见文字残缺，属于受保护 CTA 文本被截断的硬伤；2) 按钮宽度 116、高度 24、fontSize 14 配合 fontWeight medium 导致文字在按钮内未居中且溢出右侧；3) 整体纵向排布尚可——标题 → 白色面板（含两个 Checkbox + 警示行） → CTA 按钮，结构清晰，未出现 Stack 遮挡或越出卡片边界。公式交叉验证：root 内容区 116x116，title(18) + itemMargin(6) + todo_panel(62) + itemMargin(6) + bottom_action(24) = 116，纵向刚好填满，留给按钮的缓冲为零，加之按钮内文字溢出右侧，最终在截图中暴露为 CTA 文字被裁切。"
+  },
+  "issues": [
+    "底部蓝色按钮的'去操作'文字最右一字'作'在截图中被按钮右边界裁切，属于受保护 CTA 文本截断",
+    "按钮 height=24、fontSize=14、fontWeight=medium 的组合使文字无法在按钮内完整居中显示",
+    "两个 Checkbox 的 label（'先撑住'/'开省电'）与方框之间的间距偏紧，视觉略显拥挤",
+    "root Column 纵向内容（18+6+62+6+24=116）刚好等于可用高度 116，无任何缓冲，结构脆弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_todo_469\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_todo_469\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"todo_panel\",\"bottom_action\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.todo.title }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"todo_panel\",\"component\":\"Column\",\"children\":[\"todo_one\",\"todo_two\",\"warning\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":64,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"todo_one\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.todo.items[0].label }}\",\"select\":{\"path\":\"/todo/items/0/done\"},\"styles\":{\"width\":104,\"height\":14,\"padding\":{\"left\":2},\"fontSize\":12,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"todo_two\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.todo.items[1].label }}\",\"select\":{\"path\":\"/todo/items/1/done\"},\"styles\":{\"width\":104,\"height\":14,\"padding\":{\"left\":2},\"fontSize\":12,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.todo.warning }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.todo.actionText }}\",\"styles\":{\"width\":120,\"height\":26,\"padding\":{\"left\":6,\"right\":6},\"borderRadius\":13,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_todo_469\",\"path\":\"/\",\"value\":{\"todo\":{\"title\":\"救命清单\",\"items\":[{\"label\":\"先撑住\",\"done\":false},{\"label\":\"开省电\",\"done\":false}],\"warning\":\"快不行了\",\"actionText\":\"去操作\"}}}}"
+  ]
+}

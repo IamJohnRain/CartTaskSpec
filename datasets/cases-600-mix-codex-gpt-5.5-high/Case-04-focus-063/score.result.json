@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-063",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户要求'专注时长的卡片，中间是个图，点了能跳，显示已完成'。从截图看：标题'专注时长'、主指标'45分钟'、'已完成'绿色徽标、点击区'查看记录'、底部进度条均呈现。但用户明确说'中间是个图，点了能跳'，截图里中间的 FOCUS 蓝色胶囊只是一个 Text 组件，**不可点击**，真正的 onClick 跳转让位到了右侧的'查看记录'按钮上，语义上偏离了'中间是个图→点了能跳'的核心诉求；此外在没有任何 assetCandidates 的情况下，模型用文字胶囊代替'图'属于合理降级，但不够理想。协议层面 size/catalogId/version/updateDataModel/onClick.call+args 均合规。",
+    "aesthetic": "截图整体配色克制：白底+深灰文字+绿色'已完成'徽标+蓝色 FOCUS 胶囊+深色'查看记录'按钮，层次清晰。'45分钟'作为主指标字号最大、加粗，配色和谐。但底部进度条略粗、抢了中部主视觉的注意力，且该进度条理应使用绿色（与'已完成'语义一致、与状态徽标呼应），渲染上偏蓝，与卡片主题色脱节；底部 8vp 高度的进度条在 116vp 内容区里偏厚重，挤压了主区呼吸感。",
+    "layout": "截图观察：标题、徽标、'45分钟/本次完成'、FOCUS 胶囊、'查看记录'按钮五个区块均完整显示，未见裁切/截断。hero_row 三栏横向排布，84+12+76+12+80=264 ≤ 276，未溢出。进度条横跨整个内容区宽度，未遮挡 CTA。但中部'45分钟'文字与 FOCUS 胶囊、'查看记录'按钮之间的视觉节奏略紧，且底部进度条与'查看记录'按钮底边几乎贴在一起，留白略显局促。"
+  },
+  "issues": [
+    "中间的 FOCUS 胶囊是 Text 组件而非 Button，不响应点击，与'中间是个图，点了能跳'的指令不符",
+    "底部进度条颜色在截图中偏蓝，与 TaskSpec 中'已完成'的绿色主题不一致，破坏配色协调",
+    "底部进度条高度 8vp 偏粗，挤压了中部主区视觉",
+    "中部右侧'查看记录'按钮与底部进度条距离过近，留白局促"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_063\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_063\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"hero_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff8fafc\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff111827\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.status }}\",\"styles\":{\"width\":68,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffdcfce7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"duration_block\",\"glyph_block\",\"action_block\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"duration_block\",\"component\":\"Column\",\"children\":[\"duration_text\",\"hint_text\"],\"itemMargin\":2,\"styles\":{\"width\":84,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.duration }}\",\"styles\":{\"width\":84,\"height\":30,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"本次完成\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64748b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"glyph_block\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.glyph }}\",\"styles\":{\"width\":76,\"height\":48,\"borderRadius\":18,\"backgroundColor\":\"#ff2563eb\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.MainAbility\",\"uri\":\"clock://focus\"}}]},{\"id\":\"action_block\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":80,\"height\":24,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64748b\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Progress\",\"value\":100,\"styles\":{\"width\":276,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#ffe2e8f0\",\"progressColor\":\"#ff22c55e\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_063\",\"value\":{\"focus\":{\"title\":\"专注时长\",\"duration\":\"45分钟\",\"status\":\"已完成\",\"glyph\":\"FOCUS\",\"actionText\":\"查看记录\"}}}}"
+  ]
+}

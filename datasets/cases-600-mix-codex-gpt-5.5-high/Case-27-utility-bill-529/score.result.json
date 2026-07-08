@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-27-utility-bill-529",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "截图中可见标题'燃气费'、'家庭燃气账户'、状态徽标'待缴费'、主数值'68 立方'、提示语'请尽快处理'、CTA按钮'去缴费'，用户原始指令中的'燃气费卡片 / 欠了68立方 / 一点直接跳去缴费'三大诉求在截图中均真实呈现。onClick 调用 clickToDeeplink 并原样使用 eventCandidates 中的 uri 字段。catalogId/version/size/updateDataModel.path 均符合硬约束。扣分点：deeplink 目标实际为健康运动 URI，与燃气缴费语义不符（虽来自 eventCandidates）；右上角'待缴费'徽标与右侧'去缴费'按钮颜色同为蓝紫色，缺少状态/动作的区分度。",
+    "aesthetic": "截图整体配色以白色到亮黄色（#F5DC62）的斜向渐变作为底，黄色集中在右下角，颜色过渡略显生硬、不够克制；前景文字深黑在白底上清晰可读，'68'作为主指标字重最强、字号最大，层级合理。'待缴费'蓝色徽标 + '去缴费'蓝色按钮在视觉上略有色彩同质化，缺少第二强调色。留白密度舒适，对齐统一，无明显土气感。",
+    "layout": "截图显示卡片整体在 300x140 边界内，无元素溢出卡片。左侧'欠费量'信息面板（白底圆角）排布整齐，'68 立方'主指标与'请尽快处理'辅助信息无截断。但右侧'去缴费'按钮的白色文字几乎贴到按钮右边缘，'费'字右半部分笔画距离按钮右内边距极小，视觉上呈现轻微挤压/接近裁切的热区不足问题，按钮热区在 76x28 偏小。动作面板内的一条水平 Divider 处于按钮上方空白处，作用不大且略显零碎。顶部 Row 高度 28 含两行文字（16+10+itemMargin2=28）刚好对齐，但若字号微调容易溢出。整体无严重堆叠/重叠/裁断，属于小瑕疵级别。"
+  },
+  "issues": [
+    "右侧'去缴费'按钮文字右边距过小，'费'字右笔画几乎贴到按钮右内边距，存在轻微热区不足和视觉挤压",
+    "按钮宽度 76 + 字体 14 + 3个汉字在视觉上偏紧，建议增加按钮宽度到 84 左右并相应调整 action_panel 宽度",
+    "action_panel 内的水平 Divider 距离按钮较远，视觉上显得多余，可移除以简化结构",
+    "右下角亮黄色渐变（#F5DC62）饱和度过高，与左上的白底衔接生硬，建议改为浅米色/浅橙色更柔和",
+    "'待缴费'状态徽标与'去缴费'按钮同为蓝紫色系，色彩功能区分度不足，可考虑用红色/橙色强调待缴费状态"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_27_utility_bill_529\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_27_utility_bill_529\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"body_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF6F8FA\",0.55],[\"#FFFFF4D6\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_group\",\"status_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"provider_text\"],\"itemMargin\":2,\"styles\":{\"width\":176,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.title }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"provider_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.provider }}\",\"styles\":{\"width\":176,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.status }}\",\"styles\":{\"width\":68,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#19FF7A45\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFD93017\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"amount_panel\",\"action_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"amount_panel\",\"component\":\"Column\",\"children\":[\"amount_label\",\"amount_row\",\"due_hint\"],\"itemMargin\":4,\"styles\":{\"width\":166,\"height\":80,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"amount_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.amountLabel }}\",\"styles\":{\"width\":146,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_row\",\"component\":\"Row\",\"children\":[\"amount_value\",\"amount_unit\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":146,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"amount_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.amountValue }}\",\"styles\":{\"width\":58,\"height\":36,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.amountUnit }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"due_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.dueHint }}\",\"styles\":{\"width\":146,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"action_button\"],\"itemMargin\":0,\"styles\":{\"width\":100,\"height\":80,\"padding\":{\"left\":8,\"right\":8,\"top\":26,\"bottom\":26},\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.bill.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"{{ $__dataModel.payment.bundleName }}\",\"abilityName\":\"{{ $__dataModel.payment.abilityName }}\",\"uri\":\"{{ $__dataModel.payment.uri }}\"}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_27_utility_bill_529\",\"path\":\"/\",\"value\":{\"bill\":{\"title\":\"燃气费\",\"status\":\"待缴费\",\"amountValue\":\"68\",\"amountUnit\":\"立方\",\"amountLabel\":\"欠费量\",\"provider\":\"家庭燃气账户\",\"dueHint\":\"请尽快处理\",\"actionLabel\":\"去缴费\"},\"payment\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}}}"
+  ]
+}

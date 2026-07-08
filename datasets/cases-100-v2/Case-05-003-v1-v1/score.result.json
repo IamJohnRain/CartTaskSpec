@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-05-003-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 1.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 0.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 0.9,
+  "reasons": {
+    "instruction": "用户明确要求：咖啡色渐变暖色调背景、顶部'下一个日程'标签与'Agent需求评审会'会议名、中间大号'14:00-15:30'时间、'还有15分钟后开启'倒计时、带月亮图标的'专注模式'按钮、以及半透明/柔和光影的氛围。截图中除了一枚孤立悬浮在屏幕右上角附近的小胶囊按钮 'MOON 专注模式' 之外，其他所有要素（渐变背景、顶部 row、主时间、倒计时）全部不可见；onClick 在 DSL 中虽配置为 clickToDeeplink，但因整张卡片视觉上没出现，按钮点击也无从谈起，等同于未落实。指令遵从度极低。",
+    "aesthetic": "截图中只有那一枚米色胶囊按钮（米色底 #F5EBDC + 棕字 #5A3F2B）能看清，自身圆角与配色尚算协调。但卡片其它 90% 区域都是接近纯白的空白，'咖啡色渐变'、'半透明磨砂'、'柔和光影'在图中完全感受不到，'简洁高级'的观感无从谈起。整体美观几乎不可评。",
+    "layout": "截图中整张卡片实际只有 focus_button 一个控件可见，并且其位置错误地悬浮在屏幕上方右侧（按 2x4 卡片应锚在底部 row 内靠右），顶部 row（'下一个日程' + 'Agent需求评审会'）、time_text（'14:00-15:30'）、countdown_text 全部未渲染；卡片圆角与渐变背景也不可见。受保护文本（标题、会议名、主时间、倒计时）被吞掉，相当于布局崩溃。属严重排版失败。"
+  },
+  "issues": [
+    "截图里未看到咖啡色渐变背景（linearGradient 未生效或被 clip 吞掉）",
+    "顶部 row（'下一个日程' + 'Agent需求评审会'）未渲染",
+    "中间大号时间 '14:00-15:30' 不可见",
+    "倒计时 '还有15分钟后开启' 不可见",
+    "focus_button 错误地出现在屏幕上角右侧，而非底部 row 中",
+    "卡片圆角、边界、整体形状未呈现，仅剩一个孤立按钮",
+    "半透明磨砂与柔和光影的氛围完全缺失"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_05_003_agenda_reminder\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_05_003_agenda_reminder\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"time_text\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottomRight\",\"colors\":[[\"#3E1F0F\",0],[\"#7A4A24\",0.5],[\"#E6C9A0\",1]]}}},{\"id\":\"top_row\",\"component\":\"Column\",\"children\":[\"label_text\",\"meeting_text\"],\"itemMargin\":2,\"styles\":{\"width\":276,\"height\":30,\"padding\":{\"left\":10,\"right\":10,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#33FFFFFF\"}},{\"id\":\"label_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.label }}\",\"styles\":{\"width\":256,\"height\":11,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E6C9A0\"}},{\"id\":\"meeting_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.title }}\",\"styles\":{\"width\":256,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.time }}\",\"styles\":{\"width\":276,\"height\":34,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"countdown_text\",\"focus_button\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.agenda.countdownText }}\",\"styles\":{\"width\":110,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#F0FFFFFF\",\"textAlign\":\"center\"}},{\"id\":\"focus_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.focus.moonMark + '  ' + $__dataModel.data.focus.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":150,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#F5EBDC\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#5A3F2B\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_05_003_agenda_reminder\",\"path\":\"/\",\"value\":{\"data\":{\"agenda\":{\"label\":\"下一个日程\",\"title\":\"Agent需求评审会\",\"time\":\"14:00-15:30\",\"countdownText\":\"还有15分钟后开启\"},\"focus\":{\"moonMark\":\"MOON\",\"buttonText\":\"专注模式\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

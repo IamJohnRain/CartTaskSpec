@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-360",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.2,
+  "reasons": {
+    "instruction": "截图中可见的信息仅 3/5 已完成标题和被截断的警告文字。下方'已出发/已上车/已送达'三个勾选项完全未在截图中呈现，中部区域为空白，用户明确要求的'横向排列几个小待办'未落地。警告文字颜色为橙色而非用户要求的红色，'⚠'被替换为'!'是因协议禁 emoji 可以接受，但'李师傅迟到 8 分钟'的'钟'字被裁切，'分钟'丢字。点卡片跳到闹钟的 onClick 事件配置正确。总体关键诉求（三个勾选项 todo 区域）未在画面中真实呈现，指令遵从严重缺失。",
+    "aesthetic": "卡片整体采用米黄色背景，与黑色标题文字对比度尚可，但中段约 50% 区域为纯空白，画面严重失衡。警告区域配色为浅橙底+橙字，作为'标红'语义传达偏弱。字号层级上仅有大标题和警告两处，缺少待办小卡片的视觉点，画面显得单薄且不完整。",
+    "layout": "截图中存在两个致命布局问题：① 三个 todo 勾选项区域（todo_row 及其 3 个 todo_item 模板子项）完全不可见，中段约 46vp 高度被白白浪费，疑似 Checkbox 组件在 list template 上下文中未正常渲染；② 警告 Text 宽度 116 减去左右内边距 12 后可用文本宽度约 104vp，但'! 李师傅迟到 8 分钟'按 fontSize 12 估算约需 117vp，文本超出容器导致'钟'字被裁切。底部动作区到卡片底边距离尚可，但因中段空白导致整体垂直重心严重上移。"
+  },
+  "issues": [
+    "三个勾选项（已出发/已上车/已送达）在截图中完全不可见，list template + Checkbox 组合未渲染",
+    "警告文字'! 李师傅迟到 8 分钟'被截断为'! 李师傅迟到 8 分'，末尾'钟'字丢失",
+    "卡片中部约 46vp 高度为空白，未呈现'横向排列几个小待办'",
+    "警告文字使用橙色 #ffed6f21 而非用户要求的红色",
+    "3/5 已完成 下方无任何对应信息层次，画面失衡",
+    "三个 todo 项本应有不同底色区分（按 done 状态），但当前实现全部用白色且未渲染"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_360\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_360\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"todo_row\",\"warning\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7f2e8\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.deskclock\",\"abilityName\":\"com.huawei.deskclock.MainAbility\",\"uri\":\"clock://alarm/create?source=carpool&title=carpool_reminder\"}}]},{\"id\":\"hero\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/progressText\"},\"styles\":{\"width\":120,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"todo_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"todo_item\",\"path\":\"/carpool/statusRows\"},\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"todo_item\",\"component\":\"Column\",\"children\":[\"todo_mark\",\"todo_lbl\"],\"itemMargin\":2,\"styles\":{\"width\":37,\"height\":42,\"padding\":{\"left\":2,\"right\":2,\"top\":3,\"bottom\":3},\"borderRadius\":6,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"todo_mark\",\"component\":\"Text\",\"content\":\"[ ]\",\"styles\":{\"width\":33,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff4caf50\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"todo_lbl\",\"component\":\"Text\",\"content\":{\"path\":\"label\"},\"styles\":{\"width\":33,\"height\":18,\"fontSize\":9,\"fontColor\":\"#cc000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":{\"path\":\"/carpool/warningText\"},\"styles\":{\"width\":120,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":6,\"backgroundColor\":\"#fffde2e2\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_360\",\"path\":\"/\",\"value\":{\"carpool\":{\"progressText\":\"3/5 已完成\",\"statusRows\":[{\"id\":\"departed\",\"label\":\"已出发\",\"done\":true},{\"id\":\"boarded\",\"label\":\"已上车\",\"done\":true},{\"id\":\"delivered\",\"label\":\"已送达\",\"done\":false}],\"warningText\":\"! 李师傅迟到 8 分钟\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-410",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "截图可见主信息齐全：左侧白色卡片呈现'基金收益'标题、'今日收益 +128.6'主指标、'+1.86%'涨幅与'日历已连接'状态；右侧灰色面板呈现'已连接'+'日历读取'，并配有蓝色'打开应用'按钮，onClick 调用 clickToDeeplink 正确绑定 eventCandidates。尺寸 2x4、catalogId/version/updateDataModel.path 等硬约束均满足。扣分点：summary 文本'今日收益 +128.6 元'中的'元'字在截图中被裁掉，影响信息完整性；右侧'已连接'与左侧'日历已连接'语义略重复。",
+    "aesthetic": "整体配色克制：白底卡片+浅灰底+绿色收益/连接提示+蓝色 CTA，色彩语义清晰可读；字号层级分明，主数值最大、加粗，黑灰主色与品牌蓝形成主次。仅一个小问题：右侧'已连接'绿色与上方白底+浅灰底之间对比度尚可，但'日历读取'与底色同属中性灰，层次略弱。整体观感专业、干净。",
+    "layout": "截图中最大问题是左侧主数值'今日收益 +128.6'末尾的'元'字被裁切/不可见：hero 列宽 178、padding 10 后内容宽 158，而 20px 加粗下'今日收益 +128.6 元'实测约 176px，明显超出 158px 范围，导致受保护的主指标单位丢失。除此之外，'基金收益'标题、'+1.86%'与'日历已连接'同行的 rateRow 排布整齐，右侧面板与按钮热区充足（88×32），底部留白合理，无堆叠或越界。"
+  },
+  "issues": [
+    "左侧主数值 '今日收益 +128.6 元' 末尾的 '元' 字在 178px 列宽 + 10px padding 的内容区(158px) 内放不下，被裁切",
+    "summary 使用了 formatString 嵌套表达式，不如直接 {{ $__dataModel.fund.summary }} 简洁可读",
+    "右侧 '已连接' 与左侧 '日历已连接' 语义重复，可考虑合并或差异化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_21_stocks_410\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_21_stocks_410\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"title\",\"summary\",\"rateRow\"],\"itemMargin\":8,\"styles\":{\"width\":178,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.title }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.summary }}\",\"styles\":{\"width\":158,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rateRow\",\"component\":\"Row\",\"children\":[\"rate\",\"calendarStatus\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":158,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"rate\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fund.returnRate }}\",\"styles\":{\"width\":54,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendarStatus\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.connection.calendarStatus }}\",\"styles\":{\"width\":94,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"statusPanel\",\"openButton\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"statusPanel\",\"component\":\"Column\",\"children\":[\"statusDot\",\"statusText\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":64,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"statusDot\",\"component\":\"Text\",\"content\":\"已连接\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"日历读取\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fund.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_21_stocks_410\",\"path\":\"/\",\"value\":{\"fund\":{\"title\":\"基金收益\",\"summary\":\"今日收益 +128.6 元\",\"returnRate\":\"+1.86%\",\"actionLabel\":\"打开应用\"},\"connection\":{\"calendarStatus\":\"日历已连接\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

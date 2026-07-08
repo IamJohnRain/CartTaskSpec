@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-03-004-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "用户原始诉求（每日时长限制、已用完提示、倒计时显示、配置入口）均完整呈现。截图中可清晰看到：左侧白色倒计时面板含'剩余倒计时'标签、'00:00'主数值、满格蓝色进度条；右侧依次为'游戏时长管控'标题、红色'今日时长已用完'状态、'每日 60 分钟'与'已用 60 分钟'说明、蓝色'设置管控'按钮。底部按钮已绑定 clickToDeeplink 事件，args 与 TaskSpec.eventCandidates 完全一致。dataModel 路径绑定正确，updateDataModel.path='/'，value 原样回填。size 2x4（300x140）、catalogId、version 等硬约束均满足。仅因'自动锁屏'为系统级动作、卡片无法直接呈现物理锁定效果而无法 100% 闭环，故扣 0.5 分。",
+    "aesthetic": "截图观感专业克制：浅蓝（#F2F6FF）背景与左侧白色圆角面板形成柔和层次，主蓝色（#2451D6）贯穿倒计时、进度条、按钮三处形成视觉一致性，红色（#D93025）专用于'今日时长已用完'作为警示色，色阶克制不杂乱。字号阶梯清晰：32（倒计时主数值）> 16（标题）> 14（状态）> 12（说明），字重 600/700 集中于主数值与状态，12vp 列内边距与 3vp 子项间距让右侧信息列疏密有度。唯一可商榷处：红色仅出现在状态文字，进度条仍为蓝色，'时间已用完'的紧迫感可再加强一档。",
+    "layout": "截图中未观察到任何堆叠、溢出或文字截断：左侧倒计时面板三个子项（label 16 + margin 8 + 数值 40 + margin 8 + progress 8 = 80）落在 96 高度内容区内并居中排布；右侧信息列五项（20+3+20+3+16+3+16+3+32 = 116）恰好填满 116 高度，按钮底边距卡片底边 12vp，处于 10-14vp 健康区间。按钮热区 92x32 满足 ≥24vp 硬下限。根容器 borderRadius 22、clip:true 配合内边距 12，未见子元素被圆角裁切。整体横纵分布平衡，无 Stack 遮挡受保护文本。"
+  },
+  "issues": [
+    "右侧底部'设置管控'按钮底边距卡片底边仅 12vp，虽在可接受区间但视觉上略紧，建议预留 14-16vp 以增加锚定安全感",
+    "进度条在'已用完'状态下仍使用主蓝色（#2451D6），与红色状态文字的警示色调不够统一，可考虑改为红色以强化'时间到'的紧迫信号",
+    "按钮高度 32vp 略低于 40vp 的理想触控热区，长按或儿童误触场景的容错略弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"game_time_control_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"game_time_control_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"countdown_panel\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F2F6FF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdown_panel\",\"component\":\"Column\",\"children\":[\"countdown_label\",\"countdown_text\",\"time_progress\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"countdown_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.countdownLabel }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.countdownText }}\",\"styles\":{\"width\":96,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#FFD93025\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.gameControl.progress }}\",\"total\":100,\"styles\":{\"width\":96,\"height\":8,\"type\":\"linear\",\"color\":\"#FFD93025\",\"backgroundColor\":\"#22D93025\",\"borderRadius\":4}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"limit_text\",\"used_text\",\"setting_button\"],\"itemMargin\":4,\"styles\":{\"width\":148,\"height\":116,\"paddingTop\":2,\"paddingBottom\":6,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.title }}\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.statusText }}\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFD93025\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"limit_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.limitText }}\",\"styles\":{\"width\":148,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.gameControl.usedText }}\",\"styles\":{\"width\":148,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.gameControl.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"parent_control://screen_time/game_limit\"}}],\"styles\":{\"width\":104,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF2451D6\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"game_time_control_card\",\"path\":\"/\",\"value\":{\"gameControl\":{\"title\":\"游戏时长管控\",\"statusText\":\"今日时长已用完\",\"countdownLabel\":\"剩余倒计时\",\"countdownText\":\"00:00\",\"limitText\":\"每日 60 分钟\",\"usedText\":\"已用 60 分钟\",\"progress\":100,\"actionText\":\"设置管控\"}}}}"
+  ]
+}

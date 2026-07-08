@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-22-express-427",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "用户明确要求'整一排包裹的吧'，是核心诉求；要求'显示已签收'也需要体现在包裹上。截图中只看到顶部标题'包裹动态'与状态'已签收'，以及底部'查看天气'按钮，中间应该呈现包裹列表的区域完全是空白的绿色，没有任何包裹（'一号件/二号件/三号件'）的视觉呈现，等于用户的'一排包裹'诉求在视觉上完全缺失，是关键诉求未落实。点击事件 onClick(callToDeeplink) 已正确挂到 weather 按钮上，size 2x2、catalogId、version、updateDataModel.path/value 等硬约束均满足，扣分主要因包裹未渲染。",
+    "aesthetic": "截图显示绿色渐变背景（#64bb5c → #92c48d）色调柔和，标题/状态白色文字在绿色背景上对比清晰、可读性良好；底部白色胶囊按钮配绿色'查看天气'文字，胶囊感和层次都不错。不足之处是卡片中段有大块空白（包裹本应填充的位置），造成上半部与下半部之间留白断层，整体节奏不够紧凑，视觉中心被掏空，扣分。",
+    "layout": "截图中可见的布局问题是：根 Column 的 pkgList 区域（理论高度 42px、位于 header 与 weatherBtn 之间）完全为空，三个本应横向排列的 34×42 包裹卡片一项都没有渲染出来，导致整张卡片中部出现大面积纯绿留白。这是 List 模板子项未实际渲染造成的功能性布局失败，并非单纯的留白问题。尺寸核算上 22+8+42+8+32=112 仍在 116 之内，但视觉上中段无内容呈现属于关键内容缺失。除此之外未观察到文字截断、元素重叠或越界情况。"
+  },
+  "issues": [
+    "截图中部 List 区域为空，三个包裹（一号件/二号件/三号件）全部未渲染，核心诉求'一排包裹'未视觉化",
+    "中段大块纯绿留白，卡片上下两部分视觉脱节",
+    "模板循环 children={componentId:'pkgItem', path:'/packages'} 实际未产出任何子节点，建议改用显式子组件或改用 Row 显式展开",
+    "包裹区域与按钮区之间没有任何信息承接，过渡生硬"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_22_express_427\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_22_express_427\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"pkgRow\",\"weatherBtn\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff64bb5c\",0],[\"#92c48d\",1]]}}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.status }}\",\"styles\":{\"width\":46,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pkgRow\",\"component\":\"Row\",\"children\":[\"pkg1\",\"pkg2\",\"pkg3\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"pkg1\",\"component\":\"Column\",\"children\":[\"p1Name\",\"p1Status\"],\"itemMargin\":2,\"styles\":{\"width\":34,\"height\":46,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"p1Name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.packages[0].name }}\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"p1Status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.packages[0].status }}\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pkg2\",\"component\":\"Column\",\"children\":[\"p2Name\",\"p2Status\"],\"itemMargin\":2,\"styles\":{\"width\":34,\"height\":46,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"p2Name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.packages[1].name }}\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"p2Status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.packages[1].status }}\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"pkg3\",\"component\":\"Column\",\"children\":[\"p3Name\",\"p3Status\"],\"itemMargin\":2,\"styles\":{\"width\":34,\"height\":46,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"p3Name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.packages[2].name }}\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"p3Status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.packages[2].status }}\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherBtn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.weatherHint }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_22_express_427\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"包裹动态\",\"status\":\"已签收\",\"weatherHint\":\"查看天气\"},\"packages\":[{\"name\":\"一号件\",\"status\":\"已签收\"},{\"name\":\"二号件\",\"status\":\"已签收\"},{\"name\":\"三号件\",\"status\":\"已签收\"}],\"data\":{\"weather\":{\"location\":{},\"current\":{},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

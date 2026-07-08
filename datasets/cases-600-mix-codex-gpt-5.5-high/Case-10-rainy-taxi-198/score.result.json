@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-198",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.4,
+  "reasons": {
+    "instruction": "截图中能看到标题'雨天打车'居中显示，3 个圆角胶囊形状的目的地位于底部横排，整体结构与用户要求的'中间放雨伞图标+底下横排三个目的地+下雨天氛围渐变'对应。但存在两个关键缺失：1）中间本应显示雨伞图标的位置只渲染出了一个灰色矩形占位（雨伞图片未真正加载呈现）；2）三个目的地胶囊内的文字标签（公司/家/客户）在截图中几乎不可见，第三个仅能看到'...'省略号。三个 onClick 事件在 DSL 中按 eventCandidates 正确绑定到地图 deeplink，渐变背景与数据绑定路径均符合契约。",
+    "aesthetic": "从截图看，浅蓝渐变背景柔和有下雨天氛围感，标题字重明显且与背景对比清晰，整体风格干净。扣分点在于：1）中央的雨伞图标位置只显示了灰色占位矩形，严重影响视觉观感；2）底部三个胶囊内的文字标签因宽度不足被截断成省略号，破坏了'干净'的设计感；3）胶囊样式只有圆圈+空白文字，标签不可读使得组件识别度差。配色与字号层级本身没有问题，但关键内容缺失让整体观感降级。",
+    "layout": "截图中可观察到的排版问题：1）三个 Checkbox 宽度被设为 37/37/38vp，但内部需要同时容纳圆圈指示器与'公司/家/客户'两个中文字符，文本宽度超出容器宽度被截断；2）第三个 Checkbox 右侧可清晰看到'...'三个点，表明文本被强制省略；3）文字溢出到 Checkbox 边界外，部分内容可能溢出到 Row 之外（Row 总宽 116vp：37+2+37+2+38=116，恰好填满，文本再外溢就会突破 Row 边界）。受保护文本（目的地名称）出现截断，是核心布局失败。底部到卡片底边距离约 10vp，在合理范围内。标题区域无截断。"
+  },
+  "issues": [
+    "中央雨伞图标位置在截图中显示为灰色占位矩形，未渲染真实雨伞图片",
+    "三个 Checkbox 内的标签文字（公司/家/客户）因容器宽度（37-38vp）不足以容纳圆圈+2 个中文字符而被截断，第三个显示为'...'",
+    "Checkbox 组件的 label 字段绑定方式未能保证文字显示在胶囊内",
+    "底部三个 Checkbox 文字溢出风险：Row 内宽 116vp 已被子项总宽 116vp 填满，无 margin 缓冲",
+    "应改用 Button 组件以 content 形式承载文字标签，或扩大每个胶囊宽度并相应缩小其他元素"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_198\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_198\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"umbrella\",\"dest_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffeaf3ff\",0],[\"#ffd6e8f2\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"umbrella\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.rainTaxi.icon }}\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"dest_row\",\"component\":\"Row\",\"children\":[\"office_btn\",\"home_btn\",\"client_btn\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"office_btn\",\"component\":\"Button\",\"content\":\"{{ $__dataModel.rainTaxi.destinations[0].name }}\",\"styles\":{\"width\":36,\"height\":26,\"fontSize\":11,\"fontColor\":\"#ff1f3446\",\"backgroundColor\":\"#f2ffffff\",\"borderRadius\":13,\"textAlign\":\"center\",\"fontWeight\":600},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=office&address=Shenzhen%20Bay%20Office\"}}]},{\"id\":\"home_btn\",\"component\":\"Button\",\"content\":\"{{ $__dataModel.rainTaxi.destinations[1].name }}\",\"styles\":{\"width\":36,\"height\":26,\"fontSize\":11,\"fontColor\":\"#ff1f3446\",\"backgroundColor\":\"#f2ffffff\",\"borderRadius\":13,\"textAlign\":\"center\",\"fontWeight\":600},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=home&address=Nanshan%20Home\"}}]},{\"id\":\"client_btn\",\"component\":\"Button\",\"content\":\"{{ $__dataModel.rainTaxi.destinations[2].name }}\",\"styles\":{\"width\":36,\"height\":26,\"fontSize\":11,\"fontColor\":\"#ff1f3446\",\"backgroundColor\":\"#f2ffffff\",\"borderRadius\":13,\"textAlign\":\"center\",\"fontWeight\":600},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.maps\",\"abilityName\":\"com.huawei.maps.MainAbility\",\"uri\":\"mapapp://navigation?destination=client&address=Futian%20Client\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_198\",\"value\":{\"rainTaxi\":{\"title\":\"雨天打车\",\"hint\":\"勾选即导航\",\"icon\":\"assets/rainy-umbrella.png\",\"destinations\":[{\"name\":\"公司\",\"address\":\"深圳湾科技园\",\"selected\":false},{\"name\":\"家\",\"address\":\"南山家里\",\"selected\":false},{\"name\":\"客户\",\"address\":\"福田客户处\",\"selected\":false}]}}}}"
+  ]
+}

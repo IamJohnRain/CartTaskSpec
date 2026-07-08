@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-212",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.2,
+  "reasons": {
+    "instruction": "用户明确要求'下面横着排一排今天的训练计划,完成打勾',这是卡片的核心信息层,但截图中训练计划区域完全不可见——hero_row(顶部)和open_button(底部按钮)之间是一大块空白,慢跑/力量/拉伸三项训练计划及完成打勾状态均未呈现。此外,fitness.symbols='RUN BIKE GYM'在symbol_box中因宽度仅58,实际只显示了'RUN'一个词,丢失了'BIKE GYM'两个运动图标。'距离比赛还有18天'文字渲染正确,打开运动健康按钮事件绑定正确(c clickToDeeplink指向healthapp)。核心诉求(横排训练计划+打勾)缺失,严重扣分。",
+    "aesthetic": "截图整体观感:浅灰底色(#fff1f3f5)与绿色色块(#ff64bb5c)的搭配克制素净,符合'不要渐变,纯文字加色块'的要求。但中间一大块空白让卡片显得空荡、不完整,违背'简洁素净'中'有信息密度'的隐含期待。绿色按钮上的'打开运动健康'白字在按钮内部的垂直居中似乎有轻微偏差,文字顶端看起来略贴近按钮上沿,视觉上略显拥挤。",
+    "layout": "截图中可观察到的核心布局问题:1)plan_row(训练计划行,DSL中height:42)整个区域在hero_row和open_button之间只呈现为纯灰底,三个白色色块模板(plan_template, width:84, height:42)均未渲染出来,推测为模板迭代在当前引擎下未正常生成子项;2)中间出现一段约42vp高的纯空白带,使卡片出现明显的内容断层;3)symbol_box宽度58不足以容纳'RUN BIKE GYM'三个词,实际只显示'RUN',左侧BIKE GYM被裁掉;4)按钮文字'打开运动健康'在按钮内垂直位置略偏上,顶端几乎贴边;5)受保护信息(训练计划)完全缺失是D3最严重的问题。"
+  },
+  "issues": [
+    "训练计划行(plan_row)完全未渲染,三个白色色块模板不可见,核心信息缺失",
+    "symbol_box宽度58不足以容纳'RUN BIKE GYM',实际只显示'RUN'",
+    "卡片中部出现明显空白带,布局断层",
+    "按钮'打开运动健康'文字垂直居中略偏,顶端贴近按钮上沿",
+    "应将运动符号拆分为多个独立小色块(对应'几个运动小图标')而非单个文本框"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_212\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_212\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"plan_row\",\"open_button\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"sym_run\",\"sym_bike\",\"sym_gym\",\"countdown_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sym_run\",\"component\":\"Text\",\"content\":\"RUN\",\"styles\":{\"width\":38,\"height\":24,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#1964bb5c\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sym_bike\",\"component\":\"Text\",\"content\":\"BIKE\",\"styles\":{\"width\":44,\"height\":24,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#1964bb5c\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sym_gym\",\"component\":\"Text\",\"content\":\"GYM\",\"styles\":{\"width\":40,\"height\":24,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#1964bb5c\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"距离比赛还有${/fitness/daysToRace}天\"}},\"styles\":{\"width\":140,\"height\":26,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"plan_template\",\"path\":\"/data/calendar/items\"},\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"plan_template\",\"component\":\"Column\",\"children\":[\"plan_done\",\"plan_title\"],\"itemMargin\":3,\"styles\":{\"width\":86,\"height\":50,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"plan_done\",\"component\":\"Text\",\"content\":{\"path\":\"description\"},\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"plan_title\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${dtStart} ${title}\"}},\"styles\":{\"width\":74,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"clip\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":280,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_212\",\"path\":\"/\",\"value\":{\"fitness\":{\"symbols\":\"RUN BIKE GYM\",\"daysToRace\":18,\"actionText\":\"打开运动健康\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"fitness-plan-1\",\"title\":\"慢跑\",\"dtStart\":\"07:30\",\"dtEnd\":\"08:10\",\"description\":\"[x] 完成\"},{\"entityName\":\"calendar\",\"entityId\":\"fitness-plan-2\",\"title\":\"力量\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:10\",\"description\":\"[ ] 待做\"},{\"entityName\":\"calendar\",\"entityId\":\"fitness-plan-3\",\"title\":\"拉伸\",\"dtStart\":\"20:30\",\"dtEnd\":\"20:45\",\"description\":\"[ ] 待做\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

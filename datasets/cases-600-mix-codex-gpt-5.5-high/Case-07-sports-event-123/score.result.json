@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-07-sports-event-123",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户要求的勾选比赛、控球率、点击进体育app、读天气、显示已连接五项诉求中，控球率(黄色58%)、已连接(右上角绿色)、进体育按钮、天气(多云28°C)四项均可见且信息准确，但 Checkbox 旁的标签\"想看\"在截图中仅显示为\"...\"省略号而未完整呈现，用户无法直观理解勾选项含义，指令\"勾选想看的比赛\"的语义传达不完整，扣分。事件 onClick 与 dataModel 字段绑定符合协议。",
+    "aesthetic": "深绿渐变背景配白色主文字、黄色控球率强调色、绿色 CTA 按钮，配色整体协调有体育赛事氛围，文字可读性良好。但底部\"进体育\"按钮被卡片下边界裁切，破坏视觉完整度；状态行中部出现\"...\"孤儿字符影响观感，整体美观度因溢出问题明显下降。",
+    "layout": "截图中最严重的问题是底部\"进体育\"按钮被裁切：根容器高度 140，Column 子项合计 24+20+42+28=114，itemMargin×3=18，padding 24，总计 156 超出 140 约 16vp，导致最底部的 action_row(按钮)被裁切。状态行中 Checkbox 标签\"想看\"未正常渲染成\"...\"，属子项宽度/渲染问题。标题、控球率、时间、天气等文字在卡内完整可读，但底部 CTA 不可用是重大布局失败。"
+  },
+  "issues": [
+    "底部\"进体育\"按钮被卡片下边界裁切，未完整显示（Column 总高 156vp 超出 140vp 约 16vp）",
+    "Checkbox 旁的标签\"想看\"在截图中显示为\"...\"，未正确渲染标签文字",
+    "action_row 使用 justifyContent:end 将按钮推到右下方，进一步加剧底部溢出",
+    "根容器 padding 12+12 占用较多垂直空间，未根据 2x2 紧凑布局做压缩"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_123\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_123\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status_row\",\"title\",\"info_col\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0a3d2d\",\"linearGradient\":{\"colors\":[[\"#ff0a3d2d\",0],[\"#ff1a8a5f\",1]],\"direction\":\"toBottomEnd\"}}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"pick\",\"status\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"pick\",\"component\":\"Checkbox\",\"label\":\"想看\",\"select\":\"{{ $__dataModel.match.selected }}\",\"styles\":{\"width\":66,\"height\":20,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#66ffffff\",\"fontSize\":11,\"fontColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.status }}\",\"styles\":{\"width\":46,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff14f195\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"time\",\"possession\",\"weather\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.time }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"possession\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.possessionText }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffd166\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"open_btn\"],\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":62,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff14f195\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ff002b1d\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_123\",\"path\":\"/\",\"value\":{\"match\":{\"title\":\"申花 vs 海港\",\"time\":\"今晚 19:35\",\"possessionText\":\"控球率 58%\",\"selected\":true,\"status\":\"已连接\",\"actionText\":\"进体育\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"浦东新区\",\"prefectureName\":\"上海市\"},\"current\":{\"condition\":\"多云\",\"temperatureText\":\"28°C\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

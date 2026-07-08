@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-007-v1",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "截图中清晰呈现了电量数值15%、触发阈值、离线地图已缓存状态、建议文案及开启省电按钮，主要诉求'低电卡片+省电动作+离线地图状态'都满足。唯一事件clickToIntent(电池省电模式)正确挂载在按钮上，eventCandidates/args 原样保留。轻微扣分：用户原话提到关蓝牙/WiFi、切深色模式三个具体动作，但卡片只承载了一个省电动作（受eventCandidates单事件约束），且文案中未显式提示将执行这些联动操作，信息密度对用户预期略薄。",
+    "aesthetic": "截图整体观感温暖克制：米色卡底+乳白左侧小卡+橙色主色+绿色状态点缀，色相协调；15% 大字号橙色主指标在视觉层级上最强，符合'一个最强字重'原则；正文深棕/深灰在浅底上清晰可读；左侧小卡+进度条形成视觉锚点，右侧文字+按钮节奏舒适。按钮圆角胶囊造型与卡片圆角呼应，统一感好。微扣：右侧Column内子项间距略密，advice换行后与下一项的呼吸稍紧。",
+    "layout": "截图中所有元素均在卡片安全区内，无任何堆叠/截断/溢出：左侧15% 完整居中显示，触发阈值15% 完整单行，progress 完整贴合底部；右侧标题'低电出差模式'单行完整，advice 两行换行整齐且未越界，'离线地图 已缓存' 单行绿色完整，按钮'开启省电' 文案居中、未被裁切、底边距卡片下沿约8-10vp，落在10-14vp合理区间。Row 内 meter_col(110)+间距12+info_col(154)=276，正好填满内容区，无水平溢出。视觉干净，布局合格。"
+  },
+  "issues": [
+    "用户提到'关蓝牙/WiFi、切深色、缓存离线地图'三个动作，但卡片只承载一个省电动作且文案未提示联动行为，信息传达与用户预期有偏差",
+    "右侧 info_col 子项 itemMargin=4 偏小，advice 换行后与 map_status 之间视觉呼吸略显局促",
+    "advice_text 高度 34 与 maxLines=2 偏紧，若文案加长可能溢出（当前未触发但有风险）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"low_power_travel_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"low_power_travel_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"meter_col\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF8E8\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_col\",\"component\":\"Column\",\"children\":[\"level_text\",\"threshold_text\",\"power_progress\"],\"itemMargin\":8,\"styles\":{\"width\":110,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFA\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.lowPower.levelText }}\",\"styles\":{\"width\":94,\"height\":40,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#D45B00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"threshold_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.lowPower.thresholdText }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#7A3C00\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"power_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.lowPower.level }}\",\"total\":100,\"styles\":{\"width\":94,\"height\":6,\"type\":\"linear\",\"color\":\"#D45B00\",\"backgroundColor\":\"#FFE1B8\",\"borderRadius\":3}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"advice_text\",\"map_status_text\",\"save_button\"],\"itemMargin\":6,\"styles\":{\"width\":154,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.lowPower.title }}\",\"styles\":{\"width\":154,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.lowPower.travelAdvice }}\",\"styles\":{\"width\":154,\"height\":36,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#5C4B2A\",\"maxLines\":2,\"textOverflow\":\"none\",\"lineHeight\":18}},{\"id\":\"map_status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.lowPower.mapCacheStatus }}\",\"styles\":{\"width\":154,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#276648\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"save_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.lowPower.actionLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#D45B00\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"low_power_travel_card\",\"path\":\"/\",\"value\":{\"lowPower\":{\"title\":\"低电出差模式\",\"level\":15,\"levelText\":\"15%\",\"thresholdText\":\"触发阈值 15%\",\"travelAdvice\":\"建议开启省电，保留下车导航电量\",\"mapCacheStatus\":\"离线地图 已缓存\",\"actionLabel\":\"开启省电\"}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-460",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户要求纵向堆叠展示倒计时/步数/日程事件、地址按钮跳转、中间横向并列小项目、暖色渐变，截图中可见主要字段基本都呈现了（12 天、7月18日、礼物清单/生日祝福 chips、步数 6820、读日程中占位）。但截图中底部右侧的橙色 CTA 按钮上'去地址'文字完全不可见，用户无法识别该按钮的语义，这是关键信息缺失；onClick 事件绑定正确来源于 eventCandidates；emoji 图标按系统协议未使用不算扣分；深色舞台风主视觉只靠暗紫渐变顶角实现，不够'舞台聚光'感。",
+    "aesthetic": "截图中背景从深紫到暖橙的渐变色调和谐、过渡自然，主数字 12 粗壮醒目，前景白色文字在深紫底上清晰可读，chips 圆角和半透明白底处理统一，层级感尚可。但底部橙色按钮空白无字显得'未完成'，破坏整体观感；步数与读日程字号过小（fontSize 10）略显局促。",
+    "layout": "按内容区 116x116 计算 Column 纵向占用：title 18 + margin 6 + hero 40 + margin 6 + chips 22 + margin 6 + bottom_row 24 = 122，超出 6px。截图中可见底部橙色按钮的下沿几乎贴着卡片底边且按钮文字'去地址'在白底橙底上完全看不到，判定为底部按钮被 clip 截断导致标签不可读；steps_text/event_text 字号 10、行高 11 也偏紧，整体底部区域过密。chip 区域无明显问题，title/hero 顶部区域可读。属于'关键 CTA 文案被截断'的显著问题。"
+  },
+  "issues": [
+    "Column 纵向总高 122 超出内容区 116 约 6px，底部按钮被 clip 截断导致'去地址'文案不可见",
+    "day_number 字号 40 在宽 48 的容器内过紧，'12' 接近边界",
+    "steps_text/event_text 字号 10、行高 11 偏小，与主信息字号层级落差略大",
+    "深色舞台风主视觉仅靠单一暗角渐变，缺少聚光/舞台层次感",
+    "按钮热区 48x24 偏小（接近 24vp 下限），且无图标辅助识别"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_countdown_460\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_countdown_460\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"hero\",\"chips\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":160,\"colors\":[[\"#FF1A0F1F\",0],[\"#FF5A2A6B\",0.5],[\"#FFFF8A3D\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"day_number\",\"day_meta\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"day_number\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.daysLeft }}\",\"styles\":{\"width\":50,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day_meta\",\"component\":\"Column\",\"children\":[\"day_unit\",\"date_label\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"day_unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.unit }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"date_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.dateLabel }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"chips\",\"component\":\"Row\",\"children\":[\"gift_chip\",\"wish_chip\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"gift_chip\",\"component\":\"Text\",\"content\":\"🎁 {{ $__dataModel.plan.giftLabel }}\",\"styles\":{\"width\":56,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#26FFFFFF\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wish_chip\",\"component\":\"Text\",\"content\":\"🎂 {{ $__dataModel.plan.wishLabel }}\",\"styles\":{\"width\":56,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#26FFFFFF\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"support_col\",\"nav_button\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"support_col\",\"component\":\"Column\",\"children\":[\"steps_text\",\"event_text\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.activity.stepsLabel }}\",\"styles\":{\"width\":60,\"height\":11,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_text\",\"component\":\"Text\",\"content\":\"{{ size($__dataModel.data.calendar.items) > 0 ? $__dataModel.data.calendar.items[0].title : '读日程中' }}\",\"styles\":{\"width\":60,\"height\":11,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":50,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FFDB6B42\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_countdown_460\",\"path\":\"/\",\"value\":{\"birthday\":{\"title\":\"生日倒计时\",\"daysLeft\":12,\"unit\":\"天\",\"dateLabel\":\"7月18日\"},\"activity\":{\"stepsLabel\":\"步数 6820\"},\"plan\":{\"giftLabel\":\"礼物清单\",\"wishLabel\":\"生日祝福\"},\"action\":{\"label\":\"去地址\",\"locationName\":\"生日会场\",\"latitude\":\"22.3193\",\"longitude\":\"114.1694\",\"trafficpe\":\"Walk\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

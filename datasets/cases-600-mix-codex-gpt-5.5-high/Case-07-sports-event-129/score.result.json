@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-129",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "用户要求的五个核心要素中，'带比分'（2-1 清晰显示在中部）、'点能开系统设置'（Button 的 onClick 正确绑定到 clickToDeeplink）、'读天气'（朝阳区 29°C 雷阵雨显示）、'红色警告'（右上角红色'红色预警'徽章）四项已落实；但'文字叠图上那种'这一关键诉求未达成——背景图 sports-alert-score-bg.png 在截图中实际渲染为一块纯灰色，未呈现任何'红色预警氛围'的视觉底图，导致整张卡片退化为'灰色面板+白文字'，与用户期待的赛事/红色预警叠图风格相去甚远。dataModel、catalogId、version、updateDataModel 协议层面均合规。",
+    "aesthetic": "截图整体观感较差：1) 卡片左右两侧出现明显的纯黑色竖条（root 背景色 #ff000000 透过 padding 缝隙暴露），破坏视觉整体性；2) 背景图渲染为纯灰，缺失'红色警告'应有的警示氛围与色彩张力；3) 配色仅有红色徽章和红字白底按钮两处点缀，与灰色背景对比生硬，缺少过渡。文字层级尚可分辨，白字在灰色底上基本可读，但红字按钮与红色徽章的呼应稍显刻意。",
+    "layout": "截图存在两处明确视觉问题：1) 卡片左右边缘出现黑色竖条——根 Stack 设置了 backgroundColor:#ff000000 并带 padding:12，但 bg Image 尺寸仅为 276x116（填在内容区内），导致 root 的 12px 留白区显露出黑色背景，与 borderRadius:22 的圆角叠加形成'黑框'效果，严重破坏整体感；2) 底栏左下角'雷暴大风'文字底边被裁切——bottom_row 高 32、weather_block 高 32、其中 detail_line 高 14 加上 weather_line 高 16 与 itemMargin 2 正好 32，无任何下边距，文字字身下半部被 content 区裁掉（被 clip:true 进一步截断）。其余元素横向排布对齐良好，无水平溢出。"
+  },
+  "issues": [
+    "根 Stack 的 padding:12 + 黑色背景使背景图缩在 276x116 内，卡片左右两侧露出 12px 纯黑竖条，破坏'全幅叠图'观感",
+    "背景图 assets/sports-alert-score-bg.png 实际渲染为纯灰，未呈现'红色预警'主题，与用户'文字叠图+红色警告'的原始诉求脱节",
+    "bottom_row 中 detail_line'雷暴大风'(h=14)顶到 weather_block 底边，无任何下方留白，导致字底被裁切",
+    "score 区域字号 32 与 teams 字号 16 跨度大，但 teams 列被压缩为 136 宽，'中国/韩国'两字虽未截断但视觉上偏挤",
+    "整个 shade 的红色线性渐变与 #66000000 暗色叠加层被压在灰底之上，几乎看不出'红'，红色主题氛围严重弱化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_129\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_129\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"shade\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#7a000000\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}]},{\"id\":\"bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.match.background }}\",\"styles\":{\"width\":300,\"height\":140,\"borderRadius\":22,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"borderRadius\":22,\"backgroundColor\":\"#00000000\",\"linearGradient\":{\"colors\":[[\"#33ff2a2a\",0],[\"#7a8c1414\",0.55],[\"#a3000000\",1]],\"direction\":\"toRight\"}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"middle_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"league\",\"alert_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"league\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.league }}\",\"styles\":{\"width\":170,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.status }}\",\"styles\":{\"width\":80,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe53935\",\"borderRadius\":11,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"middle_row\",\"component\":\"Row\",\"children\":[\"teams\",\"score\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":42,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"teams\",\"component\":\"Column\",\"children\":[\"home\",\"away\"],\"itemMargin\":2,\"styles\":{\"width\":150,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"home\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.homeTeam }}\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"away\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.awayTeam }}\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"score\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.score }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_block\",\"settings_btn\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_block\",\"component\":\"Column\",\"children\":[\"weather_line\",\"detail_line\"],\"itemMargin\":2,\"styles\":{\"width\":168,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/data/weather/location/districtName} ${/data/weather/current/temperatureText} ${/data/weather/current/condition}\"}},\"styles\":{\"width\":168,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.statusDetail }}\",\"styles\":{\"width\":168,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"settings_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":88,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffe53935\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_129\",\"value\":{\"match\":{\"league\":\"东亚杯\",\"homeTeam\":\"中国\",\"awayTeam\":\"韩国\",\"score\":\"2 - 1\",\"status\":\"红色预警\",\"statusDetail\":\"雷暴大风\",\"actionText\":\"系统设置\",\"background\":\"assets/sports-alert-score-bg.png\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"雷阵雨\",\"alertLevel\":\"红色预警\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

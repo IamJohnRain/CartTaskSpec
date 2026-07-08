@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-104",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "用户明确提出五项诉求：①内存清理卡（满足）、②要有图（截图中图标区域仅为一个浅灰色圆角占位方块，未呈现 assets/freeclip2-memory-clean.png 的实际图像内容，严重不满足）、③点一下能跳应用（root 与 Button 都正确绑定了 clickToDeeplink，满足）、④能从日历读日程（截图中完全没有日历相关的 UI 元素，且 dataModel.data.calendar.items 为空也未做任何占位/提示，不满足）、⑤看到红色危险提示（'内存危险'标题、'91%'主指标、进度条、'去清理'按钮均使用红色系，满足）。综合来看 5 项诉求中 2 项未在截图中呈现，给 4.5。",
+    "aesthetic": "整体配色（浅粉底 + 深红主色 + 红色渐变按钮）主题统一，能清晰传达'危险/告警'语义；字号层级（16/20/14/10）合理，最强字重为 91% 与标题，符合'一个最强字重'原则；按钮渐变自然，文字在按钮上对比清晰；进度条颜色与主题一致。扣分点：截图中图标区域为纯灰色占位方块，破坏整体观感，留白略偏上。给 7.0。",
+    "layout": "截图显示元素全部落在 140×140 卡片内，无任何文字截断、溢出或组件越界：标题'内存危险'、'建议立即清理'、'91%'、'去清理'均完整可见；进度条完整在容器内；按钮底边到卡片底边约 8-10vp，符合锚定要求；左右内边距对称，无堆叠遮挡。唯一瑕疵是图标占位方块为视觉空洞，但不属于布局溢出。给 8.5。"
+  },
+  "issues": [
+    "截图中 Icon 组件未渲染出实际图片（assets/freeclip2-memory-clean.png），仅显示浅灰色占位方块，违反用户'要有图'的明确诉求",
+    "截图中完全没有日历相关 UI 元素，用户要求'能从日历读日程'未得到任何视觉体现",
+    "root 与 Button 同时绑定同一 onClick，热区重叠但不影响功能（root 整卡可点 + 按钮可点），属轻微冗余",
+    "顶部图标占位区域在视觉上形成一块灰色空洞，与整体红色主题产生违和"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_104\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_104\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"meter\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffef2f2\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"icon_stack\",\"title_box\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_stack\",\"component\":\"Stack\",\"children\":[\"icon_bg\",\"icon\"],\"styles\":{\"width\":28,\"height\":28,\"borderRadius\":8}},{\"id\":\"icon_bg\",\"component\":\"Column\",\"styles\":{\"width\":28,\"height\":28,\"borderRadius\":8,\"backgroundColor\":\"#ffcf0a2c\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.memory.icon }}\",\"styles\":{\"width\":18,\"height\":18,\"margin\":{\"left\":5,\"top\":5}}},{\"id\":\"title_box\",\"component\":\"Column\",\"children\":[\"title\",\"hint\"],\"itemMargin\":2,\"styles\":{\"width\":82,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.title }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffcf0a2c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.hint }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ff7a1b2e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter\",\"component\":\"Column\",\"children\":[\"used\",\"bar_bg\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"used\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.usedText }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffcf0a2c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bar_bg\",\"component\":\"Progress\",\"value\":91,\"max\":100,\"styles\":{\"width\":116,\"height\":8,\"color\":\"#ffcf0a2c\",\"backgroundColor\":\"#33cf0a2c\",\"borderRadius\":4}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.memory.actionText }}\",\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":14,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ffcf0a2c\",0],[\"#ffff4d4f\",1]]},\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_104\",\"value\":{\"memory\":{\"title\":\"内存危险\",\"usedText\":\"91%\",\"hint\":\"建议立即清理\",\"actionText\":\"去清理\",\"icon\":\"assets/freeclip2-memory-clean.png\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

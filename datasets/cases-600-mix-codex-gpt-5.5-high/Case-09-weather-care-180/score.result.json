@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-09-weather-care-180",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.9,
+  "reasons": {
+    "instruction": "尺寸 2x4 与 catalogId/version 协议合规，深色无渐变氛围与'暴雨预警'/'不宜出行'/'危险告警'红色状态条、查看详情按钮及点击事件均按契约落实。但截图中用户明确要求的'纵向重复排列每天的预报'完全不可见——三行 daily（今天/明天/周三 暴雨/雷雨/大风 24°/28° 等）未在画面中渲染出来，是核心诉求缺失；此外库内雷雨/大风 heroIcon 渲染为一块灰色占位矩形（资源未实际加载），乌云背景图同样未呈现，整体暗黑氛围只靠 backgroundColor 撑住。",
+    "aesthetic": "深灰底配白色'暴雨预警'与浅粉'不宜出行'文字层级尚可，红色椭圆'危险告警'与白色'查看详情'按钮形成对比，色彩基本和谐。但截图中右侧面板从'不宜出行'到'查看详情'之间有一大段空白（forecast_list 区域完全没东西），卡片整体显得残缺；左侧主体本应是雷雨/大风图标的位置只露出一块灰白色矩形，视觉上像占位图破坏了'恶劣天气'的语义氛围，留白与对齐也不够紧凑。",
+    "layout": "截图中可见的明显问题：1) right_panel Column 子项纵向合计需求约 headline 38 + 8 + forecast_list 42 + 8 + button 28 = 124vp，超出 right_panel 高度 116vp 约 8vp，导致 forecast_list 被挤出可见区域、3 行 daily 完全不显示，是核心溢出问题；2) hero_panel 内的 storm_icon 渲染为无图占位矩形（资源 86x120 中只占 68x68 居中），与右侧 forecast_list 缺失形成大面积空洞；3) 内容 Row 底部外框到底边约 10vp，CTA 锚定尚可，但因 overflow 实际可点击区与上方 forecast 区重叠被裁切；4) Stack 中 storm_bg Image 同样未呈现，dark_scrim 与 backgroundColor 叠加后只剩纯灰。整体属于关键信息缺失+局部溢出。"
+  },
+  "issues": [
+    "right_panel 列纵向高度溢出 8vp，导致 forecast_list（3 天预报）在截图中完全不可见",
+    "storm_icon（resources/base/media/icon_weather_rain.png）资源未渲染，显示为灰色占位矩形",
+    "storm_bg 乌云背景图（assets/weather-storm-band.png）未渲染，背景只剩 backgroundColor 纯灰色，丧失'乌云延伸的暗黑氛围'",
+    "用户明确要求的'纵向每天预报'三条数据（今天/明天/周三）在画面中完全缺失",
+    "hero_panel 与 right_panel 之间的视觉平衡被空白 forecast_list 区破坏，左侧图标占位也加大空洞感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_180\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_180\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"storm_bg\",\"dark_scrim\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff111318\",\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"storm_bg\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.weather.cloudBackground }}\",\"styles\":{\"width\":300,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"dark_scrim\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"backgroundColor\":\"#66111318\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"right_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":14,\"right\":14,\"top\":10,\"bottom\":10},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"storm_icon\",\"status_badge\"],\"itemMargin\":8,\"styles\":{\"width\":86,\"height\":120,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"storm_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.weather.heroIcon }}\",\"styles\":{\"width\":64,\"height\":64,\"objectFit\":\"contain\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.status }}\",\"styles\":{\"width\":76,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"headline\",\"forecast_list\",\"open_weather\"],\"itemMargin\":4,\"styles\":{\"width\":174,\"height\":120,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"headline\",\"component\":\"Column\",\"children\":[\"title\",\"advice\"],\"itemMargin\":2,\"styles\":{\"width\":174,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.advice }}\",\"styles\":{\"width\":174,\"height\":12,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffd7d3\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"forecast_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"day_item\",\"path\":\"/weather/daily\"},\"itemMargin\":3,\"styles\":{\"width\":174,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"day_item\",\"component\":\"Row\",\"children\":[\"day_name\",\"day_condition\",\"day_range\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":174,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"day_name\",\"component\":\"Text\",\"content\":{\"path\":\"day\"},\"styles\":{\"width\":42,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day_condition\",\"component\":\"Text\",\"content\":{\"path\":\"condition\"},\"styles\":{\"width\":64,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"day_range\",\"component\":\"Text\",\"content\":{\"path\":\"range\"},\"styles\":{\"width\":56,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionText }}\",\"styles\":{\"width\":88,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffe84026\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_180\",\"value\":{\"weather\":{\"title\":\"暴雨预警\",\"advice\":\"不宜出行\",\"status\":\"危险告警\",\"heroIcon\":\"resources/base/media/icon_weather_rain.png\",\"cloudBackground\":\"assets/weather-storm-band.png\",\"actionText\":\"查看详情\",\"daily\":[{\"day\":\"今天\",\"condition\":\"暴雨\",\"range\":\"24°/28°\"},{\"day\":\"明天\",\"condition\":\"雷雨\",\"range\":\"23°/27°\"},{\"day\":\"周三\",\"condition\":\"大风\",\"range\":\"22°/26°\"}]}}}}"
+  ]
+}

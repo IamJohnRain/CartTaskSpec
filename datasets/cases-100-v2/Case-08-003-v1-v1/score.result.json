@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-08-003-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.9,
+  "reasons": {
+    "instruction": "用户最核心的诉求'突出展示睡眠时长6小时45分'在截图中完全看不到任何数字时间，duration_text 元素未渲染出来，属于关键信息缺失。深紫色夜晚渐变背景在截图中完全没有显示，卡片整体呈现为白色背景，与'深紫色的夜晚渐变风格'严重不符。圆环元素、'设定早睡提醒'按钮存在并绑定了正确的 clickToDeeplink 事件，但用户要求'带闹钟图标'因协议禁止 emoji 而无法满足。整体无法体现'安静、柔和、有科技感和高级感'。",
+    "aesthetic": "截图中最显著的视觉问题是深紫色渐变背景完全未渲染，导致所有元素悬浮在纯白背景上。'睡眠不足'标题（#FFD7E8 浅粉）在白底上对比度极差，'睡眠时长'标签（#C9B8EA）也几乎看不清，失去了深紫夜色应有的氛围。卡片中下部存在大段无内容留白，整体观感简陋、苍白，与用户期待的'高级感、科技感'相去甚远。",
+    "layout": "截图中最严重的布局问题是 duration_text '6小时45分'完全不可见，作为本卡片最核心的指标文本缺席；Row 容器 content_row 内 64 高度应能容纳两行（label 14 + text 30）但只显示了 label。卡片整体渲染区域看起来高度大于 140，下方按钮到卡片底边出现明显大段留白，按钮居中悬浮在中上部。圆环和文字标签垂直方向上对齐尚可，但 '睡眠不足' 标题水平居中偏移到了中线以右位置（可能与 padding 影响有关）。"
+  },
+  "issues": [
+    "核心指标 '6小时45分' 在截图中完全未渲染，duration_text 元素缺失",
+    "深紫色夜晚渐变背景（linearGradient）未在截图中体现，卡片背景为白色",
+    "白底上浅紫粉标题/标签对比度极差，文字几乎不可读",
+    "卡片中下部存在大段空白区域，按钮上方留白过多",
+    "按钮缺少用户要求的闹钟图标（受协议 emoji 限制，需用文字/前缀或符号替代）",
+    "标题 '睡眠不足' 水平位置略偏中线右侧，对齐不完美"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"sleep_monitor_night_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"sleep_monitor_night_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status_text\",\"content_row\",\"alarm_button\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"top\":8,\"right\":12,\"bottom\":8,\"left\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#1A0B3A\",\"linearGradient\":{\"colors\":[[\"#1A0B3A\",0],[\"#3D1B68\",0.55],[\"#0F1638\",1]],\"direction\":\"toBottomEnd\"},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"睡眠不足\",\"styles\":{\"width\":276,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFD7E8\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"ring_stack\",\"duration_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"sleep_ring\",\"ring_core\"],\"styles\":{\"width\":64,\"height\":64}},{\"id\":\"sleep_ring\",\"component\":\"Progress\",\"value\":75,\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":64,\"height\":64,\"color\":\"#B999FF\",\"backgroundColor\":\"#3E2A64\"}},{\"id\":\"ring_core\",\"component\":\"Text\",\"content\":\"夜\",\"styles\":{\"width\":30,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#5C3D8E\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_panel\",\"component\":\"Column\",\"children\":[\"duration_label\",\"duration_text\"],\"itemMargin\":2,\"styles\":{\"width\":200,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"duration_label\",\"component\":\"Text\",\"content\":\"睡眠时长\",\"styles\":{\"width\":200,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#C9B8EA\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"6小时45分\",\"styles\":{\"width\":200,\"height\":32,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alarm_button\",\"component\":\"Button\",\"label\":\"设定早睡提醒\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":200,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#8062D6\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"sleep_monitor_night_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"statusText\":\"睡眠不足\",\"durationText\":\"6小时45分\",\"progressValue\":75,\"progressTotal\":100}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-001-v1",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图中可见内存已用 6.2GB/8GB、剩余空间 42GB、电量 56%、状态 建议清理四类信息均完整呈现，标题 手机状态 与 CTA 查看存储 按钮均在位且事件按 TaskSpec.eventCandidates 正确绑定（clickToDeeplink → storage_settings）。但用户明确提出 释放内存加速 的诉求，截图中的 CTA 仅为 查看存储（跳转存储设置），并未直接体现 一键加速/释放内存 的动作意图；此外数据模型中的 memoryLabel 字段（内存已用）在截图中未显示，仅靠 6.2GB/8GB 数值隐含语义。progressColor 在 DSL 中写为绿色 #007D6C，但截图中进度条呈鲜艳蓝色，与规格不一致。",
+    "aesthetic": "截图整体配色克制专业：左面板淡绿底色与深绿 CTA 形成记忆区视觉重心，右侧三行白/淡黄圆角卡层级清晰。字号阶梯（标题 12 → 内存主值 20 → 副值 14 → 标签 12）分明，主值字重 700 突出。问题：进度条渲染为亮蓝色而非 DSL 指定的墨绿/青色，与左面板绿色调不统一，略显跳脱；左面板内 标题/数值/进度条/按钮 四项全部左对齐，留白节奏尚可但进度条与按钮之间略松散。",
+    "layout": "截图中所有受保护文本（手机状态、6.2GB / 8GB、剩余空间 42GB、电量 56%、状态 建议清理、查看存储）均完整可见，未出现裁切或截断；左右两面板均未越界出卡片圆角，底边距卡片下沿约 10vp，合规。右侧三行高度统一为 32vp，垂直居中分布，节奏整齐。仅个别小瑕疵：左面板 标题 与 内存主值 之间留白偏大（itemMargin=6 + 高度差导致），视觉上略有断层；进度条与按钮之间也偏松。整体无堆叠、无遮挡、布局成立。"
+  },
+  "issues": [
+    "用户要求 释放内存加速，但 CTA 为 查看存储（跳转 storage_settings），未直接体现 一键加速 动作",
+    "数据模型中的 memoryLabel 字段 内存已用 未在截图中呈现",
+    "Progress 进度条渲染为亮蓝色，与 DSL 指定的 #007D6C 墨绿色不一致，与左面板绿色调割裂",
+    "左面板 标题 与 内存主值 之间垂直留白偏大，节奏略松散"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"device_status_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"device_status_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"memory_panel\",\"status_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F7FAFC\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"memory_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"memory_label\",\"memory_value\",\"memory_bar\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":136,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#E8F7F1\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.title }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.memoryLabel }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#8A929C\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.memoryUsed + ' / ' + $__dataModel.data.deviceStatus.memoryTotal }}\",\"styles\":{\"width\":120,\"height\":26,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#007D6C\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.deviceStatus.memoryPercent }}\",\"styles\":{\"width\":120,\"height\":8,\"borderRadius\":4,\"trackColor\":\"#FFFFFF\",\"progressColor\":\"#00B894\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.deviceStatus.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":92,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#007D6C\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"storage_row\",\"battery_row\",\"state_row\"],\"itemMargin\":6,\"styles\":{\"width\":130,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"storage_row\",\"component\":\"Row\",\"children\":[\"storage_label\",\"storage_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":130,\"height\":32,\"padding\":8,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"storage_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.storageLabel }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"storage_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.storageFree }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_row\",\"component\":\"Row\",\"children\":[\"battery_label\",\"battery_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":130,\"height\":32,\"padding\":8,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"battery_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.batteryLabel }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.batteryPercent }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_row\",\"component\":\"Row\",\"children\":[\"state_label\",\"state_value\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":130,\"height\":32,\"padding\":8,\"borderRadius\":12,\"backgroundColor\":\"#FFF6E5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"state_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.statusLabel }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.deviceStatus.statusText }}\",\"styles\":{\"width\":66,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#9F6B00\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"device_status_card\",\"path\":\"/\",\"value\":{\"data\":{\"deviceStatus\":{\"title\":\"手机状态\",\"memoryLabel\":\"内存已用\",\"memoryUsed\":\"6.2GB\",\"memoryTotal\":\"8GB\",\"memoryPercent\":78,\"storageLabel\":\"剩余空间\",\"storageFree\":\"42GB\",\"batteryLabel\":\"电量\",\"batteryPercent\":\"56%\",\"statusLabel\":\"状态\",\"statusText\":\"建议清理\",\"actionLabel\":\"查看存储\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

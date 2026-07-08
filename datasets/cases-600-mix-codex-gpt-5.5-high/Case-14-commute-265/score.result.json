@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-14-commute-265",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求通勤卡、点一下能导航去公司、8公里、前面红色危险提示，截图中均得到完整呈现：左侧红色渐变面板显示'导'字符徽章+'危险提示'+'前方红色预警'；右侧白色面板显示标题'通勤去公司'、距离'距离公司 8公里'以及红色渐变'开始导航'按钮。onClick 调用的 clickToIntent 及其 args（StartNavigate/dstLocation/trafficpe）原样来自 eventCandidates；尺寸 2x4 (300x140)、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.value 与 TaskSpec.dataModel.value 完全一致，所有硬约束满足。",
+    "aesthetic": "截图整体配色和谐：左侧采用红到深红线性渐变（#ff3b30→#b3261e）营造危险提示氛围，右侧白底+浅阴影突出主信息区。字号层级清晰：标题 18pt（最强字重）、距离 16pt 红色、按钮/告警 14pt、提示 10pt，主次分明。受保护文字（'危险提示'、'通勤去公司'、'开始导航'）在各自背景上均清晰可读，红色按钮渐变在白底上对比强烈。底部按钮距卡片底边约 12vp，留白舒适。两块面板的圆角与卡片圆角形成统一感。唯一小遗憾是左面板底部'前方红色预警'在浅色渐变中可读性略弱，但整体观感专业克制。",
+    "layout": "截图中各元素均无堆叠或截断：左面板（86×116）内 glyph_badge（34×34 圆形）、'危险提示'（14pt 单行）、'前方红色预警'（10pt 双行）从上到下依次居中分布，垂直占用约 10+34+6+18+6+28=102vp，居中在 116vp 中无溢出。中间 divider（1×96）贯穿左面板中央。右面板（169×116）采用 justifyContent:spaceBetween，将标题、距离、按钮三组均匀分隔：title_row 22 + distance_text 24 + nav_button 32 + 间距 = 约 108vp，留 8vp 上下对称。横向 12+86+10+1+10+169+12=300vp 精确等于卡片宽度，无左右溢出。底部'开始导航'按钮底边距卡片底边约 12vp，符合 10-14vp 区间。整体左右两块面板以 divider 为对称轴视觉平衡良好。"
+  },
+  "issues": [
+    "左面板底部'前方红色预警'在红色渐变底部（#b3261e 偏暗）上对比度略低，可考虑将 fontColor 提亮或使用更暖的浅色",
+    "右面板 distance_text 使用 formatString + path 字符串拼接，文本宽度按 16pt 估算约 152vp，接近容器宽度 149vp 余量很小，建议保留但监控是否被截断",
+    "左面板内部 itemMargin:6 在 116vp 高度中视觉密度偏高，'前方红色预警'与上方的'危险提示'距离略近"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_265\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_265\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"alert_panel\",\"divider\",\"route_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_panel\",\"component\":\"Column\",\"children\":[\"glyph_badge\",\"alert_text\",\"alert_hint\"],\"itemMargin\":8,\"styles\":{\"width\":86,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#ffff3b30\",0],[\"#ffb3261e\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyph_badge\",\"component\":\"Text\",\"content\":{\"path\":\"/commute/glyph\"},\"styles\":{\"width\":34,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#33ffffff\",\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":{\"path\":\"/commute/alertText\"},\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_hint\",\"component\":\"Text\",\"content\":{\"path\":\"/commute/routeHint\"},\"styles\":{\"width\":70,\"height\":28,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffe6e4\",\"textAlign\":\"center\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":96,\"backgroundColor\":\"#1f000000\"}},{\"id\":\"route_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"distance_text\",\"nav_button\"],\"itemMargin\":8,\"styles\":{\"width\":169,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"shadow\":{\"radius\":8,\"color\":\"#18000000\",\"offsetX\":0,\"offsetY\":2},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":{\"path\":\"/commute/title\"},\"styles\":{\"width\":149,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance_text\",\"component\":\"Text\",\"content\":{\"path\":\"/commute/distanceText\"},\"styles\":{\"width\":149,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffff3b30\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":{\"path\":\"/commute/actionText\"},\"styles\":{\"width\":149,\"height\":32,\"borderRadius\":16,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ffff3b30\",0],[\"#ffff6b5f\",1]]},\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":{\"path\":\"/commute/destination/latitude\"},\"longitude\":{\"path\":\"/commute/destination/longitude\"}},\"trafficpe\":{\"path\":\"/commute/trafficpe\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_265\",\"value\":{\"commute\":{\"title\":\"通勤去公司\",\"distanceText\":\"8公里\",\"alertText\":\"危险提示\",\"routeHint\":\"前方红色预警\",\"actionText\":\"开始导航\",\"glyph\":\"导\",\"trafficpe\":\"Drive\",\"destination\":{\"name\":\"公司\",\"latitude\":\"\",\"longitude\":\"\"}}}}}"
+  ]
+}

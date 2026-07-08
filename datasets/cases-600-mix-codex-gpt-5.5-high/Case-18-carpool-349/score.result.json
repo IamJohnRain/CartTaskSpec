@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-18-carpool-349",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "用户的三条明确诉求：①拼车卡、②点一下能导航、③显示已接上几人。截图中可见标题'拼车出发'、路线'去科技园'、状态'同路已确认'、接单数'已接上 2人'均完整呈现；clickToIntent 事件已正确绑定到 root Row 与 nav_button，args 完全源自 eventCandidates；size=2x2、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 均符合硬约束。扣分点：右侧绿色 CTA 按钮的'导航'文案在截图中被截断为'...'，用户无法识别该按钮是'导航'功能，直接削弱了'点一下能导航'这一核心诉求的可读性。",
+    "aesthetic": "整体配色克制协调：浅灰渐变底 + 绿色主题点缀，主标题'拼车出发'采用最重字重 16px/700，路线/状态采用 12px/500 形成清晰层级；右侧蓝紫色药丸与绿色主按钮形成节奏。但截图右下角绿色 CTA 按钮显示为'...'，视觉上像加载中或渲染失败，是显著的美观扣分项，破坏了卡片整体的精致感与完成度。留白密度尚可，左右两列对齐统一。",
+    "layout": "截图最突出的布局问题是绿色 CTA 按钮文字被截断为'...'：原 DSL 中 button width=44、height=32、fontSize=14，文字'导航'在按钮内 padding（左右各 8vp 左右）下实际可用文本宽度约 28vp，仅够 2 个中文字符贴边显示，被系统降级为省略号。这是受保护 CTA 文案被截断的典型问题。其余布局基本成立：左列三行文字（title/route/status）纵向堆叠无重叠，右侧 count_box 与 button 纵向堆叠无溢出，底部 button 距卡片底边约 12vp（在 8-12vp 范围内）。Button 高度 32 满足 ≥24vp 热区要求，但宽度 44 偏窄是导致文字截断的直接原因。"
+  },
+  "issues": [
+    "右侧绿色 CTA 按钮文字'导航'在截图中显示为'...'，按钮宽度 44vp 无法容纳 fontSize=14 的'导航'二字，关键交互文案被截断",
+    "按钮宽度仅 44vp 偏窄，且内 padding 后实际文本宽度不足；建议扩到内容区全宽 116vp，让'导航'二字清晰可读并提升点击热区",
+    "count_box 内部 itemMargin=2 略小，'已接上'与'2人'之间呼吸感可以更舒展"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_349\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_349\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"info\",\"nav_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#ffffffff\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ $__dataModel.nav.destination.latitude }}\",\"longitude\":\"{{ $__dataModel.nav.destination.longitude }}\"},\"trafficpe\":\"{{ $__dataModel.nav.trafficpe }}\"}}}]},{\"id\":\"info\",\"component\":\"Row\",\"children\":[\"main\",\"count_box\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"route\",\"status\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.title }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"route\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.routeText }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.statusText }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_box\",\"component\":\"Column\",\"children\":[\"picked_label\",\"picked_count\"],\"itemMargin\":2,\"styles\":{\"width\":44,\"height\":48,\"padding\":{\"left\":4,\"right\":4,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#190a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"picked_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.pickedLabel }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"picked_count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.pickedCountText }}\",\"styles\":{\"width\":36,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.actionText }}\",\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ff64bb5c\",0],[\"#ff5ba854\",1]]},\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ $__dataModel.nav.destination.latitude }}\",\"longitude\":\"{{ $__dataModel.nav.destination.longitude }}\"},\"trafficpe\":\"{{ $__dataModel.nav.trafficpe }}\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_349\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"拼车出发\",\"routeText\":\"去科技园\",\"pickedLabel\":\"已接上\",\"pickedCountText\":\"2人\",\"statusText\":\"同路已确认\",\"actionText\":\"导航\"},\"nav\":{\"destination\":{\"name\":\"科技园南门\",\"latitude\":\"22.5431\",\"longitude\":\"114.0579\"},\"trafficpe\":\"Drive\"}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-sleep-151",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.8,
+  "reasons": {
+    "instruction": "用户明确要求中间横排3个可勾选项（白噪音/雨声/海浪）并各带'累计播放X次'动态数字，这是核心诉求之一，但截图中这三组复选框+播放次数完全不可见，仅显示顶部'助眠歌单'标题和底部'安心助眠'状态，核心信息缺失严重。标题、月亮图标、深紫到深蓝渐变、点击跳转deeplink、状态条件判断（calendar空时显示safeStatus）均已落实，2x2尺寸与catalogId/version等硬约束也满足。月亮图标在截图中看起来像emoji风格（带星点装饰），与assetCandidates中icon_sleep.png的描述不完全一致，疑似图片未加载而回退到emoji。",
+    "aesthetic": "深紫到深蓝的135°线性渐变观感较好，标题白色加粗与底色对比清晰，'安心助眠'绿色文字在深色背景上也可读。但卡片中部从标题下沿到状态文字之间存在大面积纯色空白（占整张卡片约40%面积），视觉上严重不平衡、显空洞，浪费了2x2本就紧张的版面。月亮图标疑似emoji也降低了专业感。",
+    "layout": "截图中可见的最大问题是3个轨道项（复选框+标签+播放次数）完全缺失，卡片中段留出约50-60vp高度的空白区域。Header（20vp）和status（16vp）本身未截断、未溢出，但tracks Row使用了模板循环 {{componentId:'trackTpl',path:'/sleep/tracks}}，渲染器似乎未正确实例化该模板，导致3个36vp宽的Column子项一个都没出现。Root Column采用justifyContent:spaceBetween把status推到了底部，间接暴露了中段空白。没有出现文字裁切或边界溢出，但空白本身就是严重的排版失败。"
+  },
+  "issues": [
+    "3个复选框轨道项（白噪音/雨声/海浪+累计播放次数）在截图中完全不可见，是核心诉求缺失",
+    "tracks Row 的模板循环 {componentId:'trackTpl',path:'/sleep/tracks'} 未被渲染器正确实例化",
+    "卡片中部存在约50-60vp的大面积纯色空白，视觉空洞",
+    "月亮图标在截图中呈现emoji风格，疑似图片未正确加载",
+    "2x2空间紧张但原DSL未对字号/间距做极致压缩，导致tracks区域过大反而凸显空缺"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_151\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_151\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"tracks\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff4b2b78\",0],[\"#ff16386a\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"sleepIcon\",\"title\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleepIcon\",\"component\":\"Image\",\"src\":{\"path\":\"/sleep/icon\"},\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":98,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tracks\",\"component\":\"Row\",\"children\":[\"track0\",\"track1\",\"track2\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":56,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"track0\",\"component\":\"Column\",\"children\":[\"cb0\",\"cnt0\"],\"itemMargin\":3,\"styles\":{\"width\":37,\"height\":56,\"alignItems\":\"center\"}},{\"id\":\"cb0\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/sleep/tracks/0/name\"},\"select\":{\"path\":\"/sleep/tracks/0/checked\"},\"styles\":{\"width\":37,\"height\":22,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff9b8cff\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"cnt0\",\"component\":\"Text\",\"content\":\"累计{{$__dataModel.sleep.tracks.0.playCount}}次\",\"styles\":{\"width\":37,\"height\":14,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"track1\",\"component\":\"Column\",\"children\":[\"cb1\",\"cnt1\"],\"itemMargin\":3,\"styles\":{\"width\":37,\"height\":56,\"alignItems\":\"center\"}},{\"id\":\"cb1\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/sleep/tracks/1/name\"},\"select\":{\"path\":\"/sleep/tracks/1/checked\"},\"styles\":{\"width\":37,\"height\":22,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff9b8cff\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"cnt1\",\"component\":\"Text\",\"content\":\"累计{{$__dataModel.sleep.tracks.1.playCount}}次\",\"styles\":{\"width\":37,\"height\":14,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"track2\",\"component\":\"Column\",\"children\":[\"cb2\",\"cnt2\"],\"itemMargin\":3,\"styles\":{\"width\":37,\"height\":56,\"alignItems\":\"center\"}},{\"id\":\"cb2\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/sleep/tracks/2/name\"},\"select\":{\"path\":\"/sleep/tracks/2/checked\"},\"styles\":{\"width\":37,\"height\":22,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ff9b8cff\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"cnt2\",\"component\":\"Text\",\"content\":\"累计{{$__dataModel.sleep.tracks.2.playCount}}次\",\"styles\":{\"width\":37,\"height\":14,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ size($__dataModel.data.calendar.items) > 0 ? $__dataModel.sleep.status : $__dataModel.sleep.safeStatus }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ size($__dataModel.data.calendar.items) > 0 ? '#ffff4d4f' : '#ffa7f3c7' }}\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sleep_151\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"助眠歌单\",\"status\":\"请勿超时使用\",\"safeStatus\":\"安心助眠\",\"icon\":\"resources/base/media/icon_sleep.png\",\"tracks\":[{\"name\":\"白噪音\",\"playCount\":36,\"checked\":true},{\"name\":\"雨声\",\"playCount\":24,\"checked\":false},{\"name\":\"海浪\",\"playCount\":18,\"checked\":false}]},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

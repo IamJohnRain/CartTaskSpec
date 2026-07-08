@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-09-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求一张天气卡片监控女朋友学校的天气，降温超5°时弹'明天降温五度记得穿厚外套'，下雪时弹'下雪了出门别骑车了打车吧'。原 DSL 通过 dataModel 表达式完整呈现了'明天降温 6°C'（红色警示）+'记得穿厚外套'、'下雪了'（蓝色徽章）+'出门别骑车，打车吧'，并补充当前温度 -2°C 阴转雪、北方学校天气标题、北风3级风况。size 2x4、root width/height/borderRadius、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value 完整对等，均符合硬约束；eventCandidates 为空故无 onClick 符合协议。轻微扣分：未直接渲染 districtName '北京海淀'，daily 数组（今天/明天 low/high/condition）未在 UI 中利用。",
+    "aesthetic": "整体配色克制和谐：浅灰底 #FFF7F8FA + 白色圆角面板，红色 #C73426 用于降温警示、蓝色 #0A59F7 用于雪况徽章，语义清晰、对比度好；字号 12/14/16、间距 4/8/10 均落在阶梯上。但严重违反'同一卡片只保留一个最强字重'规则——title_text、temp_text、drop_text、snow_badge、advice_text 共 5 个元素全部使用 fontWeight:700，导致重点不突出、信息层级扁平；下雪了徽章底色已足够强，无需再叠加 700 字重。",
+    "layout": "全部 Row/Column 预算核算通过：root Column 纵向占用=12+12+8*2+56+24+20=140，与可用 140 恰好相等（不溢出但贴边无余量，存在亚像素舍入裁剪风险）；top_row 横向=10+128+138=276=可用 276；weather_panel Column 纵向=8+8+4+18+18=56=可用 56；forecast_panel Column 纵向=8+8+4+20+16=56=可用 56；care_row 横向=8+72+196=276=可用 276。文本宽度 112/122/72/196/276 均不超过父内容区宽度，无文字截断；Stack 仅底层背景、无遮盖；按钮热区 72x24≥24vp。截图佐证文字完整可读，无溢出。"
+  },
+  "issues": [
+    "5 个元素（title_text/temp_text/drop_text/snow_badge/advice_text）均使用 fontWeight:700，违反'同一卡片只保留一个最强字重'规则，层级扁平",
+    "root Column 纵向占用 140 恰好等于容器高度 140，无任何渲染冗余，存在亚像素舍入裁剪的潜在风险",
+    "未直接展示 districtName '北京海淀' 地点信息，天气卡片通常应明示位置",
+    "daily 数组（今天/明天 low/high/condition）未在 UI 中体现，信息密度可再提升"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"girlfriend_school_weather_care_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"girlfriend_school_weather_care_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"care_row\",\"travel_text\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"forecast_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"temp_text\"],\"itemMargin\":4,\"styles\":{\"width\":128,\"height\":56,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.titleText }}\",\"styles\":{\"width\":112,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.districtName + ' · ' + $__dataModel.data.weather.current.temperatureText + ' · ' + $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":112,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"forecast_panel\",\"component\":\"Column\",\"children\":[\"drop_text\",\"wind_text\"],\"itemMargin\":4,\"styles\":{\"width\":138,\"height\":56,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"drop_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.dropText }}\",\"styles\":{\"width\":122,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFC73426\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wind_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.windText }}\",\"styles\":{\"width\":122,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care_row\",\"component\":\"Row\",\"children\":[\"snow_badge\",\"advice_text\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"snow_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.snowText }}\",\"styles\":{\"width\":64,\"height\":24,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF0A59F7\",\"borderRadius\":12,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.adviceText }}\",\"styles\":{\"width\":204,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"travel_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.travelText }}\",\"styles\":{\"width\":276,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"girlfriend_school_weather_care_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"北京海淀\",\"prefectureName\":\"北京\"},\"current\":{\"temperatureText\":\"-2°C\",\"condition\":\"阴转雪\",\"windText\":\"北风 3级\"},\"daily\":[{\"day\":\"今天\",\"lowText\":\"-2°C\",\"highText\":\"4°C\",\"condition\":\"阴\"},{\"day\":\"明天\",\"lowText\":\"-8°C\",\"highText\":\"-1°C\",\"condition\":\"小雪\"}],\"updatedAt\":\"08:30\"}},\"care\":{\"titleText\":\"北方学校天气\",\"dropText\":\"明天降温 6°C\",\"snowText\":\"下雪了\",\"adviceText\":\"记得穿厚外套\",\"travelText\":\"出门别骑车，打车吧\"},\"state\":{\"loading\":false,\"dropOverFive\":true,\"snowing\":true}}}}"
+  ]
+}

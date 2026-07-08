@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-244",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户要求服药打卡卡、几项可勾选、点击进App、显示天气和已完成。截图显示标题'服药打卡'、状态'已完成'、两个已勾选复选框(早药/晚药)、绿色按钮、底部天气文本均已出现，事件 onClick 原样使用 clickToDeeplink。但天气文本被截断为'天气读取'(少了'中'字)、按钮文本被截断为'进...'(少了'App')，两条均为用户明确要求展示的受保护信息，指令完成度受损。",
+    "aesthetic": "整体配色以白底+绿色点缀+底部薄荷绿渐变带，色调统一且清新；标题加粗、副状态绿色、复选框绿底白勾形成清晰的字重层级。但 weather_text 与 Button label 均出现截断，破坏了视觉完整性；卡片白底与画布白底融合过强，缺少可识别的卡片轮廓线。",
+    "layout": "截图中可观察到两处严重溢出/截断：(1) 底部'天气读取中'被裁切为'天气读取'，末尾的'中'字缺失——weather_text 宽度仅 52 但 5 个 12pt 汉字需约 60vp，故溢出裁切；(2) 绿色 CTA 按钮上'进App'被截断为'进...'——button 宽度 56 在 fontSize:14 + 默认内边距下不足以容纳'进App'。两条均为受保护文本/CTA 的截断，布局存在明显缺陷。"
+  },
+  "issues": [
+    "天气文本'天气读取中'被截断为'天气读取'，缺失末字'中'",
+    "按钮文字'进App'被截断为'进...'，缺失'App'，CTA 不可读",
+    "weather_text 宽度(52)不足以容纳 fontSize:12 的 5 个汉字(需~60vp)",
+    "Button 宽度(56)在 fontSize:14 时不足以容纳'进App'加内边距",
+    "卡片白底与画布白底对比度低，缺少可识别的卡片边界线"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_244\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_244\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_band\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\",\"border\":{\"width\":1,\"color\":\"#14000000\"}}},{\"id\":\"ambient_band\",\"component\":\"Row\",\"children\":[],\"styles\":{\"width\":140,\"height\":44,\"margin\":{\"top\":96},\"linearGradient\":{\"angle\":0,\"colors\":[[\"#ff92d6cc\",0],[\"#ffffffff\",1]]},\"backgroundColor\":\"#ff92d6cc\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"check_col\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"title_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_remind.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"status\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.statusText }}\",\"styles\":{\"width\":86,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_col\",\"component\":\"Column\",\"children\":[\"med_morning\",\"med_evening\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"med_morning\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[0].label }}\",\"select\":\"{{ $__dataModel.items[0].done }}\",\"styles\":{\"width\":116,\"height\":20,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#e5000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"med_evening\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.items[1].label }}\",\"select\":\"{{ $__dataModel.items[1].done }}\",\"styles\":{\"width\":116,\"height\":20,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"fontSize\":12,\"fontColor\":\"#e5000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_text\",\"open_app\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":54,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_app\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionText }}\",\"styles\":{\"width\":58,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_244\",\"path\":\"/\",\"value\":{\"title\":\"服药打卡\",\"statusText\":\"已完成\",\"items\":[{\"label\":\"早药\",\"done\":true},{\"label\":\"晚药\",\"done\":true}],\"actionText\":\"进App\",\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"天气读取中\"},\"daily\":[],\"updatedAt\":\"\"}}}}}"
+  ]
+}

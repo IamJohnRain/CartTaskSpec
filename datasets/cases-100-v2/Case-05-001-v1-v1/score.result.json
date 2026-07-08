@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-001-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "截图中可见会议标题'产品评审会'、时间'14:30-15:15'、会议ID'863 245 901'以及'日程详情'按钮，时间与ID信息均完整呈现；右侧两个白色卡片分别显示'共享摘要/方案首页'与'聊天摘要/3条新消息'。但用户明确要求'实时屏幕共享内容和聊天消息'，卡片只展示了摘要标签和一行简短占位文字，没有呈现任何屏幕共享画面的视觉信息（如缩略图/动态指示），也没有呈现聊天消息的具体内容，与'实时/内容'的诉求有差距；事件 clickToIntent/ViewCalendarEvent 正确绑定到'日程详情'按钮；尺寸 2x4(300x140)、catalogId、version、updateDataModel 均符合协议；无 assetCandidates，故无图像资源问题。",
+    "aesthetic": "截图整体配色为浅蓝主调（#F7FAFF 背景 + #EAF2FF 左侧面板 + 白色子卡 + #0A59F7 强调色），色彩和谐、专业；标题'产品评审会'为中灰、时间用大号蓝色加粗做强对比、ID 标签灰+数值深色形成层次，主信息层级清晰；左右两列对齐整齐，内边距合理，留白舒适；按钮胶囊形态与蓝色背景形成强焦点；只存在一个最强字重（时间 18/700），其余均为弱化处理，符合美学规范。无明显土气或不协调之处。",
+    "layout": "截图显示卡片宽 300、高 140，左侧蓝面板承载标题/时间/ID/按钮，右侧两个白色小卡承载共享与聊天信息。所有受保护文本（标题、时间、ID、按钮'日程详情'、右侧两条摘要）均完整可见，无截断、无 ellipsis 省略；右列 share_box(54) + chat_box(54) + itemMargin(8) = 116 与列高 116 严丝合缝，未出现堆叠或溢出；按钮宽 96 高 28，热区充足且底边距卡片底约 12vp，符合规范；左右列之间 6vp 间距，无重叠；Stack 未遮挡任何关键信息。整体排版干净利落。"
+  },
+  "issues": [
+    "用户要求'实时屏幕共享内容和聊天消息'，但右列仅以文字摘要（'方案首页'/'3条新消息'）呈现，没有体现'实时画面'或'消息内容'的视觉信息，语义落实不充分",
+    "share_box 与 chat_box 在视觉上几乎完全对称（白底/灰标签/黑加粗值），无法直观区分'屏幕共享'与'聊天'两类信息，缺少指示性视觉元素",
+    "share_summary 与 chat_summary 字色均为 #182431，没有给'共享摘要'加额外视觉强调以暗示其代表的是'当前正在共享的页面'"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"meeting_join_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"meeting_join_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"summary_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F7FAFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"time_text\",\"id_row\",\"detail_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":116,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#EAF2FF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":128,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":128,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"id_row\",\"component\":\"Row\",\"children\":[\"id_label\",\"id_value\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":128,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"id_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.idLabel }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"id_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.meetingId }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.meeting.detailLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"summary_col\",\"component\":\"Column\",\"children\":[\"share_box\",\"chat_box\"],\"itemMargin\":8,\"styles\":{\"width\":130,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"share_box\",\"component\":\"Column\",\"children\":[\"share_label\",\"share_summary\"],\"itemMargin\":2,\"styles\":{\"width\":130,\"height\":54,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#EAF6EE\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"share_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.shareLabel }}\",\"styles\":{\"width\":114,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#1A8F4A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"share_summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.shareSummary }}\",\"styles\":{\"width\":114,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"chat_box\",\"component\":\"Column\",\"children\":[\"chat_label\",\"chat_summary\"],\"itemMargin\":2,\"styles\":{\"width\":130,\"height\":54,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#FFF7E6\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"chat_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.chatLabel }}\",\"styles\":{\"width\":114,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#A8651B\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"chat_summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.meeting.chatSummary }}\",\"styles\":{\"width\":114,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"meeting_join_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-meeting-05001\",\"title\":\"产品评审会\",\"eventLocation\":\"线上会议\",\"description\":\"会议ID 863 245 901\",\"dtStart\":\"14:30\",\"dtEnd\":\"15:15\"}]},\"meeting\":{\"idLabel\":\"会议ID\",\"meetingId\":\"863 245 901\",\"shareLabel\":\"共享摘要\",\"shareSummary\":\"方案首页\",\"chatLabel\":\"聊天摘要\",\"chatSummary\":\"3条新消息\",\"detailLabel\":\"日程详情\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

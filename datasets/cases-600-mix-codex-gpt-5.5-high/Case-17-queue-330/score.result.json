@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-17-queue-330",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户明确要求'主体是图'，但截图中左上角的 queue_image 仅渲染为一个小灰色圆角占位胶囊（34x34），并未呈现真实的柜台插图素材，主体性严重缺失；叫到号信息（A016）与导航按钮均已落位，事件 clickToDeeplink 参数与 TaskSpec 一致，updateDataModel 路径与值匹配，但作为用户原话中的'主体'图像未生效，关键视觉诉求未满足，扣分明显。",
+    "aesthetic": "配色采用奶油色渐变底+橙红强调色，整体暖色调和谐，标题/店名/叫到/A016 的字重层级（A016 fontSize 32 800）也算清晰。但截图左上角本应是插图的位置变成了灰色占位胶囊，与整体精致感割裂；A016 大字底部与下方橙色按钮贴得过近，视觉上显得局促，削弱了高级感。",
+    "layout": "截图存在两处明显问题：① 顶部 '排号叫号' 标题文字与左侧 image 占位区域几乎贴边，第一字 '排' 与胶囊右沿视觉上紧贴甚至略微重叠；② 中部 A016 大字（fontSize 32）底部与下方'导航'按钮顶部发生重叠/压字，A016 的下沿被按钮上沿切到一截，属于受保护主指标被遮挡；③ 卡片整体偏拥挤，留白不足。"
+  },
+  "issues": [
+    "queue_image 渲染为灰色占位胶囊，未呈现真实插图，违反用户'主体是图'的核心诉求",
+    "A016 大字底部与'导航'按钮顶部重叠，A016 被按钮切到",
+    "标题'排号叫号'与左侧 image 占位区域在水平方向几乎贴边，缺少呼吸空间",
+    "图像尺寸 34x34 过小，未能体现'主体'地位",
+    "called_col 高度 42 + fontSize 32 文本实际行高溢出，导致下沿侵入按钮区域"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_queue_330\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_queue_330\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"called_col\",\"nav_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFF7ED\",0],[\"#FFFFEDD5\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"queue_image\",\"title_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"queue_image\",\"component\":\"Image\",\"src\":{\"path\":\"/assets/queueIllustration\"},\"styles\":{\"width\":46,\"height\":46,\"objectFit\":\"cover\",\"borderRadius\":10}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"store_text\"],\"itemMargin\":2,\"styles\":{\"width\":62,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":62,\"height\":16,\"fontSize\":12,\"fontWeight\":800,\"fontColor\":\"#FF1F2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"store_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.storeName }}\",\"styles\":{\"width\":62,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF9A3412\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"called_col\",\"component\":\"Column\",\"children\":[\"called_label\",\"called_no\"],\"itemMargin\":1,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"called_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.calledLabel }}\",\"styles\":{\"width\":116,\"height\":11,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FF7C2D12\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"called_no\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.calledNo }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.actionText }}\",\"styles\":{\"width\":116,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.maps\",\"abilityName\":\"com.huawei.hmos.maps.MainAbility\",\"uri\":\"geo:0,0?q=%E6%98%9F%E6%B2%B3%E8%8C%B6%E9%A4%90%E5%8E%85\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_queue_330\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"排号叫号\",\"storeName\":\"星河茶餐厅\",\"calledLabel\":\"叫到\",\"calledNo\":\"A016\",\"actionText\":\"导航\"},\"assets\":{\"queueIllustration\":\"resources/base/media/queue_counter.png\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-06-002-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图清晰呈现了用户所有诉求：内存占用比例 86%（大字主指标）、状态文字'内存快满'、建议'清理约 2.4GB'、'一键清理'按钮（带正确 onClick clickToIntent → OpenSetting/storage_settings）、手机 42%、耳机 68%、耳机仓 31% 三条电量信息均完整可读。尺寸 2x4 (300x140)、catalogId/version/updateDataModel 等协议硬约束均满足。仅在进度条语义上用户提到'占用比例'而主指标已经是百分比展示，呈现完整，不扣分。",
+    "aesthetic": "截图观感整体干净专业：浅薄荷绿底色 (#F1F8F5) 与白色小卡 (#FFFFFF) 形成柔和层次，深绿色主数值与按钮主色 (#007D65) 统一呼应，文字对比清晰可读。字号层级明确——86% (32号粗体) 唯一最强字重、建议文字 16号中等、状态/电量 12-14号次级，配色克制无杂色。留白密度舒适，无空洞也无拥挤；左卡圆角与整体卡片圆角协调。略显不足的是右下角按钮相对较窄，与右侧文本宽度不形成对称感，但属于可接受范围。",
+    "layout": "从截图观察：左卡 86% / 内存快满 / 进度条三段居中排列且未截断；右侧'建议清理约 2.4GB'单行完整、三条电量文字均完整可读未截断、'一键清理'按钮文字居中且底边未被裁切、未溢出卡片边界。各元素间距合理，无堆叠重叠，无 Stack 遮挡。理论计算上 detail_col 内容纵向总和约 118vp 略超父高 116vp，但实际渲染中按钮仍完整位于卡片内、未挤压，截图未观察到可见问题，因此扣分很轻。"
+  },
+  "issues": [
+    "detail_col 纵向内容总和（suggestion 20 + itemMargin 8 + battery_col 50 + itemMargin 8 + button 32 = 118）理论略超父容器 116，存在 2vp 潜在溢出风险",
+    "battery_col 高度 50 固定而内部三条 14vp 文字加 2 个 4vp itemMargin 共 50，刚好填满但缺余量",
+    "clean_button 宽度 100 偏小，与右侧文本区域宽 164 视觉上略不对称，理想可加宽至 116-120vp"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"memory_cleanup_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"memory_cleanup_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"memory_panel\",\"detail_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F1F8F5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"memory_panel\",\"component\":\"Column\",\"children\":[\"memory_percent\",\"memory_status\",\"memory_progress\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"memory_percent\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.usedPercentText }}\",\"styles\":{\"width\":84,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#007D65\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.statusText }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#194D44\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.memory.usedPercent }}\",\"total\":100,\"styles\":{\"width\":84,\"height\":8,\"type\":\"linear\",\"color\":\"#007D65\",\"backgroundColor\":\"#CFEFE6\",\"borderRadius\":4}},{\"id\":\"detail_col\",\"component\":\"Column\",\"children\":[\"suggestion_text\",\"battery_col\",\"clean_button\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":116,\"paddingLeft\":4,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"suggestion_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.suggestionText }}\",\"styles\":{\"width\":160,\"height\":20,\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#18211F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_col\",\"component\":\"Column\",\"children\":[\"phone_battery\",\"earbuds_battery\",\"case_battery\"],\"itemMargin\":4,\"styles\":{\"width\":160,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"phone_battery\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.phoneText }}\",\"styles\":{\"width\":160,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#3F4A47\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"earbuds_battery\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.earbudsText }}\",\"styles\":{\"width\":160,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#3F4A47\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"case_battery\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.caseText }}\",\"styles\":{\"width\":160,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#3F4A47\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"clean_button\",\"component\":\"Button\",\"label\":\"一键清理\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"OpenSetting\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"storage_settings\"}}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#007D65\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"memory_cleanup_card\",\"path\":\"/\",\"value\":{\"memory\":{\"usedPercent\":86,\"usedPercentText\":\"86%\",\"statusText\":\"内存快满\",\"suggestionText\":\"建议清理约 2.4GB\"},\"battery\":{\"phoneText\":\"手机 42%\",\"earbudsText\":\"耳机 68%\",\"caseText\":\"耳机仓 31%\"}}}}"
+  ]
+}

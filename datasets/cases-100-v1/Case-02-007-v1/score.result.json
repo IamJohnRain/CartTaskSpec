@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-007-v1",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.4,
+  "reasons": {
+    "instruction": "用户原始诉求覆盖：耳机连接状态、时段推荐歌单、本地歌单名、当前曲目、歌词、播放位置记忆、CTA。截图中实际只能看到一颗灰色胶囊内的'下一句歌词：穿过站台的风'，以及右下角被截断为'打开…'的蓝色文字。deviceStatus、timeMode、playlistName（本地提神快歌）、trackTitle（晨光节拍）、playPosition（上次听到 01:26）、右侧时段推荐/离线歌单——这些用户明确点名的字段全部没有在截图中呈现；onClick 已配置但按钮热区因文本截断几乎不可用。信息完整度极低，仅歌词一行勉强落地，给 2.0。",
+    "aesthetic": "截图绝大部分为纯白底：根壳层的蓝-青渐变（toBottomRight #2B6EEA→#33C5A5）和 borderRadius:22 圆角均未渲染出来，导致卡片没有任何视觉外壳。字号层级无从谈起，对齐无法判断。底部按钮白色背景也没渲染，只剩蓝色字'打开…'浮在白底上，整体观感等同于渲染失败，给 1.0。",
+    "layout": "截图中只有 lyric_box 与被截断的'打开…'两个元素可见，其他 10 余个组件（包括 status_text、playlist_text、track_text、side_panel 整块以及 bottom_row 中的 position_text）均未出现在画面中。open_button 的 label'打开音乐'被截断为'打开…'，说明 button 宽度 72 不足以容纳 fontSize:13 的 4 个汉字，热区不可用；按 2x4 底部动作区到底边的安全距离 10–14vp 也无法验证（白底无外壳）。主信息（playlistName/trackTitle/状态/位置）整片缺失，可判定为严重布局坍塌，给 1.0。"
+  },
+  "issues": [
+    "根壳层 linearGradient 与 borderRadius 在截图中未渲染，卡片没有外壳",
+    "status_text、playlist_text、track_text、position_text 全部未在截图呈现",
+    "side_panel 整块（时段推荐/快节奏/离线歌单/已就绪）未在截图呈现",
+    "open_button 的 label '打开音乐' 实际渲染为 '打开…'，被截断",
+    "Button 白底背景未渲染，仅剩蓝色 label 浮在白底上",
+    "bottom_row 中 position_text 缺失，播放位置记忆信息未传达"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"commute_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"commute_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status_row\",\"title_text\",\"track_text\",\"lyric_box\",\"bottom_row\"],\"itemMargin\":3,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#2B6EEA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"dot\",\"status_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"dot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":10,\"height\":14,\"fontSize\":10,\"fontColor\":\"#33C5A5\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.deviceStatus }} · {{ $__dataModel.music.timeMode }}\",\"styles\":{\"width\":252,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlistName }}\",\"styles\":{\"width\":276,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackTitle }} · 时段：快节奏\",\"styles\":{\"width\":276,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lyric_box\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.lyricLine }}\",\"styles\":{\"width\":276,\"height\":20,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#66000000\",\"fontSize\":11,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"position_text\",\"open_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"position_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playPosition }}\",\"styles\":{\"width\":130,\"height\":18,\"fontSize\":10,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#2B6EEA\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"commute_music_card\",\"path\":\"/\",\"value\":{\"music\":{\"deviceStatus\":\"耳机已连接\",\"timeMode\":\"早高峰通勤\",\"playlistName\":\"本地提神快歌\",\"trackTitle\":\"晨光节拍\",\"lyricLine\":\"下一句歌词：穿过站台的风\",\"playPosition\":\"上次听到 01:26\",\"buttonLabel\":\"打开音乐\"}}}}"
+  ]
+}

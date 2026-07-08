@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-17-queue-328",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户要求的核心要素：排队清单打勾（身份证、医保卡）、医院导航入口、提前喊我状态。截图可见：标题'排队提醒'、红色'提前喊我'状态、两枚已勾选的红方块（身份证、医保卡）、'医院导航'地点文字以及一个红色行动按钮，事件 onClick 原样来自 eventCandidates。但存在两个明显问题：1) 底部按钮的'去医院'文字被截断为'去...'，CTA 关键文案未完整呈现；2) 顶部 nav_glyph 图标在截图中显示为一个空灰色方块，素材未真正渲染，等于'医院导航'的视觉锚点丢失。size/root shell/catalogId/version/updateDataModel 等硬约束均符合。",
+    "aesthetic": "配色整体协调：奶白底（#FFF7ED）+ 朱红强调（#E84026）+ 深灰文字构成温暖、克制的视觉氛围；层级清晰，'排队提醒'作最强字重（800）配合红色'提前喊我'状态形成对比；两个红方块复选框与红按钮形成视觉呼应。扣分点：1) 顶部位置图标位置仅显示一个灰色空矩形，缺少图标细节让标题区显得突兀；2) 底部红按钮文字截断成'去...'，破坏按钮完整性；3) '医院导航'灰色文字与下方红按钮色差略大，左下信息量稍显空。",
+    "layout": "截图中可观察到的具体问题：1) 底部按钮文字'去医院'被截断为'去...'，仅显示'去'字加省略号，是受保护 CTA 文案被截断的严重问题（按钮 width=60、fontSize=14、'去医院'=3 字≈42px，但实际渲染未留出文字内边距空间导致省略号截断）；2) 顶部 nav_glyph（24×24）在截图中只呈现为灰色占位矩形，图标未渲染，使标题区与图标区存在视觉脱节；3) 整体 vertical 节奏尚可，'排队提醒'/状态/复选框/底栏四级排布对齐良好，'医院导航'左侧贴齐、按钮右侧贴齐，justifyContent:spaceBetween 生效；4) 未观察到元素越过 140×140 圆角边界，未出现 Stack 遮盖关键文本的情况；5) 按钮热区 60×28 < 理想 40vp（接近），但仍在 24vp 最低门槛以上。"
+  },
+  "issues": [
+    "底部按钮文字'去医院'被截断为'去...'，CTA 关键文案不完整",
+    "顶部 nav_glyph 图标未渲染，呈现为灰色占位矩形",
+    "按钮 width=60 在 14px 字号下未预留文字内边距空间，导致省略号截断",
+    "place_text 宽 48 + button 宽 60 + margin 8 正好等于 116，缺少容错空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_17_queue_328\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_17_queue_328\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"check_col\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF7ED\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"nav_glyph\",\"title_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"nav_glyph\",\"component\":\"Image\",\"src\":{\"path\":\"/assets/navGlyph\"},\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\",\"backgroundColor\":\"#FFE84026\",\"borderRadius\":12}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.title }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#FF1F2937\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.statusText }}\",\"styles\":{\"width\":86,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_col\",\"component\":\"Column\",\"children\":[\"id_card_check\",\"medical_card_check\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"id_card_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.queue.items.idCardLabel }}\",\"select\":{\"path\":\"/queue/checked/idCard\"},\"styles\":{\"width\":116,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF374151\",\"selectedColor\":\"#FFE84026\",\"unSelectedColor\":\"#FFD1D5DB\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"medical_card_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.queue.items.medicalCardLabel }}\",\"select\":{\"path\":\"/queue/checked/medicalCard\"},\"styles\":{\"width\":116,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF374151\",\"selectedColor\":\"#FFE84026\",\"unSelectedColor\":\"#FFD1D5DB\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"place_text\",\"nav_button\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"place_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.queue.place }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF6B7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.queue.actionText }}\",\"styles\":{\"width\":68,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFE84026\",\"fontSize\":13,\"fontWeight\":\"bold\",\"fontColor\":\"#FFFFFFFF\",\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4}},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3186\",\"longitude\":\"114.1742\"},\"trafficpe\":\"Walk\"}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_17_queue_328\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"排队提醒\",\"place\":\"医院导航\",\"statusText\":\"提前喊我\",\"actionText\":\"去医院\",\"items\":{\"idCardLabel\":\"身份证\",\"medicalCardLabel\":\"医保卡\"},\"checked\":{\"idCard\":true,\"medicalCard\":true}},\"assets\":{\"navGlyph\":\"resources/base/media/icon_location.png\"}}}}"
+  ]
+}

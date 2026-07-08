@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-29-elderly-care-579",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.3,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "用户明确要求'下面是纵向几条音乐推荐'，但截图中三个音乐条目是横向并排的（轻音乐 助眠 / 戏曲 经典 / 老歌 - 80年代金曲），与'纵向'诉求严重相悖。三个音乐条目的文本也都被截断简化：'轻音乐 - 助眠'被简化为'轻音乐 助眠'、'戏曲 - 经典选段'被简化为'戏曲 经典'，仅第三条保留了全名但又因作为Text换行变成两行。红色寒潮预警虽然显示了，但'寒潮预警 减少外出'被截成了'寒潮预警 减少外'，'出'字丢失。第三条'老歌'因uri为空未挂onClick，但样式却与前两个Button不同（无背景填充），与用户'每条能跳音乐App歌单'的统一期望不一致。'大图配深色舞台风'基本落实：背景渐变+舞台字符画均有，但舞台字符画极淡。",
+    "aesthetic": "深色渐变背景与紫色调搭配尚可，'-3℃'主指标字重突出，红色寒潮条与背景对比明显，视觉上有紧急感。但红色告警条的'出'字被截断，破坏完整性。前两个音乐Button与第三个Text样式不一致（两个是圆角Button、一个是无底色的Text且换行成两行），视觉整齐度较差。舞台字符画'/*\\/* * /*\\/*'在深色背景上几乎不可见（#33ffffff ≈ 20%不透明度），未起到'舞台风'装饰作用。'戏曲 经典'两字悬空在Button内显得空荡。",
+    "layout": "截图中最严重的布局问题是红色告警条右侧'出'字被卡片右边切掉，'寒潮预警 减少外'是受保护文案（用户明确写出的告警内容），不应被裁切。第二个问题是音乐区采用了横向Row（musicPanel + oldSong），与用户要求的'纵向'严重不符，且因为横向挤压导致'戏曲 经典'Button只够显示两字。第三个问题是第三个音乐Text没有高度约束，被自动换行成两行'老歌 - 80年'/'代金曲'，与相邻两个单行Button高度不统一，整个底部行高错位。Hero区舞台字符画'/*\\/* * /*\\/*'叠在温度与告警之间的空白处，未遮挡关键文案，但可视度过低。温度'-3℃'、'室外温度'标签、'雨夹雪 注意路面'文案均完整可读，无被遮挡。底部外框到卡片底边距离也基本合规。"
+  },
+  "issues": [
+    "红色寒潮告警条'寒潮预警 减少外出'右侧'出'字被裁切，文案不完整",
+    "音乐区采用横向Row布局，与用户要求的'纵向几条'严重不符",
+    "音乐条目标签被简化：'轻音乐 - 助眠'→'轻音乐 助眠'、'戏曲 - 经典选段'→'戏曲 经典'，省略了用户明确写出的连字符和'选段'",
+    "第三个音乐条目'老歌 - 80年代金曲'作为无背景Text自动换行成两行，与前两个Button视觉不一致",
+    "第三个音乐条目因uri为空未挂onClick，与前两个Button交互性不一致",
+    "舞台字符画'/*\\/* * /*\\/*'不透明度仅20%，深色背景下几乎不可见，未起到装饰作用",
+    "音乐条目命中Button的24vp热区规范但被横向挤压成24px宽86px，'戏曲 经典'仅能容下两字"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_elderly_care_579\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_elderly_care_579\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"musicSection\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff191a1c\",0],[\"#ff202224\",0.62],[\"#ff634794\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero\",\"component\":\"Stack\",\"children\":[\"heroPanel\",\"heroContent\"],\"styles\":{\"width\":276,\"height\":56,\"borderRadius\":16,\"clip\":true,\"backgroundColor\":\"#19000000\"}},{\"id\":\"heroPanel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.stageGlyph }}\",\"styles\":{\"width\":276,\"height\":56,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#66ffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"heroContent\",\"component\":\"Row\",\"children\":[\"weatherInfo\",\"weatherSide\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":56,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weatherInfo\",\"component\":\"Column\",\"children\":[\"weatherTitle\",\"tempRow\"],\"itemMargin\":2,\"styles\":{\"width\":132,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weatherTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.temperatureLabel }}\",\"styles\":{\"width\":132,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tempRow\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":132,\"height\":30,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherSide\",\"component\":\"Column\",\"children\":[\"condition\",\"alertBar\"],\"itemMargin\":4,\"styles\":{\"width\":128,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.roadTip }}\",\"styles\":{\"width\":128,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"end\",\"textOverflow\":\"none\"}},{\"id\":\"alertBar\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alertText }}\",\"styles\":{\"width\":128,\"height\":20,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#ffe64566\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"musicSection\",\"component\":\"Column\",\"children\":[\"musicTitle\",\"music1\",\"music2\",\"music3\"],\"itemMargin\":1,\"styles\":{\"width\":276,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"musicTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.musicTitle }}\",\"styles\":{\"width\":276,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music1\",\"component\":\"Text\",\"content\":\"♪ 轻音乐 - 助眠\",\"styles\":{\"width\":276,\"height\":14,\"padding\":{\"left\":8,\"right\":8,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#19ffffff\",\"fontSize\":11,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"music2\",\"component\":\"Text\",\"content\":\"♪ 戏曲 - 经典选段\",\"styles\":{\"width\":276,\"height\":14,\"padding\":{\"left\":8,\"right\":8,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#19ffffff\",\"fontSize\":11,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}]},{\"id\":\"music3\",\"component\":\"Text\",\"content\":\"♪ 老歌 - 80年代金曲\",\"styles\":{\"width\":276,\"height\":14,\"padding\":{\"left\":8,\"right\":8,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#0cffffff\",\"fontSize\":11,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_elderly_care_579\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\",\"prefectureName\":\"\"},\"current\":{\"temperatureText\":\"-3℃\",\"condition\":\"雨夹雪\",\"alertLevel\":\"寒潮预警\"},\"daily\":[],\"updatedAt\":\"\"}},\"care\":{\"title\":\"居家环境\",\"temperatureLabel\":\"室外温度\",\"roadTip\":\"雨夹雪 注意路面\",\"alertText\":\"寒潮预警 减少外出\",\"stageGlyph\":\"/\\\\/\\\\  *  /\\\\/\\\\\",\"musicTitle\":\"音乐推荐\",\"musicItems\":[{\"name\":\"轻音乐 - 助眠\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"},{\"name\":\"戏曲 - 经典选段\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"},{\"name\":\"老歌 - 80年代金曲\",\"uri\":\"\"}]},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-06-memory-clean-113",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 0.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.6,
+  "reasons": {
+    "instruction": "DSL 文本层在协议、数据模型、事件绑定上均按 userQuery 落实：包含 '一键清理' 标题、'待清理 82%' 用量、'垃圾超过80%，注意风险' 警示、'清微信/清相册' 复选框、'开启勿扰' 按钮，onClick 调用 SetSettingSwitch do_not_disturb 事件也正确。但截图中用户实际看不到任何这些信息：标题文字、百分比数字、风险提示文字、两个复选框标签、进度条、底部按钮均未呈现，整张卡片只剩渐变背景，等同于信息未传递给用户。硬约束（尺寸 2x4、catalogId、version、updateDataModel.path）均满足，但渲染失败使指令遵从几乎归零。",
+    "aesthetic": "从截图能看到的只有一层从左上奶白到右下橙红的 linearGradient 背景，圆角裁剪正常，整体氛围与'橙红紧迫渐变'的诉求大致相符。但因为所有信息层（白色 summaryBox、奶白 riskText 块、红色 Button）都未渲染，无法评判字号层级、字重强弱、留白节奏、对齐与可读性。卡片内部完全空白，仅靠背景色撑场，美观只能给到及格以下。",
+    "layout": "截图为关键问题：卡片 300x140 区域除渐变背景外没有任何可见元素——没有 '一键清理' 标题、没有 '待清理 82%' 大字、没有 '垃圾超过80%' 警示块、没有清微信/清相册复选框、没有进度条、也没有底部 '开启勿扰' 按钮。summaryBox（高度 48，内部 children 16+2+22=40，加上 padding 6+6=12 共 52）已超过容器高度，理论上可能造成内容被裁；optionRow 高度 30 但内含 Progress 高度 10 + Checkbox 高度 30，存在纵向不一致；bottomRow 仅 30，按钮热区偏小。这些尺寸/层级问题在截图中以'全部内容缺失'的形式集中爆发，按 D3 评分基准属于布局崩溃级别。"
+  },
+  "issues": [
+    "截图中除渐变背景外无任何内容渲染，所有 Text/Checkbox/Progress/Button 均不可见",
+    "summaryBox 内部 children 高度(40) + 上下 padding(12) = 52，超过 summaryBox height 48，存在溢出",
+    "optionRow 高度 30 包含 height=30 的 Checkbox 与 height=10 的 Progress，纵向基线不一致",
+    "bottomRow 高度 30，Button height 30，热区未达 40vp 理想值且距卡片底边仅 10vp，略显局促",
+    "usageText fontSize 18 在 22 高度内单行勉强可下，但与 titleText 12px 缺少阶梯过渡，标题与主数值视觉权重冲突",
+    "卡片内部出现大量空白，没有任何可交互/可读的信息，对用户而言等同于空卡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_113\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_113\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"type\":\"Column\",\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":8,\"bottom\":8},\"borderRadius\":22,\"clip\":true,\"background\":{\"type\":\"linearGradient\",\"angle\":120,\"colors\":[\"#FFF8F4\",\"#FFE4D6\",\"#FF6B3A\"]},\"children\":[\"topRow\",\"optionRow\",\"bottomRow\"],\"itemMargin\":5,\"justifyContent\":\"space-between\",\"alignItems\":\"stretch\"},{\"id\":\"topRow\",\"type\":\"Row\",\"width\":276,\"height\":46,\"children\":[\"summaryBox\",\"riskText\"],\"itemMargin\":10,\"alignItems\":\"center\"},{\"id\":\"summaryBox\",\"type\":\"Column\",\"width\":108,\"height\":46,\"padding\":{\"left\":10,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#FFFFFF\",\"children\":[\"titleText\",\"usageText\"],\"itemMargin\":2,\"justifyContent\":\"center\",\"alignItems\":\"stretch\"},{\"id\":\"titleText\",\"type\":\"Text\",\"width\":90,\"height\":14,\"text\":\"{{ memory.title }}\",\"fontSize\":12,\"fontWeight\":\"Medium\",\"fontColor\":\"#7A2E12\",\"maxLines\":1},{\"id\":\"usageText\",\"type\":\"Text\",\"width\":90,\"height\":22,\"text\":\"{{ memory.usageText }}\",\"fontSize\":16,\"fontWeight\":\"Bold\",\"fontColor\":\"#D71920\",\"maxLines\":1},{\"id\":\"riskText\",\"type\":\"Text\",\"width\":158,\"height\":46,\"padding\":{\"left\":8,\"right\":8,\"top\":14,\"bottom\":14},\"borderRadius\":14,\"backgroundColor\":\"#FFF1E8\",\"text\":\"{{ memory.riskText }}\",\"fontSize\":13,\"fontWeight\":\"Medium\",\"fontColor\":\"#B3261E\",\"maxLines\":1},{\"id\":\"optionRow\",\"type\":\"Row\",\"width\":276,\"height\":32,\"children\":[\"wechatCheck\",\"albumCheck\",\"usageProgress\"],\"itemMargin\":8,\"alignItems\":\"center\"},{\"id\":\"wechatCheck\",\"type\":\"Checkbox\",\"width\":80,\"height\":32,\"label\":\"{{ memory.options.wechat.label }}\",\"select\":{\"path\":\"/memory/options/wechat/selected\"},\"fontSize\":12,\"fontColor\":\"#3A1C12\",\"selectedColor\":\"#FF6B3A\",\"unSelectedColor\":\"#C8A79A\",\"shape\":\"rounded_square\"},{\"id\":\"albumCheck\",\"type\":\"Checkbox\",\"width\":80,\"height\":32,\"label\":\"{{ memory.options.album.label }}\",\"select\":{\"path\":\"/memory/options/album/selected\"},\"fontSize\":12,\"fontColor\":\"#3A1C12\",\"selectedColor\":\"#FF6B3A\",\"unSelectedColor\":\"#C8A79A\",\"shape\":\"rounded_square\"},{\"id\":\"usageProgress\",\"type\":\"Progress\",\"width\":100,\"height\":12,\"value\":\"{{ memory.usageValue }}\",\"total\":\"{{ memory.totalValue }}\",\"progressColor\":\"#D71920\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":6},{\"id\":\"bottomRow\",\"type\":\"Row\",\"width\":276,\"height\":36,\"children\":[\"actionButton\"],\"justifyContent\":\"flex-end\",\"alignItems\":\"center\"},{\"id\":\"actionButton\",\"type\":\"Button\",\"width\":108,\"height\":36,\"text\":\"{{ memory.actionText }}\",\"fontSize\":14,\"fontWeight\":\"Medium\",\"fontColor\":\"#FFFFFF\",\"backgroundColor\":\"#D71920\",\"borderRadius\":12,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"do_not_disturb\",\"switchFlag\":1}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_113\",\"value\":{\"memory\":{\"title\":\"一键清理\",\"usageText\":\"待清理 82%\",\"usageValue\":82,\"totalValue\":100,\"riskText\":\"垃圾超过80%，注意风险\",\"actionText\":\"开启勿扰\",\"options\":{\"wechat\":{\"label\":\"清微信\",\"selected\":true},\"album\":{\"label\":\"清相册\",\"selected\":false}}}}}}"
+  ]
+}

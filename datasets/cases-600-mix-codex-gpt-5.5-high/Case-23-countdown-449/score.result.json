@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-449",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户明确要求生日纪念日卡片、字叠背景图、点击进入系统日历。截图中可见标题'生日纪念日'、倒计时'12 天'、日期'7月18日'，右侧'进日历'按钮已绑定 onClick clickToIntent，事件 call/args 原样来自 eventCandidates，路径指 /data/calendar/items/0/entityId。size=2x4(300x140) 符合。assetCandidates 为空，背景以渐变代替可接受。扣分点：用户要求'字叠背景图'，使用渐变色（无真实图片素材）属合理替代；information completeness 满足。",
+    "aesthetic": "截图整体配色为紫到粉的渐变，与生日纪念主题契合；标题、倒计时、日期字号阶梯清晰（18/40/14），最强字重集中在'12'上；右侧磨砂半透明白色面板与紫色背景形成层次。扣分点：右侧 hint 文字'点开日历查看'在 72px 宽、14pt 字号下被换行为'点开日历查 / 看'，'看'字单独成行，视觉上极不均衡，破坏整体美观；hint 白色字在 #33FFFFFF 半透明面板上对比度偏弱，略显发灰。",
+    "layout": "截图主要问题集中在右侧 side 面板：hint 文字容器宽 72px、字号 14pt，'点开日历查看' 6 个汉字理论宽约 84px，超出容器被迫换行，maxLines=2 导致'看'字孤立在第二行；该面板内部 padding 8/8 + hint(34) + gap10 + action(28) = 80 + 20(padding) = 100，已超出 94px 高度，挤压感明显。左侧主区'12 天'水平排布、'生日纪念日'、'7月18日'均完整可见无截断；底部按钮'进日历'在面板内位置合理。未观察到元素溢出卡片边界或 Stack 层叠遮挡关键内容。"
+  },
+  "issues": [
+    "右侧 hint 文本'点开日历查看'在 72px 宽 14pt 字号下被强制换行，'看'字孤立成第二行，视觉不均衡",
+    "hint 字号 14pt × 6 字符 ≈ 84px 超出 72px 容器宽度，存在横向空间不足",
+    "side Column 子项总高 34+10+28=72 + padding 20 = 92 与声明 height 94 基本持平，挤压感明显",
+    "hint 白色 #FFFFFFFF 字在 #33FFFFFF 半透明背景上对比度偏弱，可读性略降",
+    "action 按钮热区 72x28 略小于理想 40vp 高，仅 28vp"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"birthday_anniversary_449\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"birthday_anniversary_449\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#564AF7\",\"linearGradient\":{\"angle\":125,\"colors\":[[\"#564AF7\",0],[\"#AC49F5\",0.56],[\"#E67C92\",1]]},\"alignContent\":\"center\"}},{\"id\":\"ambient\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"strokeWidth\":116,\"color\":\"#33000000\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"main\",\"side\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"hero\",\"dateLabel\"],\"itemMargin\":6,\"styles\":{\"width\":150,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.title }}\",\"styles\":{\"width\":150,\"height\":22,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"days\",\"unit\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":150,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"days\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.days }}\",\"styles\":{\"width\":58,\"height\":44,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.unit }}\",\"styles\":{\"width\":20,\"height\":24,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dateLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.dateLabel }}\",\"styles\":{\"width\":110,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"hint\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":102,\"height\":96,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.birthday.hint }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.birthday.actionLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":82,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"birthday_anniversary_449\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"birthday-20260718\",\"title\":\"生日纪念日\",\"dtStart\":\"2026-07-18\",\"dtEnd\":\"2026-07-18\",\"eventLocation\":\"系统日历\",\"description\":\"还有 12 天\",\"importantEventType\":2,\"senderName\":\"Calendar\"}]}},\"birthday\":{\"title\":\"生日纪念日\",\"days\":\"12\",\"unit\":\"天\",\"dateLabel\":\"7月18日\",\"hint\":\"点开日历查看\",\"actionLabel\":\"进日历\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

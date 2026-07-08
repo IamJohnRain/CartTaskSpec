@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-005",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.7,
+  "reasons": {
+    "instruction": "DSL 完整覆盖了 dataModel 中的 deviceStatus/playlistName/trackHint/listenDuration/runNote/buttonLabel 六个字段，标题/状态/CTA/已听时长都按语义呈现；onClick 事件 call=clickToDeeplink 与 args 原样来自 eventCandidates，未发明新事件。size=2x4、catalogId=ohos.a2ui.extended.catalog、每行 version=v0.9、updateDataModel.path=/ 等硬约束全部满足。扣分点：用户明确要求的『抬手划一下切歌』仅用一个『打开』按钮隐式表达，没有切歌/手势的可视化提示；『跑完自动记录听了多久』仅以静态文本 listenDuration 呈现，缺少进度或累计趋势反馈，场景贴合度略弱。",
+    "aesthetic": "配色思路合理（紫色对角渐变 #AC49F5→#C386F0，文字白色为主），字号阶梯 12/14/18/16/10 在规范内，主字重 playlist_text 与 state_value 都用 700，整体层级清晰。但渲染截图近乎全白，仅残留微小紫色痕迹，无法核验实际视觉效果；action_row 用 #33FFFFFF（20% 透明白）作底配白色文字，对比度偏低，state_panel 同样存在白底白字风险，整体在真实可读性上需要更稳的对比方案。",
+    "layout": "逐项预算核算：根 Row=12+12+14+176+86=300 横向刚好填满，无溢出；main_col Column 纵向 0+0+3*4+20+22+18+44=116 等于可用 116，无溢出；action_row Row 横向 8+8+8+102+50=176 等于宽 176 无溢出，纵向 8+8+28=44 等于高 44 无溢出；duration_col Column 纵向 0+0+2+14+12=28 等于高 28 无溢出；state_col 内 state_panel Column 纵向 8+8+2*6+14+20+14=76 < 96 留有 20vp 余量，宽度内容 70 <= 70 临界但通过。底部 action_row 底边到卡片底边 = 140-(12+116)=12vp，落在 10-14vp 区间。open_button 热区 50x28 大于 24vp 最低要求。受保护文本 playlist_text『夜跑心动歌单』6 字 ×18=108px < 176、status_text 5 字 ×14=70 < 176，均不会被截断。文字宽度全部通过但渲染截图显示卡片几乎全白、看不到任何内容，疑似 8 位十六进制颜色（如 #E5FFFFFF、#CCFFFFFF、#33FFFFFF）触发 RGBA/ARGB 解析歧义导致内容被吞，实际可见性失败，扣重分。"
+  },
+  "issues": [
+    "渲染截图基本为空白（仅见微小紫色痕迹），与紫色渐变 + 白色文字的预期视觉严重不符，疑似渲染失败",
+    "字体颜色大量使用 8 位带透明度的十六进制（#E5FFFFFF、#CCFFFFFF、#99FFFFFF 等），RGBA 与 ARGB 解析存在歧义，可能被某些渲染器将透明度误读为颜色分量导致文字透明化",
+    "action_row 背景 #33FFFFFF（20% 白）+ 白色文字，对比度不足；state_panel #26FFFFFF 配白字同样偏弱",
+    "用户提及的『抬手划一下切歌』缺乏手势/切歌的可视化提示，CTA 仅通用『打开』",
+    "『跑完自动记录听了多久』仅以静态文本 listenDuration 呈现，缺少进度条或累计趋势等可视化反馈",
+    "state_panel 宽度 86，padding 8 后内容区 70，state_value『耳机在线』4 字 ×16=64px 紧贴边界，几乎无水平留白风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"run_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"run_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"state_col\"],\"itemMargin\":14,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottomRight\",\"colors\":[[\"#7B2EE5\",0],[\"#A855F7\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"status_text\",\"playlist_text\",\"track_text\",\"gesture_hint\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.deviceStatus }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E8E8E8\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlistName }}\",\"styles\":{\"width\":176,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackHint }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#CCCCCC\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"gesture_hint\",\"component\":\"Text\",\"content\":\"← 抬手滑一下切歌 →\",\"styles\":{\"width\":176,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#FFCC66\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"duration_col\",\"open_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":176,\"height\":40,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#4DFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"duration_col\",\"component\":\"Column\",\"children\":[\"duration_text\",\"sync_text\"],\"itemMargin\":2,\"styles\":{\"width\":102,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.listenDuration }}\",\"styles\":{\"width\":102,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sync_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.runNote }}\",\"styles\":{\"width\":102,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#D0D0D0\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":50,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFF\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#7B2EE5\"}},{\"id\":\"state_col\",\"component\":\"Column\",\"children\":[\"state_panel\"],\"itemMargin\":0,\"styles\":{\"width\":86,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"state_panel\",\"component\":\"Column\",\"children\":[\"state_label\",\"state_value\",\"state_hint\"],\"itemMargin\":6,\"styles\":{\"width\":86,\"height\":96,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"state_label\",\"component\":\"Text\",\"content\":\"连接状态\",\"styles\":{\"width\":70,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#E8E8E8\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_value\",\"component\":\"Text\",\"content\":\"耳机在线\",\"styles\":{\"width\":70,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_hint\",\"component\":\"Text\",\"content\":\"歌单待播\",\"styles\":{\"width\":70,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#D0D0D0\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"run_music_card\",\"path\":\"/\",\"value\":{\"music\":{\"deviceStatus\":\"耳机已连接\",\"playlistName\":\"夜跑心动歌单\",\"trackHint\":\"节奏跑步推荐\",\"listenDuration\":\"已听 42 分钟\",\"runNote\":\"跑完后同步记录\",\"buttonLabel\":\"打开\"}}}}"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-10-rainy-taxi-194",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.6,
+  "reasons": {
+    "instruction": "用户要求的 5 项要素（雨天打车卡、左侧雨云图标、主题蓝背景、右侧横排温/湿/排队、点天气跳转天气 app）在 DSL 与数据模型中均已落实：root 使用蓝渐变背景、左侧 icon_panel 引用 rainCloudIcon、右侧三列横排温湿排数据、weather_link 配置了原样的 clickToDeeplink 事件。但截图中三处关键文本被截断——标题'雨天打车'只显示'雨天打'、天气胶囊只显示'天'、排队值'12人'只显示'12'，用户实际看到的核心信息不完整，指令遵从度被严重拉低。",
+    "aesthetic": "截图整体观感尚可：蓝色对角渐变（#0a59b7→#37a7ff）清爽自然，白色文字在蓝底上对比度高可读性好，半透明白色 icon_panel 容器与胶囊式 weather_link 设计有质感。但左侧图标区呈竖长胶囊形（36×92），与 32×32 的方形图标比例失调，且渲染出来是一小块灰白方块而非可识别的雨云图形，视觉识别度差；右侧三列宽度不均、被截断的字符进一步破坏了精致感。",
+    "layout": "截图中可清晰看到三处受保护文本被裁切：(1) 标题'雨天打车'在 width:42、fontSize:12 下'车'字被吃掉，只剩'雨天打'；(2) 天气跳转胶囊 width:26、padding 4 加 fontSize:12 下'气'字被切，只显示'天'；(3) 排队值 width:22 容纳不下'12人'，'人'被切，只剩'12'。三处均为用户明确要求呈现的核心信息（标题、CTA、主指标），按规范不得依赖 maxLines:1 隐藏而应通过扩宽/缩字解决。左侧 icon_panel 高 92、宽 36 的细长胶囊与 32×32 图标比例不协调，icon 居中后上下大量留白，视觉重心失衡。"
+  },
+  "issues": [
+    "标题'雨天打车'被截断为'雨天打'，丢失'车'字",
+    "天气跳转胶囊'天气'被截断为'天'，丢失'气'字，CTA 不可识别",
+    "排队值'12人'被截断为'12'，丢失'人'字，主指标信息不全",
+    "左侧 icon_panel 为 36×92 竖长胶囊，与 32×32 方形图标比例失调，icon 居中后上下留白过多",
+    "雨云图标实际渲染为一小块灰白方块，未呈现可识别的雨云图形（可能是 asset 未加载或图片本身问题）",
+    "右侧三列宽度（24/22/22）未按文本实际宽度分配，'18°C'与'12人'均超出分配宽度",
+    "原 padding 12+12=24 在 140 宽下可用空间仅 116，icon_panel 36 + gap 8 + info_col 72 刚好，但 info_col 内排版已无余裕"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_194\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_194\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"icon_panel\",\"info_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":18,\"bottom\":18},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a59b7\",0],[\"#ff37a7ff\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"rain_icon\"],\"itemMargin\":0,\"styles\":{\"width\":40,\"height\":88,\"padding\":{\"left\":4,\"right\":4,\"top\":28,\"bottom\":28},\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"rain_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.rainCloudIcon }}\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"top_row\",\"metric_row\"],\"itemMargin\":10,\"styles\":{\"width\":80,\"height\":88,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"weather_link\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":80,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":48,\"height\":20,\"fontSize\":11,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_link\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.weatherAction }}\",\"styles\":{\"width\":30,\"height\":24,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.weather\",\"abilityName\":\"com.huawei.weather.MainAbility\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"temp_col\",\"humidity_col\",\"queue_col\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":80,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temp_col\",\"component\":\"Column\",\"children\":[\"temp_label\",\"temp_value\"],\"itemMargin\":4,\"styles\":{\"width\":26,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"temp_label\",\"component\":\"Text\",\"content\":\"温\",\"styles\":{\"width\":26,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.temperature }}\",\"styles\":{\"width\":26,\"height\":16,\"fontSize\":10,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"humidity_col\",\"component\":\"Column\",\"children\":[\"humidity_label\",\"humidity_value\"],\"itemMargin\":4,\"styles\":{\"width\":22,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"humidity_label\",\"component\":\"Text\",\"content\":\"湿\",\"styles\":{\"width\":22,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"humidity_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.humidity }}\",\"styles\":{\"width\":22,\"height\":16,\"fontSize\":10,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"queue_col\",\"component\":\"Column\",\"children\":[\"queue_label\",\"queue_value\"],\"itemMargin\":4,\"styles\":{\"width\":28,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"queue_label\",\"component\":\"Text\",\"content\":\"排\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"queue_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.queueText }}\",\"styles\":{\"width\":28,\"height\":16,\"fontSize\":10,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_194\",\"value\":{\"taxi\":{\"title\":\"雨天打车\",\"weatherAction\":\"天气\",\"temperature\":\"18°C\",\"humidity\":\"86%\",\"queueText\":\"12人\"},\"asset\":{\"rainCloudIcon\":\"assets/freeclip-rain-cloud.png\"}}}}"
+  ]
+}

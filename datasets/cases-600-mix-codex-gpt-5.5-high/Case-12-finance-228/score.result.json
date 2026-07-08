@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-228",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "截图中可见标题'本月预算'、红色'快超支'徽章、橙色'打开记账'按钮，核心字段均已呈现。但主数值'剩1200元'的'元'字被截断丢失，单位信息不完整；底部按钮的 onClick 事件原样来自 eventCandidates（虽然 TaskSpec 给的是 com.huawei.hmos.clock 计时器包名，与'记账app'语义不符，但这是 TaskSpec 数据问题，模型正确遵循了协议）；尺寸 2x2、catalogId、version、updateDataModel.path/value 均符合协议。",
+    "aesthetic": "截图整体配色温暖协调：奶白渐变背景、红色警示徽章与进度环、橙色 CTA 按钮形成统一的暖色调，字重层级也基本清晰。但进度环与主数值文字在视觉上发生叠压——红色环线穿过'剩'字左半边，使主信息显得凌乱、缺乏精致感，留白偏紧，扣分。",
+    "layout": "截图存在两处明显布局问题：1) Stack 中 Progress 环宽 54vp 而 Text 宽 66vp、fontSize 18，'剩1200元'经 formatString 拼接后实际宽度约 79vp，远超 66vp，导致末位'元'被截断丢失；2) Text 与 Progress 在同一 Stack 内居中，66vp 的文字覆盖了 54vp 直径的环，红色环线直接穿过'剩'字左侧笔画，叠压严重。其余区域（顶部 Row、底部 Button、卡片边距、对齐）基本正常。Button 底边距卡片底约 12vp，符合规范。"
+  },
+  "issues": [
+    "主数值'剩1200元'中'元'字被截断，66vp 宽度不足以容纳 18px 字号的 5 个字符",
+    "Progress 环与 Text 在 Stack 中居中叠放，红色环线穿过'剩'字左侧笔画，造成视觉碰撞",
+    "formatString 拼接后未核算实际宽度，导致受保护的主指标文本被截断",
+    "eventCandidates 提供的 bundleName 为时钟应用而非记账应用（TaskSpec 数据问题，模型无法修改）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_228\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_228\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"meter_row\",\"open_btn\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#fffff7ed\",0],[\"#fff1f3f5\",0.62],[\"#ffffffff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.statusText }}\",\"styles\":{\"width\":50,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ffe84026\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"budget_ring\",\"amount_col\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"budget_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.finance.usedPercent }}\",\"total\":\"{{ $__dataModel.finance.totalPercent }}\",\"styles\":{\"type\":\"ring\",\"width\":48,\"height\":48,\"color\":\"#ffe84026\"}},{\"id\":\"amount_col\",\"component\":\"Column\",\"children\":[\"amount_text\",\"amount_label\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":56,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"flexStart\"}},{\"id\":\"amount_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.remainingText }}\",\"styles\":{\"width\":56,\"height\":28,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_label\",\"component\":\"Text\",\"content\":\"剩余\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":10,\"fontColor\":\"#991e1e1e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_228\",\"value\":{\"finance\":{\"title\":\"本月预算\",\"statusText\":\"快超支\",\"remainingText\":\"1200元\",\"usedPercent\":86,\"totalPercent\":100,\"actionText\":\"打开记账\"}}}}"
+  ]
+}

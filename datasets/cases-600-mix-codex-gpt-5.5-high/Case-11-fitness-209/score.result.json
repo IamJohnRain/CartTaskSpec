@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-209",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户要求的全部内容：'今日跑步'标题、'68%'完成比例（顶部右侧大字）、线性进度条可视化、'3.4/5.0 km'距离、'配速 6'20\"'、'打开跑步'按钮；点击按钮通过 onClick 调用 clickToDeeplink，args 与 eventCandidates 完全一致（uri 指向 huaweischeme://healthapp/home/sport?sportType=2）。所有 dataModel 字段均通过路径正确绑定。尺寸 2x4、root shell 参数、catalogId、version、updateDataModel.path 等硬约束均满足。",
+    "aesthetic": "截图中整体配色协调：浅灰底（#f7f8fa）配深绿主色（#0a7f64），文字层级清晰，标题与百分比形成对比，CTA 按钮填充色统一可读。但存在两点瑕疵：(1) 中间进度条尺寸仅 50×8px，相对于 276px 宽的详情区显得过于窄小，视觉上像被压缩成一条小线，未充分发挥进度条的视觉表达力；(2) 标题、百分比、距离三处均使用 fontWeight:700（三个最强字重），字重对比层次过多，缺少主次呼吸感。",
+    "layout": "从截图观察，root Column 内容纵向 20+8+50+8+30=116，再加上下 padding 24=140，刚好填满卡片，无溢出也无空白堆叠。headerRow 中 titleText(160)+margin(8)+percentText(72)=240<276，spaceBetween 正常撑开；mainRow 中 runProgress(50)+margin(12)+detailColumn(214)=276 满宽排布；按钮宽 276 居中。文字 '今日跑步'、'68%'、'3.4 / 5.0 km'、'配速 6'20\"'、'打开跑步' 在截图中均完整可见，无截断、无遮挡，底部按钮距卡片底边 12vp（在 8-12vp 建议范围内）。唯一可优化点：进度条与右侧 detailColumn 等高对齐导致进度条过窄。"
+  },
+  "issues": [
+    "进度条宽度仅 50px，相对于卡片宽度视觉占比过小，进度可视化效果弱",
+    "存在三处 fontWeight:700（titleText、percentText、distanceText），字重层级过多，缺少主次",
+    "进度条与详情列共享同一 Row 高度，使进度条被压缩为细线"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_209\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_209\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"headerRow\",\"progressBar\",\"detailColumn\",\"actionButton\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"headerRow\",\"component\":\"Row\",\"children\":[\"titleText\",\"percentText\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/title\"},\"styles\":{\"width\":180,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"percentText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/completedText\"},\"styles\":{\"width\":80,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff0a7f64\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"progressBar\",\"component\":\"Progress\",\"value\":{\"path\":\"/run/completedPercent\"},\"total\":{\"path\":\"/run/totalPercent\"},\"styles\":{\"type\":\"linear\",\"width\":276,\"height\":8,\"color\":\"#ff0a7f64\",\"backgroundColor\":\"#1a0a7f64\",\"borderRadius\":4}},{\"id\":\"detailColumn\",\"component\":\"Column\",\"children\":[\"distanceText\",\"paceText\"],\"itemMargin\":2,\"styles\":{\"width\":276,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"distanceText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/distanceText\"},\"styles\":{\"width\":276,\"height\":20,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#ff25313b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"paceText\",\"component\":\"Text\",\"content\":{\"path\":\"/run/paceText\"},\"styles\":{\"width\":276,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ff6b7280\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionButton\",\"component\":\"Button\",\"label\":{\"path\":\"/run/actionText\"},\"styles\":{\"width\":276,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a7f64\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_209\",\"value\":{\"run\":{\"title\":\"今日跑步\",\"completedText\":\"68%\",\"completedPercent\":68,\"totalPercent\":100,\"distanceText\":\"3.4 / 5.0 km\",\"paceText\":\"配速 6'20\\\"\",\"actionText\":\"打开跑步\"}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-092",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "截图中左侧倒计时块（今天晚上/42/分钟）渲染良好，顶部右侧'距离下个会议开始还有42分钟'拼接文本也正确显示。但用户明确要求的'右边纵向排列今天接下来的几个会议'完全没有渲染，data.calendar.items 内的三项（线上沙龙19:30、项目复盘21:00、明日准备22:10）均未出现在截图中，对应的分隔线也一并缺失。点击事件虽然定义了 onClick.clickToIntent.ViewCalendarEvent，但因列表未渲染而无任何可点击项落地。整体看仅约 1/3 的核心诉求被呈现。",
+    "aesthetic": "从截图看，浅蓝到浅绿的 110° 渐变背景柔和、有时间流逝感；左侧白色圆角色块与背景对比清晰，蓝色 42 数字、绿色'分钟'、灰色'今天晚上'三级字重层次合理；右侧'距离下个会议开始还有42分钟'字色深灰可读性好。仅可见部分观感良好，但右侧大片空白严重破坏整体视觉平衡。",
+    "layout": "截图中右半部分（agendaPanel 区域）除顶部一行'距离下个会议开始还有42分钟'外，约 92px 高度的 eventList 完全空白，三条会议记录及三条分隔线均未渲染，导致卡片右半部分约 70% 区域为真空。视觉上明显头重脚轻、内容严重缺失。左侧 96×116 倒计时块内文字与色块对齐良好，未见溢出或截断。"
+  },
+  "issues": [
+    "右侧 eventList 未渲染三条会议记录（线上沙龙/项目复盘/明日准备），核心信息缺失",
+    "用户要求的'分隔线隔开每个会议详情'未体现（因列表整体未渲染）",
+    "卡片右半部分约 70% 区域为空白，视觉严重不平衡",
+    "divider 颜色 #1F007DFF 的 alpha 仅约 12%，即便列表渲染也几乎不可见",
+    "eventRow 中 dtStart 与 title 之间仅 8px 间距较紧，且 eventTime 宽 40 在 13px 字号下偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_092\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_092\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"countdownBlock\",\"agendaPanel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":110,\"colors\":[\"#FFEAF4FF\",\"#FFEAF8EF\"]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"countdownBlock\",\"component\":\"Column\",\"children\":[\"countTitle\",\"countValue\",\"countUnit\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"countTitle\",\"component\":\"Text\",\"content\":\"今天晚上\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF4D6475\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countValue\",\"component\":\"Text\",\"content\":\"42\",\"styles\":{\"width\":80,\"height\":44,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#FF007DFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countUnit\",\"component\":\"Text\",\"content\":\"分钟\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF0A7F42\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"agendaPanel\",\"component\":\"Column\",\"children\":[\"countSentence\",\"eventList\"],\"itemMargin\":6,\"styles\":{\"width\":168,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"countSentence\",\"component\":\"Text\",\"content\":\"距离下个会议开始还有42分钟\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF1F2A33\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventList\",\"component\":\"List\",\"children\":{\"componentId\":\"eventTpl\",\"path\":\"/data/calendar/items\"},\"styles\":{\"width\":168,\"height\":92,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0}}},{\"id\":\"eventTpl\",\"component\":\"Column\",\"children\":[\"eventRow\",\"eventDivider\"],\"itemMargin\":3,\"styles\":{\"width\":168,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"eventRow\",\"component\":\"Row\",\"children\":[\"eventTime\",\"eventTitle\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":168,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"eventTime\",\"component\":\"Text\",\"content\":\"19:30\",\"styles\":{\"width\":44,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FF007DFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"线上沙龙\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FF26333D\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eventDivider\",\"component\":\"Divider\",\"styles\":{\"width\":168,\"height\":1,\"strokeWidth\":1,\"color\":\"#FFB7CDEA\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_092\",\"path\":\"/\",\"value\":{\"agenda\":{\"dateLabel\":\"今天晚上\",\"countdownMinutes\":42,\"countdownUnit\":\"分钟\"},\"data\":{\"calendar\":{\"source\":\"calendar_mock\",\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-092-1\",\"title\":\"线上沙龙\",\"dtStart\":\"19:30\",\"dtEnd\":\"20:30\",\"eventLocation\":\"视频会议\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-092-2\",\"title\":\"项目复盘\",\"dtStart\":\"21:00\",\"dtEnd\":\"21:30\",\"eventLocation\":\"线上会议\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-092-3\",\"title\":\"明日准备\",\"dtStart\":\"22:10\",\"dtEnd\":\"22:30\",\"eventLocation\":\"日历提醒\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

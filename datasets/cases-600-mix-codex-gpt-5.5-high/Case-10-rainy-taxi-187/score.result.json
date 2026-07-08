@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-187",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户要求'字浮在图片上、能点开导航、能看天气、有快来不及了的提醒'，截图中四项诉求均有明确呈现：Stack 叠层实现了字浮在图上的效果，root 上挂载了 clickToIntent/StartNavigate 事件，天气信息'小雨 22°C 雨86%'完整展示，黄色大字'快来不及了'作为警告醒目。尺寸 2x2、catalogId、version、updateDataModel 路径与值均符合协议。轻微扣分点：weather_row 与 nav_hint 用了非标准 formatString 调用的 ${} 插值（应使用 {{ $__dataModel.xxx }} 标准表达式），虽渲染正确但偏离协议推荐写法。",
+    "aesthetic": "截图中深青底色与奶黄警告字、青蓝 CTA 字的搭配有一定氛围感，黄色'快来不及了'作为最强字重层级清晰。但整体观感较为拥挤：天气图标（云后太阳+雨滴）尺寸 72×72 几乎铺满右侧，icon 边缘的雨滴线条直接与中下部文字'12分钟到上车点''点开导航去公司'产生视觉穿插，shade 渐变虽叠加在最底层上方但下端 0.8 不透明黑仍不足以压住雨滴线条，导致图文互相干扰、留白被压缩，缺少专业卡片应有的克制感。",
+    "layout": "截图中四行文字均完整渲染、未被裁切，Stack 层级顺序（image→shade→content）正确保证了文字在最上层，文字可读性整体成立。但存在两个明显布局问题：(1) 天气图片 72×72 放在 (margin left:44, top:34) 处，其右下角的雨滴图形直接伸入到中部'12分钟到上车点'和底部'点开导航去公司'文字的视觉区域，造成图文重叠（这是 Stack 中信息层与背景层未做空间隔离的典型问题）；(2) shade 是空 Column 仅作渐变占位，渐变方向 180° 但实际最深处才 0.8 alpha，不足以把右下半区的雨滴线条压暗。底部'点开导航去公司'距卡片底边约 8vp，在 2x2 范围内勉强达标但偏紧。整体没有出现文字截断或边界溢出，主要扣分来自图文视觉穿插。"
+  },
+  "issues": [
+    "天气图标 72×72 过大且位置偏右，其雨滴元素与中部'12分钟到上车点'、底部'点开导航去公司'文字产生明显的视觉重叠",
+    "shade 渐变最深仅 #cc000000（80% 黑），无法有效压暗右下半区的雨滴线条，导致图文层次不清",
+    "weather_row 与 nav_hint 文本使用了非标准的 formatString+${} 写法，建议改用标准 {{ $__dataModel.xxx }} 表达式",
+    "CTA 文本'点开导航去公司'字号仅 12，与中部'12分钟到上车点'同字号，缺少作为可点击引导的视觉差异",
+    "shade 是 children:[] 的空 Column，浪费一个组件槽位，可考虑用半透明 Rectangle 或将渐变合并到根背景"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_187\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_187\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"shade\",\"weather_image\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0a5f73\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Drive\"}}}]},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#80000000\",0],[\"#f2000000\",1]]}}},{\"id\":\"weather_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weathe2.png\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\",\"margin\":{\"left\":68,\"top\":4},\"opacity\":0.35}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"warning\",\"weather_row\",\"eta\",\"nav_hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.warning }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#fffff2cc\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_row\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }} {{ $__dataModel.weather.temperature }}°C 雨{{ $__dataModel.weather.rainChance }}%\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eta\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trip.etaText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_hint\",\"component\":\"Text\",\"content\":\"点开导航去{{ $__dataModel.trip.destination }} ▶\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffb8fff5\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_187\",\"value\":{\"trip\":{\"warning\":\"快来不及了\",\"etaText\":\"12分钟到上车点\",\"destination\":\"公司\"},\"weather\":{\"condition\":\"小雨\",\"temperature\":22,\"rainChance\":86}}}}"
+  ]
+}

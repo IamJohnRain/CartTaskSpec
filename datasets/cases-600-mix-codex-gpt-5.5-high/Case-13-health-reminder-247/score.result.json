@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-247",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "用户明确要求'几项打勾,显示带数字的,点开进系统操作,从日历读日程'。截图中头部标题'吃药提醒'和右上角'1/2 项'计数已呈现，底部'查看日程'按钮也具备并绑定到 eventCandidates 的 clickToIntent 事件，数据模型 updateDataModel.path='/'且 value 与契约一致。然而截图中灰色 reminder_panel 区域完全空白——用户要求的'几项打勾'复选项（晨间服药 1片、午间喝水 250ml）全部未渲染出来。根源是模板循环中使用了 formatString(${title} ${description})，但 A2UI 在 List/模板循环上下文里 ${} 占位不会解析当前 item 的字段，导致整个 item_tpl 渲染失败。这是核心诉求缺失，硬性扣分。",
+    "aesthetic": "卡片整体配色（白→浅灰渐变 + 蓝色主色 CTA + 浅灰圆角面板）较为克制和谐，标题字重 700 与计数 600 形成层次，字号阶梯 16/14/12 也合理。但中段面板因 Checkbox 全部缺失而留出一大块空白浅灰椭圆，视觉上像'内容未加载'的占位感，明显拖低美观度；缺少'已完成/未完成'的对比色块或勾选视觉。",
+    "layout": "截图中观察到的最严重问题：reminder_panel 区域为空白圆角矩形，没有任何 Checkbox 文字/勾/时间出现——这意味着 item_tpl 模板循环没有渲染出任何一条记录；其次 header 中 reminder_icon 紧贴左边缘、title 文本与 count 右侧'1/2 项'贴边，布局虽紧但未截断；footer 中'查看日程'按钮文字勉强可读但按钮宽度 86 偏紧，字面与按钮右边缘几乎相切，存在轻微视觉挤压。整体纵向 22+6+58+6+24+24(padding)≈140 数值上不溢出，但'内容缺失'本身就是最严重的布局失败。"
+  },
+  "issues": [
+    "模板循环 reminder_panel.children 使用 formatString(${title} ${description}) 与 ${dtStart}，在 A2UI 模板上下文无法解析，导致两条 item 全部未渲染（截图中央大块空白）",
+    "reminder_panel 的 Checkbox 全部不可见，用户的'几项打勾'核心诉求未落地",
+    "open_btn 宽度 86vp 对于 14pt 的'查看日程'4 字稍紧，文字与按钮右边缘贴边",
+    "item_tpl 高度仅 18vp，Checkbox 标签 + 时间双行显示时纵向空间不足",
+    "面板内为浅灰单色背景，未用'已完成/未完成'区分度强化信息层次"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"health_reminder_247\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"health_reminder_247\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"reminder_panel\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"linearGradient\":{\"angle\":90,\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF1F3F5\",1]]},\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"reminder_icon\",\"title\",\"count\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"reminder_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/reminderIcon\"},\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":180,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.doneCount }}/{{ $__dataModel.summary.totalCount }} 项\",\"styles\":{\"width\":66,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_panel\",\"component\":\"Column\",\"children\":{\"componentId\":\"item_tpl\",\"path\":\"/data/calendar/items\"},\"itemMargin\":2,\"styles\":{\"width\":280,\"height\":66,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#0F000000\",\"alignItems\":\"start\",\"clip\":true}},{\"id\":\"item_tpl\",\"component\":\"Row\",\"children\":[\"item_check\",\"item_time\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}],\"styles\":{\"width\":268,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"item_check\",\"component\":\"Checkbox\",\"label\":\"{{ title }} · {{ description }}\",\"select\":true,\"styles\":{\"width\":200,\"height\":26,\"shape\":\"rounded_square\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"fontSize\":13,\"fontColor\":\"#E5000000\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":11,\"strokeWidth\":2}}},{\"id\":\"item_time\",\"component\":\"Text\",\"content\":\"{{ dtStart }}\",\"styles\":{\"width\":60,\"height\":26,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"source\",\"open_btn\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"source\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.sourceLabel }}\",\"styles\":{\"width\":168,\"height\":20,\"fontSize\":12,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"查看日程\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":100,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"health_reminder_247\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"吃药提醒\",\"doneCount\":1,\"totalCount\":2,\"sourceLabel\":\"来自日历日程\"},\"asset\":{\"reminderIcon\":\"resources/base/media/icon_alarm_clock.png\"},\"state\":{\"loading\":false},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"medicine-morning\",\"instanceId\":\"medicine-morning-20260705\",\"senderName\":\"calendar\",\"title\":\"晨间服药\",\"description\":\"1片\",\"eventLocation\":\"\",\"dtStart\":\"08:00\",\"dtEnd\":\"08:05\",\"importantEventType\":0,\"remindTime\":[\"07:55\"],\"oneClickServiceType\":\"\",\"oneClickServiceLink\":\"\",\"isServiceValid\":0,\"accountId\":0},{\"entityName\":\"calendar\",\"entityId\":\"water-noon\",\"instanceId\":\"water-noon-20260705\",\"senderName\":\"calendar\",\"title\":\"午间喝水\",\"description\":\"250ml\",\"eventLocation\":\"\",\"dtStart\":\"12:30\",\"dtEnd\":\"12:35\",\"importantEventType\":0,\"remindTime\":[\"12:25\"],\"oneClickServiceType\":\"\",\"oneClickServiceLink\":\"\",\"isServiceValid\":0,\"accountId\":0}]}}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-03-002",
+  "scores": {
+    "instruction": {
+      "score": 10.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "用户要求的全部要素均已落实：顶部标题'应用使用时长监控'（绑定 usage.title）、应用名'抖音'、已用/超出文本、横向进度条（绿色段+橙色超段）、底部按钮'修改每日限制'，且 onClick 事件原样使用 eventCandidates 中的 clickToDeeplink 参数（bundleName/abilityName/uri）。尺寸 2x4（300x140）、catalogId/version/updateDataModel.path 等硬约束全部满足，未使用任何禁用组件或属性。指令遵从完整无缺漏，给 10.0。",
+    "aesthetic": "整体配色协调：浅米色底 + 绿色安全段 + 橙色超限段 + 深色文字，对比清晰，文字可读性 OK。但存在两个问题：(1) 标题 title_text 与超量文本 over_text 同为 fontWeight 700，违反'同一卡片只保留一个最强字重'的层级规则，视觉上出现两个并列最强；(2) 进度条高度仅 14px，过细，导致主视觉信息权重不足。下方留白（按钮到卡片底）虽为 12vp 符合规范，但因进度条太细，整体卡片上半部拥挤、下半部空旷，密度不平衡。给 6.0。",
+    "layout": "逐项核算：(1) Root Column（300x140，padding=12）：纵向占用 = 12+12+8*2+(20+48+32) = 140，等于父高度，无溢出但无余量；按钮底到卡片底 12vp，在 10-14vp 范围。(2) main_row（276x48）：横向占用 = 10+164+102 = 276，等于 276，刚好对齐无溢出。(3) progress_col（164x48）：纵向子项和 = 16+8+14 = 38 < 48，有 10vp 空隙，进度条 14px 过细显得单薄。(4) usage_col（102x48）：纵向子项和 = 18+6+18 = 42 < 48，正常。(5) 文本宽度估算：'已用 1小时36分' ≈ 24+19.2+43.2 = 86.4 < 102，未截断；'超出 36 分钟' ≈ 24+19.2+14.4 = 57.6 < 102，未截断；标题 6 字×16 = 96 < 276，未截断。(6) 按钮热区 128x32 ≥ 24vp，OK。(7) Stack 叠层（progress_base 底层、limit_bar 中层、over_bar 顶层 + clip:true）正确渲染 0-62% 绿、62-100% 橙，受保护文本/CTA 未被覆盖。综合：布局成立无溢出但进度条过细、main_row 内部垂直空间利用率低，扣 2.5 给 7.5。"
+  },
+  "issues": [
+    "标题 title_text（fontWeight 700）与超量文本 over_text（fontWeight 700）出现两个并列最强字重，违反'同一卡片只保留一个最强字重'规则",
+    "进度条 bar_stack 高度仅 14px，过细，主视觉信息权重不足",
+    "main_row 高度 48px 而内容仅占 38px，内部留白 10px 过多，与卡片底部留白形成上下密度不均",
+    "over_bar 使用 width='{{ ... }}%' 和 marginLeft='{{ ... }}%' 百分比定位依赖父 Stack 容器宽度解析，需确认渲染端支持",
+    "按钮宽度 128px 偏窄，未撑满内容区，作为底部主操作 CTA 可考虑加宽以提升可点感和重要性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"app_usage_guard_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"app_usage_guard_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"main_row\",\"limit_button\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF8F0\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.usage.title }}\",\"styles\":{\"width\":276,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"progress_col\",\"usage_col\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"progress_col\",\"component\":\"Column\",\"children\":[\"app_name_text\",\"bar_stack\"],\"itemMargin\":8,\"styles\":{\"width\":164,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"app_name_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.usage.appName }}\",\"styles\":{\"width\":164,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5C3B00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bar_stack\",\"component\":\"Stack\",\"children\":[\"progress_base\",\"limit_bar\",\"over_bar\"],\"styles\":{\"width\":164,\"height\":18,\"borderRadius\":9,\"clip\":true}},{\"id\":\"progress_base\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"width\":164,\"height\":18,\"type\":\"linear\",\"color\":\"#FFE1C2\",\"backgroundColor\":\"#FFE1C2\",\"borderRadius\":9}},{\"id\":\"limit_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.usage.limitProgress }}\",\"total\":100,\"styles\":{\"width\":164,\"height\":18,\"type\":\"linear\",\"color\":\"#4F8F6B\",\"backgroundColor\":\"#00FFFFFF\",\"borderRadius\":9}},{\"id\":\"over_bar\",\"component\":\"Row\",\"children\":[],\"styles\":{\"width\":\"{{ $__dataModel.usage.overProgress }}%\",\"height\":18,\"marginLeft\":\"{{ $__dataModel.usage.limitProgress }}%\",\"backgroundColor\":\"#D76000\",\"borderRadius\":9}},{\"id\":\"usage_col\",\"component\":\"Column\",\"children\":[\"used_text\",\"over_text\"],\"itemMargin\":6,\"styles\":{\"width\":102,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.usage.usedText }}\",\"styles\":{\"width\":102,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#262626\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"over_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.usage.overText }}\",\"styles\":{\"width\":102,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#D76000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"limit_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.usage.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":148,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#D76000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"app_usage_guard_card\",\"path\":\"/\",\"value\":{\"usage\":{\"title\":\"应用使用时长监控\",\"appName\":\"抖音\",\"usedMinutes\":96,\"limitMinutes\":60,\"limitProgress\":62,\"overProgress\":38,\"usedText\":\"已用 1小时36分\",\"overText\":\"超出 36 分钟\",\"buttonText\":\"修改每日限制\"}}}}"
+  ]
+}

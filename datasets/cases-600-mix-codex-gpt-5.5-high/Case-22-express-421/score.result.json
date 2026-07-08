@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-421",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户要求三件事：①看到整个待取清单（标题/汇总/明细齐全）②能打勾（Checkbox 已渲染）③点一下能跳快递app ④已取的显示已连。截图中标题'待取快递'、汇总'2件待取'、两条 Checkbox（一个未选、一个绿色对勾）以及底部状态条均存在；但'点一下能跳快递app'在 DSL 中没有 onClick，TaskSpec 的 eventCandidates 为空导致无法真正实现跳端动作，这是一处功能缺失；'已取的显示已连'仅靠绿色对勾暗示，未在已取项旁显式标注'已连'字样；数据本身绑定正确，size=2x2 与协议硬约束均满足。综合看，主要诉求部分落实，跳端能力缺失、明细被截断，扣分明显。",
+    "aesthetic": "截图整体观感良好：淡绿渐变背景柔和、标题加粗黑色、汇总用次级灰、勾选用绿色 #64BB5C 与品牌语义契合，底部胶囊状状态条层次清晰；字重只保留一个最强（标题 700），层次合理。但列表行字号偏大（12px）导致字符被裁切后变成'…'，是美观上最显眼的瑕疵；状态条字号 12px 在浅灰胶囊上颜色 #66000000 对比度偏低，可读性稍弱。",
+    "layout": "截图最突出的问题就是文字截断：第一项显示为'丰巢柜 3...'，'号柜'被裁掉；第二项显示为'驿站包裹...'，' 货架B2'整段被裁掉。2x2 卡片本就局促（内容区约 116x116），原 DSL 给 Checkbox label 预留区域约 88px，'丰巢柜 3号柜' 约 76px、'驿站包裹 货架B2' 约 100px 都已逼近或超出，因此实际渲染出现截断。截图中没有看到 Stack 叠层遮挡、组件溢出卡片边界或按钮热区问题，但文字被截属于核心信息丢失，是排版布局的硬伤，必须重扣。底部状态条底边距卡片底边约 8-10vp，符合 2x2 规范。"
+  },
+  "issues": [
+    "第一条 Checkbox 标签被截断为'丰巢柜 3...'，丢失'号柜'信息",
+    "第二条 Checkbox 标签被截断为'驿站包裹...'，丢失' 货架B2'信息",
+    "用户明确要求'点一下能跳快递app'，但 DSL 没有 onClick，且 TaskSpec.eventCandidates 为空导致该诉求无法落地",
+    "已取项仅靠对勾暗示，未显式标注'已连'字样",
+    "底部状态条字号 12px + 颜色 #66000000，对比度偏低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_421\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_421\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"list\",\"status\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF1F8F3\",0],[\"#FFEAF6ED\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title\",\"summary\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"list\",\"component\":\"Column\",\"children\":[\"item_one\",\"item_two\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":52,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"item_one\",\"component\":\"Checkbox\",\"label\":\"{{ ${/items/0/name} + ' ' + ${/items/0/detail} }}\",\"select\":{\"path\":\"/items/0/picked\"},\"styles\":{\"width\":120,\"height\":22,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"item_two\",\"component\":\"Checkbox\",\"label\":\"{{ ${/items/1/name} + ' ' + ${/items/1/detail} + ' ·已连' }}\",\"select\":{\"path\":\"/items/1/picked\"},\"styles\":{\"width\":120,\"height\":22,\"fontSize\":10,\"fontColor\":\"#99000000\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.statusText }}\",\"styles\":{\"width\":120,\"height\":18,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#19000000\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#8A000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_421\",\"path\":\"/\",\"value\":{\"title\":\"待取快递\",\"summary\":\"2件待取\",\"statusText\":\"已取显示已连\",\"items\":[{\"name\":\"丰巢柜\",\"detail\":\"3号柜\",\"picked\":false},{\"name\":\"驿站包裹\",\"detail\":\"货架B2\",\"picked\":true}]}}}"
+  ]
+}

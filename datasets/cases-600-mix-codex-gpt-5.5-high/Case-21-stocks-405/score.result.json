@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-21-stocks-405",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户要求'红色那种风险提示'，但截图中'高风险'主指标与'打开查看'按钮均使用橙色 #ed6f21，并非红色，与用户明确的色彩诉求不符，扣分。卡片完整呈现了标题'基金风险'、'高风险'、'投资需谨慎'和按钮四个字段，点击事件使用了 eventCandidates 中唯一的 clickToDeeplink，deeplink URI 指向音乐 app 而非交易软件（这是契约本身决定，模型已按契约落实）。2x2 尺寸、catalogId、version、updateDataModel 等硬约束均满足。",
+    "aesthetic": "截图中卡片整体配色以白底+橙色为主，对比度尚可，但用户明确要求红色，模型使用了暖橙色，色调倾向不一致。文字层级清晰（20pt 粗体高风险 / 16pt 标题 / 12pt 提示 / 14pt 按钮），字重对比合理，留白均匀。但图标为音符，与'基金风险'的金融语义明显违和，影响专业感（该素材是契约限定，模型选择空间有限，但视觉上仍显突兀）。",
+    "layout": "从截图可见，2x2 卡片内所有元素（图标+标题、'高风险'、'投资需谨慎'、分割线、'打开查看'按钮）均整齐排布在 140x140 区域的上半部分，无任何文字截断、堆叠或溢出。按钮宽度 116 充满内容区，CTA 文字'打开查看'完整可读。底部按钮到卡片底边留白合理，未见遮挡。卡片下半部留白较多（截图大画布显示整体观感更明显），但这是 2x2 内部排版本身的选择问题，不算溢出。"
+  },
+  "issues": [
+    "用户明确要求'红色'风险提示，模型使用了橙色 #ed6f21，色彩诉求未满足",
+    "图标为音乐符号（来自 icon_music.png），与'基金风险'的金融/股票语义不符，视觉违和",
+    "卡片下半区域存在较大空白，2x2 空间利用率偏低，可考虑增加辅助信息或下移布局",
+    "deeplink URI 指向 hwmusic://... 音乐 app，与用户期望的'交易软件'不符（属于契约问题，但落地效果与用户预期存在偏差）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_stocks_405\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_stocks_405\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"risk\",\"divider\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"icon\",\"title\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.stockRisk.icon }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stockRisk.title }}\",\"styles\":{\"width\":84,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk\",\"component\":\"Column\",\"children\":[\"alert\",\"hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stockRisk.alertText }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.stockRisk.hint }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.stockRisk.actionText }}\",\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffd32f2f\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_stocks_405\",\"value\":{\"stockRisk\":{\"title\":\"基金风险\",\"alertText\":\"高风险\",\"hint\":\"投资需谨慎\",\"actionText\":\"打开查看\",\"icon\":\"resources/base/media/icon_music.png\"}}}}"
+  ]
+}

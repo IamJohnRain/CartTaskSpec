@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-08-sleep-145",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.6,
+  "reasons": {
+    "instruction": "用户明确要求展示深睡/浅睡、点击进入操作、读天气三项。截图中仅能看到'深睡'和'浅睡'两个标签文字，看不到'2小时10分'和'4小时05分'两个主时间数值，看不到天气'晨间多云 22°C'，看不到标题'睡眠阶段'，看不到质量'深睡偏少'，按钮虽有白色底板但看不到'进入操作'文字。三项核心诉求中只有深浅睡标签勉强可见、时间值和天气完全缺失、按钮不可读，扣重分。",
+    "aesthetic": "深色渐变背景（#101417→#26384A）观感克制专业，白色药丸按钮与深色背景对比鲜明，'深睡''浅睡'两标签在深底上可读性尚可。但卡片整体显得极度空洞——大量留白未被有效信息填充，视觉重心失衡，原本应作为主指标的'2小时10分''4小时05分'和天气信息完全消失，使卡片观感'有壳无肉'。",
+    "layout": "截图中可清晰观察到严重的溢出/裁切问题：content Column 内部子项累计高度 22+42+1+28+间距 24=117 已超过内边距后可用高度 96，溢出约 21vp；导致标题'睡眠阶段'和天气'晨间多云 22°C'未出现在可见区，深睡/浅睡主数值（fontSize 18）也未显示（仅 12pt 标签可见），底部质量文字'深睡偏少'和按钮文字'进入操作'同样缺失。Stack 内的 sky_band 与 content 同宽同高但内容 Column 的真实内容被挤出可视边界，叠加 root 的 clip:true 使溢出部分直接被裁掉。底部动作区仅剩白底药丸，看不到 CTA 文字，CTA 几乎不可用。"
+  },
+  "issues": [
+    "content Column 子项总高 117 超出内可用高度 96，导致 top_row、stage_row 主数值、bottom_row 质量文字和按钮文字被裁切不可见",
+    "天气信息'晨间多云 22°C'未出现在渲染结果中，用户核心诉求'能读天气'未满足",
+    "深睡/浅睡主数值'2小时10分''4小时05分'（应为最强字重）完全缺失，违背数据可视化主次原则",
+    "按钮'进入操作'文字未显示，仅剩白色底板，CTA 不可读",
+    "标题'睡眠阶段'未出现在可见区域",
+    "质量提示'深睡偏少'未出现在可见区域",
+    "卡片整体观感极度空洞，信息密度过低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_145\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_145\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"sky_band\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF101417\",0],[\"#FF1A2435\",0.62],[\"#FF26384A\",1]]}}},{\"id\":\"sky_band\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":120,\"borderRadius\":18,\"backgroundColor\":\"#1A64B5F6\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"stage_row\",\"divider\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":120,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"weather\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.weatherSummary }}\",\"styles\":{\"width\":140,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stage_row\",\"component\":\"Row\",\"children\":[\"deep_block\",\"light_block\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"deep_block\",\"component\":\"Column\",\"children\":[\"deep_label\",\"deep_value\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"deep_label\",\"component\":\"Text\",\"content\":\"深睡\",\"styles\":{\"width\":48,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"deep_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.deepSleep }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"light_block\",\"component\":\"Column\",\"children\":[\"light_label\",\"light_value\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"light_label\",\"component\":\"Text\",\"content\":\"浅睡\",\"styles\":{\"width\":48,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"light_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.lightSleep }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#FFE0F2FF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":252,\"height\":1,\"backgroundColor\":\"#33FFFFFF\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"quality\",\"action_btn\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":252,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"quality\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.quality }}\",\"styles\":{\"width\":136,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":88,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#FF1A2435\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"sleep\":{\"title\":\"睡眠阶段\",\"deepSleep\":\"2小时10分\",\"lightSleep\":\"4小时05分\",\"quality\":\"深睡偏少\",\"weatherSummary\":\"晨间多云 22°C\",\"actionText\":\"进入操作\"}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户明确诉求逐项落实：内存占用比例 86% 已用大字呈现，'内存快满' 状态文本展示，'一键清理' 按钮存在且 onClick.call=clickToIntent / args 原样来自 eventCandidates，手机 42% / 耳机 68% / 耳机仓 31% 三条电量文本齐全（耳机仓作为用户重点提醒也独立展示）。size=2x4、createSurface 300x140/22/clip/catalogId=ohos.a2ui.extended.catalog、3 行 version=v0.9、updateDataModel.path='/' 与 value 与 TaskSpec 一致。assetCandidates 为空，未引入网络图。轻扣 1 分：userQuery 中希望'把空间腾一腾'除了显示 86% 还隐含'已用/可用'对比，但 dataModel 未提供可用空间字段，模型未做降级处理（如突出 free 容量或近似文案），只是把 available 字段融合进'建议清理约 2.4GB'，信息粒度略浅。",
+    "aesthetic": "整体配色和谐：浅绿底 #F1F8F5 + 白色内存面板 + 深绿 #007D65 强调色（百分比、按钮、进度条），符合华为 EMUI 风格克制专业。前景文字与背景对比度满足可读性。层级上 32pt/700 最大，16pt 标题次之，14pt 状态、12pt 电量、14pt 按钮文字依次降权，密度合理。扣分点：(1) 出现两处 fontWeight=700（86% 与'建议清理约 2.4GB'），违反'同一卡片只保留一个最强字重'；(2) 右侧 Column 与左侧白色 panel 之间的呼吸感可以再加强（itemMargin 12 偏小）。",
+    "layout": "逐容器预算核算：\n① root Row：横向 12+12+12+100+164=300 = 父宽 300，恰好填满无溢出；纵向 12+12+116=140 = 父高 140 ✓\n② memory_panel Column：纵向 8+8+6*2+36+18+8=90 < 116 ✓；横向 8+8+84=100 ✓\n③ detail_col Column：纵向 0+0+8*2+20+48+32=116 = 父高 116，恰好等于可用高度无缓冲；横向 164 ✓\n④ battery_row Column：纵向 0+0+4*2+14+14+14=50 > 父高 48，溢出 2vp ⚠\n受保护文本均未被截断（86% 宽 ~57.6<84；建议清理约 2.4GB 宽 ~124.8<164），按钮热区 32vp≥24vp，底边距 =140-(12+20+8+48+8+32)=12vp 在 10-14vp 区间。但 battery_row 内部 2vp 溢出会向上传导使 detail_col 实际占用 118，超过父高 116，存在文本被裁或按钮被挤的风险，是主要扣分点。"
+  },
+  "issues": [
+    "battery_row 高度 48vp < 实际 3×14+2×4=50vp，溢出 2vp",
+    "detail_col 子项总高 116 = 可用 116，无安全缓冲，受子项尺寸波动影响",
+    "fontWeight 700 出现两处（86% 与 建议清理约 2.4GB），违反'同一卡片只保留一个最强字重'",
+    "root Row 的 wrap='noWrap' 字段非必要，存在协议模糊性（非硬伤）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"memory_cleanup_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"memory_cleanup_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"memory_panel\",\"detail_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F1F8F5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"memory_panel\",\"component\":\"Column\",\"children\":[\"memory_percent\",\"memory_status\",\"memory_progress\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"memory_percent\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.usedPercentText }}\",\"styles\":{\"width\":84,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#007D65\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.statusText }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#194D44\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"memory_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.memory.usedPercent }}\",\"total\":100,\"styles\":{\"width\":84,\"height\":8,\"type\":\"linear\",\"color\":\"#007D65\",\"backgroundColor\":\"#CFEFE6\",\"borderRadius\":4}},{\"id\":\"detail_col\",\"component\":\"Column\",\"children\":[\"suggestion_text\",\"battery_row\",\"clean_button\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"suggestion_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.suggestionText }}\",\"styles\":{\"width\":164,\"height\":20,\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#18211F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_row\",\"component\":\"Column\",\"children\":[\"phone_battery\",\"earbuds_battery\",\"case_battery\"],\"itemMargin\":4,\"styles\":{\"width\":164,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"phone_battery\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.phoneText }}\",\"styles\":{\"width\":164,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#3F4A47\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"earbuds_battery\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.earbudsText }}\",\"styles\":{\"width\":164,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#3F4A47\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"case_battery\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.battery.caseText }}\",\"styles\":{\"width\":164,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#3F4A47\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"clean_button\",\"component\":\"Button\",\"label\":\"一键清理\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"OpenSetting\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"storage_settings\"}}}],\"styles\":{\"width\":92,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#007D65\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"memory_cleanup_card\",\"path\":\"/\",\"value\":{\"memory\":{\"usedPercent\":86,\"usedPercentText\":\"86%\",\"statusText\":\"内存快满\",\"suggestionText\":\"建议清理约 2.4GB\"},\"battery\":{\"phoneText\":\"手机 42%\",\"earbudsText\":\"耳机 68%\",\"caseText\":\"耳机仓 31%\"}}}}"
+  ]
+}

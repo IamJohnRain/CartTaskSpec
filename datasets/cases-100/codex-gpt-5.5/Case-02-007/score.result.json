@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-007",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.1,
+  "reasons": {
+    "instruction": "用户要求显示耳机连接状态、时段推荐、本地下载歌单、当前曲目、歌词、播放位置并提供打开音乐入口。DSL 通过 7 个字段全部以 {{...}} 表达式绑定到 dataModel，deviceStatus/timeMode/playlistName/trackTitle/lyricLine/playPosition/buttonLabel 均有展示位，open_button 完整复用了 eventCandidates 提供的 clickToDeeplink 事件（uri 完全一致），root shell 满足 size=2x4、borderRadius=22、clip:true、padding:12、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'，updateDataModel.path='/' 且 value 与 TaskSpec.dataModel.value 一致。但用户明确提出的'左右滑切歌''歌词同步滚动''摘耳机自动暂停并记住播放位置'属于交互/行为能力，A2UI 表单卡片无法提供手势/滚动事件，DSL 也未通过占位文字、状态徽标或副标题给出任何提示来传达这些语义，信息完备性扣分。",
+    "aesthetic": "渐变 #2B6EEA→#33C5A5 思路合理，白字在深色蓝/绿渐变上对比度可读；语义层级 playlist(18/700) > track(14/500) > 状态/歌词/位置(12) 清晰；side_panel 圆角容器承载时段/离线信息分组得当。但实际渲染截图显示卡片大面积空白，仅 '打开…' 一段小字孤立可见，本应呈现的渐变底、设备状态条、歌单名、曲目、歌词气泡、播放位置文字几乎全部消失，视觉效果与设计意图严重背离，无法为用户提供可读/可感的观感，扣重分。",
+    "layout": "逐项核算：(1) Root Row width=300, padding=24, itemMargin=12, 子项 main_col(182)+side_panel(82)=264, 占用 24+12+264=300, 不溢出；(2) main_col Column height=116, itemMargin=4, 子项高 status(18)+playlist(22)+track(18)+lyric_box(20)+bottom_row(34)=112, 间距 4×4=16, 合计 128 > 116, 溢出 12vp，与渲染截图主信息区几乎不可见完全吻合；(3) side_panel Column height=104, padding=16, 子项 14+18+14+18=64, 间距 5×3=15, 合计 64+15+16=95 ≤ 104, 不溢出；(4) bottom_row Row width=182, itemMargin=8, 子项 98+76=174, 合计 174+8=182, 不溢出。综合：main_col 是唯一且决定性溢出源，因 clip:true 裁掉主区，造成最关键的 status/playlist/track/lyric 四行被挤出可视范围，属严重布局事故。"
+  },
+  "issues": [
+    "main_col Column 纵向占用 128 > 116，溢出 12vp，导致主信息区被 clip 裁掉",
+    "open_button 热区高度 30vp 仍低于 40vp 理想值，CTA 不够突出",
+    "open_button width=76 紧贴主列右边界，与 position_text 间距局促",
+    "side_panel padding=8 内部内容区仅 50vp 宽，对中文 4 字标签偏紧",
+    "渲染截图证实溢出：渐变背景、设备状态、歌单名、曲目、歌词、播放位置全部不可见",
+    "未以任何提示文字传达'左右滑切歌''歌词同步滚动''摘耳机自动暂停'语义"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"commute_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"commute_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottomRight\",\"colors\":[[\"#2B6EEA\",0],[\"#33C5A5\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"status_text\",\"playlist_text\",\"track_text\",\"lyric_box\",\"bottom_row\"],\"itemMargin\":2,\"styles\":{\"width\":182,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.deviceStatus }} · {{ $__dataModel.music.timeMode }}\",\"styles\":{\"width\":182,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlistName }}\",\"styles\":{\"width\":182,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackTitle }}\",\"styles\":{\"width\":182,\"height\":16,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#F2FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lyric_box\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.lyricLine }}\",\"styles\":{\"width\":182,\"height\":18,\"padding\":2,\"borderRadius\":8,\"backgroundColor\":\"#66000000\",\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"position_text\",\"open_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":182,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"position_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playPosition }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":72,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#2B6EEA\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"mode_label\",\"mode_value\",\"local_label\",\"local_value\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":104,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"mode_label\",\"component\":\"Text\",\"content\":\"时段推荐\",\"styles\":{\"width\":70,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mode_value\",\"component\":\"Text\",\"content\":\"快节奏\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"local_label\",\"component\":\"Text\",\"content\":\"离线歌单\",\"styles\":{\"width\":70,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"local_value\",\"component\":\"Text\",\"content\":\"已就绪\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"commute_music_card\",\"path\":\"/\",\"value\":{\"music\":{\"deviceStatus\":\"耳机已连接\",\"timeMode\":\"早高峰通勤\",\"playlistName\":\"本地提神快歌\",\"trackTitle\":\"晨光节拍\",\"lyricLine\":\"下一句歌词：穿过站台的风\",\"playPosition\":\"上次听到 01:26\",\"buttonLabel\":\"打开音乐\"}}}}"
+  ]
+}

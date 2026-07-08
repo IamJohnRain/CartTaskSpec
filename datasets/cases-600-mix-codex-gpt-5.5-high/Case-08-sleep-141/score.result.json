@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-08-sleep-141",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.1,
+  "reasons": {
+    "instruction": "用户要求睡眠卡片：主体图带数字、可点击进入系统、红色危险提示。从截图看，环图（主体）存在、onClick 事件已挂载、红色危险徽章形状已渲染，但核心信息几乎全部丢失：评分数字'42'完全不可见、标题'睡眠监测'不可见、徽章内文字'红色危险'不可见、按钮内文字'查看系统'不可见、提示'深睡不足'不可见；时长文本因使用了不受支持的 formatString 调用而直接显示裸模板'小时分'，未能呈现'4小时18分'。用户明确点名要看到的'数字'与'红色危险提示'都未真正落地。",
+    "aesthetic": "深色渐变背景叠加暗红氛围的方向是对的，红色徽章、白色 CTA 与灰环形成一定对比；但因大量关键文字缺失，截图中可见的'小时分'和'睡眠分'两条文本在环心区域上下堆叠，白色药丸按钮内无文字，整体观感像是半成品，达不到专业健康卡片的克制与清晰度。",
+    "layout": "截图中可观察到严重的排版问题：1) 评分主数字'42'（受保护文本）未出现，环心区域只剩两条无意义文字堆叠；2) 右侧标题行（睡眠监测/红色危险）整行未渲染，顶部只剩一个空的红色药丸；3) 提示文字'深睡不足'完全不可见；4) 底部白色 CTA 按钮位于卡片中下偏中位置，且按钮内文字不可见，无法识别为可点击；5) 时长'小时分'以裸模板形式横在环心，与'睡眠分'上下贴在一起。多处受保护文本/CTA 不可见，布局几乎处于崩溃状态。"
+  },
+  "issues": [
+    "评分主数字 '42'（score_value）在截图中完全未渲染，环心区域无受保护主指标",
+    "duration_text 使用了不规范的 formatString 调用，导致显示为裸模板 '小时分'，而非 '4小时18分'",
+    "标题 '睡眠监测'（title）未在截图中可见，应在右侧顶部",
+    "红色徽章（alert）形状存在但内部文字 '红色危险' 未渲染",
+    "底部按钮（action_btn）为白色药丸，但 label '查看系统' 在截图中不可见，按钮无法被识别为可点击",
+    "提示文字 '深睡不足'（hint_text）未在截图中可见",
+    "hero 区域（环+分数）与 content 列在垂直中线附近出现文本堆叠，环心被无关文字占据",
+    "根 Stack 的 onClick 重复绑定了一次（与按钮 onClick 重复），不是硬错但属冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_141\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_141\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient\",\"hero\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FF101417\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FF101417\",0],[\"#FF1C2533\",0.58],[\"#FF3A1518\",1]]}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]},{\"id\":\"ambient\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1AFF3B30\"}},{\"id\":\"hero\",\"component\":\"Stack\",\"children\":[\"score_track\",\"score_ring\",\"score_value\",\"score_unit\"],\"styles\":{\"width\":96,\"height\":96,\"margin\":{\"left\":8,\"top\":10}}},{\"id\":\"score_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":96,\"height\":96,\"strokeWidth\":9,\"color\":\"#33FFFFFF\"}},{\"id\":\"score_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.score }}\",\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":84,\"height\":84,\"strokeWidth\":9,\"color\":\"#FFFF3B30\"}},{\"id\":\"score_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.scoreText }}\",\"styles\":{\"width\":96,\"height\":30,\"margin\":{\"top\":28},\"fontSize\":26,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"score_unit\",\"component\":\"Text\",\"content\":\"睡眠分\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"duration_text\",\"hint_text\",\"action_btn\"],\"itemMargin\":4,\"styles\":{\"width\":160,\"height\":104,\"margin\":{\"left\":110,\"top\":8}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"alert\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":160,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":80,\"height\":22,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.status }}\",\"styles\":{\"width\":68,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#FFFF3B30\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.durationHours }}小时{{ $__dataModel.sleep.durationMinutes }}分\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.hint }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#FFFF3B30\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"sleep\":{\"title\":\"睡眠监测\",\"score\":42,\"scoreText\":\"42\",\"durationHours\":4,\"durationMinutes\":18,\"durationUnit\":\"小时\",\"status\":\"红色危险\",\"hint\":\"深睡不足\",\"actionText\":\"查看系统\"}}}}"
+  ]
+}

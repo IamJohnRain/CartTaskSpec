@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-423",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.6,
+  "reasons": {
+    "instruction": "用户明确要求三项视觉诉求：1) 整个卡片背景是快递点图片——截图中完全看不到任何背景图，背景仅呈现纯深灰色（疑似 path 绑定未生效或被 60% 黑色遮罩完全盖死），第一诉求失败；2) 点一下能看物流详情——onClick 事件及 call/args 原样来自 eventCandidates，此项满足；3) 快递丢了标红色——截图中状态色块明显是橙色（#ED6F21），并非用户要求的红色，此项失败。两项关键视觉诉求未达成，指令遵从分大幅扣减。",
+    "aesthetic": "截图观感偏弱：缺失快递点背景图导致卡片整体是一块深灰方块，毫无场景氛围；状态色块用橙色与用户要求的红色不符，警示感被削弱；底部白色按钮的'查看物流详情'被截成'查看物流详'，状态块的'包裹疑似丢失'被截成'包裹疑似丢'，关键文案被切走直接拉低可读性与专业感。配色层级（白标题/灰副标题/橙状态/白按钮）尚算清晰，但因裁切与缺图整体只能给到中下。",
+    "layout": "截图中可观察到两处明显文字截断：1) 橙色状态块内 status_text 文本'包裹疑似丢失'末字'失'被裁掉，只显示'包裹疑似丢'，原因是文本宽 80、padding 8+8=16，可书写宽度仅 64px 远小于 6 个 14px 汉字所需的 84px；2) 底部白色按钮内'查看物流详情'被截成'查看物流详'，'情'字被切，原因是 padding 10+10=20、可用宽 76px 也不足 6×14=84px。两处均属关键 CTA/状态文案被截断，是排版布局维度的硬伤。卡片整体未溢出 140×140 边界、Stack 层级正确，但截断问题足以让本维度分明显下调。"
+  },
+  "issues": [
+    "快递点背景图未在截图中呈现（疑 Image.src 路径绑定 + 60% 黑色遮罩导致完全不可见）",
+    "状态色块颜色为橙色（#ED6F21），与用户明确要求的'标红色'不符",
+    "status_text'包裹疑似丢失'末字'失'被截断，文本容器宽度过窄",
+    "action'查看物流详情'末字'情'被截断，按钮内 padding 过大挤占文字空间",
+    "遮罩 shade 不透明度 0x99（约 60%）过高，即便图片加载成功也会被完全压暗"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_card_423\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_card_423\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg\",\"shade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\",\"alignContent\":\"center\"}},{\"id\":\"bg\",\"component\":\"Image\",\"src\":\"resources/base/media/express_station_bg.png\",\"styles\":{\"width\":140,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#55000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"status\",\"action\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":116,\"padding\":8,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"station\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"station\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.station }}\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Column\",\"children\":[\"status_text\",\"tracking\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":34,\"padding\":{\"left\":5,\"right\":5,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#FFD32F2F\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.status }}\",\"styles\":{\"width\":90,\"height\":15,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tracking\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.trackingNo }}\",\"styles\":{\"width\":90,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.hint }}\",\"styles\":{\"width\":100,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_card_423\",\"path\":\"/\",\"value\":{\"title\":\"快递异常\",\"station\":\"小区快递点\",\"status\":\"包裹疑似丢失\",\"trackingNo\":\"SF 4238\",\"hint\":\"查看物流详情\",\"asset\":{\"stationBg\":\"resources/base/media/express_station_bg.png\"}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户三大诉求均已落实：标题、剩余时间倒计时、每日限制、状态说明、进度条均通过 dataModel 字段展示；'设置限制'按钮通过 onClick 正确绑定 eventCandidates 中的 clickToDeeplink（parent_control URI）。尺寸 2x4、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/'、value 原样回填等硬约束全部满足。扣 1 分因为原 DSL 纵向溢出导致 CTA 不可用，间接削弱了'设好每天玩多久'的可达性。",
+    "aesthetic": "配色采用蓝白主调，专业克制，倒计时文字（蓝色 32pt）层级突出，背景 #F7F8FA 与深色文字对比度足够。但存在两处明显问题：1）title_text 和 countdown_text 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'规则；2）CTA 按钮被根 Column 溢出 clip 截掉，视觉上卡片残缺、底部锚定失败。留白与对齐尚可。",
+    "layout": "Root Column 纵向预算严重溢出：父容器高度 140，子项总占用 = padding.top(12) + padding.bottom(12) + itemMargin×(5-1)=32 + Σ子项 height(20+34+8+24+32)=118 = 174 > 140，溢出 34vp。截图证实 setting_button 被 clip 截掉只剩顶部一小段蓝色色块，CTA 标签完全不可见、热区被毁。info_row 横向预算成立（92+176+itemMargin 8=276=父宽），但根 Column 的纵向堆叠彻底失败，倒计时主指标也挤压了上方空间。受保护文本（CTA 按钮）严重截断。"
+  },
+  "issues": [
+    "Root Column 纵向总占用 174 > 140，溢出 34vp",
+    "setting_button 被 clip 截切，CTA 标签'设置限制'不可见、可点击热区失效",
+    "title_text 与 countdown_text 同时使用 fontWeight:700，违反单一最强字重规则",
+    "countdown_text 高度 34 配 fontSize 32 在 2x4 卡片中过大，挤压下方 24vp",
+    "5 个子项 + itemMargin 8 使累计间距达 32vp，进一步加剧纵向溢出",
+    "底部按钮外框底边到卡片底边实际为负值（被裁掉），违反 ≥8vp 锚定要求"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_03_006_anti_addiction_countdown\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_03_006_anti_addiction_countdown\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"countdown_text\",\"progress_bar\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.title }}\",\"styles\":{\"width\":276,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.remainingText }}\",\"styles\":{\"width\":276,\"height\":26,\"fontSize\":24,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.antiAddiction.remainingRatio }}\",\"total\":100,\"styles\":{\"width\":276,\"height\":6,\"type\":\"linear\",\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#FFE5EAF0\",\"borderRadius\":3}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"info_column\",\"setting_button\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"daily_limit\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":168,\"height\":32,\"alignItems\":\"start\"}},{\"id\":\"daily_limit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.dailyLimitText }}\",\"styles\":{\"width\":168,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.antiAddiction.statusText }}\",\"styles\":{\"width\":168,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.antiAddiction.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_03_006_anti_addiction_countdown\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"防沉迷倒计时\",\"remainingText\":\"剩余 45 分钟\",\"dailyLimitText\":\"每日限制 2 小时\",\"statusText\":\"到时将按家长控制规则锁屏\",\"remainingRatio\":38,\"actionText\":\"设置限制\"}}}}"
+  ]
+}

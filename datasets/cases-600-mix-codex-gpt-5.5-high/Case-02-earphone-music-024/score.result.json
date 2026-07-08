@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-024",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户明确要求'弄个图的那种'，但截图中左侧图标区域仅呈现一个灰色矩形占位框，耳机/音乐图片素材未正常渲染，这是指令遵从的明显缺失。点击跳转音乐App的按钮和 onClick 事件配置正确，日程'晚间跑步 19:30-20:30'已正确从日历数据绑定呈现，'已连接'状态文字也已显示。但核心的'图'诉求在视觉上未达成，扣分明显。",
+    "aesthetic": "配色方面，浅蓝到浅绿的渐变背景与白色艺术面板、绿色主按钮搭配协调，主标题'FreeBuds Pro 3'为深色加粗，时间'19:30-20:30'采用深绿强调，文字层级清晰。但左侧图标区域仅显示灰色矩形，明显是图片资源未加载/未渲染的占位状态，严重影响整体美感和专业度，给人'未完成'的视觉印象。按钮圆角、字体可读性、对齐均尚可。",
+    "layout": "截图中没有观察到文字截断、堆叠重叠或元素溢出卡片边界。左侧白色 art_panel 与右侧信息列在 Row 中按 12vp 间距水平排布，垂直居中对齐良好。标题、日程、时间、按钮在 info_col 中纵向依次排布，按钮热区约 96x32 可点击区域充足，底部到卡片底边距离合理。'已连接'文字和图标在 art_panel 内也清晰可读，无 Stack 遮挡问题。布局本身干净规整。"
+  },
+  "issues": [
+    "截图中左侧 earphone_icon 仅渲染为灰色矩形占位框，'assets/icons/earphone-music.png' 图片素材未正常显示，违背用户'弄个图的那种'的核心诉求",
+    "art_panel 区域视觉留白偏大但图标缺失，整体观感不完整",
+    "按钮 '打开音乐' 颜色为 #FF00A87E 略偏亮绿，色板与左侧 '已连接' 的 #FF008A5C 和时间文字 #FF006C5B 属于近似色系，存在轻微色相冲突但尚在可接受范围"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_024\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_024\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"art_panel\",\"info_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFEFF7FF\",0],[\"#FFE6F7F0\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"art_panel\",\"component\":\"Column\",\"children\":[\"earphone_icon\",\"connected_text\"],\"itemMargin\":6,\"styles\":{\"width\":104,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\",\"shadowColor\":\"#0F182431\",\"shadowBlur\":12,\"shadowOffsetY\":2}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"assets/icons/earphone-music.png\",\"styles\":{\"width\":64,\"height\":64,\"objectFit\":\"contain\",\"margin\":{\"top\":4,\"bottom\":4}}},{\"id\":\"connected_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.connectionStatus }}\",\"styles\":{\"width\":84,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF008A5C\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"schedule_text\",\"time_text\",\"music_button\"],\"itemMargin\":8,\"styles\":{\"width\":160,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.device.name }}\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF3B4A5A\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF006C5B\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}],\"styles\":{\"width\":104,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#FF008A5C\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_024\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"FreeBuds Pro 3\",\"connectionStatus\":\"已连接\"},\"music\":{\"title\":\"音乐\",\"actionText\":\"打开音乐\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-music-024\",\"title\":\"晚间跑步\",\"dtStart\":\"19:30\",\"dtEnd\":\"20:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

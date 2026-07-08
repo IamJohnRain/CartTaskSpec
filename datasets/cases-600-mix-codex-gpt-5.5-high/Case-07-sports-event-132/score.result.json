@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-07-sports-event-132",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "截图中能看到三个小环形进度（红/蓝/红）、'备战68%'、右侧'赛事备战 / 24°C / 多云 / 紧迫'、底部按钮，整体信息框架齐全。但关键 CTA '开始训练' 在截图中被截断显示为'开...'，用户完全看不到'开始训练'四个字，违反了'底部开始训练按钮'的明确要求；'紧迫'红字虽在右侧呈现，但截图中没有清晰指出具体是哪几场比赛距开赛不到7天（事件名'越野'也被截断为'越'，进一步模糊了判断依据）。onClick 的 deeplink 参数与 eventCandidates 一致，深色舞台风背景与红色高亮基本落实。",
+    "aesthetic": "深色渐变舞台背景营造出一定氛围，红色 CTA 按钮和'紧迫'红字与深底对比鲜明可读，配色方向正确。但截图中：底部红色胶囊按钮里的'开始训练'被裁为'开...'，视觉上很突兀、不完整；左侧事件名'半马 骑行 越'的'越'字被截断显得粗糙；'备战68%'字号偏小且与三环之间留白松散，没有形成环形进度主指标应有的视觉重心；右侧'赛事备战 / 24°C / 多云 / 紧迫'四行排布偏挤，整体缺乏统一的字号阶梯和呼吸感。",
+    "layout": "截图中可观察到两处明确的文字/内容截断：（1）底部红色按钮里的'开始训练'被裁为'开...'，CTA 文字不可读，是核心交互元素的可用性问题；（2）左侧事件名行'半马 骑行 越'最后一个'越野'被截断为'越'，信息丢失。此外三个环形进度尺寸仅 18×18、过小且水平一字排开，'备战68%'放置在环下方而非视觉上'居中于环'的位置，与用户描述的'中心固定写备战68%'语义有偏差。底行'东北风3级'挤在按钮左侧与按钮争抢水平空间。底部外框底边到卡片底边距离目测偏紧，接近 16vp 上限。"
+  },
+  "issues": [
+    "底部'开始训练'按钮文字被截断为'开...'，CTA 不可用",
+    "事件名'越野'被截断为'越'，左侧事件名溢出 64px 宽",
+    "三个环形进度仅 18×18、过小，未能形成'中心 备战68% 周围三环'的视觉重心",
+    "右侧'紧迫'红字没有明确指向具体哪几场比赛紧迫",
+    "底行'东北风3级'与按钮挤在 116px 宽度内，按钮被压窄导致截断",
+    "字号阶梯不够清晰，'备战68%'与天气/紧迫字号差距小，主次不明"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_132\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_132\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"stage\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff000000\"}},{\"id\":\"stage\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#ff111111\",\"linearGradient\":{\"colors\":[[\"#ff1f1f1f\",0],[\"#ff252033\",0.55],[\"#ff300f18\",1]],\"direction\":\"toBottom\"}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"rings\",\"weather_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":76,\"alignItems\":\"start\"}},{\"id\":\"rings\",\"component\":\"Column\",\"children\":[\"ring_row\",\"center_text\",\"status_row\"],\"itemMargin\":4,\"styles\":{\"width\":68,\"height\":76,\"alignItems\":\"center\"}},{\"id\":\"ring_row\",\"component\":\"Row\",\"children\":[\"ring_one\",\"ring_two\",\"ring_three\"],\"itemMargin\":3,\"styles\":{\"width\":68,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"ring_one\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.prep.events[0].progress }}\",\"max\":100,\"styles\":{\"width\":20,\"height\":20,\"strokeWidth\":4,\"color\":\"#fff23030\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":10}},{\"id\":\"ring_two\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.prep.events[1].progress }}\",\"max\":100,\"styles\":{\"width\":20,\"height\":20,\"strokeWidth\":4,\"color\":\"#ff0a84ff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":10}},{\"id\":\"ring_three\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.prep.events[2].progress }}\",\"max\":100,\"styles\":{\"width\":20,\"height\":20,\"strokeWidth\":4,\"color\":\"#fff23030\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":10}},{\"id\":\"center_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.prep.centerText }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_row\",\"component\":\"Text\",\"content\":\"5d·12d·3d\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#fff23030\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"title\",\"weather_temp\",\"weather_cond\",\"urgent\"],\"itemMargin\":2,\"styles\":{\"width\":40,\"height\":76,\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.prep.title }}\",\"styles\":{\"width\":40,\"height\":12,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":40,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_cond\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"urgent\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.prep.urgentText }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#fff23030\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"train_btn\"],\"styles\":{\"width\":116,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"train_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.prep.actionText }}\",\"styles\":{\"width\":116,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#fff23030\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"hwhealth://sport/training\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_132\",\"value\":{\"prep\":{\"title\":\"赛事备战\",\"centerText\":\"备战68%\",\"urgentText\":\"紧迫\",\"actionText\":\"开始训练\",\"events\":[{\"name\":\"半马\",\"daysToStart\":5,\"status\":\"紧迫\",\"progress\":68},{\"name\":\"骑行\",\"daysToStart\":12,\"status\":\"稳步\",\"progress\":68},{\"name\":\"越野\",\"daysToStart\":3,\"status\":\"紧迫\",\"progress\":68}]},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\"},\"current\":{\"temperatureText\":\"24°C\",\"condition\":\"多云\",\"wind\":\"东北风3级\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

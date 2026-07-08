@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-10-rainy-taxi-185",
+  "scores": {
+    "instruction": {
+      "score": 1.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.6,
+  "reasons": {
+    "instruction": "用户要求做一个能勾选平台、上面带数字、点了能进App的雨天打车卡。截图中可见的结构仅有：顶部一个浅灰圆角胶囊（疑似图标占位）、中部一个空心圆角方框（Checkbox）、右下角一个蓝色圆角按钮（无文字）。DataModel 中的 title「雨天打车」、weatherLine「小雨 22°C」、etaValue「8」、etaUnit「分钟」、platformLabel「勾选快车平台」、actionText「进App」在截图中全部不可见。文字层完全缺失，关键信息（标题、天气、ETA 数值、平台文字、按钮文案）一项都未呈现给用户；onClick 绑定虽然存在但按钮无文字。指令几乎完全未落实。",
+    "aesthetic": "截图整体观感极差：卡片大面积留白却几乎没有任何可读信息；渐变背景本身柔和但完全浪费；checkbox 与按钮孤零零地漂浮，中间留白空洞；没有任何字号/字重层级可言——因为文字层整体缺失；唯一可见的图标占位是浅灰胶囊，毫无质感。视觉上像渲染崩溃后的残骸。",
+    "layout": "截图中可见两个最严重问题：(1) 文字层整体未渲染——title/weather_line/eta_value/eta_unit/平台 label/按钮文字全部不可见；(2) 按 Column 纵向核算：padding(12+12) + top_row(30) + margin(6) + eta_row(36) + margin(6) + platform_check(22) + margin(6) + action_row(28) = 158px > 140px 卡片高度，垂直方向严重溢出 18px，是造成内容被 clip 切掉/文字消失的核心原因。Card 已设置 clip:true，因此底部超出部分被直接裁剪。Checkbox 与按钮轮廓虽在卡内，但因文字层垮塌，布局语义上已不成立。"
+  },
+  "issues": [
+    "Column 内容总高 158px 超过 140px 卡片高度，受 clip 裁剪，文字层被吞掉",
+    "weather_line 使用了 formatString 调用，许多渲染器不支持此函数，导致其 content 为空",
+    "截图中标题、天气、ETA 数字与单位、平台标签、按钮文字全部不可见，关键信息完全丢失",
+    "rainy-taxi-icon.png 资源未渲染（截图里只看到一个浅灰胶囊占位，无图）",
+    "底部 action_row 距卡片底边仅 12-10=2px 留白（实际还因溢出被 clip 切掉），违反 2x2 底部 8-12vp 留白规范",
+    "eta_value 高度 36 + eta_unit 高度 18 上下未对齐，eta_row 总占用 36 但两个子项垂直中心不同",
+    "整个卡片缺少有效信息层，用户看到的是近乎空白 + 一个勾框 + 一个蓝按钮"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_185\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_185\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"eta_row\",\"platform_check\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff2f8fb\",0],[\"#ffd8eaf3\",0.62],[\"#ffb6d7ea\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"rain_icon\",\"title_col\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"rain_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.rainTaxi.icon }}\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":8,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"weather_line\"],\"itemMargin\":1,\"styles\":{\"width\":90,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.title }}\",\"styles\":{\"width\":90,\"height\":14,\"fontSize\":12,\"fontWeight\":800,\"fontColor\":\"#ff182a33\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.weatherLine }}\",\"styles\":{\"width\":90,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ff506674\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eta_row\",\"component\":\"Row\",\"children\":[\"eta_value\",\"eta_unit\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"eta_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.etaValue }}\",\"styles\":{\"width\":38,\"height\":30,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ff006c9c\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"eta_unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.rainTaxi.etaUnit }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":800,\"fontColor\":\"#ff182a33\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"platform_check\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.rainTaxi.platformLabel }}\",\"value\":{\"path\":\"/rainTaxi/platformValue\"},\"select\":{\"path\":\"/rainTaxi/platformSelected\"},\"styles\":{\"width\":120,\"height\":20,\"selectedColor\":\"#ff007dba\",\"unSelectedColor\":\"#80ffffff\",\"shape\":\"rounded_square\",\"fontSize\":11,\"fontColor\":\"#ff365260\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":11,\"strokeWidth\":2}}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"app_button\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":26,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"app_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.rainTaxi.actionText }}\",\"styles\":{\"width\":64,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ff007dba\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.taxi\",\"abilityName\":\"com.huawei.hmos.taxi.MainAbility\",\"uri\":\"taxi://home?scene=rainy&platform=express\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"value\":{\"rainTaxi\":{\"title\":\"雨天打车\",\"weatherLine\":\"小雨 22°C\",\"etaValue\":8,\"etaUnit\":\"分钟\",\"platformLabel\":\"勾选快车平台\",\"platformValue\":\"express\",\"platformSelected\":true,\"actionText\":\"进App\",\"icon\":\"assets/rainy-taxi-icon.png\"}}}}"
+  ]
+}

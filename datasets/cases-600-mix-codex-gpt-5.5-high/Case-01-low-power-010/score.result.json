@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-010",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户四项诉求（省电模式页/字写在背景图上/可点击跳进应用/红色提示）均已在截图中落实：红色\"电量偏低\"胶囊清晰可见，标题\"低电模式\"和提示\"开启省电延长续航\"叠在深色背景与省电图标上，按钮\"进入设置\"触发 clickToDeeplink 且参数 bundleName/abilityName/uri 原样来自 eventCandidates。尺寸 2x4（300x140）、catalogId、version、updateDataModel.path/value 等硬约束全部满足。轻微扣分点：内容虽完整但未提供任何额外信息层级（如电池百分比或当前状态切换），略显单薄。",
+    "aesthetic": "深色背景（#ff101417）与白色高对比文字组合专业易读；红色警示\"电量偏低\"采用 #ffff3b30 实色文字 + 半透明同色底胶囊，与整体暗色形成强对比但不刺眼；标题 20px/700 与提示 14px/regular 形成清晰两级层次。背景电池+闪电图标以 0.22 透明度呈现，起到氛围点缀又不抢戏。留白密度合理，左侧文字区与右侧图标区分配均衡。稍显不足：图标使用 contain 模式显得画面中有完整空电池框+独立闪电两个独立元素，与图标外形成\"画中画\"观感，略显生硬。",
+    "layout": "截图中无文字截断：标题\"低电模式\"、提示\"开启省电延长续航\"、按钮\"进入设置\"、警示\"电量偏低\"均完整呈现。按键热区 96x36 充足，底部留白在 8-10vp 范围内，左右 padding 12 一致。但 Column 设 height:116 而其四个子项自然总高 24+26+20+36+3*8(margin)=130，存在 14vp 理论溢出风险——实际渲染中被 spaceBetween 勉强撑开，按钮\"进入设置\"已贴近卡片底边（距底约 8vp），与建议的 10-14vp 留白几乎贴底，存在贴边风险；此外 bg_icon 占 96x96 大小使其右缘紧贴卡片右 padding（188+96=284，+12 右边距后正好到 296，距 300 卡片右沿仅 4vp），视觉上图标右侧有切角感。这些是潜在隐患。"
+  },
+  "issues": [
+    "Column 显式 height:116，但子项自然总高度 130，超出 14vp，存在潜在溢出/贴底风险",
+    "bg_icon 宽 96 + 左 margin 188 = 右缘到 284，加上右边距 12 后距卡片右沿仅 4vp，视觉上图标贴近右边缘",
+    "省电图标使用 objectFit:contain 在 96x96 框中显得有空电池外壳+闪电两个独立子元素，缺乏统一视觉",
+    "按钮距卡片底边仅约 8vp，贴底较紧，未达建议的 10-14vp 区间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_010\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_010\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":14,\"right\":14,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff101417\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.power.icon }}\",\"styles\":{\"width\":80,\"height\":80,\"objectFit\":\"contain\",\"opacity\":0.20,\"margin\":{\"left\":184,\"top\":30}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"title\",\"hint\",\"spacer\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":272,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"alert\"],\"styles\":{\"width\":272,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.alert }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffff3b30\",\"backgroundColor\":\"#33ff3b30\",\"borderRadius\":10,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":180,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.hint }}\",\"styles\":{\"width\":180,\"height\":18,\"fontSize\":13,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"spacer\",\"component\":\"Column\",\"styles\":{\"width\":1,\"height\":4}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":96,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff101417\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_010\",\"value\":{\"power\":{\"title\":\"低电模式\",\"alert\":\"电量偏低\",\"hint\":\"开启省电延长续航\",\"actionText\":\"进入设置\",\"icon\":\"resources/base/media/icon_save_power.png\"}}}}"
+  ]
+}

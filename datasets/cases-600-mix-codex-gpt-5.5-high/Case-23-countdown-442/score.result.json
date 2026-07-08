@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-442",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "指令要求'文字放背景图上、数字会变、点一下跳到应用、读日历'，截图能看到标题'分手倒计时'、日期'8月1日'、大数字'26'与单位'天'、底部按钮'查看日程'均完整呈现；onClick 已正确引用 eventCandidates 中的 clickToIntent + ViewCalendarEvent + entityId 路径；Image.src 引用 /asset/calendarIcon 与 assetCandidates 一致；尺寸 2x2、catalogId、version、updateDataModel.path=/ 均符合协议。数字 26 通过 {{ $__dataModel.countdown.days }} 表达式绑定满足'数字会变'。整体信息齐备，无多余字段，扣分点仅在视觉呈现导致数字与日期与日历图标产生冲突，影响了'文字放背景图上'这一语义的清晰度。",
+    "aesthetic": "渐变紫粉配色与分手倒计时主题契合、白色文字在深紫底上对比度足够、按钮磨砂白观感干净。但截图中背景日历图标（74x74）位于正中央且与 '26 天' 完全重叠、图标顶端的两个装订环穿过 '8月1日' 文字、图标主体方框与 '26' 视觉打架，造成明显的'图文混叠'；20% 黑色软罩（#33000000）不足以把图标压成水印，背景层与信息层争抢视觉焦点，整体观感从'优雅'滑向'杂乱'。",
+    "layout": "截图最显著的问题是日历图标的两个顶部装订环压在 '8月1日' 文字上，造成'8月1日'被横线穿过的视觉截断感；图标主体方框和 '26' 在同一区域叠加，'26' 虽为前景但图标边线在数字缝隙处仍可见；'天' 字紧贴 '26'，行高 24 与数字 42 底部对齐后实际无问题但视觉显得局促。'查看日程' 按钮位置与底边距离（≈12vp）符合 2x2 规范。Stack 三层叠放导致背景层无法退到合理深度，需要降低图标尺寸并加深遮罩。"
+  },
+  "issues": [
+    "背景日历图标（74x74）尺寸过大，与居中的 '26 天' 文字完全重叠，视觉冲突明显",
+    "softShade 仅 20% 黑色遮罩（#33000000），无法把日历图标压成水印",
+    "日历图标顶部装订环与 '8月1日' 文字水平相交，造成日期被横线穿过的观感",
+    "图标主体方框线条在 '26' 数字周围仍清晰可见，破坏数字的清晰度",
+    "dateLabel 颜色 #99FFFFFF 透明度偏高，与背景图标叠加后对比度偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"breakup_countdown_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"breakup_countdown_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bgIcon\",\"softShade\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#564AF7\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#564AF7\",0],[\"#AC49F5\",0.58],[\"#E67C92\",1]]},\"alignContent\":\"center\"}},{\"id\":\"bgIcon\",\"component\":\"Image\",\"src\":{\"path\":\"/asset/calendarIcon\"},\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"softShade\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"strokeWidth\":116,\"color\":\"#66000000\"}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top\",\"hero\",\"bottomAction\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top\",\"component\":\"Column\",\"children\":[\"title\",\"dateLabel\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.title }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"dateLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.dateLabel }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"days\",\"unit\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":98,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"bottom\"}},{\"id\":\"days\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.days }}\",\"styles\":{\"width\":50,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.unit }}\",\"styles\":{\"width\":20,\"height\":24,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"start\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomAction\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.countdown.caption }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":96,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"breakup_countdown_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"breakup-20260801\",\"title\":\"分手纪念日\",\"dtStart\":\"2026-08-01\",\"dtEnd\":\"2026-08-01\",\"eventLocation\":\"日历\",\"description\":\"还有 26 天\",\"importantEventType\":2,\"senderName\":\"Calendar\"}]}},\"countdown\":{\"title\":\"分手倒计时\",\"days\":\"26\",\"unit\":\"天\",\"dateLabel\":\"8月1日\",\"caption\":\"查看日程\"},\"asset\":{\"calendarIcon\":\"resources/base/media/icon_schedule.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

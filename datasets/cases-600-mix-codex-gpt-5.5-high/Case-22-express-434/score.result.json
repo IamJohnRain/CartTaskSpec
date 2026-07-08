@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-22-express-434",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.8,
+  "reasons": {
+    "instruction": "截图中可见的内容仅有左侧的\"包\"大字、其下被强制换行成\"签收/分组\"两行的标题，以及右侧底部的\"点公司名听/歌等待\"提示文字。用户最核心的诉求——按快递公司分组的卡片本体（顺丰 √ 3件 / 京东 √ 2件）以及打勾标记、细线分隔、公司名横向并排——在截图中完全看不到，因此视为关键诉求未在视觉上落实。onClick 事件在 DSL 中已正确接入 clickToDeeplink，但因公司名未渲染，无法验证点击可达。📦 主视觉用\"包\"字符替代是合理的，但整体未呈现公司分组的核心信息。",
+    "aesthetic": "截图显示卡片有淡灰色磨砂背景，边角圆润，配色克制不花哨，符合\"别花哨\"的诉求；\"包\"字符用 fontWeight:700 的 32pt 黑色，视觉分量足够，做到了\"左边大图标当主视觉\"。但由于公司列表完全缺失，整张卡片仅剩主图标+标题+提示三块内容，留白过于空洞、缺乏内容支撑，视觉完整性差。",
+    "layout": "截图中右侧 content_col 上半部分（应当渲染 company_row / 两个公司卡片的位置）完全是空白的，看不到任何公司名、打勾标记、件数、状态或细线；公司卡片（32×72 逻辑单位）几乎没在画面中呈现任何像素内容，相当于主信息全部丢失。底部 hint_text 位置虽然靠下但被挤在右侧文字列里与标题视觉重叠。hero_col 内的\"签收分组\"标题宽度只有 28，被强制折成两行\"签收/分组\"，造成与右侧 hint 文字左右相挤、阅读顺序混乱。整体上属于核心内容未渲染出来的严重布局失败。"
+  },
+  "issues": [
+    "截图中两个公司卡片（顺丰/京东）完全不可见，company_row 区域为空，是最严重的指令落空",
+    "公司名、件数、状态之间的细线分隔在截图中无法看到",
+    "打勾标记 √ 在截图中未出现",
+    "公司名按钮 name_btn 宽度 20 在 32 宽的 company_tpl 内几乎不可点，热区与可读性都过小",
+    "hero_title 宽度仅 28 不足以容纳\"签收分组\"4 个汉字，被强制换行成\"签收/分组\"两行",
+    "hero_glyph 的 32pt 字体在 26×34 盒内略偏大，字形上沿几乎贴边",
+    "content_col 高度 108 容纳 72 的 company_row + 8 margin + 28 的 hint_text 虽能放下，但公司卡片本身 32 宽信息密度太低",
+    "右侧 hint 文字与左侧标题在视觉上紧贴且行高错位，整体留白分配不平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"express_group_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"express_group_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"divider_top\",\"companies_row\",\"hint_text\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"hero_glyph\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_glyph\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.heroGlyph }}\",\"styles\":{\"width\":30,\"height\":26,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.title }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":128,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"companies_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"company_tpl\",\"path\":\"/companies\"},\"itemMargin\":4,\"styles\":{\"width\":128,\"height\":64,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"company_tpl\",\"component\":\"Column\",\"children\":[\"cmp_name_row\",\"cmp_divider\",\"cmp_count\",\"cmp_status\"],\"itemMargin\":3,\"styles\":{\"width\":62,\"height\":64,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"cmp_name_row\",\"component\":\"Row\",\"children\":[\"cmp_mark\",\"cmp_name_btn\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"cmp_mark\",\"component\":\"Text\",\"content\":{\"path\":\"mark\"},\"styles\":{\"width\":12,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cmp_name_btn\",\"component\":\"Button\",\"label\":{\"path\":\"name\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":42,\"height\":22,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"backgroundColor\":\"#00000000\",\"borderRadius\":6,\"padding\":{\"left\":2,\"right\":2,\"top\":0,\"bottom\":0}}},{\"id\":\"cmp_divider\",\"component\":\"Divider\",\"styles\":{\"width\":50,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"cmp_count\",\"component\":\"Text\",\"content\":{\"path\":\"count\"},\"styles\":{\"width\":58,\"height\":12,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cmp_status\",\"component\":\"Text\",\"content\":{\"path\":\"status\"},\"styles\":{\"width\":58,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.card.hint }}\",\"styles\":{\"width\":128,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"express_group_card\",\"path\":\"/\",\"value\":{\"card\":{\"heroGlyph\":\"包\",\"title\":\"签收分组\",\"hint\":\"点公司名听歌等待\",\"dividerLabel\":\"已签收\"},\"companies\":[{\"mark\":\"√\",\"name\":\"顺丰\",\"count\":\"3件\",\"status\":\"已签收\"},{\"mark\":\"√\",\"name\":\"京东\",\"count\":\"2件\",\"status\":\"已签收\"}]}}}"
+  ]
+}

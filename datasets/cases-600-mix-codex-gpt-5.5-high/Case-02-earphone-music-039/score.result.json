@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-039",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "截图中只能看到四个元素：'耳机电量 85%'（白色加粗）、'耳机已连接'（绿色）、'15:30 下午约会'、以及底部白色'设置闹钟'按钮。用户在指令中明确要求'上面横向排列四个快捷标签：我的歌单、最近播放、私人FM、本地音乐'，但截图顶部完全没有这四个标签，属于关键诉求缺失，扣重分。其余要素（深色渐变背景、绿色正向状态、日历日程、底部大按钮带正确 onClick 跳转闹钟应用）均已正确落实，且尺寸 2x2、catalogId、version、updateDataModel 路径与值均合规。",
+    "aesthetic": "截图观感整体清爽：深蓝深青对角渐变有氛围感，白色主文字在深色背景上对比清晰、读起来不费力，绿色'耳机已连接'点缀得当，底部白色'设置闹钟'按钮与卡片形成明暗对比，层次与对齐尚可。扣分点在于内容偏少、留白偏多（卡片内部右半侧几乎空着），且因缺少顶部标签阵列，整体缺乏横向信息节奏感。",
+    "layout": "截图未观察到任何元素堆叠、文字截断、组件溢出卡片边界的问题。'耳机电量 85%'、'耳机已连接'、'15:30 下午约会'、'设置闹钟'四个元素从上到下依次清晰呈现，文字完整无裁切，按钮热区充足且未触及卡片底边。但 root 用了 alignItems:center + 内层 Column 用 alignItems:start，导致内容整体偏左、卡片右半侧空旷，存在明显的横向空间浪费；同时缺少顶部四个横向标签行，布局未按用户预期的'四标签 + 主体 + 按钮'三段式分布。"
+  },
+  "issues": [
+    "顶部缺失用户明确要求的四个横向快捷标签（我的歌单 / 最近播放 / 私人FM / 本地音乐），是主要指令遗漏",
+    "root Column 与内层 main Column 均使用 alignItems:center / start，使内容整体偏左，2x2 内容区右侧大片空白",
+    "2x2 高度仅 140，四个横向标签 + 电量/状态 + 日历 + 大按钮的纵向叠加容易超界，需要在改进版中严格控制每行高度与 itemMargin",
+    "日历时间格式直接拼接为 '15:30 下午约会'，缺少'日程'或图标引导，语义略弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_039\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_039\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"tagsRow\",\"batteryCol\",\"calendar\",\"alarmButton\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff182433\",0],[\"#ff30495c\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"tagsRow\",\"component\":\"Row\",\"children\":[\"tag1\",\"tag2\",\"tag3\",\"tag4\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"tag1\",\"component\":\"Text\",\"content\":\"我的歌单\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tag2\",\"component\":\"Text\",\"content\":\"最近播放\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tag3\",\"component\":\"Text\",\"content\":\"私人FM\",\"styles\":{\"width\":24,\"height\":18,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tag4\",\"component\":\"Text\",\"content\":\"本地音乐\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":8,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"batteryCol\",\"component\":\"Column\",\"children\":[\"battery\",\"status\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"battery\",\"component\":\"Text\",\"content\":\"{{ '耳机电量 ' + $__dataModel.earphone.batteryText }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.earphone.statusText }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar\",\"component\":\"Text\",\"content\":\"{{ '日程 ' + $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alarmButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"styles\":{\"width\":120,\"height\":30,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ff182433\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_039\",\"value\":{\"earphone\":{\"batteryText\":\"85%\",\"statusText\":\"耳机已连接\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-afternoon-meeting-039\",\"title\":\"下午约会\",\"dtStart\":\"15:30\",\"dtEnd\":\"16:30\"}]}},\"action\":{\"label\":\"设置闹钟\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-010-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求显示喂食器状态、出粮克数、未出粮告警、余粮和剩余天数。截图中均可见：左侧'08:00未出粮'红色主状态、'07:58出粮18g'上次出粮记录、'该手动补喂'告警提示，右侧'余粮1.2kg'主数值与'约6天'剩余天数，下方进度条直观反映余粮比例。'补喂'按钮正确绑定 eventCandidates 中的 clickToDeeplink 事件。size=2x4、root 300x140、catalogId、version、updateDataModel.path/value 均合规。素材为空时未引入任何外部图，完全符合协议。略有遗憾：未在视觉上区分'出粮通知'与'未出告警'两种状态（当前只有红色告警态），扣 1 分。",
+    "aesthetic": "截图整体配色和谐：暖米色底（#FFFFF7F0）+ 白色卡片，营造温馨家居感；红色（#FFE64545）用于告警与按钮，绿色（#FF0A8F6A）用于余粮/天数与进度条，语义清晰。最强字重集中在状态主指标上（16px 与 20px），层级分明。前景文字在白底与米底上对比度良好，可读性强。左右两栏视觉平衡，padding 与 itemMargin 留白舒适。略扣分：右侧'猫粮桶'小标题与'还能喂 约6天'行之间留白稍显宽松但仍可接受；'该手动补喂'字号 10 偏小，告警可读性可再提升。",
+    "layout": "截图中所有元素均完整呈现，无文字被裁切、无元素溢出卡片边界、无堆叠遮挡：左侧 4 行（标题/状态/上次出粮/动作行）纵向相加约 16+20+14+32=82 + 间距 12 + 上下 padding 16 = 110，小于 116 内容区；右侧 4 行约 16+24+18+10=68 + 间距 24 + 上下 padding 20 = 112，约等于 116。左右栏底部锚定齐平，'补喂'按钮底边到卡片底边约 16vp，符合下限。进度条完整显示约 60% 填充。Stack/Column/Row 嵌套未出现遮挡问题。'该手动补喂'虽字小但未截断。整体排版干净。"
+  },
+  "issues": [
+    "左侧告警文字'该手动补喂'字号 10 偏小，与卡片内其他主要字号（12/14/16/20）对比下告警感被削弱",
+    "右侧'猫粮桶'为静态字符串，未从 dataModel 绑定（虽然 TaskSpec 未提供该字段静态值，但风格上不如其它字段统一）",
+    "两个面板背景同为纯白，缺少微弱阴影/描边区分层次（虽 borderRadius 已分组，但视觉上仍偏平）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_11_010_pet_feeder_status\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_11_010_pet_feeder_status\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFF7F0\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"last_feed_text\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\",\"shadowColor\":\"#14000000\",\"shadowRadius\":6,\"shadowOffsetY\":1}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.title }}\",\"styles\":{\"width\":112,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.statusText }}\",\"styles\":{\"width\":112,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.data.feeder.statusColor }}\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"last_feed_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.lastFeedText }}\",\"styles\":{\"width\":112,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"alert_text\",\"feed_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":112,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.missedAlertText }}\",\"styles\":{\"width\":54,\"height\":32,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"{{ $__dataModel.data.feeder.statusColor }}\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"feed_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.feeder.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://petfeeder/home/manual-feed\"}}],\"styles\":{\"width\":50,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"{{ $__dataModel.data.feeder.statusColor }}\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"paddingLeft\":6,\"paddingRight\":6}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"remain_label\",\"remain_text\",\"days_row\",\"food_progress\"],\"itemMargin\":6,\"styles\":{\"width\":132,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\",\"shadowColor\":\"#14000000\",\"shadowRadius\":6,\"shadowOffsetY\":1}},{\"id\":\"remain_label\",\"component\":\"Text\",\"content\":\"猫粮桶\",\"styles\":{\"width\":112,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remain_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.binRemainText }}\",\"styles\":{\"width\":112,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.data.feeder.progressColor }}\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_row\",\"component\":\"Row\",\"children\":[\"days_label\",\"days_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":112,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"days_label\",\"component\":\"Text\",\"content\":\"还能喂\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.feeder.daysLeftText }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"{{ $__dataModel.data.feeder.progressColor }}\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"food_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.feeder.feedProgress }}\",\"total\":100,\"styles\":{\"width\":112,\"height\":8,\"type\":\"linear\",\"color\":\"{{ $__dataModel.data.feeder.progressColor }}\",\"backgroundColor\":\"#FFDCEFE8\",\"strokeWidth\":8}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_11_010_pet_feeder_status\",\"path\":\"/\",\"value\":{\"data\":{\"feeder\":{\"title\":\"喂食器看护\",\"statusText\":\"08:00未出粮\",\"statusColor\":\"#FFE64545\",\"lastFeedText\":\"07:58出粮18g\",\"missedAlertText\":\"该手动补喂\",\"binRemainText\":\"余粮1.2kg\",\"daysLeftText\":\"约6天\",\"feedProgress\":60,\"progressColor\":\"#FF0A8F6A\",\"buttonText\":\"补喂\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

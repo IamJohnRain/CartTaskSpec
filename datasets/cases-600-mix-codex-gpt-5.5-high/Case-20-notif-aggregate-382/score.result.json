@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-20-notif-aggregate-382",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户四项诉求：可勾选列表、点击跳转、读日程、重要项标红。截图中可见两个 Checkbox 列表项，第一个未勾选（提交周报）、第二个已勾选带蓝底白勾（同步会议），点击跳转通过 onClick+clickToIntent 正确接入 eventCandidates。但'读日程'诉求仅显示了标题，未呈现 dtStart/dtEnd（09:30、14:00）等时间字段，截图中完全看不到日程时间信息；'重要项标红'诉求虽然在 DSL 中给重要项设置 #ffdb6b42，但实际渲染出的'提交周报'颜色与背景对比度过低，几乎看不出红色，未能形成用户期待的视觉警示。尺寸 2x2、catalogId、version、updateDataModel 等硬约束全部满足。",
+    "aesthetic": "深色渐变背景与圆角容器风格克制专业，标题'今日日程'与副标题'重要项已标红'层次清晰。但列表内两个条目颜色对比度偏弱：'提交周报'作为重要项使用了 #ffdb6b42，在深灰底色上几乎呈现为暗棕色而非醒目的红色，未能形成'标红'应有的视觉冲击；与已勾选项的蓝白高亮相比，重要项反而显得更弱、不够突出。整体留白合理、对齐统一，但缺少一个最强的视觉重点。",
+    "layout": "截图中所有元素均位于 140x140 卡片边界内：标题、副标题、内嵌圆角列表容器与两个 Checkbox 整齐堆叠，未观察到任何文字裁切、组件溢出或 Stack 遮挡。Checkbox 框与文字水平基线对齐，列表容器内边距均匀，底部与卡片底边留有合理间距，无明显截断或堆叠问题。"
+  },
+  "issues": [
+    "重要项'提交周报'在截图中未呈现明显红色，#ffdb6b42 在深色背景上对比度过低，无法满足'重要的标红'诉求",
+    "日程时间信息（dtStart/dtEnd）完全未渲染，用户'能读日程'的诉求只满足一半",
+    "首项 Checkbox 文字使用 fontWeight:500 与次项 fontWeight:400 区分，但红色未亮起时整体层次仍偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_382\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_382\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"list\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff1f2125\",0],[\"#ff2a2c30\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":30,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.subtitle }}\",\"styles\":{\"width\":116,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"list\",\"component\":\"Column\",\"children\":[\"item1\",\"item2\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":80,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":14,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"item1\",\"component\":\"Row\",\"children\":[\"check1\",\"text1\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check1\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/data/calendar/items/0/title\"},\"select\":{\"path\":\"/data/calendar/items/0/checked\"},\"value\":{\"path\":\"/data/calendar/items/0/entityId\"},\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ffff5252\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]},{\"id\":\"text1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items.0.title }}  {{ $__dataModel.data.calendar.items.0.dtStart }}\",\"styles\":{\"width\":78,\"height\":24,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffff5252\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"item2\",\"component\":\"Row\",\"children\":[\"check2\",\"text2\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check2\",\"component\":\"Checkbox\",\"label\":{\"path\":\"/data/calendar/items/1/title\"},\"select\":{\"path\":\"/data/calendar/items/1/checked\"},\"value\":{\"path\":\"/data/calendar/items/1/entityId\"},\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff317af7\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/1/entityId\"}}}}]},{\"id\":\"text2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items.1.title }}  {{ $__dataModel.data.calendar.items.1.dtStart }}\",\"styles\":{\"width\":78,\"height\":24,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_382\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"今日日程\",\"subtitle\":\"重要项已标红\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"cal-important-382\",\"title\":\"提交周报\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"checked\":false,\"importantEventType\":1},{\"entityName\":\"calendar\",\"entityId\":\"cal-normal-382\",\"title\":\"同步会议\",\"dtStart\":\"14:00\",\"dtEnd\":\"14:30\",\"checked\":true,\"importantEventType\":0}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

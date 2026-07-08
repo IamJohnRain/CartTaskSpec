@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-02-005-v1",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.5,
+  "reasons": {
+    "instruction": "截图可见的字段有'耳机已连接'、'连接状态'、'节奏跑步推荐'、'← 抬手滑一下切歌 →'、'歌单待播'、'跑完后同步记录'，与用户跑步场景核心诉求中的'连接状态/切歌手势/跑完记录'三条线索对得上。但主标题'夜跑心动歌单'（playlist_text，18pt 白色加粗）、'已听 42 分钟'（duration_text，白色）、'耳机在线'（state_value，16pt 白色加粗）、'打开'按钮（open_button）这四个关键信息在截图中完全不可见——这意味着用户最关心的'跑步歌单名'和'CTA 入口'未被呈现，已听时长也无法直观看出来。onClick 事件配置正确，但点击元素视觉上不存在。素材未使用 assetCandidates（与契约一致）。尺寸/root/catalogId/version/updateDataModel 协议合规。",
+    "aesthetic": "截图中卡片区域基本是白色底，紫色的 linearGradient 完全没有渲染出来，导致依赖白色字号的'夜跑心动歌单'、'已听 42 分钟'、'耳机在线'全部隐入背景。可见的几个灰/淡紫字色与白底对比度极低，整体观感像未完成稿；右侧 state_col 的半透明面板也未体现（#33FFFFFF 在白底上几乎不可见），整个卡片缺乏色彩层次、留白极度不均（中上部稀疏、中下部大片空白），视觉品质很差。",
+    "layout": "截图中文字沿垂直方向散布到很高位置（'跑完后同步记录'出现在约 y=378 处），而卡片尺寸规定 140 高，说明 main_col 实际占用远超 116 的内容区，发生纵向溢出。main_col 子项高度合计 18+4+24+4+16+4+14+4+(40+16 padding)=144，明显超出 116，造成底部 action_row 被挤出可视区。按公式核算：main_col 子项 18+4+24+4+16+4+14+4+40=128，叠加 action_row 自身 padding 8（=16）后达 144，亦超过 116。截图中'…'三个紫点位于中下部，是 open_button 容器（白底）的残余痕迹，按钮文字与底色同白故消失。整张卡片在视觉上呈现'上密下空、关键元素集体失踪'的崩溃态。"
+  },
+  "issues": [
+    "根容器 linearGradient 未生效，卡片背景渲染为纯白",
+    "白底 + 白色字（playlist_text、duration_text、state_value）导致主标题/时长/状态值完全不可见",
+    "open_button 文字'打开'在白底白字下不可见，按钮区域仅残留省略号'…'",
+    "main_col 子项高度合计 ~144（含 action_row 内边距）超过 116 内容区，产生纵向溢出",
+    "action_row 自身 padding:8（+16px）与 height:40 合计 56px，把自身和后续内容推出可视区",
+    "state_col 内 #33FFFFFF 面板在白底上无视觉边界，右侧分组看不出层次",
+    "底部外框到卡片底边的距离看起来远超 16vp，破坏 2x4 底部锚定规范"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"run_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"run_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"state_col\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#2D1B69\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"status_text\",\"playlist_text\",\"track_text\",\"gesture_hint\",\"action_row\"],\"itemMargin\":3,\"styles\":{\"width\":196,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.deviceStatus }}\",\"styles\":{\"width\":196,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#B8A5E0\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.playlistName }}\",\"styles\":{\"width\":196,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.trackHint }}\",\"styles\":{\"width\":196,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#D5C5F0\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"gesture_hint\",\"component\":\"Text\",\"content\":\"← 抬手滑一下切歌 →\",\"styles\":{\"width\":196,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#FFCC66\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"duration_text\",\"open_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":196,\"height\":30,\"padding\":5,\"borderRadius\":10,\"backgroundColor\":\"#FFFFFF22\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.listenDuration }} · {{ $__dataModel.music.runNote }}\",\"styles\":{\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":52,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#FFCC66\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#2D1B69\"}},{\"id\":\"state_col\",\"component\":\"Column\",\"children\":[\"state_panel\"],\"itemMargin\":0,\"styles\":{\"width\":70,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"state_panel\",\"component\":\"Column\",\"children\":[\"state_value\",\"state_hint\"],\"itemMargin\":3,\"styles\":{\"width\":70,\"height\":68,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFF1F\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"state_value\",\"component\":\"Text\",\"content\":\"在线\",\"styles\":{\"width\":58,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#7CFFA0\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"state_hint\",\"component\":\"Text\",\"content\":\"待播放\",\"styles\":{\"width\":58,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#FFCC66\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"run_music_card\",\"path\":\"/\",\"value\":{\"music\":{\"deviceStatus\":\"耳机已连接\",\"playlistName\":\"夜跑心动歌单\",\"trackHint\":\"节奏跑步推荐\",\"listenDuration\":\"已听 42 分钟\",\"runNote\":\"跑完后同步记录\",\"buttonLabel\":\"打开\"}}}}"
+  ]
+}

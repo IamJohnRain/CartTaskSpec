@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-206",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户四项明确诉求(运动卡标题、可点击跳转、读天气、显示已连接)在截图中均能看到对应呈现：标题'运动卡'、状态徽章'已连接'、天气文字'多云 24°C'、动作文字'进入运动'，root 容器已挂载 clickToDeeplink 事件，eventCandidates 原样使用。size=2x2、catalogId=ohos.a2ui.extended.catalog、每行 version=v0.9、updateDataModel.path='/' 且 value 与 TaskSpec.dataModel.value 一致，协议硬约束全部满足。扣分点：进度环的进度值(62)未通过可见方式呈现，环形轨迹与文字存在视觉冲突，弱化了'读运动数据'的语义。",
+    "aesthetic": "渐变色(薄荷→浅蓝→米黄)和圆角 18 整体协调，标题与徽章字体层级清楚。但截图中环形 Progress 后方露出一块明显的浅灰方形色块(背景色 #1F000000 在 2x2 紧凑空间内显得生硬且与整体配色冲突)，'6.2k' 与 '今日步数' 处于环的灰底之上，可读性受影响；底部 '进入运动' 字号 10pt 在深绿下偏小，整张卡片观感偏'土气'，离专业克制还有距离。",
+    "layout": "截图最显著的问题是 Stack(76x58) 内部排布冲突：progress_ring(58x58) 占据 y=0~58，step_text 位于 y=18、step_label 位于 y=38，导致 '今日步数' 文字被环形组件的下半弧覆盖，'日步数' 三字被环轨切掉一部分，呈现为断续/被遮挡状。环轨迹的方形背景(track 在该尺寸下未完美裁成圆)直接暴露在 6.2k 文字后，视觉上像套了个灰方框。meter_stack 整体偏高也使得 root Column 在 spaceBetween 下被挤压，'多云 24°C' 与 '进入运动' 距卡片底边较近但可读；底边距约 8-10vp，符合 2x2 要求，但中部遮挡是硬伤。"
+  },
+  "issues": [
+    "环形 Progress 背景渲染为可见的浅灰方形，与圆形轨迹不一致，视觉突兀",
+    "step_label '今日步数' 位于 y=38-52 区间，与高度 58 的 progress_ring 严重重叠，文字被环轨切掉",
+    "step_text '6.2k' 字号 20 + height 22 在环内显得过大，'k' 字符下沿接近环内边沿",
+    "底部 '进入运动' 字号仅 10pt，作为可点击入口的视觉权重偏弱",
+    "meter_stack 宽 76 比环 58 大，但环用 margin-left:9 偏移后未居中，导致环在卡片水平方向略偏左"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_11_fitness_206\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_11_fitness_206\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"value_row\",\"step_label\",\"bottom_col\"],\"itemMargin\":5,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#FFEAFBF1\",0],[\"#FFE9F5FF\",0.52],[\"#FFFFF7E6\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":{\"path\":\"/fitness/title\"},\"styles\":{\"width\":62,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":{\"path\":\"/fitness/connectionText\"},\"styles\":{\"width\":48,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#2638A169\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FF0A7F42\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"value_row\",\"component\":\"Row\",\"children\":[\"progress_ring\",\"step_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":100,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":{\"path\":\"/fitness/progress\"},\"total\":100,\"styles\":{\"type\":\"ring\",\"width\":36,\"height\":36,\"color\":\"#FF0A7F42\",\"backgroundColor\":\"#FFFFFFFF\"}},{\"id\":\"step_text\",\"component\":\"Text\",\"content\":{\"path\":\"/fitness/stepText\"},\"styles\":{\"width\":52,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"step_label\",\"component\":\"Text\",\"content\":{\"path\":\"/fitness/stepLabel\"},\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_col\",\"component\":\"Column\",\"children\":[\"weather_text\",\"action_text\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":{\"path\":\"/data/weather/current/condition\"},\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":{\"path\":\"/fitness/actionText\"},\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF0A7F42\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_11_fitness_206\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"运动卡\",\"connectionText\":\"已连接\",\"stepText\":\"6.2k\",\"stepLabel\":\"今日步数\",\"progress\":62,\"actionText\":\"进入运动\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\",\"prefectureName\":\"\",\"cityCode\":\"\"},\"current\":{\"temperatureC\":24,\"temperatureText\":\"24°C\",\"condition\":\"多云 24°C\",\"feelsLikeC\":25,\"humidityPercent\":58,\"airQuality\":\"优\",\"windDirection\":\"东风\",\"windLevel\":2,\"uvIndex\":\"中等\",\"coldLevel\":\"较低\",\"alertLevel\":\"无\"},\"daily\":[{\"date\":\"2026-07-05\",\"weekday\":\"星期日\",\"condition\":\"多云\",\"temperatureRangeText\":\"22° / 29°\",\"rainProbabilityPercent\":\"20%\",\"airQuality\":\"优\",\"uvIndex\":\"中等\",\"coldLevel\":\"较低\"}],\"updatedAt\":\"2026-07-05 08:00\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

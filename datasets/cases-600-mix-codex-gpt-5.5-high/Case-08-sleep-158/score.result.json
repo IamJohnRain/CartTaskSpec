@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-sleep-158",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户要求的三块横向信息（已睡/天气/卧室到公司）已落实，深紫渐变主题已渲染，红字警示（不足6小时徽章+红色 sleep tile）已加上，立刻就寝大按钮已在底部，distance tile 的导航 intent 与按钮的 deeplink 均按 eventCandidates 原样写入。但截图中三块数据值的核心信息全部因排版溢出而被截断：'已睡5.2小时' 仅显示 '已睡5.2小'（'时' 缺失），'今晚气温18度' 仅显示 '今晚气温18'（'度' 缺失），'卧室到公司12公里' 仅显示 '卧室到公司'（'12公里' 整段缺失，距离信息在截图中完全不可见）。updateDataModel 缺少 path '/' 字段属轻微协议瑕疵，但渲染功能未受影响。",
+    "aesthetic": "深紫到亮紫的渐变与红字警示搭配专业克制，标题层级与按钮反白对比到位，整体主题色统一协调。但截图中三块 tile 的正文文字均被强行裁切，呈现为残缺文本 '已睡5.2小'、'今晚气温18'、'卧室到公司'，视觉上像未渲染完成，严重削弱了卡片的专业感与可读性。",
+    "layout": "截图中三块数据值在 tile 内均被单行 maxLines:1 裁切，是本次最严重的布局问题：左侧睡眠 tile '已睡5.2小时' 被截为 '已睡5.2小'（'时' 溢出右边界），中间天气 tile '今晚气温18度' 被截为 '今晚气温18'（'度' 字被裁），右侧距离 tile '卧室到公司12公里' 被截为 '卧室到公司'（'12公里' 整段未显示）。三块 tile 宽 88px、内边距 6+6、内容宽仅 76px，使用 14pt 字号时 '已睡5.2小时' 约需 67px 可勉强放下但 '今晚气温18度' 需 74px 已接近极限、'卧室到公司12公里' 需 90px 严重超出，必然出现单行截断。卡片标题行、状态徽章、底部按钮均完整未越界，clip:true 工作正常，仅 info_row 区域三处文字被截断。底部按钮到卡片底边 12vp 留白合理。"
+  },
+  "issues": [
+    "睡眠 tile 数值 '已睡5.2小时' 被截切为 '已睡5.2小'，缺少 '时' 字",
+    "天气 tile 数值 '今晚气温18度' 被截切为 '今晚气温18'，缺少 '度' 字",
+    "距离 tile 数值 '卧室到公司12公里' 被截切为 '卧室到公司'，'12公里' 整段缺失，距离信息在截图中完全不可见",
+    "updateDataModel 缺少 path '/' 字段（轻微协议瑕疵，渲染未受影响）",
+    "tile 内 value 字号 14pt 与 76px 内容宽不匹配，9 字以上的中文+数字内容必然溢出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_158\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_158\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_row\",\"info_row\",\"sleep_button\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff1a0d2e\",0],[\"#ff5b3fa8\",0.55],[\"#ff8c55c2\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":170,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.durationStatus }}\",\"styles\":{\"width\":86,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#33ff3b30\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffff5449\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_row\",\"component\":\"Row\",\"children\":[\"sleep_tile\",\"weather_tile\",\"distance_tile\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"sleep_tile\",\"component\":\"Column\",\"children\":[\"sleep_label\",\"sleep_value\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":48,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#29ff3b30\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"sleep_label\",\"component\":\"Text\",\"content\":\"已睡\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"sleep_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.durationText }}\",\"styles\":{\"width\":76,\"height\":26,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffff5449\",\"maxLines\":2,\"lineHeight\":13,\"textOverflow\":\"none\"}},{\"id\":\"weather_tile\",\"component\":\"Column\",\"children\":[\"weather_label\",\"weather_value\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":48,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.temperatureText }}\",\"styles\":{\"width\":76,\"height\":26,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"lineHeight\":13,\"textOverflow\":\"none\"}},{\"id\":\"distance_tile\",\"component\":\"Column\",\"children\":[\"distance_label\",\"distance_value\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.5431\",\"longitude\":\"114.0579\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":88,\"height\":48,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"distance_label\",\"component\":\"Text\",\"content\":\"导航\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.distanceText }}\",\"styles\":{\"width\":76,\"height\":26,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"lineHeight\":13,\"textOverflow\":\"none\"}},{\"id\":\"sleep_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":276,\"height\":30,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff5b3fa8\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sleep_158\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠守护\",\"durationText\":\"已睡5.2小时\",\"durationStatus\":\"不足6小时\",\"temperatureText\":\"今晚气温18度\",\"distanceText\":\"卧室到公司12公里\",\"actionText\":\"立刻就寝\"}}}}"
+  ]
+}

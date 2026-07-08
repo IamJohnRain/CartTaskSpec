@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-20-notif-aggregate-386",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户四项诉求在截图中均能找到对应：标题'作业待办'、'剩1项'徽章代表未完成数、两组 Checkbox（数学订正未勾选/英语听写已勾选）、红色'快来不及了'提示、底部跳转按钮 onClick 也绑定到 clickToDeeplink（参数原样来自 eventCandidates）。但截图里底部 CTA 按钮文字 '进钉钉' 被渲染成 '进...'，关键跳转入口语义被截断，对'点一下能进钉钉'的诉求是实质性损伤，扣分。",
+    "aesthetic": "整体配色（白底+蓝色主色+红色警示+浅灰任务底）方向合理，文字层级清晰：标题加粗、徽章加粗、任务常规、警示加粗。但未勾选 Checkbox 用红色边框（#ffe84026）容易被误解为'出错/危险'，与常规 UI 中'未完成=中性灰、完成=蓝/绿'的约定不一致；底部 '进...' 的截断样式也影响观感。",
+    "layout": "截图中明确看到：底部按钮 '进钉钉' 被截断为 '进...'，即受保护的 CTA 文本溢出/被省略，Button width 52 + 内部 padding 后不足以容纳 fontSize 12 的三个中文 + 边距。其余区域（标题 116 宽内排开、徽章 44 宽内'剩1项'完整、两个 Checkbox 完整可见、警示文字完整）均无溢出，整张卡纵向 12+20+4+58+4+26+12=136 也安全落在 140 内。问题集中于 CTA 截断，属于严重布局问题。"
+  },
+  "issues": [
+    "截图中底部按钮 '进钉钉' 被截断为 '进...'，CTA 文本不可读",
+    "未勾选 Checkbox 使用红色边框（#ffe84026），与常见 UI 语义不符，易被误读为错误状态",
+    "warning 文字（fontSize 12 × 5 字 = 60vp）与 Button（52vp）共享 116vp 宽度时挤压，导致按钮宽度不足以容纳 '进钉钉'"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_386\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_386\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"taskList\",\"footer\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"remain\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":68,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"remain\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.remainText }}\",\"styles\":{\"width\":44,\"height\":20,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":10,\"backgroundColor\":\"#330a59f7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"taskList\",\"component\":\"Column\",\"children\":[\"task1\",\"task2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":58,\"padding\":{\"left\":6,\"right\":6,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"task1\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.tasks[0].title }}\",\"select\":{\"path\":\"/tasks/0/done\"},\"value\":{\"path\":\"/tasks/0/id\"},\"styles\":{\"width\":104,\"height\":24,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#ff999999\",\"shape\":\"rounded_square\"}},{\"id\":\"task2\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.tasks[1].title }}\",\"select\":{\"path\":\"/tasks/1/done\"},\"value\":{\"path\":\"/tasks/1/id\"},\"styles\":{\"width\":104,\"height\":24,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#ff999999\",\"shape\":\"rounded_square\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"warning\",\"openBtn\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.warning }}\",\"styles\":{\"width\":50,\"height\":22,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openBtn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.alibaba.dingtalk\",\"abilityName\":\"\",\"uri\":\"dingtalk://dingtalkclient/page/conversation?source=homework386\"}}],\"styles\":{\"width\":62,\"height\":26,\"margin\":{\"top\":0},\"borderRadius\":13,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_386\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"作业待办\",\"remainText\":\"剩1项\",\"warning\":\"快来不及了\",\"actionText\":\"进钉钉\"},\"tasks\":[{\"id\":\"math386\",\"title\":\"数学订正\",\"done\":false},{\"id\":\"english386\",\"title\":\"英语听写\",\"done\":true}]}}}"
+  ]
+}

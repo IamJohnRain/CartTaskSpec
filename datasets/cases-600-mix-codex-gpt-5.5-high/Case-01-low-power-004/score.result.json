@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-004",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "截图中可见'低电提醒'标题、'电量 12%'主指标、'快没电时喊我'状态、'下一程 18:30'日程摘要、右侧'日程/晚间日程'面板、'开启省电'按钮，五个用户诉求（低电提醒/字在背景图上/进系统设置/看日程/快没电喊我）中前四项落实良好；'字在背景图上'虽用 powerIcon 作为 ambient 背景，但 opacity 仅 0.28 偏淡，背景图存在感较弱。此外，calendar_row 中的 calendar_icon 使用了 resources/base/media/icon_schedule.png，不在 TaskSpec.assetCandidates 中，违反素材来源约束。onClick 事件 call/args 与 eventCandidates 一致，尺寸 2x4、catalogId、version、updateDataModel.path 均合规。",
+    "aesthetic": "截图中卡片采用深色到暖红的 90° 线性渐变，与'低电'语义高度契合；白色主标题'电量 12%'在深色背景上对比鲜明、清晰可读；右侧'开启省电'白色胶囊按钮与红色字形成强对比、CTA 突出；右侧'日程/晚间日程'面板使用半透明白色背景过渡自然，留白合理。字号层级 28/16/12/10 区分清晰，最强字重统一在 700。整体观感克制专业，仅 background 图标偏淡略缺层次。",
+    "layout": "截图显示无元素堆叠遮挡、无文字被裁切：'低电提醒'、'电量 12%'、'快没电时喊我'、'下一程 18:30'均完整呈现；右侧'日程'面板与'开启省电'按钮纵向端对齐、间距合理；'开启省电'按钮位于卡片右下、距底边约 8-10vp、点击热区充足；ambient power icon 位于右侧背景，未遮盖关键文本或 CTA。但 main_col 子项 height 之和 22+34+18+18=92 + 3×itemMargin(6)=18 = 110，超出容器 104 高度 6vp，理论上存在内部挤压/裁切风险（实际渲染未出现截断，属于隐患），Stack 也未遮挡受保护文本/CTA/进度值。",
+    "issues": [
+      "calendar_row 中的 calendar_icon 引用 resources/base/media/icon_schedule.png，不在 TaskSpec.assetCandidates 内，违反 Image.src 来源约束",
+      "ambient_icon 背景图 opacity=0.28 偏淡，'字在背景图上'诉求下背景图存在感不足",
+      "main_col 子项总高 110 > 容器 104，存在 6vp 内部溢出隐患（截图未触发但布局数值不自洽）",
+      "ambient_icon 宽高 92 与右半区 panel+action 区域有交叠，背景图与面板混在一起降低了'背景图'语义"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_004\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_004\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient_icon\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ff202224\",0],[\"#ff2e3033\",0.58],[\"#ffd94838\",1]]},\"alignContent\":\"center\"}},{\"id\":\"ambient_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.powerIcon }}\",\"styles\":{\"width\":120,\"height\":120,\"objectFit\":\"contain\",\"margin\":{\"left\":168,\"top\":8},\"opacity\":0.18}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_col\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"title\",\"level\",\"status\",\"calendar_row\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":176,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"level\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.levelText }}\",\"styles\":{\"width\":176,\"height\":34,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.statusText }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_row\",\"component\":\"Row\",\"children\":[\"calendar_text\"],\"itemMargin\":0,\"wrap\":\"noWrap\",\"styles\":{\"width\":176,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.summary }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_col\",\"component\":\"Column\",\"children\":[\"panel\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":90,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"panel\",\"component\":\"Column\",\"children\":[\"panel_label\",\"panel_value\"],\"itemMargin\":4,\"styles\":{\"width\":90,\"height\":54,\"padding\":{\"left\":8,\"right\":8,\"top\":7,\"bottom\":7},\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"panel_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":74,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panel_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":90,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffd94838\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_004\",\"value\":{\"power\":{\"title\":\"低电提醒\",\"levelText\":\"电量 12%\",\"statusText\":\"快没电时喊我\",\"actionText\":\"开启省电\"},\"data\":{\"calendar\":{\"summary\":\"下一程 18:30\",\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-calendar-low-power-004\",\"title\":\"晚间日程\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:00\",\"eventLocation\":\"手机日历\"}]}},\"assets\":{\"powerIcon\":\"resources/base/media/icon_save_power.png\"}}}}"
+  ]
+}

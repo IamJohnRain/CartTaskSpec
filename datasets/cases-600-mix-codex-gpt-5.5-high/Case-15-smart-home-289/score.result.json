@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-15-smart_home_289",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "截图中可见标题『灯光』、橙色警示文案『电量快不行了』、电池闪电图标、『打开』按钮均已呈现，root 上挂载的 onClick 与 Button 上的 onClick 都正确指向 clickToDeeplink，deeplink uri 与 TaskSpec.eventCandidates 一致；icon 资源绑定到 /smartHome/icon 且 updateDataModel 的 value 与 TaskSpec.dataModel.value 完全一致；2x2 尺寸、root shell、catalogId、version 等硬约束均满足。但 content Column 宽度仅 64vp 强制状态文本换行，影响了『提醒我快不行了』的视觉传达，扣 2 分。",
+    "aesthetic": "配色为白色卡片 + 橙色警示文字/按钮，主题一致，警示感明确。但截图中 Column 宽度过窄导致『电量快不行了』被强行断成『电量快不 / 行了』两行，字面割裂感强；按钮『打开』仅 64vp 宽、字号 14pt 显得局促；卡片下半部留白偏多，整体不克制，扣 3-4 分。",
+    "layout": "截图中 4 个子项（icon + title + status + button）在 140x140 卡片内未发生元素堆叠或越界，clip 生效；但右侧 Column 宽 64vp，导致 6 字中文状态文本在 14pt 下被截成 2 行（『电量快不 / 行了』），视觉上挤压并占用纵向空间；Row 整体仅占内容区上半部（约 70vp），下方留出明显空洞，热区紧贴卡片上沿；按钮高度 28vp 在 2x2 卡片中可接受但视觉偏小。整体布局可用但有局部挤压与视觉不平衡，扣 3-4 分。"
+  },
+  "issues": [
+    "content Column 宽 64vp 不足，状态文本『电量快不行了』在 14pt 下被强制断行成『电量快不/行了』",
+    "Row 高度使用不当：列高 92、icon 高 44 居中靠拢，导致整体内容紧贴卡片顶部，下方留白过多",
+    "按钮宽度仅 64vp，『打开』视觉上偏小，与卡片整体不协调",
+    "Card 背景纯白，缺少弱化背景图或浅橙底色等视觉锚定，使整个卡片看起来比较扁平",
+    "title fontSize 16 与 status fontSize 14 字阶差距不大，层级不够清晰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_289\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_289\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"icon\",\"title\",\"status\",\"action\"],\"itemMargin\":6,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":14,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFF4E5\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"icon\",\"component\":\"Image\",\"src\":{\"path\":\"/smartHome/icon\"},\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.smartHome.title }}\",\"styles\":{\"width\":116,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.smartHome.statusText }}\",\"styles\":{\"width\":116,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffb25000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.smartHome.actionText }}\",\"styles\":{\"width\":80,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffb25000\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_289\",\"value\":{\"smartHome\":{\"icon\":\"resources/base/media/icon_charge.png\",\"title\":\"灯光\",\"statusText\":\"电量快不行了\",\"actionText\":\"打开\"}}}}"
+  ]
+}

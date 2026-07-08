@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-01-low-power-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "用户要求一个能开启省电模式的按钮，并显示已开启状态。截图中可见：标题'省电模式'清晰展示、状态'已开启'明确呈现、按钮'开启省电'为可点击的绿色胶囊形按钮，按钮的 onClick 事件完全引用了 TaskSpec.eventCandidates 中的 clickToIntent，args 原样一致；数据绑定使用 {{ $__dataModel.powerMode.* }} 表达式正确读取 dataModel；尺寸 2x2、catalogId 'ohos.a2ui.extended.catalog'、version 'v0.9'、updateDataModel.path '/' 均符合硬约束。轻微扣分点：按钮文案'开启省电'与状态'已开启'存在语义张力（已开启时按钮应提示关闭），但这属于 TaskSpec 数据层设定，DSL 忠实呈现无可厚非。",
+    "aesthetic": "截图整体观感良好。配色采用与'省电/环保'语义高度契合的浅绿渐变背景（#DFF5E8 → #F7FFF9），深绿标题文字（#183326）在浅绿底色上对比清晰可读，状态文字（#257A4D）使用中等饱和度绿色与主题一致；按钮使用实心绿（#1F8F5A）+ 白色文字，热区高对比度、识别性强。字号层级为 16(标题)/14(状态)/14(按钮)，标题使用 fontWeight 700 作为唯一最强字重，层级清晰。居中对齐统一，留白密度舒适，无土气感。",
+    "layout": "截图中三个元素（标题/状态/按钮）纵向居中堆叠，无任何堆叠重叠。卡片 140×140、padding 12，可视区 116×116；按公式核算：12+22+8+18+8+36+12=116，恰好填满内容区无溢出。标题'省电模式'完整显示无截断，状态'已开启'完整显示无截断，按钮'开启省电'居中完整显示。按钮宽 104 高 36，热区充分（≥24vp）。按钮底边距卡片底边约 12vp，处于 2x2 推荐范围 8-12vp 内。元素未超出卡片圆角边界，clip 生效。整体布局干净、紧凑、平衡。"
+  },
+  "issues": [
+    "按钮文案'开启省电'与状态'已开启'在语义上略有冲突（已开启时按钮更合理的提示是'关闭省电'），但这属于 TaskSpec 数据设定层面，DSL 已忠实呈现。",
+    "底部按钮距卡片底边的视觉留白约为 12vp，处于推荐范围上沿，若缩窄 2-4vp 可让按钮视觉更靠下锚定、更突出 CTA。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"low_power_002\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"low_power_002\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"open_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":\"10 12 8 12\",\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#EAF7EF\",\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[[\"#DFF5E8\",0],[\"#F7FFF9\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.powerMode.title }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#183326\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.powerMode.statusText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#1F8F5A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.powerMode.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":104,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#1F8F5A\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"low_power_002\",\"path\":\"/\",\"value\":{\"powerMode\":{\"title\":\"省电模式\",\"statusText\":\"已开启\",\"buttonLabel\":\"开启省电\"}}}}"
+  ]
+}

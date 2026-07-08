@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-09-weather-care-170",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户要求带图天气卡、点一下跳app、能读天气、显示已完成四项均已落实：左上天气图标+背景太阳装饰图均来自 assetCandidates 的 icon_weather1.png；root 与 Button 都有 clickToDeeplink 事件，参数原样来自 eventCandidates；'能读天气'提示文字与'已完成'徽章均在截图中可见。但 readout 字段'出门记得带伞'被截断为'出门记得带'，关键信息'伞'丢失，按指令'能读天气'的完整朗读内容也缺失，扣分。",
+    "aesthetic": "截图中渐变青绿配色和谐，白色主文字在深色底上对比清晰可读，'阵雨转多云'使用黄色字强调也较美观。徽章使用半透明白底+白字的层次合理。但右上背景太阳图标(opacity 0.3)与右侧 readout 文字发生位置重叠，'出门记得带'末尾字符'带'正好压在太阳图标轮廓上，造成视觉干扰，文字边缘辨识度下降，扣 1-2 分。",
+    "layout": "截图中存在明显文字截断：readout 文本'阵雨转多云 29 度，出门记得带伞'在 weather_text_col(width=172, fontSize=12) 中实际宽度约 178px，超过容器宽度，末尾'伞'字被裁切消失，仅显示'出门记得带'。这是受保护主信息被截断的硬伤。同时背景太阳图标(margin-left:184, top:14, 92x92)覆盖到 (184,14)-(276,106) 区域，与右侧文字区(约 92-264, 24-90) 发生大面积重叠，进一步加剧可读性下降。其他元素如标题'天气关怀'、'广州 天河'、'已完成'徽章、'29°C'、'看天气'按钮均完整无截断，布局整体尚可。"
+  },
+  "issues": [
+    "readout 文字'阵雨转多云 29 度，出门记得带伞'在 weather_text_col 中被截断为'出门记得带'，'伞'字丢失",
+    "右上背景天气图标与 readout 文字发生位置重叠，造成视觉干扰",
+    "weather_text_col 宽度 172px 不足以容纳 fontSize 12 的完整 readout 文本（约 178px）",
+    "readout 文字被截断后，'能读天气'的完整朗读内容缺失"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_170\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_170\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"weather_bg\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a4b5a\",0],[\"#ff148f8f\",0.62],[\"#ff39b6a3\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]},{\"id\":\"weather_bg\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":64,\"height\":64,\"objectFit\":\"contain\",\"margin\":{\"left\":218,\"top\":62},\"opacity\":0.18}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"title_col\",\"done_badge\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"location\"],\"itemMargin\":2,\"styles\":{\"width\":156,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":156,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.location }}\",\"styles\":{\"width\":156,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"done_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.statusText }}\",\"styles\":{\"width\":64,\"height\":22,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"temp_text\",\"weather_text_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":80,\"height\":46,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text_col\",\"component\":\"Column\",\"children\":[\"condition\",\"readout\"],\"itemMargin\":3,\"styles\":{\"width\":188,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.condition }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffd166\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"readout\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.readout }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"voice_hint\",\"open_weather\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"voice_hint\",\"component\":\"Text\",\"content\":\"能读天气\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_weather\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.weather.actionText }}\",\"styles\":{\"width\":86,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ff0a6f73\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://home\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_170\",\"value\":{\"weather\":{\"title\":\"天气关怀\",\"location\":\"广州 天河\",\"temperature\":29,\"temperatureText\":\"29°C\",\"condition\":\"阵雨转多云\",\"readout\":\"阵雨转多云 29 度，出门记得带伞\",\"statusText\":\"已完成\",\"actionText\":\"看天气\"}}}}"
+  ]
+}

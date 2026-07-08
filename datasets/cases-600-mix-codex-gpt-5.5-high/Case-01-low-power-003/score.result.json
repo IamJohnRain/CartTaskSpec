@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-003",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户提出四项诉求：1)低电卡片(标题'低电模式'+副标'快没电了'已呈现)；2)字浮在背景图上(渐变背景+ambient闪电图，但闪电图位置错误导致浮在文字上方而非下方)；3)点跳app(root与Button均挂载clickToDeeplink到设置-电池，事件落实)；4)读日历日程(calendar_line绑定数据，但渲染后'议'字被闪电图完全遮挡，信息不完整)。日历信息缺失是用户核心诉求的关键扣分项。",
+    "aesthetic": "深红渐变+橙色CTA+白字/橙副标配色契合低电主题，字号阶梯16/12/14清晰，整体观感有质感。但闪电图与日历文字发生直接视觉冲突，'议'字缺失造成明显的视觉残缺感，破坏了卡片的专业观感。",
+    "layout": "截图中可明确观察到Stack叠层违规：ambient闪电图位于margin(40,4) size 76x76，覆盖区域x:52-128, y:16-92，而calendar_line文字位于y:60-78、x:0-100.8，二者在x:52-100.8, y:60-78区域发生重叠。截图显示'18:30 晚间会议'渲染为'18:30 晚间会'，'议'字被闪电图完全覆盖，属于Stack叠层覆盖受保护文本的明确违规。layout公式交叉验证：calendar_line 116x18可容纳约88.8px的文字，确实在容器内，但Stack渲染顺序导致ambient在content之上(或文字透明度80%使背景透出)，造成视觉截断。"
+  },
+  "issues": [
+    "ambient闪电图(76x76 at margin(40,4))在Stack中覆盖了calendar_line的'议'字，截图可见'18:30 晚间会'后紧跟闪电图，文字被截断",
+    "backgroundImage尺寸过大(76x76)，与116x116内容区几乎等高，违反'弱化视觉锚点'的asset描述语义",
+    "calendar_line文字颜色#ccffffff(80%透明度)使背景闪电图透出，进一步加剧文字可读性问题",
+    "ambient未做透明度衰减，'弱化背景锚点'的意图未实现，反而成为视觉焦点"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_003\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_003\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff231816\",0],[\"#ff4a241c\",0.62],[\"#ff7a321d\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"ambient\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_electricity.png\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\",\"margin\":{\"left\":82,\"top\":72}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"calendar_line\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"icon\",\"headline\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_save_power.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"headline\",\"component\":\"Column\",\"children\":[\"title\",\"warning\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.title }}\",\"styles\":{\"width\":86,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warning\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.warning }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffc47a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":116,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#ffffb55a\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff2b160d\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_003\",\"value\":{\"power\":{\"title\":\"低电模式\",\"warning\":\"快没电了\",\"actionText\":\"电池设置\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"calendar-low-power-003-1\",\"title\":\"晚间会议\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:00\",\"eventLocation\":\"线上\",\"description\":\"低电量时提前充电再参会\",\"senderName\":\"calendar\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-18-carpool-341",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户明确要求：拼车卡片可点击进入系统操作，需看到'已出发'或'已结束'状态。截图中标题'拼车出行'清晰可见，状态徽章'已出发'以白底绿字显著呈现，路线'科技园 → 会展中心'完整显示，'08:35 发车'时间信息齐全，底部'系统操作'按钮作为可点击入口明确，'点击进入系统处理'作为操作引导。onClick 已正确绑定到 eventCandidates 中的 clickToIntent，参数原样使用。size 2x4、catalogId、version、updateDataModel.path/value 等硬约束均满足。轻微扣分：eventCandidate 本身的语义（battery_saving_mode）与拼车场景存在一定错位，但模型按规范原样使用，不应扣分；'系统操作'与事件意图存在语义偏差也属于 spec 层面问题。",
+    "aesthetic": "截图显示绿色渐变背景（#64bb5c → #92c48d）柔和自然，前景白色文字在绿色背景上对比度高、清晰可读。字号层级清晰：18pt 粗体标题最强，16pt 路线信息次之，12pt 时间/提示文字最弱，整体只有一个最强字重。'已出发'白底胶囊和'系统操作'白底圆角按钮在视觉上形成良好的重量平衡。留白分布舒适，元素对齐整齐。轻微扣分：按钮与状态徽章视觉风格高度相似（都是白底+绿字胶囊），辨识度上略有同质化。",
+    "layout": "截图整体布局干净，无堆叠重叠或文字截断。标题区（top_row）左侧'拼车出行'+'08:35 发车'与右侧'已出发'胶囊水平对齐良好，状态徽章未触达右边界；中间路线'科技园 → 会展中心'完整显示未被裁切；底部'点击进入系统处理'与'系统操作'按钮对齐正确，按钮底边距卡片底边约 12vp 在合理范围。公式校验：root Column 内部 40+8+26+8+34=116 与内容区高度 116 完全吻合；top_row 子项 178+8+72=258 < 276；bottom_row 子项 156+8+112=276 恰好填满，无溢出风险。热区方面，'系统操作'按钮 112x34vp 满足 ≥24vp 要求。"
+  },
+  "issues": [
+    "底部'系统操作'按钮与顶部'已出发'状态徽章在视觉样式上几乎完全一致（白底+绿字+圆角胶囊），缺乏区分度",
+    "标题'拼车出行'与下方'08:35 发车'时间行间距略紧（itemMargin=2），可考虑适当增加",
+    "onClick 事件意图（battery_saving_mode）与卡片场景（拼车出行）语义不匹配（属于 spec 层面问题，模型无法修正）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_341\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_341\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"route_text\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":14,\"right\":14,\"top\":14,\"bottom\":14},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff52a849\",0],[\"#ff7ec27e\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_block\",\"status_pill\"],\"itemMargin\":8,\"styles\":{\"width\":272,\"height\":40,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_block\",\"component\":\"Column\",\"children\":[\"title\",\"time\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.title }}\",\"styles\":{\"width\":178,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.time }}\",\"styles\":{\"width\":178,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.status }}\",\"styles\":{\"width\":76,\"height\":28,\"padding\":{\"left\":12,\"right\":12,\"top\":5,\"bottom\":5},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff3d8b3a\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"route_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.carpool.route }}\",\"styles\":{\"width\":272,\"height\":26,\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"hint\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":272,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"\\u70b9\\u51fb\\u8fdb\\u5165\\u7cfb\\u7edf\\u5904\\u7406\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.carpool.actionText }}\",\"styles\":{\"width\":116,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff3d8b3a\",\"borderColor\":\"#ff3d8b3a\",\"borderWidth\":0},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_341\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"\\u62fc\\u8f66\\u51fa\\u884c\",\"status\":\"\\u5df2\\u51fa\\u53d1\",\"route\":\"\\u79d1\\u6280\\u56ed \\u2192 \\u4f1a\\u5c55\\u4e2d\\u5fc3\",\"time\":\"08:35 \\u53d1\\u8f66\",\"actionText\":\"\\u7cfb\\u7edf\\u64cd\\u4f5c\"}}}}"
+  ]
+}

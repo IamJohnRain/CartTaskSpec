@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-20-notif-aggregate-388",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户明确要求呈现：微信群消息入口、明天天气、快没电了提醒、可点击进微信。截图中只有 '3 条未读'、'快没电了'、按钮 '读群消息' 正确渲染；而主标题 '微信 群消息' 实际显示为被截断的模板原文 '{{ $__dataM'，天气行 '明天 多云 28°C' 显示为被截断的 '{{ $__dataModel.wea'。即两个核心信息字段（消息来源、天气）完全没有真实数据落地，指令遵从严重缺位。onClick 事件/参数与 TaskSpec 一致、尺寸/catalogId/version/updateDataModel 硬约束满足、事件与尺寸项不扣分。",
+    "aesthetic": "截图整体配色（绿色微信头标+按钮、橙色提醒）协调，背景 #fff1f3f5 干净。但模板表达式原文 '{{ $__dataM'、'{{ $__dataModel.wea' 直接暴露在卡片正面，字体粗黑且被裁切，视觉上非常不专业、像调试残影；正常产品卡不应出现未解析的 Mustache 字面量。字重层级（700 主标、500 副文、700 按钮）合格，但模板泄露问题把整体美观度拉低。",
+    "layout": "布局结构本身没有溢出：root(116×116 内容) 装下了 msg_row(34)+divider(1)+weather(16)+battery(16)+btn(30)+4×itemMargin(16)=113，留白合理，按钮底到卡底约 12vp，落在 8-12vp 区间，未发生堆叠遮挡。'信'圆形字标与右侧文字块水平居中对齐良好，分割线贯通，列对齐统一。问题在于：模板未解析导致 msg_title 和 weather_text 在 82/116 宽度内只显示了 '{{ $__dataM' / '{{ $__dataModel.wea' 的左侧若干字符，文本被截断（受保护主信息本不应被截断），属于内容层而非几何层问题，但仍属截图可见的截断现象。"
+  },
+  "issues": [
+    "msg_title 的 content 为 '{{ $__dataModel.message.app }} {{ $__dataModel.message.target }}'，同字段内拼接两个表达式导致渲染时整段被当字面量，截图中显示为 '{{ $__dataM'",
+    "weather_text 同样在 content 中拼接两个表达式 '{{ $__dataModel.weather.day }} {{ $__dataModel.weather.summary }}'，截图中显示为 '{{ $__dataModel.wea'",
+    "msg_title 实际宽度 82 在 fontSize 14/字重 700 下能容纳 '微信 群消息'（约 75.6px），属于留有安全余量，但当前未发生尺寸超限",
+    "weather_text 宽度 116 在 fontSize 12/字重 600 下能容纳 '明天 多云 28°C'（约 84px），也无尺寸问题",
+    "模板未解析的字符串本身被 maxLines:1 + textOverflow:none 限制后右端被切，造成受保护主信息残缺"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_notif_aggregate_388\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_notif_aggregate_388\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"msg_row\",\"divider\",\"weather_text\",\"battery_text\",\"open_btn\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"msg_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"msg_block\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"信\",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"msg_block\",\"component\":\"Column\",\"children\":[\"msg_title\",\"msg_count\"],\"itemMargin\":2,\"styles\":{\"width\":82,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"msg_title\",\"component\":\"Text\",\"content\":\"{{ message.title }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"msg_count\",\"component\":\"Text\",\"content\":\"{{ message.unreadText }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"color\":\"#33000000\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ weather.summaryText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ battery.warning }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.tencent.mm\",\"abilityName\":\"com.tencent.mm.ui.LauncherUI\",\"uri\":\"weixin://dl/chat\"}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_notif_aggregate_388\",\"path\":\"/\",\"value\":{\"message\":{\"app\":\"微信\",\"target\":\"群消息\",\"unreadText\":\"3 条未读\",\"title\":\"微信 群消息\"},\"weather\":{\"day\":\"明天\",\"summary\":\"多云 28°C\",\"summaryText\":\"明天 多云 28°C\"},\"battery\":{\"level\":12,\"warning\":\"快没电了\"},\"actionText\":\"读群消息\"}}}"
+  ]
+}

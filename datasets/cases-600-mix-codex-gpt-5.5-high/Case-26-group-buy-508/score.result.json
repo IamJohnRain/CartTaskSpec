@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-26-group-buy-508",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.5,
+  "reasons": {
+    "instruction": "用户要求五个要素：拼团卡、几个口味能打勾、一行话显示还差几杯、点一下进付款、显示已满员。截图显示标题'奶茶拼团'、绿色'已满员'状态徽章、底部'去付款'按钮均已呈现，onClick 事件原样来自 eventCandidates。但关键的一行话'还差几杯'被截断为'还差 0 杯，当前已'，'满员'二字丢失，信息传达不完整；口味勾选框区域仅能看到两个非常小的方块，第三个口味（芋泥）几乎不可见，口味名称（乌龙/茉莉/芋泥）在截图中几乎无法辨认。指令落实存在明显缺漏。",
+    "aesthetic": "卡片采用暖色渐变（黄到橙），整体调性与奶茶主题契合，前景文字在渐变背景上可读。但卡片底部约一半区域为大面积空白，布局严重不均衡；勾选框标签字号过小，几乎与背景融合；按钮配色（亮蓝）与暖色背景对比强烈，略显突兀。整体观感一般，留白处理欠佳。",
+    "layout": "截图中最严重的问题是摘要文字'还差 0 杯，当前已满员'被强制单行后截断为'还差 0 杯，当前已'，末尾'满员'被裁切丢失，这属于受保护文本被截断的硬伤。口味勾选区域可见两个小方块，第三个口味（芋泥）位置和标签都不清晰，疑似被挤压或未完整渲染。卡片下方约 50% 区域为完全空白，纵向空间未充分利用。按钮虽完整显示但热区距卡片底边距离偏大，整体布局上重下空，失衡明显。"
+  },
+  "issues": [
+    "摘要文本'还差 0 杯，当前已满员'被强制单行截断为'还差 0 杯，当前已'，关键信息丢失",
+    "口味勾选框区域仅能辨认两个小方块，第三个口味（芋泥）几乎不可见",
+    "Checkbox 标签文字（乌龙/茉莉/芋泥）字号过小，在截图中几乎无法辨认",
+    "卡片底部约一半区域为空白，纵向空间利用严重不足，布局上重下空",
+    "formatString 调用嵌套在 Text.content 中不是标准 A2UI 语法，存在协议合规风险",
+    "按钮亮蓝（#ff0a59f7）与暖色渐变背景对比过于强烈，视觉上略显割裂"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"group_buy_card_508\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"group_buy_card_508\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"flavor_row\",\"summary\",\"pay_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"to bottom\",\"colors\":[[\"#f5dc62\",0],[\"#ed955f\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title\",\"status\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.title }}\",\"styles\":{\"width\":68,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.status }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":9,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"flavor_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"flavor_item\",\"path\":\"/groupBuy/flavors\"},\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"flavor_item\",\"component\":\"Checkbox\",\"label\":{\"path\":\"name\"},\"value\":{\"path\":\"id\"},\"select\":{\"path\":\"selected\"},\"group\":\"milk_tea_flavors\",\"styles\":{\"width\":40,\"height\":28,\"fontSize\":12,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":1.5}}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"还差 {{ $__dataModel.groupBuy.remainingCups }} 杯成团\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"pay_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.groupBuy.payLabel }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":120,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"group_buy_card_508\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"title\":\"奶茶拼团\",\"status\":\"已满员\",\"remainingCups\":0,\"payLabel\":\"去付款\",\"flavors\":[{\"id\":\"oolong\",\"name\":\"乌龙\",\"selected\":true},{\"id\":\"jasmine\",\"name\":\"茉莉\",\"selected\":true},{\"id\":\"taro\",\"name\":\"芋泥\",\"selected\":false}]}}}}"
+  ]
+}

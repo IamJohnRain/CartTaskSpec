@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-05-agenda-089",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户要求一行提醒显示 'meeting at 3'，截图左侧 '3 PM meeting' 文本正确呈现；onClick 事件 clickToIntent→ViewCalendarEvent 绑定完整，args 中 entityId 路径与 dataModel 对齐；dataModel.value 与 updateDataModel 一致；size=2x4、root 300x140、borderRadius 22、clip true、catalogId/version 均符合协议。主要扣分点：CTA 按钮文案 'Open Calendar' 在截图中被截断为 'Open ...'，用户看到的是不完整动作名，无法清晰判断点击后会打开日历，削弱了 'tap to open calendar' 的指令落实。",
+    "aesthetic": "截图整体配色克制：浅灰底（#fff7f8fa）配深色主文本与高饱和度蓝按钮，色彩对比清晰；'3 PM meeting' 字重 700、字号 20，层级突出，是卡片唯一的强字重；圆角 18 的胶囊按钮形态专业。扣分点：CTA 截断为 'Open ...' 是一个明显的视觉瑕疵，破坏了按钮的完整性和可读性；卡片纵向留白偏多（12+56+12=80，卡片高 140，居中后上下各约 30vp 空白），画面略显松散、不够紧凑。",
+    "layout": "截图最显著的布局问题是右侧蓝色按钮的文字被裁切：按钮 width=92，按 14px 700 字重估算 'Open Calendar' 需约 102-110px 宽度，扣除按钮左右内边距后内部可用仅约 76-80px，远不够装下完整 'Open Calendar'，于是渲染出 'Open ...' 的截断效果；maxLines:1 + textOverflow:none 的组合在宽度受限时未做缩字或换行处理，导致受保护的 CTA 文本被截断。其余布局没有堆叠或溢出：左侧 '3 PM meeting' 在 172 宽度内完整显示；Row 内 spaceBetween 与 itemMargin 12 计算正确（172+12+92=276=父宽）；垂直居中没有遮挡问题；卡片圆角与边界均合规。"
+  },
+  "issues": [
+    "截图右侧按钮文案 'Open Calendar' 被截断为 'Open ...'，CTA 不可完整辨识（按钮宽 92 不够装 14px 700 字重的 'Open Calendar'）",
+    "受保护的 CTA 文本受 maxLines:1 + textOverflow:none 限制在宽度不足时硬截断，未做缩字或缩字号处理",
+    "卡片纵向留白偏大（上下各约 30vp），2x4 形态下内容显得不够紧凑",
+    "formatString 表达式与 $__dataModel 表达式混用，协议风格不够统一（虽然两种都合法）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_089\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_089\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"itemMargin\":0,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fa\",\"justifyContent\":\"center\",\"alignItems\":\"stretch\"}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"reminder_text\",\"open_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":56,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/calendar/nextEvent/reminderLine}\"}},\"styles\":{\"width\":130,\"height\":32,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.nextEvent.actionText }}\",\"styles\":{\"width\":134,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"paddingLeft\":14,\"paddingRight\":14,\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/calendar/nextEvent/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_089\",\"path\":\"/\",\"value\":{\"calendar\":{\"source\":\"calendar_mock\",\"nextEvent\":{\"entityName\":\"calendar\",\"entityId\":\"calendar-agenda-089-next\",\"time\":\"15:00\",\"title\":\"Meeting\",\"reminderLine\":\"3 PM meeting\",\"actionText\":\"Open Calendar\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

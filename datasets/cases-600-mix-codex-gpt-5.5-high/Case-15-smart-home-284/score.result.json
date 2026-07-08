@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-15-smart-home-284",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户诉求四项均已落实：标题'灯控'、大字号'1'作为'一行数字'、绿色圆点+文字'已连接'表示连接状态、右侧绿色渐变'打开'按钮挂载 clickToDeeplink 事件（call/args 与 TaskSpec.eventCandidates 完全一致）；size=2x4、catalogId、version、updateDataModel.path/value 等硬约束均满足；dataModel 五字段全部呈现。唯一可议之处是 deeplink 指向 healthapp（与灯控语义略不符），但这是 TaskSpec 给定的事件，不扣分。",
+    "aesthetic": "截图整体观感干净专业：白底+绿色点缀配色克制和谐，绿色连接指示与按钮形成视觉呼应；字号层级清晰（14 标题 / 40 主数字 / 12 状态/提示），40 号主数字为唯一最强字重；按钮采用浅绿到深绿的对角渐变，质感不错；左右两栏留白均衡，分割线纤细不抢戏。无明显土气或不可读问题。",
+    "layout": "截图显示左侧三行（标题、数字、状态行）纵向紧凑居中，未出现裁切；大字号'1'在 42 高容器内完整显示，底部无截断；右侧'设备在线'+按钮上下居中，按钮距底边留白约 10vp（符合 2x4 应在 10-14vp 区间）；垂直分割线长度 84 居中于 116 内容区，视觉锚定稳；元素未越出卡片边界，无 Stack 遮挡问题。底部大块空白属于 2x4 内容稀疏的正常表现，不算缺陷。"
+  },
+  "issues": [
+    "numberLine 高度 42vp 与 fontSize 40vp 几乎无内边距，大字号字符在某些字体下可能贴底，建议略增至 46vp 提高安全余量",
+    "右侧 actionHint 字号 12vp 与左侧 statusText 字号相同但颜色更浅（#66000000 vs #99000000），信息层级略弱",
+    "deeplink 指向 healthapp 而非灯控应用，属于上游 TaskSpec 问题，不扣模型分"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_smart_home_284\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_smart_home_284\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main\",\"divider\",\"actionPanel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"title\",\"numberLine\",\"statusRow\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.title }}\",\"styles\":{\"width\":178,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"numberLine\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/light/level}\"}},\"styles\":{\"width\":178,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusRow\",\"component\":\"Row\",\"children\":[\"statusDot\",\"statusText\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":178,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"statusDot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":14,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.status }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"width\":1,\"height\":84,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"actionPanel\",\"component\":\"Column\",\"children\":[\"actionHint\",\"openButton\"],\"itemMargin\":12,\"styles\":{\"width\":77,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"actionHint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.light.actionHint }}\",\"styles\":{\"width\":77,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"openButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.light.actionText }}\",\"styles\":{\"width\":77,\"height\":36,\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff64bb5c\",0],[\"#ff92c48d\",1]]},\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_smart_home_284\",\"value\":{\"light\":{\"title\":\"灯控\",\"level\":\"1\",\"status\":\"已连接\",\"actionHint\":\"设备在线\",\"actionText\":\"打开\"}}}}"
+  ]
+}

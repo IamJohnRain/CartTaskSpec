@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-weather-care-167",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求'图为主+点击跳转天气应用'。截图中天气图标(云+太阳)清晰可见居中显示在浅蓝色 hero 圆角区域内，onClick 已正确挂载 clickToDeeplink 事件，uri 与 TaskSpec 一致；DataModel 中 title/city/condition/temperatureText/careText 全部以表达式渲染并真实呈现。尺寸/catalogId/version/updateDataModel 全部合规。扣分点：用户明确强调'做张图为主'，但当前 44x44 的图标相对 116x116 内容区占比约 38%，图的主视觉地位还可进一步强化。",
+    "aesthetic": "截图中浅蓝白底(#fff7fbff)与 hero 区淡蓝(#ffe8f4ff)形成柔和层次，主天气文本用 #ff006cde 蓝色加粗，温度 29°C 是最强字重，符合'同一卡片只保留一个最强字重'的层级原则；标题与关怀文字颜色对比足够，文字可读性良好。留白与对齐统一，圆角处理现代。整体观感专业但偏朴素，缺少渐变/装饰等加分项，扣 0.5 分。",
+    "layout": "从截图观察：所有文字均单行完整显示，无截断；hero(图标+今日天气)、main_weather(深圳 29°C 多云)、care(出门带伞，注意补水)三块在 116x116 内容区上下排列，无堆叠/遮挡；卡片四周留白合理，未溢出 140x140 边界；底部没有 CTA 元素，底部边距符合 2x2 的 8-12vp 要求。布局公式交叉验证：72+6+38=116 恰等于内容区高度，无溢出隐患。扣分点：hero 区域上下空白稍多，图标视觉占比可进一步放大以呼应'图为主'。",
+    "issues": [
+      "天气图标 44x44 在 116x116 内容区中视觉占比偏小，未充分体现用户'图为主'诉求",
+      "主天气文本字号 16 与标题字号 14 差距小，hero 内标题'今日天气'与下方主天气信息视觉强度接近，层级可再拉大",
+      "卡片整体配色偏素，缺少渐变或微质感"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_167\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_167\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"summary\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7fbff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"title\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":74,\"borderRadius\":16,\"backgroundColor\":\"#ffe8f4ff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/weather/icon\"},\"styles\":{\"width\":52,\"height\":52,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.title }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Column\",\"children\":[\"main_weather\",\"care\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.city + ' ' + $__dataModel.weather.temperatureText + ' ' + $__dataModel.weather.condition }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ff006cde\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.careText }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_167\",\"path\":\"/\",\"value\":{\"weather\":{\"title\":\"今日天气\",\"city\":\"深圳\",\"condition\":\"多云\",\"temperatureText\":\"29°C\",\"careText\":\"出门带伞，注意补水\",\"icon\":\"resources/base/media/icon_weather1.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

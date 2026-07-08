@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-03-anti-addiction-046",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图内可见四项用户诉求全部落实：①主数值'3小时35分'清晰呈现今日用机时长；②右上'快超时'状态字以橙棕色高亮显示，满足'快超时提醒'；③'多云 29°C'天气行可见；④底部'回到App'胶囊按钮存在，onClick.call/args 与 eventCandidates 原样一致（clickToDeeplink → parent_control）。size=2x2、root=140x140、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/' 等硬约束均合规。assetCandidates 为空且未引入网络图，符合约束。轻微不足：未直观展示 215/240 限额占比（缺少进度可视化），信息密度可再高一点。",
+    "aesthetic": "截图整体配色为暖橙渐变（#fff7ed → #ffedd5 → #ff9500），主数值深棕与按钮白字在浅橙底上对比清晰、可读性强；字号阶梯 20/16/12/14 层级合理，最强字重仅出现在主数值与状态字上，符合'一个最强字重'原则；居中对齐统一，圆角一致（卡片 18、按钮 15、徽标 12），观感专业克制。不足：顶部'时'徽标与'快超时'之间有少量留白略显松散，天气行与按钮之间间距略大，整体略偏宽松。",
+    "layout": "截图未观察到任何元素堆叠、重叠或文字裁切/截断现象。Column 五个子项（top_row 24、used_text 30、weather_line 16、action_button 30 + itemMargin 12 = 112）在 116 内容区中正常分布，justifyContent:spaceBetween 配合 alignItems:center 使垂直分布均匀。'快超时'三字在 width:86 中清晰完整；'3小时35分'在 width:116 中无截断；'多云 29°C'在 width:116 中完整；'回到App'按钮底边距卡片底约 12vp，符合 2x2 区间。热区足，CTA 完整可达。"
+  },
+  "issues": [
+    "缺少 215/240 限额进度的可视化（无 Progress 条），'快超时'仅靠文字传达，不够直观",
+    "顶部时字徽标与状态行之间留白偏多，纵向可适度压缩以提高信息密度",
+    "天气行字号 12 在 2x2 卡片上偏小，可读性略受影响（可微调到 11-12 已是合理下限）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_anti_addiction_046\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_anti_addiction_046\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"used_text\",\"progress_bar\",\"weather_line\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fffff7ed\",0],[\"#ffffedd5\",0.58],[\"#ffff9500\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"glyph\",\"status_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"时\",\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffff9500\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.screenTime.status }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ff7a2e00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"used_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.screenTime.usedText }}\",\"styles\":{\"width\":116,\"height\":26,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff2d1b12\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"styles\":{\"width\":116,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#33ff9500\",\"progressColor\":\"#ffff9500\",\"value\":89.5}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff7a5139\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.screenTime.actionText }}\",\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffff9500\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_anti_addiction_046\",\"path\":\"/\",\"value\":{\"screenTime\":{\"usedMinutes\":215,\"limitMinutes\":240,\"remainingMinutes\":25,\"usedText\":\"3小时35分\",\"status\":\"快超时\",\"actionText\":\"回到App\"},\"data\":{\"weather\":{\"location\":{\"cityCode\":\"101010100\",\"districtName\":\"朝阳区\",\"prefectureName\":\"北京市\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\",\"airQuality\":\"良\",\"humidityPercent\":58,\"windDirection\":\"东南风\",\"windLevel\":2,\"uvIndex\":\"中等\",\"coldLevel\":\"低\",\"alertLevel\":\"\"},\"daily\":[{\"date\":\"2026-07-05\",\"weekday\":\"周日\",\"condition\":\"多云\",\"temperatureRangeText\":\"24° / 32°\",\"rainProbabilityPercent\":\"20%\"}],\"updatedAt\":\"2026-07-05 09:20\"}},\"state\":{\"loading\":false,\"timeoutMock\":{\"limitMinutes\":240,\"usedMinutes\":215,\"remainingMinutes\":25,\"nearTimeout\":true}}}}}"
+  ]
+}

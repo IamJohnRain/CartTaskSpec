@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-26-group-buy-519",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.5,
+  "reasons": {
+    "instruction": "用户核心诉求'口味的勾选项竖着排下来(每个一格带勾选框)'在截图中完全缺失，分隔线下方留出大面积空白但没有渲染出任何勾选项，三种口味的复选框（珍珠奶茶、桃桃乌龙、茉莉奶绿）均不可见，这是模板 Checkbox 没有正确展开所致；上半部分拼单信息、分隔线、淡粉渐变、定提醒入口和 onClick 事件均按 TaskSpec 落实，但状态文本'拼单已成立'被截断为'拼单已'，关键字段信息不完整。",
+    "aesthetic": "截图整体配色为淡粉到深粉的 135° 渐变，柔和度尚可，标题区嵌入式小面板的半透明白色叠层让上半部分有层次感；但分隔线下方出现一大片与卡片同色的空白，严重破坏视觉完整性与留白节奏，看起来像'渲染失败'；状态文本'拼单已'被截掉两字，破坏可读性。",
+    "layout": "截图中存在两处显著布局问题：1) 状态文本'拼单已成立'在右上角被截断为'拼单已'，宽度 30 不足以容纳 5 个中文字符；2) 口味勾选区域（taste_list）整块空白，三个 Checkbox 项完全没有渲染出来，导致分隔线与底部'定提醒'按钮之间出现约 40px 的真空地带；3) 底部按钮虽锚定在卡片下沿附近但因上方空白而显得孤立。整体布局未崩溃但内容严重缺失。"
+  },
+  "issues": [
+    "三种口味的 Checkbox 项在截图中完全没有渲染，模板 {{componentId, path}} 绑定疑似未生效",
+    "状态文本'拼单已成立'被截断为'拼单已'，status_text 宽度 30 不足",
+    "taste_list 区域占高 41 但实际无内容渲染，出现大块空白",
+    "嵌入式小面板仅出现在顶部，勾选项未按用户要求做成'嵌入式小面板'形式",
+    "勾选项之间缺乏'状态变化'的视觉体现，无法展示勾选与否的差异"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_26_group_buy_519\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_26_group_buy_519\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_panel\",\"divider\",\"taste_list\",\"alarm_btn\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFFFFF\",0],[\"#F5C6CF\",1]]}}},{\"id\":\"top_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"deadline_text\"],\"itemMargin\":1,\"styles\":{\"width\":124,\"height\":30,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#0CFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"glyph_text\",\"title_text\",\"status_text\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":112,\"height\":13,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"glyph_text\",\"component\":\"Text\",\"content\":\"杯\",\"styles\":{\"width\":12,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#E64566\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.title }}\",\"styles\":{\"width\":50,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.status }}\",\"styles\":{\"width\":46,\"height\":13,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#FF64BB5C\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"deadline_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.deadlineLabel }}\",\"styles\":{\"width\":112,\"height\":9,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"taste_list\",\"component\":\"Column\",\"children\":[\"taste1\",\"taste2\",\"taste3\"],\"itemMargin\":2,\"styles\":{\"width\":124,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"taste1\",\"component\":\"Row\",\"children\":[\"check1\",\"name1\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":12,\"padding\":{\"left\":4,\"right\":4,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#0CFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.flavors.0.checked ? '☑' : '☐' }}\",\"styles\":{\"width\":12,\"height\":10,\"fontSize\":10,\"fontColor\":\"#E64566\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"name1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.flavors.0.name }}\",\"styles\":{\"width\":100,\"height\":10,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"taste2\",\"component\":\"Row\",\"children\":[\"check2\",\"name2\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":12,\"padding\":{\"left\":4,\"right\":4,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#0CFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.flavors.1.checked ? '☑' : '☐' }}\",\"styles\":{\"width\":12,\"height\":10,\"fontSize\":10,\"fontColor\":\"#E64566\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"name2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.flavors.1.name }}\",\"styles\":{\"width\":100,\"height\":10,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"taste3\",\"component\":\"Row\",\"children\":[\"check3\",\"name3\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":12,\"padding\":{\"left\":4,\"right\":4,\"top\":1,\"bottom\":1},\"borderRadius\":6,\"backgroundColor\":\"#0CFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check3\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.flavors.2.checked ? '☑' : '☐' }}\",\"styles\":{\"width\":12,\"height\":10,\"fontSize\":10,\"fontColor\":\"#E64566\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"name3\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupOrder.flavors.2.name }}\",\"styles\":{\"width\":100,\"height\":10,\"fontSize\":10,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alarm_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.groupOrder.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":124,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#E64566\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_26_group_buy_519\",\"path\":\"/\",\"value\":{\"groupOrder\":{\"title\":\"奶茶拼单\",\"status\":\"拼单已成立\",\"deadlineLabel\":\"20:30 截止\",\"hint\":\"勾选后同步状态\",\"flavors\":[{\"name\":\"珍珠奶茶\",\"checked\":true},{\"name\":\"桃桃乌龙\",\"checked\":false},{\"name\":\"茉莉奶绿\",\"checked\":true}],\"actionLabel\":\"定提醒\"}}}}"
+  ]
+}

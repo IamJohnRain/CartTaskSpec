@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-25-reading-495",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.1,
+  "reasons": {
+    "instruction": "截图中最核心的内容——三本书（封面图标/书名/章节/勾选框）完全没有渲染出来，book_row 区域整片空白，是用户最关心的功能模块全部缺失；顶部天气文字'天气加载中'被截断为'天气加载'，未完整呈现。标题、勾选按钮、渐变背景、onClick 事件（clickToCallPhone/13800138000）落实，但因核心书籍内容缺失，指令遵从度严重不足。",
+    "aesthetic": "从截图看，晨光米黄色渐变背景与白色内面板搭配尚算温柔克制，标题字重和'打给书友'蓝色按钮的对比也合理。但中部近 60% 卡片高度是空洞的纯白留白，让整张卡片看起来像是只渲染了头部和底部、主体被掏空，严重影响观感完整度。",
+    "layout": "截图显示 book_row 区域是完整空白（既没有书籍封面色块也没有图标/书名/章节/勾选框），三本书籍全部未呈现；顶部右侧'天气加载中'被截断为'天气加载'，末字'中'在容器边界外被裁掉；面板 Column 实际占用约 18+54+26+12=110vp 超出 padding 后的 100vp 内容区，存在纵向溢出风险（被裁切或被压缩），与截图呈现一致。底部蓝色按钮整体可见，但视觉重心完全压到按钮上，结构性失衡。"
+  },
+  "issues": [
+    "三本书（封面 A/B/C 标记、书名'长夜/山海/春灯'、章节'第12章/第7章/第3章'、勾选框）全部未在截图中渲染，book_row 区域完全空白",
+    "顶部天气文字'天气加载中'被截断为'天气加载'，末字丢失",
+    "面板 Column 纵向占用(18+54+26+12=110) 超过 padding 后 100vp 的可用高度，存在溢出",
+    "卡片中部大面积空白，整体观感严重不完整"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"reading_shelf_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"reading_shelf_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient\",\"panel\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFF8EC\",0],[\"#F9E6BF\",1]]}}},{\"id\":\"ambient\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":120,\"height\":120,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\"}},{\"id\":\"panel\",\"component\":\"Column\",\"children\":[\"header\",\"book_row\",\"call_button\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":120,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#E5FFFFFF\",\"shadow\":{\"radius\":6,\"color\":\"#22000000\",\"offsetX\":0,\"offsetY\":2},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"weather\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":108,\"height\":12,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.title }}\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weatherLine }}\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\",\"textOverflow\":\"none\"}},{\"id\":\"book_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"book_item\",\"path\":\"/books\"},\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":108,\"height\":70,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"book_item\",\"component\":\"Column\",\"children\":[\"book_top\",\"book_name\",\"book_chapter\"],\"itemMargin\":2,\"styles\":{\"width\":34,\"height\":70,\"padding\":2,\"borderRadius\":6,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"book_top\",\"component\":\"Row\",\"children\":[\"book_mark\",\"book_done\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":30,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"book_mark\",\"component\":\"Text\",\"content\":{\"path\":\"mark\"},\"styles\":{\"width\":14,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"book_done\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":{\"path\":\"done\"},\"styles\":{\"width\":12,\"height\":12,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"book_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":30,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"book_chapter\",\"component\":\"Text\",\"content\":{\"path\":\"chapter\"},\"styles\":{\"width\":30,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.actionLabel }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phonenumber\":\"13800138000\"}}],\"styles\":{\"width\":108,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"reading_shelf_card\",\"path\":\"/\",\"value\":{\"title\":\"晨读书架\",\"weatherLine\":\"天气加载中\",\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"\",\"condition\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"books\":[{\"mark\":\"A\",\"name\":\"长夜\",\"chapter\":\"第12章\",\"done\":true},{\"mark\":\"B\",\"name\":\"山海\",\"chapter\":\"第7章\",\"done\":false},{\"mark\":\"C\",\"name\":\"春灯\",\"chapter\":\"第3章\",\"done\":true}],\"actionLabel\":\"打给书友\"}}}"
+  ]
+}

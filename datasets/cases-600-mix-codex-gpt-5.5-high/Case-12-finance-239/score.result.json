@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-239",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.1,
+  "reasons": {
+    "instruction": "截图中最关键的右侧纵向勾选列表（信用卡/车贷/房租三项账单及到期日）完全未渲染，用户明确要求的'右侧纵向勾选列表,每项不同账单加到期日 X月X日'没有一项呈现。左侧主视觉'逾期 ¥328'被截断为仅显示'逾期'两字，金额信息丢失。其余部分：'!'圆形红色告警徽标正常、'还款日清单'标题正常、'点账单进日历'提示正常。onClick 事件已在 DSL 中配置但因列表未渲染无法生效。整体信息呈现严重不完整。",
+    "aesthetic": "左侧 hero 区域配色尚可：橙色'!'圆形徽标醒目，淡粉米色背景柔和，过期文字使用主题橙色与告警语义一致，字重层级清晰。但整张卡片右半部分为大面积纯白空白，视觉上严重失衡，不像一张完整的 2x4 服务卡片，更像渲染失败后的半成品。",
+    "layout": "截图中存在两处严重布局问题：1) 整个右侧 bill_list Column 区域完全空白，300x140 卡片右半部分（理论应有约 154px 宽的勾选列表）没有任何元素渲染，可能是 Column 模板循环搭配 Checkbox 组件时未正确实例化；2) overdue_amount 文字 '逾期 ¥328' 在 92px 宽容器内以 fontSize 20 渲染，因宽度不足被裁切为仅显示 '逾期'，金额 '¥328' 被截断丢失；3) 卡片右半部分大面积空白，整体观感严重残缺。"
+  },
+  "issues": [
+    "右侧 bill_list 勾选列表完全未渲染，3 条账单数据（信用卡/车贷/房租及对应到期日）全部不可见",
+    "overdue_amount 文字 '逾期 ¥328' 被截断为 '逾期'，金额部分丢失",
+    "根 Row 整体只渲染了左半部分 hero，右侧约 154px 区域为纯白空白，卡片观感残缺",
+    "CheckBox 组件在 Column 模板循环（path 绑定）模式下可能存在渲染兼容性问题，需改用直接路径绑定或简化子结构"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_239\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_239\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero\",\"bill_list\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"hero_label\",\"overdue_amount\",\"hero_hint\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":120,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"backgroundColor\":\"#0ced6f21\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.alertIcon }}\",\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"overdue_amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.overdueText }}\",\"styles\":{\"width\":100,\"height\":30,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.hint }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bill_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"bill_item\",\"path\":\"/data/calendar/items\"},\"itemMargin\":4,\"styles\":{\"width\":148,\"height\":120,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"bill_item\",\"component\":\"Row\",\"children\":[\"bill_check\",\"bill_due\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":148,\"height\":30,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"bill_check\",\"component\":\"Checkbox\",\"label\":{\"path\":\"title\"},\"select\":{\"path\":\"paid\"},\"value\":{\"path\":\"entityId\"},\"group\":\"repayment\",\"styles\":{\"width\":82,\"height\":22,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"fontSize\":11,\"fontColor\":\"#e5000000\"}},{\"id\":\"bill_due\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"到期日 ${dueDate}\"}},\"styles\":{\"width\":52,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_239\",\"path\":\"/\",\"value\":{\"finance\":{\"alertIcon\":\"!\",\"title\":\"还款日清单\",\"overdueText\":\"逾期 ¥328\",\"hint\":\"点账单进日历\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"repay-card-239-001\",\"title\":\"信用卡\",\"dtStart\":\"08-03\",\"dtEnd\":\"08-03\",\"dueDate\":\"8月3日\",\"paid\":false},{\"entityName\":\"calendar\",\"entityId\":\"repay-loan-239-002\",\"title\":\"车贷\",\"dtStart\":\"08-10\",\"dtEnd\":\"08-10\",\"dueDate\":\"8月10日\",\"paid\":false},{\"entityName\":\"calendar\",\"entityId\":\"repay-rent-239-003\",\"title\":\"房租\",\"dtStart\":\"08-18\",\"dtEnd\":\"08-18\",\"dueDate\":\"8月18日\",\"paid\":true}]}}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-13-health-reminder-257",
+  "scores": {
+    "instruction": {
+      "score": 3.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.2,
+  "reasons": {
+    "instruction": "截图中最核心的诉求——右侧纵向列出的三次药（早药/午药/晚药）及方括号勾选框完全不可见，整个右侧面板中部只剩大片空紫色，完全没有 check 行渲染出来。深蓝到紫渐变、左侧药丸造型色块、'上次吃药 08:00'、分区不同底色等已落实，但用户明确要求的'点药名能直接跳到闹钟设置下次提醒'因药名不可见而无法验证。",
+    "aesthetic": "截图配色（深蓝→紫渐变 + 药丸薄荷绿/紫双拼）整体观感不错，分区底色对比也清晰。但右侧面板上方'今日用药'之下约 60px 高的区域是完全空白紫色，视觉上严重失衡；药丸与'吃药提醒'文字水平方向直接压在一起，文字穿在药丸中央，可读性差；底部白色按钮'设置提醒'文字仅露出上半截，下半截被卡片裁掉。",
+    "layout": "截图显示三处明确溢出/裁切问题：(1) 右侧药名 CheckBox 行完全缺失，应是模板未渲染或被溢出推到 clip 之外；(2) 右下角白色 Button '设置提醒' 底边被卡片裁切，只剩半截字——根因是 right_panel 高度 116、内边距 8 之后可用 100，但三段子项总高 18+8+62+8+22=118，溢出 18px；(3) 左侧'吃药提醒'标题与药丸色块水平叠在一起，Stack 叠层位置/尺寸冲突导致文字压在药丸上。"
+  },
+  "issues": [
+    "右侧 medicine_list 模板行完全未渲染，截图里看不到任何 [ ] 勾选框和药名",
+    "右下角 '设置提醒' 按钮被卡片底边裁切，只显示半截字",
+    "左侧 '吃药提醒' 文字与药丸色块在水平方向重叠，文字穿在药丸中央",
+    "右侧面板中部存在大块空白（药名区缺失），视觉严重不平衡",
+    "right_panel 高度 116 容纳不下 panel_header(18)+8+medicine_list(62)+8+clock_button(22)=118 的总高度，溢出 18px",
+    "hero_panel 内部 Stack 子项 pill_shape (margin left:14,top:24, 72x42) 与 hero_texts (margin left:8,top:68) 在 y≈68 附近发生 z 序/水平冲突"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_257\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_257\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"right_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0b1026\",0],[\"#564af7\",0.58],[\"#ac49f5\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"pill_shape\",\"hero_title\",\"last_time\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":120,\"padding\":{\"left\":6,\"right\":6,\"top\":10,\"bottom\":6},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#26ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"pill_shape\",\"component\":\"Row\",\"children\":[\"pill_left\",\"pill_right\"],\"itemMargin\":0,\"styles\":{\"width\":60,\"height\":30,\"borderRadius\":15,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"pill_left\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":30,\"height\":30,\"backgroundColor\":\"#92d6cc\"}},{\"id\":\"pill_right\",\"component\":\"Text\",\"content\":\"\",\"styles\":{\"width\":30,\"height\":30,\"backgroundColor\":\"#c386f0\"}},{\"id\":\"hero_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.title }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"last_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.lastTakenText }}\",\"styles\":{\"width\":84,\"height\":14,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"panel_header\",\"medicine_list\",\"clock_button\"],\"itemMargin\":4,\"styles\":{\"width\":174,\"height\":120,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"panel_header\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.todayLabel }}\",\"styles\":{\"width\":158,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"medicine_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"medicine_row_tpl\",\"path\":\"/medicines\"},\"itemMargin\":2,\"styles\":{\"width\":158,\"height\":60,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"medicine_row_tpl\",\"component\":\"Row\",\"children\":[\"med_check\",\"med_name\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":158,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"med_check\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":{\"path\":\"taken\"},\"styles\":{\"width\":16,\"height\":16,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":2}}}},{\"id\":\"med_name\",\"component\":\"Text\",\"content\":{\"path\":\"label\"},\"styles\":{\"width\":132,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"clock_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.reminder.actionText }}\",\"styles\":{\"width\":158,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":11,\"fontWeight\":\"bold\",\"fontColor\":\"#ff0b1026\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_257\",\"path\":\"/\",\"value\":{\"reminder\":{\"title\":\"吃药提醒\",\"todayLabel\":\"今日用药\",\"lastTakenText\":\"上次吃药 08:00\",\"actionText\":\"设置提醒\"},\"medicines\":[{\"label\":\"[ ] 早药 08:00\",\"taken\":true},{\"label\":\"[ ] 午药 13:00\",\"taken\":false},{\"label\":\"[ ] 晚药 21:00\",\"taken\":false}],\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"med-last-0800\",\"title\":\"吃药\",\"dtStart\":\"08:00\",\"dtEnd\":\"08:05\",\"description\":\"上次吃药时间\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

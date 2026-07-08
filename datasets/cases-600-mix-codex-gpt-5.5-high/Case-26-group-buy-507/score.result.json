@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-26-group-buy-507",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "截图中可见 title '奶茶拼单'、状态 '快截单'、'还差 2 杯' 主指标、'看取餐日历' 提示、'去门店' 按钮（含 clickToIntent 导航事件）等关键字段均已渲染且数据绑定正确。但用户明确要求 '文字叠奶茶图上'，因 assetCandidates 为空、协议禁止网络图与占位图，卡片未呈现任何奶茶背景图，'叠在图上' 的核心诉求未满足，dataModel 中 progress:3/target:5 的进度信息也未被可视化展示。",
+    "aesthetic": "橙色渐变背景与白色文字对比清晰，蓝色 CTA 按钮突出，'2' 的大字号主指标层级明确，整体配色和谐。但截图可见标题 '奶茶拼单' 左侧被圆角裁切，状态徽章 '快截单' 右侧也被圆角裁切，视觉上有明显瑕疵；卡片上半部分标题行紧贴边缘、缺乏安全留白，专业感不足。",
+    "layout": "截图中最突出的排版问题是：标题 '奶茶拼单' 的首字 '奶' 左侧被 surface_bg 的 borderRadius:16 圆角裁切，左上角部分笔画缺失；状态徽章 '快截单' 的白底胶囊右端被右上圆角裁切，'单' 字右侧笔画受影响。两处均为受保护文本（标题/状态）被容器圆角遮挡，按布局硬约束属于严重问题。'还差 2 杯'、'看取餐日历'、'去门店' 按钮在截图中显示正常无截断。"
+  },
+  "issues": [
+    "标题 '奶茶拼单' 左侧被渐变背景圆角裁切，首字 '奶' 笔画缺失",
+    "状态徽章 '快截单' 右侧被圆角裁切，'单' 字与白底胶囊右端被截",
+    "用户明确要求 '文字叠奶茶图上'，但无任何奶茶图/插画元素（assetCandidates 为空导致）",
+    "dataModel 中 progress:3/target:5 的进度信息未被可视化",
+    "标题行与卡片左右边缘几乎零留白，缺乏安全边距"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"group_buy_card_507\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"group_buy_card_507\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"surface_bg\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"surface_bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"clip\":true,\"linearGradient\":{\"angle\":155,\"colors\":[[\"#fbd38d\",0],[\"#ed8936\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"progress_bar\",\"pickup_text\",\"nav_button\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.group.title }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.group.status }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":9,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"need_label\",\"need_number\",\"need_unit\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"bottom\"}},{\"id\":\"need_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.group.needLabel }}\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"need_number\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.group.needCups }}\",\"styles\":{\"width\":24,\"height\":28,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"need_unit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.group.unit }}\",\"styles\":{\"width\":18,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":60,\"styles\":{\"width\":108,\"height\":5,\"backgroundColor\":\"#33ffffff\",\"progressColor\":\"#ffffffff\",\"borderRadius\":3}},{\"id\":\"pickup_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.group.pickupHint }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#33000000\",\"borderRadius\":8,\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":116,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"group_buy_card_507\",\"path\":\"/\",\"value\":{\"group\":{\"title\":\"奶茶拼单\",\"needLabel\":\"还差\",\"needCups\":2,\"unit\":\"杯\",\"progress\":3,\"target\":5,\"status\":\"快截单\",\"pickupHint\":\"看取餐日历\"},\"action\":{\"label\":\"去门店\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-09-weather-care-162",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "用户五条诉求基本都被落实：背景渐变 + ambient 数字构成'文字叠背景'；温度数字绑定到 dataModel 可变化；'立即拨号'按钮带 clickToCallPhone(120) 事件；voiceText 文字可读；care.statusText '身体不适请联系家人' 表达'我快不行了'。尺寸 2x4=300x140、catalogId、version、updateDataModel 全部合规。扣分原因：ambient 35° 与右侧按钮区产生视觉冲突，使'文字叠背景'效果在执行上不到位。",
+    "aesthetic": "截图整体配色和谐：左上的橙红徽章 + 暗红主数字 + 暖橙渐变背景层次清晰。字重主次也较分明（主数字 700 粗体压住视觉，其它为中等字重）。但 ambient 的 35° 透出在'立即拨号'按钮的上方与左侧，形成一种'浮在按钮上'的杂色水印，削弱了按钮的视觉锚点和主数字的唯一最强字重；左下'晴热 35 度，注意补水'颜色偏淡，在浅米色背景上对比度稍弱。",
+    "layout": "截图可观察到两个明显问题：1) Stack 中 ambient 文本（35°）位于右侧中部，与 side 列的'身体不适请联系家人'文字、'立即拨号'按钮在像素上重叠，红色水印直接浮在按钮上沿，干扰关键 CTA；2) 右侧 '身体不适请联系家人' 因宽度仅 100 在 14px 字号下放不下，强制断行成'身体不适请联系 / 家人'两行，与左侧主数字视觉重量不匹配。按钮距卡片底边也偏大（视觉上约 25-28vp），未落在 10-14vp 的舒适锚定区。综合为堆叠 + 文字截断 + 底部留白偏大。"
+  },
+  "issues": [
+    "Stack 中 ambient '35°' 与右侧 care_text/按钮区在 x≈175-247 区域发生像素级重叠，红色水印浮在按钮上",
+    "care.statusText '身体不适请联系家人' 在 100vp 宽、14px 字号下被强制断为两行，破坏信息完整性",
+    "call_button 距卡片底边明显大于 14vp，底部锚定偏松",
+    "左侧 readout '晴热 35 度，注意补水' 颜色 #cc000000 在浅米色渐变上对比度偏低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_162\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"styles\":{\"width\":300,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_162\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fffff7ed\",0],[\"#ffffe4d6\",0.56],[\"#ffff7a45\",1]]},\"alignContent\":\"center\"}},{\"id\":\"ambient\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":276,\"height\":116,\"margin\":{\"left\":0,\"top\":0},\"fontSize\":130,\"fontWeight\":900,\"fontColor\":\"#18ff3b30\",\"textAlign\":\"right\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"main\",\"side\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"}},{\"id\":\"main\",\"component\":\"Column\",\"children\":[\"badge\",\"temperature\",\"readout\"],\"itemMargin\":6,\"styles\":{\"width\":150,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.alertLabel }}\",\"styles\":{\"width\":76,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffff7a45\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temperature\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.temperatureText }}\",\"styles\":{\"width\":150,\"height\":40,\"fontSize\":36,\"fontWeight\":700,\"fontColor\":\"#ffb42318\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"readout\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.weather.voiceText }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#dd000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"care_text\",\"call_button\"],\"itemMargin\":10,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"care_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.statusText }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff8b1e13\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.care.actionText }}\",\"styles\":{\"width\":110,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffff3b30\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ $__dataModel.care.phoneNumber }}\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_162\",\"value\":{\"weather\":{\"temperature\":35,\"temperatureText\":\"35°\",\"condition\":\"晴热\",\"alertLabel\":\"高温提醒\",\"voiceText\":\"晴热 35 度，注意补水\"},\"care\":{\"statusText\":\"身体不适请联系家人\",\"actionText\":\"立即拨号\",\"phoneNumber\":\"120\"}}}}"
+  ]
+}

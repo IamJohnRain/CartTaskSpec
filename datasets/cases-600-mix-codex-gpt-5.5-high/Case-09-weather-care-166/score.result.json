@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-09-weather-care-166",
+  "scores": {
+    "instruction": {
+      "score": 3.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.0,
+  "reasons": {
+    "instruction": "用户原始指令明确要求'几项打勾'，即需要一个带勾选项的感冒关怀卡。截图中虽然显示了标题'感冒关怀'、天气文本'阵雨 18°C'、红色提醒'降温了,快不行就多休息'和更新时间'08:30'，但 dataModel.items 中的两条勾选项（量体温、喝热水）及其复选框在截图中完全不可见。用户最核心的诉求——展示几个打勾项目——未被落实，扣重分。",
+    "aesthetic": "截图中可见部分（标题/天气/提醒/更新时间）的配色较和谐：米色背景、深青标题、暗红提醒、灰青时间戳形成温馨的关怀感；标题加粗、提醒用红色作为情感强调，层级也基本成立。但卡片中部存在大面积空洞（原本应放勾选项的位置完全空白），显得非常空旷、不完整，削弱了整体观感。",
+    "layout": "截图中存在严重布局问题：(1) 复选框与对应文字（量体温/喝热水）完全未渲染，checks 区域只剩空白；(2) 卡片中部有明显大段空白带，显示内容溢出或被裁切——根 Column 的四个子段（head 32 + alert 30 + checks 44 + foot 12 = 118）已超过 116 的可用内容区；(3) 模板循环 check_row 即使在 DSL 中正确声明，也没有出现在截图中。底部更新时间到卡片底边距离偏大（约 60vp），进一步印证 spaceBetween 在内容溢出的情况下把 checks 挤到不可见区域。属于'布局核心元素缺失'的严重失败。"
+  },
+  "issues": [
+    "复选框勾选项（量体温、喝热水）完全未在截图中渲染，缺失用户最核心诉求",
+    "checks 区域高度 44 + head 32 + alert 30 + foot 12 + itemMargin 18 = 136，超出 116 的可用内容区，触发溢出/裁切",
+    "卡片中部出现大段空白带（约 60vp），视觉上空旷、严重不平衡",
+    "根 Column 使用 spaceBetween 在内容总高 > 容器时被异常拉伸，导致 children 视觉错位",
+    "alert 文本被截成 2 行（'降温了,快不行就多休/息'），分行位置不自然",
+    "底部 '更新 08:30' 距离卡片底边过大，违反 2x2 底部 8-12vp 的锚定约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_weather_care_166\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_weather_care_166\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"head\",\"alert\",\"checks\",\"foot\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7f5f2\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"head\",\"component\":\"Column\",\"children\":[\"title\",\"weather\"],\"itemMargin\":1,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.weatherText }}\",\"styles\":{\"width\":116,\"height\":9,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ff3f6f75\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alert }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffb3261e\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"checks\",\"component\":\"Column\",\"children\":[{\"componentId\":\"check_row\",\"path\":\"/care/items\"}],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"check_box\",\"check_label\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":13,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check_box\",\"component\":\"Checkbox\",\"checked\":\"{{ $item.checked }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff007d69\",\"unselectedColor\":\"#ffc8d0d2\"}},{\"id\":\"check_label\",\"component\":\"Text\",\"content\":\"{{ $item.label }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"foot\",\"component\":\"Text\",\"content\":\"{{ '更新 ' + $__dataModel.care.updatedAt }}\",\"styles\":{\"width\":116,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ff6f7d83\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_weather_care_166\",\"value\":{\"care\":{\"title\":\"感冒关怀\",\"weatherText\":\"阵雨 18°C\",\"alert\":\"降温了,快不行就多休息\",\"updatedAt\":\"08:30\",\"items\":[{\"label\":\"量体温\",\"checked\":true},{\"label\":\"喝热水\",\"checked\":true}]}}}}"
+  ]
+}

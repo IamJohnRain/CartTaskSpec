@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-021",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求显示专辑图、点击跳到app、带日程。截图中左侧明显呈现了音乐专辑封面面板（含音乐图标作为本地主视觉替代），右侧有标题'每日音乐'、副标题'耳机播放中'、日程提示'今日日程同步中'以及'打开音乐'按钮，三个诉求在截图中都真实可见。事件绑定上根容器和打开音乐按钮均使用 clickToDeeplink 跳转到音乐 app，日程容器使用 clickToIntent 触发 ViewCalendarEvent，args 原样来自 eventCandidates，eventCandidates 落地完整。素材使用了 assetCandidates 里的 music cover fallback、earphone_icon、schedule_icon，路径与 bindTo 一致。尺寸 2x4、catalogId 'ohos.a2ui.extended.catalog'、version v0.9、updateDataModel.value 与契约一致，协议合规。轻微扣分：日程 items 为空时仅显示同步中文案，缺少实数据回落展示；同时根容器和打开音乐按钮都绑定到同一 deeplink，缺乏差异化交互语义，但并不违反用户原始诉求。",
+    "aesthetic": "截图整体观感良好。紫色渐变（#ac49f5 → #c386f0）协调，渐变角度自然；白字在紫底上清晰可读，标题加粗白色与副标题半透明白形成清晰的字号字重层级，左侧封面面板使用半透明白色背景与主色形成柔和高光。日历提示胶囊（#33ffffff）半透明白叠加在紫色上既区分区域又不破坏整体色系；底部'打开音乐'按钮使用纯白底+紫色字，CTA 对比强烈且克制。整张卡片字号阶梯（18/12/12/14）合理、对齐统一、留白舒适。",
+    "layout": "截图未观察到任何堆叠、重叠或文字截断。封面面板 104x116 位于卡片左内侧，左侧距边 12vp，内部音乐图标居中、右下角耳机徽标恰好落在面板内不越界；右侧信息区 160x116 与封面平分剩余宽度（12+12 padding + 12 itemMargin + 104 + 160 = 300 精确填满 300 宽度）。'每日音乐'18px 加粗标题完整显示无截断；'耳机播放中'副标题完整；日程胶囊内 '今日日程同步中' 完整无省略；'打开音乐' 按钮 160x32 居中显示，文字未被裁切。底部按钮距卡片底边约 12vp，合规。受保护文本均无依赖 ellipsis/clip 隐藏，布局干净。"
+  },
+  "issues": [
+    "右侧无更多视觉留白节奏：标题组高度 40 + 间距 8 + 日历组 28 + 间距 8 + 按钮 32 = 116，恰好填满，但信息组视觉重心略偏下，'音乐标题-副标题'与日程胶囊之间空白偏紧而日程与按钮之间空白略大（spaceBetween 推挤结果），可微调 itemMargin 改善节奏",
+    "封面面板内背景 cover_bg 设为 #19000000 黑色蒙层，与封面图叠加在视觉上产生一层偏暗的紫灰底，但封面图本身为半透明风格素材，因此最终呈现偏暗，可考虑让 cover_bg 直接透出卡片渐变以提升鲜亮感",
+    "打开音乐按钮和根容器都绑定 clickToDeeplink，事件重复；若设计意图是整卡可点+按钮额外可点，建议在 Button 上叠加更明确的差异化反馈或将根 onClick 移除以避免区域冲突"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_021\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_021\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"cover_panel\",\"info_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffac49f5\",0],[\"#ffc386f0\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"cover_panel\",\"component\":\"Stack\",\"children\":[\"cover_bg\",\"cover_img\",\"earphone_badge\"],\"styles\":{\"width\":104,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#26ffffff\",\"clip\":true,\"alignContent\":\"center\"}},{\"id\":\"cover_bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":104,\"height\":116}},{\"id\":\"cover_img\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.music.cover }}\",\"styles\":{\"width\":76,\"height\":76,\"objectFit\":\"contain\"}},{\"id\":\"earphone_badge\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.earphone }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\",\"margin\":{\"left\":70,\"top\":82}}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"music_group\",\"spacer_top\",\"calendar_group\",\"spacer_mid\",\"open_music\"],\"itemMargin\":0,\"styles\":{\"width\":160,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"music_group\",\"component\":\"Column\",\"children\":[\"music_title\",\"music_subtitle\"],\"itemMargin\":4,\"styles\":{\"width\":160,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"music_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.title }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.music.subtitle }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"spacer_top\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":160,\"height\":6}},{\"id\":\"calendar_group\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"calendar_text\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":160,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}]},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.schedule }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.calendarHint }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"spacer_mid\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":160,\"height\":8}},{\"id\":\"open_music\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.music.actionText }}\",\"styles\":{\"width\":160,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffac49f5\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_021\",\"value\":{\"music\":{\"title\":\"每日音乐\",\"subtitle\":\"耳机播放中\",\"actionText\":\"打开音乐\",\"cover\":\"resources/base/media/icon_music.png\"},\"assets\":{\"earphone\":\"resources/base/media/icon_earphone.png\",\"schedule\":\"resources/base/media/icon_schedule.png\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true,\"calendarHint\":\"今日日程同步中\"}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-27-utility-bill-522",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户明确要求『红色警告』，但截图中的卡片使用的是橙到粉的渐变（#ed6f21 → #e67c92），整体偏向珊瑚/橙色，红色感不足，警告氛围被削弱；『上面有数字』按字面理解应把数字放在按钮上，但截图把 ¥286.40 放在了按钮上方，严格来说与『按钮上有数字』略有偏差。缴费按钮、点击跳转（onClick clickToDeeplink）、2x2 尺寸、catalogId/version/updateDataModel 等协议硬约束都满足。综合看主要诉求基本落地但『红』和『数字在按钮上』两点有瑕疵。",
+    "aesthetic": "渐变本身过渡自然、留白舒适、对齐统一，字号层级（标题14 / 金额20 / 状态10 / 按钮14）也清晰。但配色没满足『红色警告』的硬性语义诉求，是首要扣分点；此外截图中白色按钮内的『立即缴费』文本看起来没有在按钮内部垂直居中，文字偏靠按钮上沿，下方留出较多空白，使得按钮视觉重心略偏。状态文字使用半透明白（#99ffffff），可读性尚可但稍弱。",
+    "layout": "截图无任何文字被截断、元素堆叠或溢出卡片边界的情况。标题『水电缴费』、状态『逾期警告』、金额『¥286.40』、按钮『立即缴费』全部完整可见。Column 三段（header 34 + amount 34 + payButton 32 + 2*8 = 116）正好等于内容区 116，无挤压。底部按钮底边到卡片底边约 12vp，符合规范。唯一的微瑕是按钮内文字未严格垂直居中、且按钮与卡片底部的距离使得整张卡片底部显得略微空荡。"
+  },
+  "issues": [
+    "配色未满足『红色警告』：渐变是橙到粉（#ed6f21→#e67c92），红色警告语义缺失",
+    "数字 ¥286.40 位于按钮上方，未放在按钮之上，与『按钮上面有数字』的字面要求有出入",
+    "白色按钮内『立即缴费』文字未在按钮内部垂直居中，视觉上偏靠按钮上沿",
+    "状态文字『逾期警告』使用半透明白（#99ffffff），警示性不足",
+    "amount 使用 formatString 表达式，虽然功能上等价，但与协议推荐的 {{...}} 完整表达式不一致，建议直接使用 {{ $__dataModel.bill.amount }}"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_utility_bill_522\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_utility_bill_522\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"payButton\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#d32f2f\",0],[\"#7f1d1d\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title\",\"status\",\"amount\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.status }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffeb3b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.bill.amount }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"payButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.bill.actionText }}\",\"styles\":{\"width\":116,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#d32f2f\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_utility_bill_522\",\"value\":{\"bill\":{\"title\":\"水电缴费\",\"amount\":\"¥286.40\",\"status\":\"逾期警告\",\"actionText\":\"立即缴费\"}}}}"
+  ]
+}

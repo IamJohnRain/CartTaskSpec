@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-18-carpool-346",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "用户三大诉求（点按导航去公司、看天气、延误用红色提醒）在 DSL/数据层全部落实：卡片整体挂载了 clickToIntent(StartNavigate) 且 args 来自 eventCandidates；天气字段 26°C/小雨可见；延误用红色（#ffe84026）展示。但截图中'去公司'按钮文字被截断为'…'，用户点按 CTA 时实际看不到目标地点文案，弱化了'去公司'的语义传达，扣分。",
+    "aesthetic": "截图中白底配蓝/红/橙三色，色调干净，但按钮里仅显示三个省略号'…'，视觉上像未渲染完成的占位符，专业感骤降。卡片下半部分为留白，无任何装饰/插图，2x2 信息密度偏低。字号层级虽有（20/14/12），但左侧'拼车通勤'与右侧'26°C'的对比度与对齐略显生硬，缺少一个真正的视觉锚点。",
+    "layout": "截图中'去公司'按钮明显文字被截断为'…'，这是最严重的排版失败：按钮 width=50vp 而 14px 中文字符'去公司'需要约 42-48vp 文本宽度，加上按钮内边距后严重不足。其余元素（拼车通勤/延误/晚 12 分钟/26°C/小雨）在 140vp 高度内基本贴合顶部，没有出现明显元素相互堆叠，但 58vp 的 hero 列与 50vp 的 side 列都偏窄，留白分布也不均，导致整体观感局促。"
+  },
+  "issues": [
+    "CTA 按钮'去公司'被截断为'…'，文字不可读（最关键问题）",
+    "按钮宽度 50vp 不足，14px 中文字符超出可显示区域",
+    "卡片下半部分留白过多，2x2 信息密度偏低",
+    "hero(58) 与 side(50) 两列均偏窄，对齐后视觉重心偏左",
+    "天气提示信息过于精简（仅温度+条件），未体现 dataModel 中已有的 alertLevel'道路湿滑'安全提示",
+    "原 hero Column 的 width 58 与 side Column 的 width 50 加 itemMargin 8 再加父 padding 24 = 140，恰好贴合但毫无缓冲"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_carpool_346\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_carpool_346\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"statusRow\",\"weatherRow\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ $__dataModel.nav.destination.latitude }}\",\"longitude\":\"{{ $__dataModel.nav.destination.longitude }}\"},\"trafficpe\":\"{{ $__dataModel.nav.trafficpe }}\"}}}]},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.title }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff1a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"statusRow\",\"component\":\"Row\",\"children\":[\"delay\",\"detail\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"delay\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.delayStatus }}\",\"styles\":{\"width\":42,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.delayDetail }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherRow\",\"component\":\"Row\",\"children\":[\"temp\",\"condition\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.commute.actionText }}\",\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":12,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_carpool_346\",\"value\":{\"commute\":{\"title\":\"拼车通勤\",\"delayStatus\":\"延误\",\"delayDetail\":\"晚 12 分钟\",\"actionText\":\"去公司\"},\"nav\":{\"destination\":{\"name\":\"公司\",\"latitude\":\"31.2304\",\"longitude\":\"121.4737\"},\"trafficpe\":\"Drive\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\",\"prefectureName\":\"\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"小雨\",\"alertLevel\":\"道路湿滑\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

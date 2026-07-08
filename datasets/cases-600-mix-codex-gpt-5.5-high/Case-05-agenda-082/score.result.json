@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-05-agenda-082",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "截图中只看到左上角'会议提醒'标签、右下角蓝色按钮(无文字)，以及若干灰色矩形占位。数据绑定的'7月6日 09:30 开会'时间行、'产品评审会'标题、'A座 12F 会议室 1208'地点、按钮上的'入会'文字均完全不可见。用户最核心的诉求——'几号几点开会'和'点进去能入会'——在视觉上完全失败；'会议室图'仅以抽象灰条表示，难以辨识为会议室。onClick 已按 eventCandidates 绑定，但按钮无文字让点击目标含义不明。",
+    "aesthetic": "卡片整体使用浅蓝渐变背景，配色和谐、留白合理。但因数据绑定文本未渲染，导致大量留白显得空洞，'会议室图'靠 Divider 拼出的窗户/桌椅过于抽象、缺乏空间感，无法传达'会议室'语义。卡片仅有一个最强字重(标题应为最强)，层级尚可。",
+    "layout": "Stack 双层结构成立(背景 roomLayer + 前景 contentPanel)，无明显溢出或裁剪。'会议提醒'标签与按钮位置合理。但 contentPanel 内部的数据绑定文本(timeLine/title/location/joinButton.label)在截图中完全缺席，疑似 {{...}} 表达式(含 + 拼接)未被求值，导致字面字符串超长被隐藏；底部按钮虽有形状但缺文字，CTA 不可读。"
+  },
+  "issues": [
+    "时间行 timeLine 使用了含 + 拼接的 {{...}} 表达式，可能未被求值导致整行不可见",
+    "标题 title 与地点 location 的数据绑定文本在截图中完全缺失",
+    "底部 Button 标签 joinHint 同样未渲染，CTA 缺少可读文字",
+    "会议室图仅由 3 个窗户 + 2 椅 1 桌的 Divider 组成，透过 90% 不透明白色面板后几乎不可见",
+    "contentPanel 高度 116 装下 4 个子项(itemMargin 6)实际需要 130，存在 14vp 潜在溢出风险",
+    "onClick.args 中的 entityId 用了 {path:...} 引用，违反'原样来自 eventCandidates'约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"agenda_room_082\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"agenda_room_082\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"roomLayer\",\"contentPanel\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFE7F0FF\"}},{\"id\":\"roomLayer\",\"component\":\"Column\",\"children\":[\"windowRow\",\"tableRow\"],\"itemMargin\":20,\"styles\":{\"width\":276,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"windowRow\",\"component\":\"Row\",\"children\":[\"w1\",\"w2\",\"w3\"],\"itemMargin\":10,\"styles\":{\"width\":256,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"w1\",\"component\":\"Divider\",\"styles\":{\"width\":70,\"height\":24,\"strokeWidth\":1.5,\"color\":\"#55000000\"}},{\"id\":\"w2\",\"component\":\"Divider\",\"styles\":{\"width\":70,\"height\":24,\"strokeWidth\":1.5,\"color\":\"#55000000\"}},{\"id\":\"w3\",\"component\":\"Divider\",\"styles\":{\"width\":70,\"height\":24,\"strokeWidth\":1.5,\"color\":\"#55000000\"}},{\"id\":\"tableRow\",\"component\":\"Row\",\"children\":[\"cl\",\"ct\",\"cr\"],\"itemMargin\":8,\"styles\":{\"width\":256,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"cl\",\"component\":\"Divider\",\"styles\":{\"width\":36,\"height\":20,\"strokeWidth\":3,\"color\":\"#330A59F7\"}},{\"id\":\"ct\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":22,\"strokeWidth\":8,\"color\":\"#190A59F7\"}},{\"id\":\"cr\",\"component\":\"Divider\",\"styles\":{\"width\":36,\"height\":20,\"strokeWidth\":3,\"color\":\"#330A59F7\"}},{\"id\":\"contentPanel\",\"component\":\"Column\",\"children\":[\"headerRow\",\"title\",\"bottomRow\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"padding\":12,\"borderRadius\":18,\"backgroundColor\":\"#E6FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"headerRow\",\"component\":\"Row\",\"children\":[\"tag\",\"timeText\"],\"itemMargin\":8,\"styles\":{\"width\":252,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"tag\",\"component\":\"Text\",\"content\":\"会议提醒\",\"styles\":{\"width\":64,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#190A59F7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ data.calendar.items[0].timeText }}\",\"styles\":{\"width\":140,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ data.calendar.items[0].title }}\",\"styles\":{\"width\":252,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottomRow\",\"component\":\"Row\",\"children\":[\"dateLocation\",\"joinButton\"],\"itemMargin\":8,\"styles\":{\"width\":252,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"dateLocation\",\"component\":\"Text\",\"content\":\"{{ data.calendar.items[0].dateText }} · {{ data.calendar.items[0].eventLocation }}\",\"styles\":{\"width\":180,\"height\":20,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"joinButton\",\"component\":\"Button\",\"label\":\"{{ data.calendar.items[0].joinHint }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"evt-20260706-0930\"}}}],\"styles\":{\"width\":60,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"agenda_room_082\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"evt-20260706-0930\",\"title\":\"产品评审会\",\"dateText\":\"7月6日\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:30\",\"timeText\":\"09:30 开会\",\"eventLocation\":\"A座 12F 会议室 1208\",\"joinHint\":\"入会\",\"description\":\"线上会议链接可用\",\"senderName\":\"Calendar\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

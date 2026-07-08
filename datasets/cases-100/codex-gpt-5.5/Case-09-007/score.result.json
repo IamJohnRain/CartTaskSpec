@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-09-007",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "DSL 结构、size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.value 与 TaskSpec 完全一致，数据绑定路径均可由 dataModel 推导，eventCandidates/assetCandidates 为空时正确未引入事件与图片，业务上覆盖了'老家位置+当前天气+降温/阴雨/高湿触发文案+提前一天标题+天气变化+关怀建议+未来三天展望'等关键诉求。扣分主要来自渲染异常：截图中 location_text（『{{ $__dataModel.data.weather.location.prefectureName }}老家天气』）、current_text（『{{ $__dataModel.data.weather.current.temperatureText }} {{ $__dataModel.data.weather.current.condition }}』）、lead_text（『{{ $__dataModel.data.care.alertLeadTime }}关怀提醒』）三处均出现『{{ $__dataModel.』字面量输出，疑似模板表达式与静态文字混写时未被求值；risk_text（『明天降温8度且湿度86%』）只显示了『明天降温8度且湿度』被截断；days_row 模板循环整条不可见。等于核心字段（位置/当前温况/提前量/三日展望）实际未正确呈现。",
+    "aesthetic": "配色使用 #0A59F7（强调蓝）、#C73426（警示红）、#E5000000/#CC000000/#99000000（中性灰阶），与浅灰卡底+白卡内层对比合理，层级清晰；字号 18/16/14/12/10 与字重 700/600/500 形成两级对比，未出现多个最强字重。但因渲染异常，截图出现『{{ $__dataModel.』字面量字串充斥关键信息位，红色警示文案被截断，整体观感严重受损，专业感与可读性显著下降。",
+    "layout": "预算核算：root Row：12+12(itemMargin)+132+132+24(padding)=300，横向精确装满；weather_panel Column：18+24+18+24=84 子项高 + 6×3=18 itemMargin + 10×2=20 padding = 122 > 可用 116，溢出 6；care_panel Column：20+36+44=100 + 8×2=16 = 116，恰好装满；days_row Row：34×3+4×2=110 ≤ 112，合格；day_item Column：10+12+2=24 装满。weather_panel 高溢出 6 会导致 risk_text 与 days_row 被压/裁，叠加模板未求值导致 location_text/current_text/lead_text 显示字面量并被单行 maxLines:1 截断（截图中已见『{{ $__dataModel.』+末尾『..』），受保护文本（地点、主温况、提前量）实际不可读。"
+  },
+  "issues": [
+    "weather_panel Column 子项总高 84 + itemMargin 18 + padding 20 = 122 > 可用 116，溢出 6",
+    "渲染时 location_text/current_text/lead_text 三个含『{{ expr }}静态后缀』的 content 字段未求值，显示字面量『{{ $__dataModel.』并被 maxLines:1 截断",
+    "risk_text 内容『明天降温8度且湿度86%』在 h:18 / fontSize:12 / width:112 实际渲染中被截断为『明天降温8度且湿度』",
+    "days_row 模板循环在截图中完全不可见，可能因 weather_panel 溢出 6 被压出可视区",
+    "advice_text 行高 12+maxLines:3=36，实际 height 设为 44 但被 maxLines:3 截断到 3 行后无溢出空间，与 change_text 之间没有缓冲",
+    "care_panel 与 weather_panel 顶部基线未对齐（weather_panel 居中、care_panel 居中），但受 weather_panel 溢出影响，两侧视觉重心不一致"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"father_weather_care_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"father_weather_care_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"care_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"location_label\",\"location_text\",\"current_text\",\"risk_text\",\"days_row\"],\"itemMargin\":3,\"styles\":{\"width\":132,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"location_label\",\"component\":\"Text\",\"content\":\"老家天气\",\"styles\":{\"width\":112,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.prefectureName }}\",\"styles\":{\"width\":112,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"current_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }} {{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":112,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.triggerText }}\",\"styles\":{\"width\":112,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FFC73426\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_row\",\"component\":\"Row\",\"children\":{\"componentId\":\"day_item\",\"path\":\"/data/weather/daily\"},\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"day_item\",\"component\":\"Column\",\"children\":[\"day_name\",\"day_condition\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"day_name\",\"component\":\"Text\",\"content\":{\"path\":\"weekday\"},\"styles\":{\"width\":36,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"day_condition\",\"component\":\"Text\",\"content\":{\"path\":\"condition\"},\"styles\":{\"width\":36,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#CC000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"care_panel\",\"component\":\"Column\",\"children\":[\"lead_text\",\"change_text\",\"advice_text\"],\"itemMargin\":8,\"styles\":{\"width\":132,\"height\":116,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"lead_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.alertLeadTime }}\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"change_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.weatherChange }}\",\"styles\":{\"width\":132,\"height\":36,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#CC000000\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.advice }}\",\"styles\":{\"width\":132,\"height\":44,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":3,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"father_weather_care_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山区\",\"prefectureName\":\"深圳\"},\"current\":{\"temperatureText\":\"20°C\",\"condition\":\"阴雨\",\"humidityPercent\":86,\"coldLevel\":\"易发\"},\"daily\":[{\"weekday\":\"今天\",\"condition\":\"阴\",\"temperatureRangeText\":\"21° / 27°\",\"rainProbabilityPercent\":\"45%\",\"coldLevel\":\"较易发\"},{\"weekday\":\"明天\",\"condition\":\"小雨\",\"temperatureRangeText\":\"13° / 19°\",\"rainProbabilityPercent\":\"88%\",\"coldLevel\":\"易发\"},{\"weekday\":\"后天\",\"condition\":\"中雨\",\"temperatureRangeText\":\"12° / 18°\",\"rainProbabilityPercent\":\"90%\",\"coldLevel\":\"易发\"}],\"updatedAt\":\"mock\"},\"care\":{\"watchDays\":\"未来三天\",\"thresholds\":{\"temperatureDropC\":8,\"humidityPercent\":80,\"continuousRainDays\":2},\"alertLeadTime\":\"提前一天\",\"riskType\":\"降温+连续阴雨+高湿\",\"triggerText\":\"明天降温8度且湿度86%\",\"weatherChange\":\"明天小雨 13° / 19°，后天仍有中雨\",\"advice\":\"提醒爸少出门，护膝保暖，热敷膝腿并保持屋内干燥\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

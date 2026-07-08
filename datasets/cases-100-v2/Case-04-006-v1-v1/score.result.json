@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-006-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "用户三大诉求中，番茄钟倒计时（25:00）和休息提示（到点休息 5 分钟）均在截图中清晰呈现，标题、状态文案齐全；事件 clickToDeeplink 已按契约绑定到按钮。但'一键静音所有通知'这一关键交互入口在截图中几乎被裁切——按钮底部超出卡片可见区，文本仅剩顶部一小截字符、严重无法识别，用户既看不清入口语义也无法准确点击，因此核心交互诉求落实不完整，扣分明显。",
+    "aesthetic": "整体配色（薄荷绿背景配深绿文字）克制和谐，'25:00' 大字视觉焦点突出，字号层级清晰，字重使用合理（仅 timer 用 700 加粗）。但底部 CTA 按钮被截断导致视觉不完整：绿色胶囊按钮的圆角底缘被切掉，按钮文字渲染成不明的孤立字符，整体卡片'收尾'残缺，专业感与精致度被明显拉低。",
+    "layout": "截图中可清晰看到：底部绿色按钮的圆角下沿被卡片 clip 切掉，按钮标签仅显示顶部一小段字符（看似'叮'或乱码），其余被裁切至不可见。这是典型的纵向溢出问题：padding 12+itemMargin 6×4+title 18+timer 36+status 14+rest 12+button 24=152，超过卡片高度 140。底边距也远大于 16vp 的安全值。Stack/clip 已开启，溢出的就是受保护的 CTA 文本与按钮热区，属严重布局事故。"
+  },
+  "issues": [
+    "底部'专注入口 一键静音'按钮纵向溢出卡片边界，被 clip:true 切掉，圆角底沿和大部分文字不可见",
+    "纵向总占用 152vp > 卡片 140vp，存在约 12vp 的硬溢出",
+    "按钮热区被裁剪，可点击区域远小于 24vp 的最小标准",
+    "button 高度 24 + 文字 fontSize 11 + padding 共同作用使文本基线被压在裁切线以下",
+    "itemMargin 6 与 padding 12 在 5 个子项 Column 中过于宽松，挤占了底部按钮空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"focus_timer_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"focus_timer_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"timer_text\",\"status_text\",\"rest_text\",\"entry_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#EAF3EE\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#3B5C4A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"letterSpacing\":1}},{\"id\":\"timer_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.timerText }}\",\"styles\":{\"width\":120,\"height\":30,\"fontSize\":26,\"fontWeight\":700,\"fontColor\":\"#0F6B4A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"letterSpacing\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#3B5C4A\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rest_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.restHint }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#6B8479\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"entry_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.entryLabel }} 一键静音\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":108,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#0F6B4A\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"focus_timer_card\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"timerText\":\"25:00\",\"statusText\":\"通知静音待设置\",\"restHint\":\"到点休息 5 分钟\",\"entryLabel\":\"专注入口\"}}}}"
+  ]
+}

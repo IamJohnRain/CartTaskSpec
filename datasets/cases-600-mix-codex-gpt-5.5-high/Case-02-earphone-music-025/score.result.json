@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-02-earphone-music-025",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户要求'点一下跳音乐，读个天气'：卡片根部 onClick 正确携带 clickToDeeplink 至音乐 uri（参数与 eventCandidates 完全一致），满足'点一下跳音乐'的动作诉求；dataModel 也按 TaskSpec 提供了天气与音乐的全部字段。但截图中右侧蓝色胶囊按钮里显示为省略号'...'而不是'音乐'，用户从视觉上看不到按钮文字，导致该 CTA 几乎不可读；同时左侧主指标'26°'被裁剪成'26'，缺少了'°'符号，温度信息呈现不完整。综合来看主要意图落实了，但两处关键文本的视觉降级明显影响信息完整度。",
+    "aesthetic": "整体配色淡雅（薄荷绿底 + 白色面板 + 蓝色主色）协调清爽，层次靠蓝色温度数字建立，对齐统一。但截图可见两处明显降低观感的问题：①左侧'26°'的度符号被裁掉，使主指标显得残缺；②右侧蓝按钮内文字渲染为三个点'...'，既不像图标也不像文案，视觉上突兀。字号阶梯与留白本身合理，问题主要集中在文字溢出对美感的破坏。",
+    "layout": "从截图可直接观察到两处关键文字溢出/截断：①左侧 weather_temp 文本框宽 44、字号 32，'26°'实际约需 51+ 像素，超出 44 宽度，'°'符号在截图中已被裁掉只剩'26'；②右侧 music_button 宽 48、字号 14 的按钮在 HarmonyOS Button 默认内边距下可用文本宽度不足以容纳 2 个 14 号汉字'音乐'，截图里按钮内只显示了三个点'...'，CTA 实质失效。两列水平尺寸之和 60+48+8=116 刚好等于 root 内容区，未触发横向溢出，但内部文本超框是实打实的。垂直方向各列内子项总和也未越界，问题集中在文本宽度与字号不匹配。整体布局思路成立，但两个受保护文本（主指标与 CTA）出现裁切，属 D3 严重问题。"
+  },
+  "issues": [
+    "weather_temp 文本 '26°' 在 width=44 / fontSize=32 下溢出，截图中度符号 '°' 被裁掉，主指标残缺",
+    "music_button 文本 '音乐' 在 width=48 / fontSize=14 下因 Button 内边距实际可用宽度不足被省略为 '...'，CTA 不可读",
+    "action_col 整体宽度 48 偏紧，'点按跳转' 与 '适合出门' 也接近宽度极限，潜在挤压风险",
+    "white 面板内 weather_temp 高度 34 大于字号 32 所需行高，存在轻微纵向浪费",
+    "weather_panel 内 itemMargin=6 与 action_col 共享 itemMargin=8，可统一以减少视觉割裂"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_earphone_music_025\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_earphone_music_025\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"action_col\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFEEF7F4\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"weather_title\",\"weather_temp\",\"weather_condition\",\"comfort_bar\"],\"itemMargin\":6,\"styles\":{\"width\":60,\"height\":116,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_title\",\"component\":\"Text\",\"content\":{\"path\":\"/weather/title\"},\"styles\":{\"width\":48,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":{\"path\":\"/weather/temperatureText\"},\"styles\":{\"width\":48,\"height\":30,\"fontSize\":24,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":{\"path\":\"/weather/condition\"},\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"comfort_bar\",\"component\":\"Progress\",\"value\":{\"path\":\"/weather/comfortIndex\"},\"total\":100,\"styles\":{\"width\":48,\"height\":4,\"type\":\"linear\",\"color\":\"#FF0A59F7\",\"backgroundColor\":\"#220A59F7\",\"borderRadius\":2}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"music_status\",\"music_button\",\"weather_hint\"],\"itemMargin\":6,\"styles\":{\"width\":50,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"music_status\",\"component\":\"Text\",\"content\":{\"path\":\"/music/status\"},\"styles\":{\"width\":50,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":{\"path\":\"/music/actionText\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.music\",\"abilityName\":\"com.huawei.hmos.music.MainAbility\",\"uri\":\"music://home\"}}],\"styles\":{\"width\":50,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":{\"path\":\"/weather/hint\"},\"styles\":{\"width\":50,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_earphone_music_025\",\"path\":\"/\",\"value\":{\"weather\":{\"title\":\"天气\",\"temperature\":26,\"temperatureText\":\"26°\",\"condition\":\"多云\",\"comfortIndex\":72,\"hint\":\"适合出门\"},\"music\":{\"status\":\"点按跳转\",\"actionText\":\"音乐\"}}}}"
+  ]
+}

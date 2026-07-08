@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-29-elderly-care-567",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "用户明确要求'红色提示老人出事了'，但截图中告警条使用的是橙色(#ffed6f21)，并非红色，色相偏离用户指令；告警文案'老人出事了'在截图中只显示出'老人出'，最后一个'了'字被遮挡/截断，核心告警信息不完整；'整个图为主体'要求告警作为主体，但白色天气面板视觉上与橙色告警条平分空间并发生覆盖，告警未成为视觉主导；天气信息可正常看到（--/读取中）；无事件需求，协议硬约束（尺寸300x140、catalogId、version、updateDataModel）满足。",
+    "aesthetic": "截图中卡片采用浅灰渐变底+橙色块+白色块的配色，层次尚可但告警色不是用户要求的红色，语义上不够紧迫；橙色与白色对比明显但告警文字被截断破坏可读性；两个面板圆角一致，整体不算难看但'告警'的视觉冲击力被弱化。",
+    "layout": "截图中存在明显布局缺陷：1) 橙色告警条内的文字'老人出事了'仅显示'老人出'三字，'了'字被右侧白色天气面板在Stack中后绘制而覆盖，属于关键受保护文本被遮挡；2) 橙色告警条右边缘与白色天气面板左边缘几乎贴合/轻微重叠，两块面板在视觉上贴在一起；3) 告警条宽度132px扣除左右padding各12px后内容区仅108px，fontSize 20的中文5字'老人出事了'在多数字体下实际渲染宽度接近或超过108px，导致文字向右溢出并被上层白色面板遮盖；4) 公式交叉验证：alert_text宽108、5字×fontSize 20≈100-110px，处在边界，存在溢出风险，与截图观吻合。"
+  },
+  "issues": [
+    "告警文案'老人出事了'中'了'字在截图中被白色天气面板遮挡，显示为'老人出'",
+    "告警条颜色为橙色#ffed6f21，未按用户要求使用红色",
+    "Stack布局下白色天气面板覆盖在告警条之上，导致告警文字被遮挡",
+    "alert_text宽度108px对于fontSize 20的5个中文来说过窄，文字易溢出",
+    "'整个图为主体'的设计意图未体现，告警未成为视觉主导",
+    "两个面板宽度相同(132px)，视觉上平分空间，告警地位被削弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"elderly_care_567\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"elderly_care_567\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"alert_card\",\"weather_card\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff5f5f5\"}},{\"id\":\"alert_card\",\"component\":\"Column\",\"children\":[\"alert_title\",\"alert_subtitle\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":62,\"padding\":{\"left\":14,\"right\":14,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#ffd32f2f\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"alert_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.alertText }}\",\"styles\":{\"width\":248,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.statusText }}\",\"styles\":{\"width\":248,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_card\",\"component\":\"Row\",\"children\":[\"w_left\",\"w_right\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":48,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"w_left\",\"component\":\"Column\",\"children\":[\"w_title\",\"w_label\"],\"itemMargin\":2,\"styles\":{\"width\":150,\"height\":32,\"padding\":0,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"w_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"w_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.weatherLabel }}\",\"styles\":{\"width\":150,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"w_right\",\"component\":\"Row\",\"children\":[\"w_temp\",\"w_cond\"],\"itemMargin\":6,\"styles\":{\"width\":110,\"height\":32,\"padding\":0,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"w_temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":40,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"w_cond\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"elderly_care_567\",\"path\":\"/\",\"value\":{\"care\":{\"title\":\"老人看护\",\"alertText\":\"老人出事了\",\"statusText\":\"立即关注\",\"weatherLabel\":\"当前天气\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--\",\"condition\":\"读取中\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

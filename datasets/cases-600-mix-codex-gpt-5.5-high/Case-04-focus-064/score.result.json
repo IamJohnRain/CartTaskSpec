@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-064",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中可见'专注中'标题、'24:18'倒计时主值、'多云 27C'天气、'轻触切换'点击提示、'低电量'红色提醒五大信息均完整呈现，用户四个明确诉求（倒计时/点切换/天气/低电量红色）全部满足；onClick.call 与 args 与 eventCandidates 原样一致；updateDataModel.value 与 TaskSpec.dataModel.value 字段一致；size=2x2、root 140x140、borderRadius=18、clip:true、padding:12、catalogId 与 version 均合规。轻微扣分点：updateDataModel 缺少 path:'/' 字段（按协议应为 '/'），不补也不影响渲染但不完全合规；'FO' 字母徽章是模型自加的视觉元素，未在用户指令或 dataModel 中要求。",
+    "aesthetic": "截图整体观感良好：深蓝（#182431）背景沉稳专业，白色大号倒计时数字形成清晰视觉焦点，蓝色'FO'徽章与'轻触切换'形成蓝色点缀呼应，红色'低电量'作为警示色突出但不过分刺眼。字号层级清晰：32pt 倒计时 > 14pt 标题/警示 > 12pt 副信息，受保护文本仅一个最强字重（700）。轻微不足：'FO'是英文缩写，与中文为主的内容在语境上略显突兀，可改为单字'专'更贴合主题；留白密度尚可，顶部 header 与底部 alert 之间间距稍显松散。",
+    "layout": "截图中无元素堆叠、无文字截断、无组件溢出卡片边界。根容器 140x140，子项纵向累加 20+38+20+22=100 + 3×4 间距 + 上下各 12 padding = 136 ≤ 140，安全收口。header Row：glyph 22 + 6 + title 88 = 116 正好填满。info Row：weather 58 + 6 + mode 52 = 116 正好填满。受保护文本'专注中''24:18''低电量'均完整可见。底部 alert 距卡片底边约 14vp，符合 2x2 8-12vp（可接受偏上限）的范围。"
+  },
+  "issues": [
+    "updateDataModel 缺少 path:'/' 字段，未完全符合协议'path 必须是 /'的硬约束",
+    "glyph 徽章使用英文缩写'FO'，与中文为主的卡片内容语境不够贴合，建议改为单字'专'或'Z'",
+    "alert 组件距卡片底边约 14vp，略超 2x2 推荐的 8-12vp 区间，视觉上底部略松",
+    "header Row 与 alert 之间留白相对偏多，柱状信息密度可再紧凑一点"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_064\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_064\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"timer\",\"info\",\"alert\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff182431\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"focus_mode\"}}]},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"glyph\",\"title\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"glyph\",\"component\":\"Text\",\"content\":\"专\",\"styles\":{\"width\":22,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff3d7eff\",\"borderRadius\":6,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.remaining }}\",\"styles\":{\"width\":116,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info\",\"component\":\"Row\",\"children\":[\"weather\",\"mode\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.weather }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mode\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.modeText }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ff8fb7ff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.batteryAlert }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffff4d4f\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_064\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"专注中\",\"remaining\":\"24:18\",\"modeText\":\"轻触切换\",\"weather\":\"多云 27C\",\"batteryAlert\":\"低电量\"}}}}"
+  ]
+}

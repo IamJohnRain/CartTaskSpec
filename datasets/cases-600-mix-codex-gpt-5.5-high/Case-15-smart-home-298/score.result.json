@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-15-smart-home-298",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "截图中主提示文字'距离会议还有45分钟'被截断为'距离会议还有'，丢失了用户明确点名的'45分钟'关键信息，'信息区显示距离会议还有45分钟和日历日程'这条核心诉求只完成了一半。按钮'导航去公司'、地点芯片'公司/学校/健身'、日历信息'09:30 日历日程'、onClick事件（clickToIntent+StartNavigate+经纬度+Drive）、2x2尺寸与root shell（140x140、borderRadius 18、catalogId ohos.a2ui.extended.catalog、version v0.9）、updateDataModel均正确，无网络图/非白名单组件。",
+    "aesthetic": "截图整体配色为浅蓝主题，和谐统一：标题加粗黑、按钮蓝（#FF0A59F7）、地点胶囊灰，文字在底色上清晰可读，字号阶梯 12/10/13/10 合理、字重最强落在主提示 700 上一致。但存在两点问题：1) 背景渐变 #F5FAFF→#E7F3F7 色差极小，'天气渐变'几乎不可见；2) info_panel 使用 #CCFFFFFF（80%透明白）叠加在浅蓝底上几乎隐形，'信息区色块'的视觉层次消失。",
+    "layout": "截图最严重的排版问题是 reminder_text（width=100、fontSize=14、maxLines=1、textOverflow:'none'）无法容纳'距离会议还有45分钟'（约108px），右端被裁切，仅显示'距离会议还有'，'45分钟'三个字直接消失，属于受保护主指标文字被截断。其余元素：按钮'导航去公司'完整、三个地点芯片完整、日历文字'09:30 日历日程'完整无截断，整体无元素堆叠、无组件溢出卡片边界。底部地点行距卡片底边余量约 18vp 偏大（2x2 建议 8-12vp），但未越界。综合来看，文字截断是受保护信息丢失，扣重分。"
+  },
+  "issues": [
+    "主提示文字'距离会议还有45分钟'在截图中被裁切为'距离会议还有'，'45分钟'丢失",
+    "reminder_text width=100 在 fontSize=14 下不足以容纳 9 个字符的字符串",
+    "info_panel 背景 #CCFFFFFF 在浅蓝底上几乎隐形，白色面板'色块'效果丢失",
+    "背景渐变 #F5FAFF→#E7F3F7 极浅，'天气渐变'主题几乎不呈现",
+    "places_row 底部到卡片底边余量约 18vp，超过 2x2 建议的 8-12vp"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"smart_home_commute_298\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":{\"width\":140,\"height\":140}}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"smart_home_commute_298\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"info_panel\",\"nav_button\",\"places_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"toBottom\",\"colors\":[[\"#E3F2FD\",0],[\"#A8D5F2\",1]]}}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"reminder_text\",\"schedule_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":54,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#E6FFFFFF\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.mainText }}\",\"styles\":{\"width\":104,\"height\":24,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":2,\"lineHeight\":12,\"textOverflow\":\"none\"}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart + ' ' + $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ $__dataModel.action.destination.latitude }}\",\"longitude\":\"{{ $__dataModel.action.destination.longitude }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"places_row\",\"component\":\"Row\",\"children\":[\"place_home\",\"place_school\",\"place_gym\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"place_home\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.places[0].name }}\",\"styles\":{\"width\":36,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#1F000000\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_school\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.places[1].name }}\",\"styles\":{\"width\":36,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#1F000000\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_gym\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.places[2].name }}\",\"styles\":{\"width\":36,\"height\":20,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#1F000000\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"smart_home_commute_298\",\"path\":\"/\",\"value\":{\"reminder\":{\"mainText\":\"距离会议还有45分钟\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"meeting-placeholder\",\"title\":\"日历日程\",\"eventLocation\":\"公司\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:30\"}]}},\"action\":{\"label\":\"导航去公司\",\"destination\":{\"latitude\":\"39.908823\",\"longitude\":\"116.39747\"}},\"places\":[{\"name\":\"公司\"},{\"name\":\"学校\"},{\"name\":\"健身\"}],\"state\":{\"loading\":true}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-014",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "截图中可见：夜空延伸渐变背景（深蓝紫→暗红）已落实；信息区显示了电量'18%'（橙色）和'电量低'状态，符合低电橙色警告要求；日历区有占位'今日日程/等待日历同步'。但用户明确要求的'右边动作区横向排几个可勾选的小卡片'在截图中完全不可见，action_row（Checkbox行）未渲染；同时用户提到的'电池优化'也未在 dataModel.checks 中提供。事件 clickToDeeplink 已配置且 args 原样来自 eventCandidates。",
+    "aesthetic": "截图中渐变背景质感尚可，橙色高亮与深色背景对比清晰，层级（18%>电量低>日程文案）可读。但右上角橙色 Button 内显示的是三个圆点'...'，看起来像占位符而非'设置'，视觉非常突兀；左侧 power_icon 渲染为一根 USB 插头/连接器图案，与'低电'语义不匹配；卡片底部约 30-40% 区域仅为渐变留白，因 action_row 缺失导致画面下半部空旷失衡。",
+    "layout": "截图中可观察到三处明显问题：1) 底部 action_row（应承载两个 Checkbox）整行未渲染，导致卡片下半部 30-40% 区域为空白，这是核心布局缺失；2) 顶部 CTA Button 内文字呈'...'（3 个点），疑似 label 绑定或省略截断失败，CTA 不可读；3) 原 DSL 使用 children 模板循环 `{\"componentId\":\"check_item\",\"path\":\"/power/checks\"}` 且 check_item 用 `{\"path\":\"label\"}` 简写，结合截图表现判断该模板未在渲染端展开。原有 top_row / event_card 区域内未发现溢出或元素堆叠。"
+  },
+  "issues": [
+    "action_row 模板循环未在渲染端展开，两个 Checkbox 完全不可见",
+    "CTA Button label 显示为 '...'，'设置' 文字未正常渲染",
+    "power_icon 资源（resources/base/media/icon_save_power.png）渲染为 USB 连接器图案，语义不符",
+    "卡片底部约 30-40% 区域空旷，因 action_row 缺失导致视觉失衡",
+    "dataModel.checks 缺少用户提到的'电池优化'选项"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_low_power_014\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_low_power_014\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"event_card\",\"action_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":160,\"colors\":[[\"#ff111827\",0],[\"#ff312e81\",0.62],[\"#ff7c2d12\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"power_icon\",\"power_info\",\"cta\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":30,\"alignItems\":\"center\"}},{\"id\":\"power_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.asset.powerIcon }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"power_info\",\"component\":\"Column\",\"children\":[\"power_value\",\"power_status\"],\"itemMargin\":1,\"styles\":{\"width\":42,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"power_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.levelText }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffb86b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"power_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.power.status }}\",\"styles\":{\"width\":42,\"height\":11,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffd7a3\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.power.actionText }}\",\"styles\":{\"width\":42,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffff8a3d\",\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"event_card\",\"component\":\"Column\",\"children\":[\"event_time\",\"event_title\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"今日日程\",\"styles\":{\"width\":100,\"height\":11,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"等待日历同步\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"check1\",\"check2\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":26,\"alignItems\":\"center\"}},{\"id\":\"check1\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.power.checks[0].label }}\",\"select\":\"{{ $__dataModel.power.checks[0].select }}\",\"styles\":{\"width\":55,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#22ffffff\",\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffff8a3d\",\"unSelectedColor\":\"#66ffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]},{\"id\":\"check2\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.power.checks[1].label }}\",\"select\":\"{{ $__dataModel.power.checks[1].select }}\",\"styles\":{\"width\":55,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#22ffffff\",\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffff8a3d\",\"unSelectedColor\":\"#66ffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_low_power_014\",\"value\":{\"data\":{\"calendar\":{\"items\":[]}},\"power\":{\"levelText\":\"18%\",\"status\":\"电量低\",\"actionText\":\"设置\",\"checks\":[{\"label\":\"省电\",\"select\":true},{\"label\":\"屏幕\",\"select\":false},{\"label\":\"电池优化\",\"select\":false}]},\"asset\":{\"powerIcon\":\"resources/base/media/icon_save_power.png\"},\"state\":{\"loading\":true}}}}"
+  ]
+}

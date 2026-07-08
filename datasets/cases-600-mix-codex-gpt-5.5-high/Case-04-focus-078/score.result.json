@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-078",
+  "scores": {
+    "instruction": {
+      "score": 4.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.8,
+  "reasons": {
+    "instruction": "用户明确要求在顶部用一行字拼接显示'剩余专注时间45分钟'并配时间小图标，截图中顶部行仅显示'剩余专注时间45'，'分钟'二字被截断；用户要求'把日历里的待办日程纵向排成一列'，截图中仅有一个深色圆角空框，两条待办（19:30 整理日报、20:15 代码收尾）均未渲染出来，关键信息缺失。'已完成3个任务'状态、'去计时'主按钮及 clickToDeeplink 事件均已落实，时间小图标已正确使用 icon_time.png。'夜晚渐变'只用了纯深色，未体现明显渐变；分区底色仅 status 和 button 有对比，calendar 区无内容显得空旷。",
+    "aesthetic": "整体暗色基调符合夜晚加班氛围，绿色状态徽章和蓝色主按钮色彩对比清晰、CTA 醒目。但顶部文字与时间图标的组合排得过紧，'分钟'被截断后视觉上不完整；calendar 区域是一个空荡荡的深色圆角矩形，破坏卡片整体的完成感；层次偏少，留白集中在中下，构图不够均衡。",
+    "layout": "截图中可明确观察到两处关键问题：① 顶部 time_label 宽度 94+fontSize 12 不够容纳'剩余专注时间45分钟'整行，'分钟'被右边裁掉；② calendar_list 区域是一个空的深色圆角方块，没有渲染出任何待办条目（'19:30 整理日报'、'20:15 代码收尾'均不可见），与用户要求的'纵向排成一列'完全不符。底部'去计时'按钮位置和高度尚可，未见裁切。Stack 叠层问题不存在，但模板循环未生效导致核心内容缺失属于严重排版失败。"
+  },
+  "issues": [
+    "顶部 time_label 宽度不足，'分钟'二字被截断，未满足'写死一行字拼接显示剩余专注时间45分钟'",
+    "calendar_list 使用模板循环未渲染出任何待办条目，截图中央为一个空的深色矩形",
+    "夜晚渐变氛围缺失，root 仅为纯深色背景，无渐变感",
+    "calendar_item 内容使用了 formatString 的 ${dtStart} ${title}，在模板循环上下文中可能未正确展开",
+    "顶部行高度 20、icon 16px、文字 12px 整体偏紧凑，行内留白不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_078\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_078\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"status_text\",\"calendar_list\",\"action_button\"],\"itemMargin\":5,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":10,\"right\":10,\"top\":10,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0b1220\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"time_icon\",\"time_label\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"flexStart\"}},{\"id\":\"time_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_time.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"time_label\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"剩余专注时间${/focus/remainingMinutes}分钟\"}},\"styles\":{\"width\":102,\"height\":18,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffc7d2fe\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.completionStatus }}\",\"styles\":{\"width\":120,\"height\":22,\"borderRadius\":8,\"backgroundColor\":\"#ff14532d\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffdcfce7\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_list\",\"component\":\"Column\",\"children\":[\"cal_item_1\",\"cal_item_2\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":30,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#ff1f2937\",\"justifyContent\":\"center\",\"alignItems\":\"flexStart\"}},{\"id\":\"cal_item_1\",\"component\":\"Row\",\"children\":[\"cal_time_1\",\"cal_title_1\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":11,\"alignItems\":\"center\",\"justifyContent\":\"flexStart\"}},{\"id\":\"cal_time_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ff9ca3af\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cal_title_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":72,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffe5e7eb\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cal_item_2\",\"component\":\"Row\",\"children\":[\"cal_time_2\",\"cal_title_2\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":11,\"alignItems\":\"center\",\"justifyContent\":\"flexStart\"}},{\"id\":\"cal_time_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[1].dtStart }}\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ff9ca3af\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cal_title_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[1].title }}\",\"styles\":{\"width\":72,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffe5e7eb\",\"textAlign\":\"left\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":120,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ff2563eb\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_078\",\"path\":\"/\",\"value\":{\"focus\":{\"remainingMinutes\":\"45\",\"completionStatus\":\"已完成3个任务\",\"actionText\":\"去计时\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"mock-focus-078-1\",\"title\":\"整理日报\",\"dtStart\":\"19:30\",\"dtEnd\":\"20:00\"},{\"entityName\":\"calendar\",\"entityId\":\"mock-focus-078-2\",\"title\":\"代码收尾\",\"dtStart\":\"20:15\",\"dtEnd\":\"21:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

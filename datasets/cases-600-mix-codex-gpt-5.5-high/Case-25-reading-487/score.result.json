@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-25-reading-487",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户三个诉求：①显示阅读天数——截图中可见'连续阅读 12 天'，落实良好；②点一下能跳进去——底部'去听书'按钮带 onClick[clickToDeeplink] 事件，call 与 args 与 eventCandidates 完全一致，落实到位；③能念天气——截图中仅有'今日天气播报'文字标签，由于 dataModel 中 weather.current.condition / temperatureText 均为空字符串，weather_line 渲染为空白，实际天气信息（气温/状况/空气质量）均不可见，关键诉求'念天气'未真正呈现，扣分。协议层 size=2x4、catalogId、version、updateDataModel.path/value 均合规，事件与数据绑定路径正确。",
+    "aesthetic": "整体配色克制：白底卡片配淡灰渐变背景，主色蓝色 #0a59f7 用于'12 天'与 CTA 按钮，标题黑色加粗、辅助文字半透明灰，层次清晰。右侧栏目由于 weather_line 渲染为空，导致'今日天气播报'与'去听书'按钮之间出现明显留白空洞，视觉上右半部分显得空荡、不够饱满，是主要的美观瑕疵。",
+    "layout": "截图中未观察到任何元素堆叠、裁切或溢出：标题'阅读听书'、'连续阅读'、'12 天'、分隔线、'今日天气播报'、'去听书'按钮均完整显示在卡片边界内；'12 天'蓝色大字清晰未截断；按钮热区高度约 30vp 满足 ≥24vp 要求；底部按钮到卡片底边距离适中；左/右子栏宽度分配（128/108）配合 10vp 间距与中央分割线，左右对称，垂直居中对齐良好。唯一布局隐忧是右侧 weather_line 空字符串导致该列在视觉上出现空白间距。"
+  },
+  "issues": [
+    "天气实际数据（气温/天气状况）未呈现：dataModel.weather.current.condition 与 temperatureText 为空，weather_line 渲染为空白，'能念天气'诉求未真正满足",
+    "右侧栏目出现明显留白空洞：'今日天气播报'与'去听书'按钮之间缺内容，视觉上半区空荡",
+    "state.loading=true 时无任何加载态指示，用户无法区分'未到数据'与'正在加载'",
+    "loading 状态未被消费，建议在 weather_line 位置根据 loading 渲染占位文本或 Progress"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"reading_weather_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"reading_weather_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"paper_panel\"],\"itemMargin\":0,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"toRight\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffe5e5ea\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"paper_panel\",\"component\":\"Row\",\"children\":[\"reading_block\",\"panel_divider\",\"weather_block\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"shadow\":{\"color\":\"#19000000\",\"radius\":8,\"offsetX\":0,\"offsetY\":2},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"reading_block\",\"component\":\"Column\",\"children\":[\"title\",\"days_label\",\"days_text\"],\"itemMargin\":4,\"styles\":{\"width\":128,\"height\":96,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.title }}\",\"styles\":{\"width\":128,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.daysLabel }}\",\"styles\":{\"width\":128,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_text\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/reading/daysText}\"}},\"styles\":{\"width\":128,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panel_divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33000000\",\"height\":84}},{\"id\":\"weather_block\",\"component\":\"Column\",\"children\":[\"weather_prompt\",\"weather_main\",\"weather_sub\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":108,\"height\":96,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_prompt\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reading.weatherPrompt }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_main\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/data/weather/current/condition} ${/data/weather/current/temperatureText}\"}},\"styles\":{\"width\":108,\"height\":22,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_sub\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"空气质量 ${/data/weather/current/airQuality}\"}},\"styles\":{\"width\":108,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/reading/actionLabel}\"}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":108,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"reading_weather_card\",\"path\":\"/\",\"value\":{\"reading\":{\"title\":\"阅读听书\",\"daysLabel\":\"连续阅读\",\"daysText\":\"12 天\",\"weatherPrompt\":\"今日天气播报\",\"actionLabel\":\"去听书\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"\",\"condition\":\"\",\"airQuality\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

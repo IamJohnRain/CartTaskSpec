@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-23-countdown-447",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "截图中可见：1) 标题\"高考倒计时\"清晰呈现于卡片顶部；2) 中央有一个日历/日程图标（schedule_glyph 资源），作为\"主体是个图\"的诉求；3) 底部白色胶囊按钮显示\"高考338天\"，是带数字的一行文字；4) 按钮 onClick 调用的 call/args 与 TaskSpec.eventCandidates 完全一致（clickToDeeplink + hmos.clock）。但 actionLabel\"查看提醒\"未在画面中显示（被合并到 button label），且用户提到的\"点一下能跳到日历或者别的应用里\"已通过 deeplink 落实。整体指令落实完整，仅有信息展现上的小遗憾。",
+    "aesthetic": "截图显示紫蓝青渐变背景（#564AF7→#8981F7→#86C5E3）自然柔和，白色标题在渐变上对比度清晰可读。中间半透明白色 pill 容器衬托日历图标形成视觉层次，底部白色 pill 按钮配深色文字对比良好。整体留白舒适、对齐居中。不足：中间图标相对卡片来说视觉份量偏小，主体\"图\"的占比不够突出；倒计时数字\"338\"在按钮内与\"高考\"\"天\"同字号同色，未能形成强焦点，视觉层级还可以更分明。",
+    "layout": "截图中三块（标题/图标区/按钮）上下排列居中，全部内容均在 140x140 圆角卡片内，未见文字被裁切或组件溢出卡片边界；按钮整体完整、文字\"高考338天\"未被截断，底部动作区底边到卡片底边距离适中（约 10vp），符合 2x2 锚定建议。图标半透明 pill 背景与按钮外缘未发生堆叠遮挡。轻微不足：图标区域(78x56)与按钮(116x30)宽度差异较大，水平方向视觉略不均衡，但不影响功能与可读性。"
+  },
+  "issues": [
+    "中间图标在卡片中视觉占比偏小，未充分体现\"主体是个图\"的诉求",
+    "倒计时数字\"338\"与\"高考\"\"天\"同字号同色，缺少视觉主次，数字应当是信息焦点",
+    "dataModel 提供的 actionLabel\"查看提醒\"未被使用，造成数据未充分利用",
+    "hero 区域 width 78、button 区域 width 116，水平宽度差异较大，视觉不够均衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"gaokao_countdown_card_447\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"gaokao_countdown_card_447\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"hero\",\"countdownButton\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#564AF7\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#564AF7\",0],[\"#8981F7\",0.58],[\"#86C5E3\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.countdown.title }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"glyphWrap\"],\"itemMargin\":0,\"styles\":{\"width\":96,\"height\":64,\"padding\":{\"left\":14,\"right\":14,\"top\":6,\"bottom\":6},\"borderRadius\":20,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyphWrap\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":64,\"height\":52,\"objectFit\":\"contain\"}},{\"id\":\"countdownButton\",\"component\":\"Button\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/countdown/linePrefix} ${/countdown/daysLeft}${ $/countdown/unit}\"}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":120,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":15,\"fontWeight\":600,\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"gaokao_countdown_card_447\",\"path\":\"/\",\"value\":{\"countdown\":{\"title\":\"高考倒计时\",\"daysLeft\":\"338\",\"unit\":\"天\",\"linePrefix\":\"高考\",\"actionLabel\":\"查看提醒\"}}}}"
+  ]
+}

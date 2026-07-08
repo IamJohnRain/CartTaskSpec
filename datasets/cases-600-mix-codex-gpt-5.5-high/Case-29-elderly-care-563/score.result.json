@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-29-elderly-care-563",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户要求中间为摄像头画面、点击跳视频通话、看天气、红色危险，截图中左侧深色面板作为摄像头画面（含客厅看护标题、电话图标、点击视频通话提示），右上角红色'危险'徽章满足红色危险诉求，右侧面板展示天气（天气/--/红色预警/看天气按钮），信息齐全。事件方面仅 TaskSpec 提供 clickToDeeplink（天气 uri），camera_panel 与 weather_button 均已正确绑定该事件，符合契约。素材 icon_call.png 经 /care/cameraAsset 绑定到电话图标，协议合规。",
+    "aesthetic": "截图整体观感良好：浅灰渐变底 + 深色摄像头面板 + 浅色天气面板形成明暗对比，红色'危险'徽章与橙色'看天气'按钮作为强调色和谐醒目。字重层级清晰（标题 14/700、温度 20/700、辅助 12/500）。但右侧天气面板因宽度仅 82vp，内容偏挤，'看天气'按钮几乎贴边，视觉舒适度略有不足。",
+    "layout": "截图中右侧天气面板宽 82vp 偏窄，导致'看天气'按钮（66vp）几乎撑满内容区边缘，按钮文字后似有微小截断痕迹。摄像头面板内'危险'徽章定位在 left:118（面板宽 184），紧邻中央电话图标右侧（图标右缘约 113），视觉上略显拥挤，徽章未置于标准的右上角。温度占位'--'本身为加载态属正常。无元素溢出卡片边界，文字均完整可见。"
+  },
+  "issues": [
+    "右侧天气面板宽度仅 82vp，按钮宽度 66vp 几乎贴边，'看天气'按钮右侧有疑似截断痕迹",
+    "摄像头面板内'危险'徽章 left:118 紧邻中央电话图标，应移至右上角以避免视觉拥挤",
+    "天气面板内 天气/温度/预警/按钮 纵向排布略显密集，itemMargin 6 偏小",
+    "温度字段当前显示 '--' 占位（dataModel 为加载态），属正常但视觉信息密度低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"elderly_care_563\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"elderly_care_563\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"camera_panel\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#ffe5e5ea\",1]]},\"alignItems\":\"center\"}},{\"id\":\"camera_panel\",\"component\":\"Stack\",\"children\":[\"camera_bg\",\"camera_content\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":170,\"height\":116,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff202224\",\"alignContent\":\"center\"}},{\"id\":\"camera_bg\",\"component\":\"Column\",\"children\":[\"live_title\",\"call_icon\",\"call_hint\"],\"itemMargin\":6,\"styles\":{\"width\":170,\"height\":116,\"padding\":10,\"alignItems\":\"center\",\"justifyContent\":\"center\",\"backgroundColor\":\"#19000000\"}},{\"id\":\"live_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.title }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"call_icon\",\"component\":\"Image\",\"src\":{\"path\":\"/care/cameraAsset\"},\"styles\":{\"width\":42,\"height\":42,\"objectFit\":\"contain\"}},{\"id\":\"call_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.cameraHint }}\",\"styles\":{\"width\":128,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"camera_content\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.care.cameraStatus }}\",\"styles\":{\"width\":54,\"height\":24,\"margin\":{\"top\":8,\"left\":106},\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"weather_head\",\"weather_temp\",\"weather_alert\",\"weather_button\"],\"itemMargin\":8,\"styles\":{\"width\":96,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#19000000\",\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"weather_head\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":80,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.alertLevel }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":72,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"elderly_care_563\",\"path\":\"/\",\"value\":{\"care\":{\"title\":\"客厅看护\",\"cameraStatus\":\"危险\",\"cameraHint\":\"点击视频通话\",\"cameraAsset\":\"resources/base/media/icon_call.png\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--\",\"condition\":\"加载中\",\"alertLevel\":\"红色预警\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

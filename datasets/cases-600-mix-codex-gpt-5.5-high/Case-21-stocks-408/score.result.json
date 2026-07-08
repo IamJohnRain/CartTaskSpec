@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-21-stocks-408",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.8,
+  "reasons": {
+    "instruction": "用户明确要求'整个自选股票列表，每只都列出来'，但截图中股票列表区域完全空白，4 只股票（华芯科技、云桥股份、海岚能源、星河医药）一行都未渲染，仅显示标题'自选股票/全部 4 只'和底部'跌停：华芯科技、星河医药'提醒条。用户要求'跌停要红色提示'，仅在底部 banner 中以橙色/浅红呈现，个股行级红色高亮缺失。点击跳 APP 功能因 eventCandidates 为空可不实现。核心信息（4 只股票价格/涨跌幅）完全缺失，指令遵从严重不足。",
+    "aesthetic": "从截图看，标题'自选股票'与副标题'全部 4 只'字体层级清晰，颜色对比度好；底部跌停提醒条以浅橙底配深红字，配色和谐。但右上角徽标'自选'被截断只显示'自'一个字，视觉上不完整。卡片中下部有大量空白（因为列表未渲染），整体留白失衡，构图严重偏上。建议降权处理。",
+    "layout": "截图中可观察到三个严重布局问题：1) 股票列表区域（位于 header 与 limit_alert 之间，高度 70vp）整片空白，4 只股票行无任何渲染内容，是核心堆叠/缺失问题；2) 右上角 count_badge 文字'自选'被裁切为'自'，因 width:42 不够装下 2 个 12pt 中文 + 左右 padding 20vp；3) Column 实际纵向占用 12+24+6+70+6+16+12=146vp > 卡片高度 140vp，存在 6vp 纵向溢出，触底区域被裁切。"
+  },
+  "issues": [
+    "股票列表 List 组件在截图中未渲染任何 item，4 只股票价格/涨跌幅完全不可见",
+    "右上角徽标'自选'被截断为'自'，因 width:42 装不下'自选'+padding",
+    "Column 实际纵向总高 146vp 超过 140vp，存在垂直溢出",
+    "底部 limit_alert 高度仅 16vp 但放在列表下方，被大片空白挤开",
+    "formatString 调用的 content 写法可能不被当前渲染引擎支持，导致整条 stock_item 模板失败"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"stock_watch_408\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"stock_watch_408\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"stock_list\",\"limit_alert\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":8,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title_group\",\"count_badge\"],\"itemMargin\":8,\"styles\":{\"width\":284,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":0,\"styles\":{\"width\":210,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.title }}\",\"styles\":{\"width\":210,\"height\":14,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.subtitle }}\",\"styles\":{\"width\":210,\"height\":8,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"count_badge\",\"component\":\"Text\",\"content\":\"自选\",\"styles\":{\"width\":50,\"height\":22,\"padding\":{\"left\":12,\"right\":12,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#190A59F7\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"stock_list\",\"component\":\"List\",\"children\":{\"componentId\":\"stock_item\",\"path\":\"/portfolio/items\"},\"space\":4,\"styles\":{\"width\":284,\"height\":76,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"stock_item\",\"component\":\"Row\",\"children\":[\"stock_identity\",\"stock_price\",\"stock_change\"],\"itemMargin\":4,\"styles\":{\"width\":284,\"height\":16,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"stock_identity\",\"component\":\"Row\",\"children\":[\"stock_name\",\"stock_code\"],\"itemMargin\":6,\"styles\":{\"width\":130,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"stock_name\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":68,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stock_code\",\"component\":\"Text\",\"content\":{\"path\":\"code\"},\"styles\":{\"width\":52,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"stock_price\",\"component\":\"Text\",\"content\":{\"path\":\"price\"},\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"stock_change\",\"component\":\"Text\",\"content\":{\"path\":\"changeLabel\"},\"styles\":{\"width\":70,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFD32F2F\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"limit_alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.portfolio.limitAlert }}\",\"styles\":{\"width\":284,\"height\":18,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#FFFDECEC\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FFD32F2F\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"stock_watch_408\",\"path\":\"/\",\"value\":{\"portfolio\":{\"title\":\"自选股票\",\"subtitle\":\"全部 4 只\",\"items\":[{\"name\":\"华芯科技\",\"code\":\"688001\",\"price\":\"18.46\",\"changeLabel\":\"-10.00%\",\"limitStatus\":\"跌停\"},{\"name\":\"云桥股份\",\"code\":\"300228\",\"price\":\"12.38\",\"changeLabel\":\"-3.12%\",\"limitStatus\":\"下跌\"},{\"name\":\"海岚能源\",\"code\":\"600819\",\"price\":\"7.92\",\"changeLabel\":\"+1.35%\",\"limitStatus\":\"上涨\"},{\"name\":\"星河医药\",\"code\":\"002431\",\"price\":\"24.15\",\"changeLabel\":\"-10.00%\",\"limitStatus\":\"跌停\"}],\"limitAlert\":\"跌停：华芯科技、星河医药\"}}}}"
+  ]
+}

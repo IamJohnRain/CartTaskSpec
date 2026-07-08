@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-258",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.9,
+  "reasons": {
+    "instruction": "协议层硬约束基本满足：尺寸 2x2、root width/height 140×140、borderRadius 18、clip true、catalogId/version 正确、updateDataModel 与 TaskSpec 一致；onClick 完整使用 eventCandidates 的 clickToDeeplink 且对 4 行都生效；4 个任务的勾选状态、淡黄底、橙红渐变天气面板、环形进度、'今日服药'标题均落地。但 userQuery 明确点名的信息在截图中严重缺失：天气只显示'今天 28度'，'晴'被截断丢失；4 行任务的药名（'降压药'/'二甲双胍'/'阿司匹林'/'钙片'）全部被截断为'降…'或'…'，作为用药提醒卡的核心字段不可读，因此 D1 扣重分。",
+    "aesthetic": "配色与设计语言基本契合需求：淡黄底（#fffaf1d7）、橙红渐变面板、橙实心圆表示已完成、空心圆表示未完成，对比与识别度尚可。但截图中四个任务行尾几乎全是'…'，且'75%✓'文字在环内略偏拥挤，视觉上显得仓促不专业；天气面板内部右侧留白偏多，文字未铺满。从截图看整体可用但谈不上克制。",
+    "layout": "截图中可观察到的具体问题：① 4 个任务行的药名全部被截断，'早8:00 降…'、'午13:00 …'、'晚18:00 …'、'睡22:00 …'，'降'字后面即出省略号；② 天气面板只显示'今天 28度'，'晴'字丢失；③ 环形进度里的'75%✓'文字与环边几乎贴齐，'✓'略压到环外；④ 任务复选框圆圈相对偏大，挤压了文字水平空间。卡片整体没有超出 140×140 边界，但文字截断/丢失问题集中在所有受保护的用药信息上，属于核心字段被裁。"
+  },
+  "issues": [
+    "四个任务的药名均被截断为'…'，受保护的药品名称（降压药/二甲双胍/阿司匹林/钙片）在截图中不可读",
+    "天气面板缺少'晴'字，只显示'今天 28度'，'condition'字段被截断丢失",
+    "环形进度内'75%✓'文字与环边贴得太近，'✓'略超出环外",
+    "任务行 Checkbox 圆圈相对偏大（默认尺寸），挤压了 label 的可显示宽度",
+    "任务 label 使用 fontSize=10 + 完整词组（早8:00 降压药1片）超出 124vp 可用宽度，触发截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_258\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_258\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"topRow\",\"taskList\"],\"itemMargin\":5,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fffaf1d7\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"meter\",\"weatherPanel\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":124,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter\",\"component\":\"Stack\",\"children\":[\"ringBg\",\"meterText\"],\"styles\":{\"width\":40,\"height\":40,\"alignContent\":\"center\"}},{\"id\":\"ringBg\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.progress.value }}\",\"total\":\"{{ $__dataModel.progress.total }}\",\"styles\":{\"type\":\"ring\",\"width\":40,\"height\":40,\"color\":\"#ffed6f21\",\"backgroundColor\":\"#33f9bc64\"}},{\"id\":\"meterText\",\"component\":\"Text\",\"content\":\"75%✓\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weatherPanel\",\"component\":\"Column\",\"children\":[\"title\",\"weather\"],\"itemMargin\":2,\"styles\":{\"width\":78,\"height\":38,\"padding\":{\"left\":6,\"right\":6,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffed6f21\",0],[\"#fff9a01e\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.header.title }}\",\"styles\":{\"width\":66,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather\",\"component\":\"Text\",\"content\":\"今天 28度 晴\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"taskList\",\"component\":\"Column\",\"children\":[\"task1\",\"task2\",\"task3\",\"task4\"],\"itemMargin\":3,\"styles\":{\"width\":124,\"height\":78,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"task1\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"早${/tasks/0/time} ${/tasks/0/name}\"}},\"value\":{\"path\":\"/tasks/0/id\"},\"select\":\"{{ $__dataModel.tasks[0].done }}\",\"styles\":{\"width\":124,\"height\":16,\"fontSize\":9,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#66000000\",\"shape\":\"circle\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"task2\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"午${/tasks/1/time} ${/tasks/1/name}\"}},\"value\":{\"path\":\"/tasks/1/id\"},\"select\":\"{{ $__dataModel.tasks[1].done }}\",\"styles\":{\"width\":124,\"height\":16,\"fontSize\":9,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#66000000\",\"shape\":\"circle\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"task3\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"晚${/tasks/2/time} ${/tasks/2/name}\"}},\"value\":{\"path\":\"/tasks/2/id\"},\"select\":\"{{ $__dataModel.tasks[2].done }}\",\"styles\":{\"width\":124,\"height\":16,\"fontSize\":9,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#66000000\",\"shape\":\"circle\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]},{\"id\":\"task4\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"睡${/tasks/3/time} ${/tasks/3/name}\"}},\"value\":{\"path\":\"/tasks/3/id\"},\"select\":\"{{ $__dataModel.tasks[3].done }}\",\"styles\":{\"width\":124,\"height\":16,\"fontSize\":9,\"fontColor\":\"#e5000000\",\"selectedColor\":\"#ffed6f21\",\"unSelectedColor\":\"#66000000\",\"shape\":\"circle\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_258\",\"value\":{\"header\":{\"title\":\"今日服药\"},\"progress\":{\"value\":75,\"total\":100,\"percent\":\"75%\"},\"weather\":{\"day\":\"今天\",\"temp\":\"28度\",\"condition\":\"晴\"},\"tasks\":[{\"id\":\"morning\",\"time\":\"8:00\",\"name\":\"降压药\",\"dose\":\"1片\",\"done\":true},{\"id\":\"noon\",\"time\":\"13:00\",\"name\":\"二甲双胍\",\"dose\":\"1片\",\"done\":true},{\"id\":\"evening\",\"time\":\"18:00\",\"name\":\"阿司匹林\",\"dose\":\"1片\",\"done\":true},{\"id\":\"bedtime\",\"time\":\"22:00\",\"name\":\"钙片\",\"dose\":\"1片\",\"done\":false}]}}}"
+  ]
+}

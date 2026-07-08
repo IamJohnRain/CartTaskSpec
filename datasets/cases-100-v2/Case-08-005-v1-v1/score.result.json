@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-08-005-v1-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.6,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中清晰呈现了用户要求的全部核心信息：标题'昨晚睡眠报告'、入睡-醒来时间'23:42-06:18'、打呼噜时长'1小时36分'、呼吸暂停次数'8次'、高风险红色徽标'高风险'、红色警示文本'风险偏高，建议就医'以及蓝色'查看详情'按钮，事件绑定 clickToDeeplink 与 TaskSpec 中 eventCandidates 完全一致。dataModel 字段全部通过 {{ $__dataModel.sleep.xxx }} 正确读取，尺寸 2x4（300x140）、catalogId、version、updateDataModel.path=/ 等硬约束全部满足。size 与协议合规。唯一可挑剔的是：没有显式使用 assetCandidates（本次为空集，故无扣分）。",
+    "aesthetic": "截图整体观感专业克制：浅灰底（#FFF7F8FA）+ 白色卡片+红色风险徽标+蓝色 CTA 的配色层级清晰，红色与蓝色在浅底上对比鲜明，文字可读性强。标题 16px 粗体作为最强字重，中部数值 14px 粗体次之，标签 12px 较浅，构成清晰的三级字号阶梯。两块指标卡圆角统一，padding 一致。底部红色警示文字 + 蓝色按钮形成稳定的视觉锚点。略有不足：徽标'高风险'字号 12px 偏小，作为风险强调元素视觉权重略弱；左下红色警示与右下蓝按钮之间留白略多，整体重心略偏左。",
+    "layout": "截图显示三行布局无任何元素堆叠、溢出或截断。top_row（标题+徽标 28vp）+ 6vp 间距 + metric_row（两块指标卡 44vp）+ 6vp 间距 + bottom_row（警示+按钮 32vp）+ 上下各 12vp padding = 140vp，精确填满 2x4 卡片，无溢出。metric_row 中 sleep_time_panel 116 + 10 + breath_panel 150 = 276，恰好填满行宽。bottom_row 中 alert_text 170 + 10 + detail_button 90 = 270，留 6vp 余裕，安全不溢出。Button 热区 90x32vp（>24vp）充足，受保护文本（标题、时间值、警示、CTA）均完整可读，无文字被裁切。唯一微瑕：徽标 width 72 略宽于内容，'高风险'三字居中后两侧留白稍大，但不影响阅读。"
+  },
+  "issues": [
+    "风险徽标'高风险'视觉权重偏小，12px 字号在强语义风险强调场景下不够醒目",
+    "底部 alert_text（170宽）与 detail_button（90宽）之间 10vp 间距相对于 276 行宽，左侧显得略有空旷，视觉重心略偏左",
+    "两块指标卡（左侧时间卡 116 + 右侧呼吸卡 150）宽度差异较大，左卡 padding 6 后内容偏紧，右卡内容居左对齐后右侧留白偏多",
+    "textOverflow:'none' 普遍设置：当前文本均能容纳故无影响，但若数据动态增长存在潜在溢出风险（建议改为 ellipsis 作为降级策略）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_08_005_sleep_risk_report\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_08_005_sleep_risk_report\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"metric_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"risk_badge_box\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":160,\"height\":26,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"risk_badge_box\",\"component\":\"Column\",\"children\":[\"risk_badge_text\"],\"styles\":{\"width\":78,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#D92D20\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"risk_badge_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.riskLevel }}\",\"styles\":{\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"sleep_time_panel\",\"breath_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_time_panel\",\"component\":\"Column\",\"children\":[\"time_label\",\"time_value\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":44,\"padding\":8,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"time_label\",\"component\":\"Text\",\"content\":\"入睡-醒来\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#5E6670\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"time_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.sleepRangeText }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"breath_panel\",\"component\":\"Column\",\"children\":[\"snore_text\",\"apnea_text\"],\"itemMargin\":3,\"styles\":{\"width\":150,\"height\":44,\"padding\":8,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"snore_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.snoreText }}\",\"styles\":{\"width\":134,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#182431\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"apnea_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.apneaText }}\",\"styles\":{\"width\":134,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#D92D20\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"alert_text\",\"detail_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.riskAlertText }}\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#D92D20\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"detail_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.buttonLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.health\",\"abilityName\":\"com.huawei.health.MainAbility\",\"uri\":\"huaweischeme://healthapp/sleep/detail\"}}],\"styles\":{\"width\":90,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_08_005_sleep_risk_report\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"昨晚睡眠报告\",\"sleepRangeText\":\"23:42-06:18\",\"snoreText\":\"打呼噜 1小时36分\",\"apneaText\":\"呼吸暂停 8次\",\"riskLevel\":\"高风险\",\"riskColor\":\"#D92D20\",\"riskAlertText\":\"风险偏高，建议就医\",\"buttonLabel\":\"查看详情\"}}}}"
+  ]
+}

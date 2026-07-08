@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-26-group-buy-510",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图显示卡片左侧清晰呈现'今日温度'+主数值'加载中'+'天气同步中'的天气信息结构，右侧蓝色面板有'奶茶拼单'标题、'先看天气再下单'状态文案以及'去看看' CTA 按钮，事件 onClick 正确指向 clickToDeeplink 及对应 uri，size 2x4（300x140）、catalogId、version、updateDataModel.path/value 等硬约束均满足。但用户实际诉求是'看到今天多少度'，截图中主数值为'加载中'占位符而非真实温度，体验价值有所折扣；且用户问'跳到奶茶app'而 deeplink 指向天气 uri，存在语义错位（这是 TaskSpec 限制，但落地效果与用户预期有差距），因此 D1 略扣。",
+    "aesthetic": "截图整体观感干净专业：白→浅灰的对角渐变背景柔和不喧宾夺主，右侧淡蓝紫填充的'奶茶拼单'面板与底部蓝色'去看看'按钮形成统一的蓝色主题，配色和谐。字号层级清晰：32px 加粗的'加载中'是唯一最强字重，14px 的'奶茶拼单'、12px 的'今日温度'与'先看天气再下单'、12px 的'天气同步中'层次分明。前景文字在浅色背景上对比清晰、可读性良好。卡片四个内角圆角统一，留白舒适。无明显土气或不可读问题。",
+    "layout": "截图未观察到文字截断、元素堆叠重叠或组件溢出卡片边界。左栏 weather_panel（176×116）与右栏 action_panel（88×116）加 12 间距恰好填满 276 内容区，无溢出。'先看天气再下单'在 72 宽内自然换行成两行，未被裁切；'去看看'按钮完整可见、文字居中未截断。唯一的轻微问题是按钮底边到卡片底边约 20vp（action_panel 内底 padding 8 + root padding 12），略超 2x4 推荐 10-14vp 区间，但视觉上无明显空洞或失重感，不构成实质布局缺陷。"
+  },
+  "issues": [
+    "主温度值渲染为'加载中'占位符，未呈现真实温度，违背用户'看今天多少度'的直接诉求",
+    "用户问'跳到奶茶app'，但 onClick 实际指向 weather 的 deeplink uri，标题'奶茶拼单'与跳转目标存在语义错位（受 TaskSpec 限制）",
+    "底部'去看看'按钮距卡片底边约 20vp，略微超过 2x4 推荐 10-14vp 区间",
+    "action_panel 宽度 88 偏窄，内部可用空间仅 72，'先看天气再下单'被迫换行，可适当加宽以提升呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_26_group_buy_510\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_26_group_buy_510\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"action_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF1F3F5\",1]]},\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"weather_label\",\"weather_main\",\"weather_condition\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#19FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"今日温度\",\"styles\":{\"width\":144,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_main\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":144,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition }}\",\"styles\":{\"width\":144,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"group_title\",\"group_status\",\"open_btn\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":{\"top\":8,\"right\":10,\"bottom\":4,\"left\":10},\"borderRadius\":18,\"backgroundColor\":\"#190A59F7\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"group_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.title }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"group_status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.groupBuy.status }}\",\"styles\":{\"width\":80,\"height\":32,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"open_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.groupBuy.actionLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":80,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_26_group_buy_510\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"加载中\",\"condition\":\"天气同步中\",\"airQuality\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true},\"groupBuy\":{\"title\":\"奶茶拼单\",\"status\":\"先看天气再下单\",\"actionLabel\":\"去看看\"}}}}"
+  ]
+}

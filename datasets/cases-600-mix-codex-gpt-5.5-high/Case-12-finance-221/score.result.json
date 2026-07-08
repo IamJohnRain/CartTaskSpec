@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-12-finance-221",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户要求记账卡、带图、点跳应用、读天气，截图里四项均可见：标题'随手记账'、主指标'￥0.00'、蓝色'打开应用'按钮（已正确绑定 clickToDeeplink 事件，uri 与 eventCandidates 完全一致）、右上角天气胶囊'加载中 --°'以及底部'空气 --'。素材 icon_weather1.png 来自 assetCandidates 并被实际渲染。size=2x4、root 300x140、catalogId/version/updateDataModel 路径等硬约束全部满足。扣分点在于视觉上'带图'的实现方式导致右侧功能区被图标干扰，属于呈现质量而非指令缺失。",
+    "aesthetic": "背景的浅蓝-白渐变与圆角卡片本身干净协调，左侧字号层级（14/10/12/20）清晰、字重主次分明。但截图右侧明显杂乱：64x64 的雨伞大图作为 Stack 底层与右上的天气胶囊、中间的'打开应用'按钮、底部的'空气 --'文字大面积重叠，伞柄与雨滴散点穿过 CTA 按钮和底部文字，造成视觉噪点和'前景文字与背景图形混在一起'的廉价感，削弱了卡片的专业度。",
+    "layout": "截图可清晰看到 hero_icon 64x64 定位在 margin.left=212, top=8 的位置（即卡片坐标系 x≈224-288, y≈20-84），与右上角 weather_chip（x≈180-288, y≈12-42）和主行 book_button（x≈184-288, y≈56-90）发生直接重叠。'打开应用'按钮虽因 solid 背景色仍可读，但伞柄与雨滴从按钮背后/周围穿过，底部'空气 --'文字所在区域也有雨滴图形干扰，Stack 叠层遮盖了受保护的 CTA 与状态文本区域，违反'Stack 叠层不得覆盖受保护文本/CTA'的约束。content Column 内部三行高度合计 100+2*8=116 恰好填满，无内部溢出，但根 Stack 的层叠是主要问题。"
+  },
+  "issues": [
+    "Stack 中 hero_icon（64x64）与右上的 weather_chip 在 x=224-288, y=20-42 区域重叠",
+    "hero_icon 与主行的 book_button（CTA）在 x=224-288, y=56-84 区域重叠，伞柄/雨滴穿过按钮背后",
+    "hero_icon 的雨滴元素延伸至底部行附近，与 weather_tip'空气 --'文字发生视觉干扰",
+    "右栏纵向三块（chip/button/空气）被当作背景的雨伞图贯穿，右侧信息密度与装饰冲突",
+    "受保护的 CTA 与状态文字所在区域被 Stack 底层图形覆盖，违反层叠约束"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_finance_221\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_finance_221\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",0.56],[\"#ffeef7f5\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_col\",\"weather_chip\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title\",\"subtitle\"],\"itemMargin\":2,\"styles\":{\"width\":160,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.title }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.subtitle }}\",\"styles\":{\"width\":160,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_chip\",\"component\":\"Row\",\"children\":[\"weather_small_icon\",\"weather_text\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":108,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#190a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_small_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"amount_col\",\"book_button\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":46,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"amount_col\",\"component\":\"Column\",\"children\":[\"amount_label\",\"amount_value\"],\"itemMargin\":4,\"styles\":{\"width\":152,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"amount_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.amountLabel }}\",\"styles\":{\"width\":152,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"amount_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.amountText }}\",\"styles\":{\"width\":152,\"height\":28,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"book_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.finance.actionText }}\",\"styles\":{\"width\":104,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"today_text\",\"weather_tip\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"today_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.finance.todayNote }}\",\"styles\":{\"width\":128,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_tip\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + $__dataModel.data.weather.current.airQuality }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_finance_221\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"随手记账\",\"subtitle\":\"支出先留个位置\",\"amountLabel\":\"今日已记\",\"amountText\":\"￥0.00\",\"todayNote\":\"还没有新增支出\",\"actionText\":\"打开应用\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"--°\",\"condition\":\"加载中\",\"airQuality\":\"--\",\"humidityPercent\":0,\"windDirection\":\"\",\"windLevel\":0,\"uvIndex\":\"\",\"coldLevel\":\"\",\"alertLevel\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-06-memory-clean-108",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户要求清理缓存卡、可勾选项、跳转到清理 app、从日历读日程。原 DSL 提供了标题'缓存清理'、'已选 2 项'摘要、两个勾选项（临时缓存、应用残留，均已勾选）、'读取今日日程'提示、以及带 clickToDeeplink(storage_settings) 的'去清理'按钮，事件 call/args 与 eventCandidates 原样一致，dataModel 路径合法。尺寸 2x2、catalogId、version、updateDataModel 硬约束均满足。扣分点：1) 实际渲染截图中底部'去清理'按钮被裁切，CTA 视觉上不可用，用户在卡片上点不到完整按钮；2) 日程区只显示了一行 hint 文字，未呈现任何日程条目（虽然 dataModel.calendar.items 为空，loading=true，但仅用一行小灰字表示'读取今日日程'显得单薄且容易被误以为是普通说明而非日历模块）。",
+    "aesthetic": "配色干净：浅蓝灰底（#F7F9FC）+ 蓝主色（#0A84FF）+ 深色文字，对比度合理、读得清；标题字重 700、摘要 600、其余正文 500/默认，形成 14/12/10 的字号阶梯，且只有标题一个最强字重，整体克制。但底部'去清理'按钮被卡片 clip 切掉一半，按钮文字只剩顶部一截白条，破坏观感；卡片内部上下挤压、内容几乎顶到圆角，底部安全留白缺失，使整张卡显得局促。",
+    "layout": "这是本 case 最严重的问题：Column 子项纵向总占用 24（上下 padding 12+12）+ 25（itemMargin 5×5）+ 18+16+22+22+14+26=118，共计 167vp，显著超过 140vp 的卡片高度。截图中可清晰看到：标题、'已选 2 项'、两个勾选项、'读取今日日程'都正常显示，但最底部的蓝色'去清理'按钮仅露出顶部约 5-6vp 的弧形边缘，按钮文字完全被卡片 clip:true 切掉，用户既看不到'去清理'文案也无法正确点按到底部 CTA 区域，热区被截断。'已选 2 项' 与第一个勾选项之间、勾选项与 hint 之间也比较紧凑；底部动作区外框底边紧贴卡片圆角下边缘，违反'2x2 底部动作区底边到卡片底边 8-12vp 且不大于 16vp'的舒适锚定原则。综合判定为关键 CTA 被裁切、整体内容纵向溢出。"
+  },
+  "issues": [
+    "Column 内容总高约 167vp 超过 140vp 卡片高度，导致底部'去清理'按钮被 clip:true 切掉，CTA 不可见不可点",
+    "按钮文字'去清理'属于受保护文本/CTA，绝对不能被裁切",
+    "itemMargin=5 加上 padding=12 过宽，应压缩到 itemMargin=2~3、padding=8 左右",
+    "日历区域仅一行小灰字 hint，未体现'从日历读日程'模块存在感（items 为空时可考虑加占位骨架或图标）",
+    "底部动作区贴底太紧，缺乏底部安全留白",
+    "建议把两个 Checkbox 用 Row 排列以节省纵向空间，或在 2x2 中考虑精简一项"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_108\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_108\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"summary\",\"check_temp\",\"check_residue\",\"calendar_hint\",\"action_btn\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF7F9FC\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.title }}\",\"styles\":{\"width\":124,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.summary }}\",\"styles\":{\"width\":124,\"height\":13,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#FF007DCC\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"check_temp\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.memory.items.tempCache.label }}\",\"select\":{\"path\":\"/memory/items/tempCache/selected\"},\"styles\":{\"width\":124,\"height\":18,\"fontSize\":11,\"fontColor\":\"#FF243447\",\"selectedColor\":\"#FF0A84FF\",\"unSelectedColor\":\"#FF9AA8B6\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":11,\"strokeWidth\":1.5}}},{\"id\":\"check_residue\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.memory.items.appResidue.label }}\",\"select\":{\"path\":\"/memory/items/appResidue/selected\"},\"styles\":{\"width\":124,\"height\":18,\"fontSize\":11,\"fontColor\":\"#FF243447\",\"selectedColor\":\"#FF0A84FF\",\"unSelectedColor\":\"#FF9AA8B6\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":11,\"strokeWidth\":1.5}}},{\"id\":\"calendar_hint\",\"component\":\"Row\",\"children\":[\"cal_icon\",\"cal_text\"],\"itemMargin\":4,\"styles\":{\"width\":124,\"height\":14}},{\"id\":\"cal_icon\",\"component\":\"Text\",\"content\":\"📅\",\"styles\":{\"width\":14,\"height\":14,\"fontSize\":10,\"fontColor\":\"#FF6B7785\"}},{\"id\":\"cal_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.hint }}\",\"styles\":{\"width\":106,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF6B7785\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.memory.action }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":124,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#FF0A84FF\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_108\",\"path\":\"/\",\"value\":{\"memory\":{\"title\":\"缓存清理\",\"summary\":\"已选 2 项\",\"hint\":\"读取今日日程\",\"items\":{\"tempCache\":{\"label\":\"临时缓存\",\"selected\":true},\"appResidue\":{\"label\":\"应用残留\",\"selected\":true}},\"action\":\"去清理\"},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

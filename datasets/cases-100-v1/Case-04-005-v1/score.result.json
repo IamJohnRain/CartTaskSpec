@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-005-v1",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "截图中可清晰看到用户要求的所有信息均已呈现：标题'图书馆专注'、屏蔽状态'社交APP通知已屏蔽'、番茄钟倒计时'25:00'及其标签、进度条、学习时长'已学 0小时00分'、目标'目标 2小时'、休息提醒'该休息了，起来接杯水'，以及底部CTA'开启专注'按钮。Button.onClick 配置正确，参数原样来自 eventCandidates。dataModel 完整无遗漏。唯一不足是按钮宽度偏窄，热区仅约124×28，未达到40vp理想值。",
+    "aesthetic": "整体配色和谐：浅薄荷绿背景呼应'专注'主题，深绿主色用于主数值和按钮，橙色用于休息提醒形成有效语义区分，灰黑色用于次要文字。字号层级清晰（24/16/14/12/10），主次分明。不足之处在于按钮偏窄且左对齐，导致卡片底部右侧有大片空白，视觉重心左偏，不够平衡。",
+    "layout": "截图中所有文字均完整显示，未见截断或裁切。元素自上而下三段式排列：标题行（高20）+ 主信息行（高58）+ 按钮行（高28），纵向合计约114，未超出116的内容区。左右两列（番茄钟/学习统计）并列排布，无堆叠。进度条显示为0%空态，渲染正确。唯一瑕疵是底部'开启专注'按钮仅占左半部分，右侧空旷，建议加宽以提升热区与视觉平衡。"
+  },
+  "issues": [
+    "底部'开启专注'按钮宽度仅124，右侧留白过多，视觉重心左偏",
+    "按钮热区高度28接近但低于40vp理想值，宽度更明显不足",
+    "study_col 中三条文字（时长22+目标12+提醒14=48）挤在58高度内，间距偏紧",
+    "进度条位于timer_col底部，在主数值'25:00'下方，视觉上与'番茄钟倒计时'标签距离过近"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_04_005_study_focus\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_04_005_study_focus\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"main_row\",\"focus_button\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF6FAF7\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"mode_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.modeText }}\",\"styles\":{\"width\":180,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF2E7D32\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"timer_col\",\"study_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"timer_col\",\"component\":\"Column\",\"children\":[\"timer_value\",\"timer_label\",\"timer_progress\"],\"itemMargin\":3,\"styles\":{\"width\":124,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"timer_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.pomodoro.remainingText }}\",\"styles\":{\"width\":124,\"height\":30,\"fontSize\":24,\"fontWeight\":700,\"fontColor\":\"#FF2E7D32\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.pomodoro.label }}\",\"styles\":{\"width\":124,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timer_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.focus.pomodoro.progress }}\",\"styles\":{\"width\":124,\"height\":4,\"progressColor\":\"#FF2E7D32\",\"trackColor\":\"#1F2E7D32\"}},{\"id\":\"study_col\",\"component\":\"Column\",\"children\":[\"duration_text\",\"goal_text\",\"reminder_text\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.study.durationText }}\",\"styles\":{\"width\":140,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"goal_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.study.goalText }}\",\"styles\":{\"width\":140,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.breakReminder.message }}\",\"styles\":{\"width\":140,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FF9A6700\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"focus_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.buttonText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":276,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF2E7D32\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_04_005_study_focus\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"图书馆专注\",\"modeText\":\"社交APP通知已屏蔽\",\"buttonText\":\"开启专注\",\"pomodoro\":{\"remainingText\":\"25:00\",\"label\":\"番茄钟倒计时\",\"progress\":0},\"study\":{\"durationText\":\"已学 0小时00分\",\"goalText\":\"目标 2小时\"},\"breakReminder\":{\"triggerText\":\"满2小时提醒\",\"message\":\"该休息了，起来接杯水\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

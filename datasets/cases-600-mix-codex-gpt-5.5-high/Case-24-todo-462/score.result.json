@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-24-todo-462",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 2.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.9,
+  "reasons": {
+    "instruction": "用户明确要求展示待办清单、点击跳转到应用、对已完成项打标。从截图看，标题\"今日待办\"、绿色摘要\"已完成 2/4\"和分割线均正确渲染，事件 onClick 也在 DSL 中正确绑定到 clickToDeeplink。然而截图最关键的 3 条 todo（回消息/取快递/取件/整理清单）完全不可见，divider 之下到 button 之间的区域是大片空白，\"已完成打标\"诉求无法被用户感知；按钮文字\"打开\"在截图中呈乱码/重叠（看起来像\"打JI\"），进一步弱化了\"点一下能跳到应用里\"的可读性。因此核心信息没有真正触达用户，严重扣分。",
+    "aesthetic": "截图中可见部分（标题加粗黑字、绿色摘要、蓝底圆角按钮）配色本身和谐、层次也合理。但因为 3 条 todo 全部未渲染、按钮文字又出现重叠/花字，整张卡片看起来像渲染到一半就停下了：上半部信息密集、下半部 2/3 面积纯白空洞，视觉上像一张未完成/破损的卡片，专业感极差。",
+    "layout": "截图中最突出的排版问题是：divider 与 action_button 之间大约 46px 高的区域里应当渲染 3 条 todo 项，但实际全白，3 条 item（包括\"回消息/取快递/整理清单\"以及对应的勾选状态）都没有被绘制出来；按钮文字\"打开\"在截图中也明显存在字符叠加/乱码，CTA 主信息不可读。卡片下半部大量留白、CTA 文字不可用，且底部按钮底边距卡片底 12vp（合规），但顶部分区与下方列表区严重失衡，截图中一眼即可判定为重大布局失败。"
+  },
+  "issues": [
+    "截图中 todo_list 区域完全空白，3 条数据项（回消息/取快递/整理清单）均未渲染，模板语法 {componentId:'todo_item',path:'/todo/items'} 在 Column 容器中未生效",
+    "Checkbox.select 使用了 {path:'done'} 路径表达式，截图里也没有任何勾选框被画出",
+    "action_button 标签\"打开\"在截图中呈乱码/重叠态（白字压在一起），CTA 不可读",
+    "2x2 卡片下半部约 2/3 高度为纯白空白，整张卡片视觉上像渲染中断",
+    "Divider 紧贴标题区，下方紧接大片空白再加按钮，纵向节奏断裂"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_todo_462\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_todo_462\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"item1\",\"item2\",\"item3\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"title\",\"summary\"],\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"space-between\",\"alignItems\":\"center\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.todo.title }}\",\"styles\":{\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"width\":66}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.todo.summary }}\",\"styles\":{\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FF64BB5C\",\"maxLines\":1,\"textAlign\":\"end\",\"width\":50}},{\"id\":\"item1\",\"component\":\"Row\",\"children\":[\"check1\",\"label1\"],\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check1\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":true,\"styles\":{\"width\":14,\"height\":14,\"shape\":\"rounded_square\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#FFB0B0B0\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"label1\",\"component\":\"Text\",\"content\":\"回消息\",\"styles\":{\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"width\":98,\"margin\":{\"left\":4}}},{\"id\":\"item2\",\"component\":\"Row\",\"children\":[\"check2\",\"label2\"],\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check2\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":false,\"styles\":{\"width\":14,\"height\":14,\"shape\":\"rounded_square\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#FFB0B0B0\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"label2\",\"component\":\"Text\",\"content\":\"取快递\",\"styles\":{\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"width\":98,\"margin\":{\"left\":4}}},{\"id\":\"item3\",\"component\":\"Row\",\"children\":[\"check3\",\"label3\"],\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check3\",\"component\":\"Checkbox\",\"label\":\"\",\"select\":true,\"styles\":{\"width\":14,\"height\":14,\"shape\":\"rounded_square\",\"selectedColor\":\"#FF64BB5C\",\"unSelectedColor\":\"#FFB0B0B0\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":2}}},{\"id\":\"label3\",\"component\":\"Text\",\"content\":\"整理清单\",\"styles\":{\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"width\":98,\"margin\":{\"left\":4}}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.action.label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_todo_462\",\"path\":\"/\",\"value\":{\"todo\":{\"title\":\"今日待办\",\"summary\":\"已完成 2/4\",\"items\":[{\"label\":\"回消息\",\"done\":true},{\"label\":\"取快递\",\"done\":false},{\"label\":\"整理清单\",\"done\":true}]},\"action\":{\"label\":\"打开\"}}}}"
+  ]
+}

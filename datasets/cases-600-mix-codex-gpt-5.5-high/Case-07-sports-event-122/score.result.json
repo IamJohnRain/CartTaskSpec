@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-07-sports-event-122",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "截图中可见「快来不及」红色徽标、「足球倒计时」标题、「今晚 19:35 开赛」副标题、「距离开赛 / 18 分钟」右侧计数区与「跳应用」白色按钮均按 dataModel 完整呈现；onClick 事件原样使用 eventCandidates 提供的 clickToDeeplink，根节点和 Button 双重绑定均符合要求；尺寸 2x4 / 300x140 / catalogId / version / updateDataModel.path 等硬约束均满足。扣分点：用户明确要求「字压在背景图上」，DSL 中虽以 Stack→Image→veil→content 的结构承载背景图，但截图中只能看到一层平滑的暗红→粉橘渐变，看不到任何可识别的足球/球场/灯光素材（暗角半透明 veil 与线性渐变叠加几乎完全遮盖了 hero），背景图的语义承载未落实，按图减 1.5 分。",
+    "aesthetic": "截图中配色克制有层次：左侧深炭黑、右侧偏暖的粉橘渐变营造出紧张氛围；红色徽标「快来不及」使用饱和红 #ba1a1a 与白字形成强警示，主标题与右侧「18 分钟」为最强字重（700、20px），其余次级文字 12-14px / 中等字重，字号阶梯干净、视觉重心明确。左侧标题区与右侧计数/按钮区在水平方向对称分布，留白合适、对齐统一。唯一可改进点：渐变中段过渡略带灰蒙感、且因看不到原图，整体观感略偏抽象，未能传达足球赛场的视觉氛围。",
+    "layout": "截图逐一排查：标题「足球倒计时」在 156 宽的左栏中完整呈现无截断；副标题「今晚 19:35 开赛」单行无溢出；右侧「距离开赛」「18 分钟」「跳应用」三件均落在 106 宽的右栏内、未见裁切；按钮「跳应用」底边距卡片底边约 10vp，符合 2x4 不大于 16vp 的约束；左右两栏之间 14vp itemMargin + 各 12vp 横向 padding = 300vp，未见溢出；Stack 三层（hero/veil/content）顺序正确，veil 在 hero 之上、content 在最上层，CTA 按钮与受保护文字均未被遮盖；徽标、标题、计数、按钮四个热区均 ≥24vp，按钮约 34vp 接近 40vp 标准。无堆叠、无截断、无溢出。"
+  },
+  "issues": [
+    "截图中看不到任何可识别的足球/球场背景图素材，hero Image 被 veil 渐变完全压住，仅呈现抽象暗红→粉橘渐变，违背「字压在背景图上」的语义诉求",
+    "中间渐变段 (#4dba1a1a) 在 1.0 锚点处色值较重，叠加后整体灰蒙，建议降低暗角强度让背景图透出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_122\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_122\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"hero\",\"veil\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":0,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff101417\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/football-122\"}}]},{\"id\":\"hero\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.match.background }}\",\"styles\":{\"width\":300,\"height\":140,\"objectFit\":\"cover\"}},{\"id\":\"veil\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#99101417\",0],[\"#66101417\",0.55],[\"#33101417\",1]]}}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"leftPanel\",\"rightPanel\"],\"itemMargin\":14,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":14,\"right\":14,\"top\":12,\"bottom\":12},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"leftPanel\",\"component\":\"Column\",\"children\":[\"alertText\",\"titleText\",\"kickoffText\"],\"itemMargin\":6,\"styles\":{\"width\":156,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alertText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.alert }}\",\"styles\":{\"width\":94,\"height\":26,\"padding\":{\"left\":10,\"right\":10,\"top\":5,\"bottom\":5},\"borderRadius\":13,\"backgroundColor\":\"#ffba1a1a\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.title }}\",\"styles\":{\"width\":156,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"kickoffText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.kickoff }}\",\"styles\":{\"width\":156,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"rightPanel\",\"component\":\"Column\",\"children\":[\"countLabel\",\"countValue\",\"actionButton\"],\"itemMargin\":6,\"styles\":{\"width\":106,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"countLabel\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.countdownLabel }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.match.countdown }}\",\"styles\":{\"width\":106,\"height\":32,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#fffff0b3\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"actionButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.match.actionText }}\",\"styles\":{\"width\":106,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffba1a1a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/football-122\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_122\",\"value\":{\"match\":{\"title\":\"足球倒计时\",\"kickoff\":\"今晚 19:35 开赛\",\"alert\":\"快来不及\",\"countdownLabel\":\"距离开赛\",\"countdown\":\"18 分钟\",\"actionText\":\"跳应用\",\"background\":\"assets/football-countdown-bg.png\"}}}}"
+  ]
+}

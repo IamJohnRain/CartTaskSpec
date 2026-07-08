@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-19-photo-album-375",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "尺寸 2x4、root shell、catalogId/version/updateDataModel 等硬约束均满足；标题、四个勾选项、前往设置按钮与 deeplink 事件均到位，深色渐变背景符合夜晚氛围诉求。但用户要求\"横向排几个勾选项\"，受 276px 宽度限制只能 2x2 排布（可接受），且勾选状态使用了蓝色 selectedColor (#ff317af7) 作为状态色，与\"不用特殊状态色\"的要求略有冲突；素材库仅使用了 clear_icon 一个图标，未用上用户提到的电池/文件夹语义图标。最大问题是第一个勾选项的标签被截断为\"清理...\"，\"清理缓存\"中的\"缓存\"二字未完整呈现，违反\"受保护文本不得依赖 ellipsis 隐藏\"的硬约束。",
+    "aesthetic": "深色到紫色的 135° 渐变氛围自然，夜晚感到位；白色胶囊按钮配蓝色文字对比清晰、跳脱有力；标题字号 18pt 加粗与正文 12pt 形成清晰层级，字重使用克制；勾选框的圆角方块与白色对勾视觉干净。扣分点：截断的\"清理...\"显得突兀，破坏了整体素净、克制的观感；其余勾选项文字颜色为偏灰白 (#e5ffffff) 在深紫底上尚可读但对比度一般。",
+    "layout": "截图中第一个 Checkbox 标签被裁切为\"清理...\"，\"缓存\"二字不可见，是核心布局缺陷；根因是 check_cache 的 width=96 不足以容纳\"清理缓存 (4 字) + 14px 勾选框 + 内部 padding\"。其余文字（清空回收站、压缩旧照片、卸载不常用应用）均完整显示；前往设置按钮居中、距底边合适、无溢出卡片边界；图标与标题左对齐良好；无 Stack 遮挡。整体为\"局部文字截断\"而非\"布局崩溃\"。"
+  },
+  "issues": [
+    "第一个 Checkbox 标签\"清理缓存\"被截断显示为\"清理...\"，受保护文本被 ellipsis 隐藏",
+    "check_cache 宽度 96 不足以容纳\"清理缓存 (4 字 × 12pt) + 14px 勾选框 + 内部间距\"",
+    "用户要求\"横向排\"，但受 2x4 宽度限制只能 2x2 排布，未能在说明中体现取舍或采用更小字号单行方案",
+    "勾选框使用蓝色 selectedColor (#ff317af7) 作为选中态颜色，与\"不用特殊状态色\"的要求存在轻微冲突",
+    "素材库中的电池、文件夹等语义图标未被使用，仅使用了 clear_icon 一个图标",
+    "未勾选项的勾选框与勾选后的对勾颜色对比偏弱（unSelectedColor #66ffffff 在深色渐变上可读性一般）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_photo_album_375\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_photo_album_375\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"options\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff202224\",0],[\"#5550a6\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"icon\",\"title\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.cleanup.title }}\",\"styles\":{\"width\":248,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"options\",\"component\":\"Column\",\"children\":[\"option_row_a\",\"option_row_b\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":52,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"option_row_a\",\"component\":\"Row\",\"children\":[\"check_cache\",\"check_trash\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"option_row_b\",\"component\":\"Row\",\"children\":[\"check_photos\",\"check_apps\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"check_cache\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.cleanup.labels.cache }}\",\"select\":{\"path\":\"/cleanup/options/cache\"},\"styles\":{\"width\":124,\"height\":24,\"fontSize\":12,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ccffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"check_trash\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.cleanup.labels.trash }}\",\"select\":{\"path\":\"/cleanup/options/trash\"},\"styles\":{\"width\":132,\"height\":24,\"fontSize\":12,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ccffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"check_photos\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.cleanup.labels.photos }}\",\"select\":{\"path\":\"/cleanup/options/photos\"},\"styles\":{\"width\":132,\"height\":24,\"fontSize\":12,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ccffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"check_apps\",\"component\":\"Checkbox\",\"label\":\"{{ $__dataModel.cleanup.labels.apps }}\",\"select\":{\"path\":\"/cleanup/options/apps\"},\"styles\":{\"width\":132,\"height\":24,\"fontSize\":12,\"fontColor\":\"#e5ffffff\",\"selectedColor\":\"#ccffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.cleanup.actionText }}\",\"styles\":{\"width\":108,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff317af7\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_photo_album_375\",\"value\":{\"cleanup\":{\"title\":\"存储清理\",\"actionText\":\"前往设置\",\"labels\":{\"cache\":\"清理缓存\",\"trash\":\"清空回收站\",\"photos\":\"压缩旧照片\",\"apps\":\"卸载不常用应用\"},\"options\":{\"cache\":true,\"trash\":false,\"photos\":true,\"apps\":false}}}}}"
+  ]
+}

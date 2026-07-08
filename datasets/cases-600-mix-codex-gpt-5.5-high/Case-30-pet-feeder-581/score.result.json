@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-30-pet-feeder-581",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户明确要求卡片主体是图、写'今天喂了32天'、点一下进app、能读日历显示已连接。截图中'32天'主指标和'已连接'状态徽章已显示，按钮的 onClick 也正确指向 clickToDeeplink。但用户特别强调的'主体是图'完全失败：左侧 hero_panel 内 Image 区域是空白的浅色方块，并未渲染 pet-feeder-hero.png 主图；底部 CTA 按钮的'进App'文字第一个汉字渲染异常（呈现为乱码/方块状字符），导致'进App'语义不清晰；用户要求显示的'日历读取中'那一行在截图中完全不可见，信息明显缺失。综合来看关键诉求（主图、日历状态、CTA 文字）都未完整呈现，扣分明显。",
+    "aesthetic": "渐变配色（淡灰到草绿）和整体留白节奏尚可接受，'32天'作为主指标字重突出，标题与副标题层级清晰。但截图左侧主图区域是一块空白的浅色方块，视觉上非常空洞不专业，'已连接'徽章浮在一片空白色块上显得突兀；按钮文字第一个汉字渲染为乱码方块状，破坏整体可读性与美感；日历行完全缺失，信息密度过低导致右侧也偏空洞。",
+    "layout": "从截图看，没有明显的横向溢出或文字被裁切（标题、副标题、'32天'、按钮文字都完整显示在卡内）。但 info_panel Column 的 children 总高度 18+42+20+26=106px 在 116px 容器内用 spaceBetween 分布，calendar_row 在视觉上未出现——猜测是模板 Row 渲染后其内嵌 calendar_item 高度仅 20px、背景 #19000000 在绿色渐变上几近不可见，导致用户视角下'日历 读取中'完全消失，相当于关键内容被'视觉性截断'。按钮区域文字乱码属于内容渲染问题。按钮热区 26vp ≥ 24vp 达标，底边距卡片底约 12vp 合理。整体结构成立但日历行视觉性丢失需扣分。"
+  },
+  "issues": [
+    "用户要求'主体是图'，但 hero_panel 内 Image 未渲染，主体区域为空白方块，核心视觉缺失",
+    "CTA 按钮 label 文字'进App'第一个汉字渲染为乱码/方块状，语义不清晰",
+    "info_panel 中的 calendar_row 在截图中完全不可见（'日历 读取中'信息视觉性丢失）",
+    "calendar_item 背景 #19000000 在绿色渐变上对比度极低，即使存在也无法辨识",
+    "feedDays 字段使用 formatString 包裹单一字符串再注入，链路多余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_pet_feeder_581\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_pet_feeder_581\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"info_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#fff1f3f5\",0],[\"#92c48d\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Stack\",\"children\":[\"hero_bg\",\"hero_image\",\"hero_fallback\",\"status_badge\"],\"styles\":{\"width\":118,\"height\":116,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#33ffffff\",\"alignContent\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_bg\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":118,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.petFeeder.image }}\",\"styles\":{\"width\":94,\"height\":86,\"objectFit\":\"contain\"}},{\"id\":\"hero_fallback\",\"component\":\"Text\",\"content\":\"喂\",\"styles\":{\"width\":94,\"height\":86,\"fontSize\":56,\"textAlign\":\"center\",\"fontColor\":\"#ff64bb5c\",\"fontWeight\":800}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.petFeeder.connectionStatus }}\",\"styles\":{\"width\":58,\"height\":22,\"margin\":{\"left\":52,\"top\":6},\"borderRadius\":11,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"days_group\",\"calendar_row\",\"open_button\"],\"itemMargin\":4,\"styles\":{\"width\":148,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.petFeeder.title }}\",\"styles\":{\"width\":148,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"days_group\",\"component\":\"Column\",\"children\":[\"feed_label\",\"feed_days\"],\"itemMargin\":2,\"styles\":{\"width\":148,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"feed_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.petFeeder.feedLabel }}\",\"styles\":{\"width\":148,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"feed_days\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.petFeeder.feedDays }}\",\"styles\":{\"width\":148,\"height\":20,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_row\",\"component\":\"Row\",\"children\":[{\"componentId\":\"calendar_item\",\"path\":\"/petFeeder/calendarRows\"}],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":148,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_item\",\"component\":\"Row\",\"children\":[\"calendar_label\",\"calendar_value\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":148,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#33000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_label\",\"component\":\"Text\",\"content\":{\"path\":\"label\"},\"styles\":{\"width\":32,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_value\",\"component\":\"Text\",\"content\":{\"path\":\"value\"},\"styles\":{\"width\":92,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.petFeeder.actionText }}\",\"styles\":{\"width\":148,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_pet_feeder_581\",\"path\":\"/\",\"value\":{\"petFeeder\":{\"title\":\"智能喂食器\",\"feedDays\":\"32天\",\"feedLabel\":\"今天已喂\",\"connectionStatus\":\"已连接\",\"actionText\":\"进App\",\"image\":\"assets/pet-feeder-hero.png\",\"calendarRows\":[{\"label\":\"日历\",\"value\":\"读取中\"}]},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

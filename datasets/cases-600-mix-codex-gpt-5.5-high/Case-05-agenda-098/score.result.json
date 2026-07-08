@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-098",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.7,
+  "reasons": {
+    "instruction": "用户明确要求『纵向重复排列的几个面板块，每个块里纯靠文字排版，放日历读来的会议主题』，但截图中三个会议面板（项目周会开场 09:30、风险事项同步 10:00、下周计划确认 10:30）一条都未出现，仅渲染了头部 CAL 图标和大字『今日已完成3个』。原因是模板内 panelTime 使用了非标准的 {call:formatString,args:{value:'${time}'}}，panelTitle 使用 {path:'title'}，在 A2UI 模板循环上下文中均无法解析为字段值，导致整列面板塌陷为空。点击事件、根壳、catalogId、updateDataModel 等硬约束 OK，但核心诉求『会议面板列表』完全缺失。",
+    "aesthetic": "浅蓝主题色块背景 + 白色面板的配色思路本身干净克制，CAL 日历图标、蓝色徽章+09:30 的拟日历视觉、字重层级（20/12）也清晰。但卡片下半部完全空白，仅有大片浅蓝色块，整体观感像是『没画完的卡片』，留白严重失衡，视觉重心漂在头部。",
+    "layout": "截图显示 root 容器下半部（panelList 区域，宽度 276、高度 68 像素）整块为空，没有出现任何 Row 面板，也没有任何会议主题文字溢出/截断/堆叠的痕迹——面板是『未渲染』而非『被裁切』。这是最严重的布局失败：用户最关心的纵向排布面板块（3 条日程）在画面上完全缺席，root 内部 68vp 的内容区呈现为纯色块空缺。头部自身排版（CAL 44×44 + 大字 + 副标题）未发现堆叠或截断。"
+  },
+  "issues": [
+    "模板循环内 panelTime.content 使用 {call:formatString,args:{value:'${time}'}} 不是合法 A2UI 表达式，导致时间字段无法解析",
+    "模板循环内 panelTitle.content 使用 {path:'title'} 缺少上下文路径或 $item 前缀，标题无法渲染",
+    "截图整片下方无任何会议面板，3 条日程（09:30 项目周会开场、10:00 风险事项同步、10:30 下周计划确认）全部缺失",
+    "卡片下半部出现大块空白（panelList 区域 68vp 未承载任何内容），视觉重心严重失衡",
+    "calendarMark 中 iconBody 直接读取 $__dataModel.calendar.items[0].time 充当日期数字，语义虽能跑通但与 CAL 徽章组合观感略生硬"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_098\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_098\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"panelList\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff0f7ff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"agenda-098-kickoff\"}}}]},{\"id\":\"header\",\"component\":\"Row\",\"children\":[\"calendarMark\",\"headerText\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendarMark\",\"component\":\"Column\",\"children\":[\"iconTop\",\"iconBody\"],\"itemMargin\":0,\"styles\":{\"width\":44,\"height\":44,\"borderRadius\":12,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"iconTop\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.iconText }}\",\"styles\":{\"width\":44,\"height\":16,\"backgroundColor\":\"#ff2563eb\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"iconBody\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.items[0].time }}\",\"styles\":{\"width\":44,\"height\":28,\"padding\":{\"top\":6},\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff1d4ed8\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"headerText\",\"component\":\"Column\",\"children\":[\"completed\",\"summary\"],\"itemMargin\":4,\"styles\":{\"width\":222,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"completed\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.completedText }}\",\"styles\":{\"width\":222,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"summary\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.title + ' · ' + $__dataModel.calendar.summary }}\",\"styles\":{\"width\":222,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff475569\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panelList\",\"component\":\"Column\",\"children\":{\"componentId\":\"meetingPanel\",\"path\":\"/calendar/items\"},\"itemMargin\":5,\"styles\":{\"width\":276,\"height\":68,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"meetingPanel\",\"component\":\"Row\",\"children\":[\"panelTime\",\"panelTitle\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":19,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"entityId\"}}}}]},{\"id\":\"panelTime\",\"component\":\"Text\",\"content\":\"{{ $item.time }}\",\"styles\":{\"width\":42,\"height\":15,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff2563eb\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panelTitle\",\"component\":\"Text\",\"content\":\"{{ $item.title }}\",\"styles\":{\"width\":210,\"height\":15,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff1f2937\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_098\",\"value\":{\"calendar\":{\"title\":\"项目周会\",\"iconText\":\"CAL\",\"completedText\":\"今日已完成3个\",\"summary\":\"4个日程事件\",\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-098-kickoff\",\"time\":\"09:30\",\"title\":\"项目周会开场\"},{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-098-risk\",\"time\":\"10:00\",\"title\":\"风险事项同步\"},{\"entityName\":\"calendar_event\",\"entityId\":\"agenda-098-next\",\"time\":\"10:30\",\"title\":\"下周计划确认\"}]}}}}"
+  ]
+}

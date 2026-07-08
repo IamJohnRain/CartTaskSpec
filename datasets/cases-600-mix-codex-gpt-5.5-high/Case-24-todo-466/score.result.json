@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-24-todo-466",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.2,
+  "reasons": {
+    "instruction": "用户明确要求'待办能打勾、点一下跳到对应app、日历里的事帮我读过来'。截图中只看到左侧'待办清单'标题、'日历同步中'状态和'打开音乐'蓝色按钮,右侧本应承载日历待办列表的整个区域完全空白,既没有可勾选的 Checkbox,也没有任何日历事项标题/时间,更没有可视化的'点一下跳到日历事件'载体。clickToIntent 事件虽然在 DSL 中存在,但由于对应的可视 taskItem 没有渲染出来,这一核心交互根本无法被用户感知。'打开音乐'按钮 onClick 接线正确,可视为唯一达成的诉求。整体上,日历同步占位/可勾选任务/点击跳转三个核心指令在截图中均未落地,严重偏离用户意图。",
+    "aesthetic": "从截图看,左侧面板排版较克制:粗体 20pt 的'待办清单'作主标题、12pt 灰色的'日历同步中'作次级状态、蓝色圆角按钮'打开音乐'配色和谐、字重层级清晰,看上去是合格的卡片片段。但卡片右半区(约 173×116 像素)是一大片纯空白,与左半区形成强烈割裂感,视觉上像一张未完成或加载失败的卡片,整张卡的专业感与完成度被严重拉低,留白不再是'克制'而成为'缺内容'。",
+    "layout": "截图最核心的布局问题:右侧 taskList Column 整个空白。taskList 通过 children: { componentId:'taskItem', path:'/data/calendar/items' } 模板循环引用占位项,但渲染引擎没有产出任何 taskItem 实例,导致 173×116 的区域里既无 Checkbox 也无 taskTitle / taskSource / timeText 出现。左侧 summaryPanel(标题+状态+音乐按钮)排布正常、按钮未被裁切、底部到卡底距离符合 2x4 规范的 8-12vp 要求、分隔线垂直贯穿。问题集中在右侧整片空白 = 用户可读/可点的核心功能位丢失,属于重大布局故障而非局部瑕疵。"
+  },
+  "issues": [
+    "右侧 taskList 区域在截图中完全空白,模板循环 children: { componentId, path } 未渲染出任何 taskItem",
+    "用户核心诉求'日历里的事帮我读过来'在截图中没有任何可视化呈现,无任务标题/无时间",
+    "用户核心诉求'任务能打勾'在截图中无任何 Checkbox 出现",
+    "用户核心诉求'点一下跳到对应app'的 clickToIntent 热区不可见、不可触达",
+    "右半张卡片为大面积纯空白,视觉上明显未完成,与左半区割裂严重",
+    "任务项模板对 Checkbox 的 value/select 字段以 {path:'...'} 形式传入,这种相对路径在脱离模板上下文或模板未渲染时风险高,需改成绝对路径或硬编码以保底"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"todo_card_466\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"todo_card_466\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"summaryPanel\",\"divider\",\"taskList\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"}},{\"id\":\"summaryPanel\",\"component\":\"Column\",\"children\":[\"title\",\"statusText\",\"musicButton\"],\"itemMargin\":10,\"styles\":{\"width\":86,\"height\":116,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.title }}\",\"styles\":{\"width\":86,\"height\":42,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.summary.statusText }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"musicButton\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.summary.musicLabel }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":86,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33000000\",\"height\":116}},{\"id\":\"taskList\",\"component\":\"Column\",\"children\":[\"taskItem\"],\"itemMargin\":6,\"styles\":{\"width\":173,\"height\":116,\"padding\":8,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"clip\":true}},{\"id\":\"taskItem\",\"component\":\"Row\",\"children\":[\"taskCheck\",\"taskTextGroup\",\"timeText\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}],\"styles\":{\"width\":157,\"height\":52,\"padding\":8,\"alignItems\":\"center\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":8}},{\"id\":\"taskCheck\",\"component\":\"Checkbox\",\"value\":\"todo-calendar-placeholder-1\",\"select\":false,\"styles\":{\"width\":20,\"height\":20,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\"}},{\"id\":\"taskTextGroup\",\"component\":\"Column\",\"children\":[\"taskTitle\",\"taskSource\"],\"itemMargin\":2,\"styles\":{\"width\":72,\"height\":40,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"taskTitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items.0.title }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"taskSource\",\"component\":\"Text\",\"content\":\"日历事项\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items.0.dtStart }}\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"todo_card_466\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"待办清单\",\"statusText\":\"日历同步中\",\"musicLabel\":\"打开音乐\"},\"state\":{\"loading\":true},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"todo-calendar-placeholder-1\",\"title\":\"读取日程中\",\"dtStart\":\"--:--\",\"dtEnd\":\"--:--\",\"done\":false}]}}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-26-group-buy-513",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.7,
+  "reasons": {
+    "instruction": "用户明确要求的'夜晚深蓝到黑渐变背景'在截图中完全没有呈现，整张卡片背景是白色；标题'奶茶凑单'在截图中完全不可见；4 条饮料列表（珍珠奶茶/乌龙鲜奶/芋泥波波/柠檬茶）也完全缺失，'列表要能滑'与'每杯状态双向同步'无从体现。仅杯图标、'✓ 已成团'状态徽章和'看天气'按钮（事件已正确绑定 clickToDeeplink）能看见，信息量不足用户诉求的三分之一。",
+    "aesthetic": "截图整体呈白底散落小元素观感，毫无'夜晚深蓝到黑'的暗色高级感；卡片外框、圆角、阴影均不可见，像是 root 容器没渲染出来；留白巨大且不均衡，左上小杯图与右侧绿色对勾孤立分布，视觉上'素净过头'到'空荡'的程度，违反用户'简洁素净但有信息密度'的初衷。",
+    "layout": "截图中最严重的问题是：root Column 整片未渲染（无暗色渐变底、无圆角白卡片边界），导致所有子元素像悬浮在白纸上；顶部 Row 中标题文本'奶茶凑单'完全未出现（推测是 textOverflow:'none' 非法值导致 Text 不渲染）；主区域左侧 drinkList（List + 模板 children）整体不可见，导致 4 条饮料条目、勾选框、参与者姓名全部丢失；只有 cupIcon、statusPill、weatherButton 三个孤立元素被画出，且 mainRow 高度 82 中只剩 weatherPanel 居中，drinkList 区域为空白，整体布局严重塌陷。"
+  },
+  "issues": [
+    "root 的 linearGradient 未生效，整张卡片呈白色而非'夜晚深蓝到黑渐变'",
+    "titleText 完全未渲染，疑因 textOverflow:'none' 非合法值",
+    "drinkList（List + 模板 children /order/items）整块不可见，4 条饮料及勾选全部丢失",
+    "卡片外框（borderRadius:22、clip:true、300x140 矩形）完全未显示",
+    "mainRow 高度 82 中左侧 176px 宽的 drinkList 区域为空白，右 90px weatherPanel 居中，布局重心失衡",
+    "cupIcon 使用 ☕ 数据绑定为字符，但渲染时可能走 emoji 通道被替换为图片，与纯文本'文字字符'诉求略有偏差"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case-26-group-buy-513\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case-26-group-buy-513\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"topRow\",\"mainRow\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff0a1024\",\"linearGradient\":{\"angle\":180,\"colors\":[{\"color\":\"#ff11224a\",\"stop\":0.0},{\"color\":\"#ff03060d\",\"stop\":1.0}]}}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"titleGroup\",\"statusPill\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"titleGroup\",\"component\":\"Row\",\"children\":[\"cupIcon\",\"titleText\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":170,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"cupIcon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.order.icon }}\",\"styles\":{\"width\":20,\"height\":20,\"fontSize\":16,\"fontColor\":\"#ffe8d3a3\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.order.title }}\",\"styles\":{\"width\":140,\"height\":22,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#fff2f4f8\",\"maxLines\":1,\"textOverflow\":\"clip\"}},{\"id\":\"statusPill\",\"component\":\"Row\",\"children\":[\"statusIcon\",\"statusText\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":78,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#1aff5ba854\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"statusIcon\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.order.statusIcon }}\",\"styles\":{\"width\":12,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff5ba854\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.order.statusText }}\",\"styles\":{\"width\":46,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff5ba854\",\"maxLines\":1,\"textOverflow\":\"clip\"}},{\"id\":\"mainRow\",\"component\":\"Row\",\"children\":[\"drinkList\",\"weatherPanel\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":280,\"height\":90,\"alignItems\":\"top\"}},{\"id\":\"drinkList\",\"component\":\"List\",\"children\":{\"componentId\":\"drinkItem\",\"path\":\"/order/items\"},\"space\":4,\"styles\":{\"width\":178,\"height\":90,\"listDirection\":\"vertical\",\"scrollBar\":\"auto\",\"backgroundColor\":\"#0cffffff\",\"borderRadius\":12,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6}}},{\"id\":\"drinkItem\",\"component\":\"Row\",\"children\":[\"drinkCheck\",\"drinkName\",\"drinkOwner\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":162,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"drinkCheck\",\"component\":\"Checkbox\",\"select\":{\"path\":\"checked\"},\"styles\":{\"width\":22,\"height\":22,\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"drinkName\",\"component\":\"Text\",\"content\":{\"path\":\"name\"},\"styles\":{\"width\":78,\"height\":18,\"fontSize\":12,\"fontColor\":\"#ffeef0f4\",\"maxLines\":1,\"textOverflow\":\"clip\"}},{\"id\":\"drinkOwner\",\"component\":\"Text\",\"content\":{\"path\":\"owner\"},\"styles\":{\"width\":48,\"height\":18,\"fontSize\":11,\"fontColor\":\"#99c0c8d4\",\"maxLines\":1,\"textAlign\":\"end\",\"textOverflow\":\"clip\"}},{\"id\":\"weatherPanel\",\"component\":\"Column\",\"children\":[\"weatherText\",\"weatherButton\"],\"itemMargin\":4,\"styles\":{\"width\":94,\"height\":90,\"padding\":{\"left\":6,\"right\":6,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#14ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"weatherText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.loading ? '看天气取餐' : $__dataModel.data.weather.current.condition + ' ' + $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":82,\"height\":38,\"fontSize\":11,\"fontColor\":\"#ffeef0f4\",\"maxLines\":2,\"textAlign\":\"center\",\"textOverflow\":\"clip\"}},{\"id\":\"weatherButton\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":82,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#ff317af7\",\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case-26-group-buy-513\",\"path\":\"/\",\"value\":{\"order\":{\"title\":\"奶茶凑单\",\"icon\":\"☕\",\"statusIcon\":\"✓\",\"statusText\":\"已成团\",\"statusReady\":true,\"items\":[{\"name\":\"珍珠奶茶\",\"owner\":\"小林\",\"checked\":true},{\"name\":\"乌龙鲜奶\",\"owner\":\"阿青\",\"checked\":true},{\"name\":\"芋泥波波\",\"owner\":\"小周\",\"checked\":true},{\"name\":\"柠檬茶\",\"owner\":\"小何\",\"checked\":false}]},\"data\":{\"weather\":{\"location\":{},\"current\":{\"temperatureText\":\"\",\"condition\":\"\",\"airQuality\":\"\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

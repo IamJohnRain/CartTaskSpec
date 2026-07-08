@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-181",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "用户要求'整卡可点'、'一行带数字的话'、'能导航看天气'、'连接成功告诉我'。截图中：整卡可点（onClick 挂在 root）✓、状态徽章显示'连接成功'✓、文案中含 85% 数字✓、deeplink 正确指向 weather。但用户明确要求'一行带数字的话'，截图中主行 '85%雨 看天气' 实际被换行为 '85%雨 看天' + '气' 两行，违反'一行'的核心诉求，因此扣分。",
+    "aesthetic": "青绿渐变背景美观自然，状态徽章半透白胶囊质感不错，配色和谐。但 hero 主行因换行产生孤字'气'独占第二行，视觉上出现明显的'断尾'，破坏整体节奏与克制感；徽章文字色 #ffccffcc（ARGB 中绿通道偏强）略有色偏，但截图看尚可。整体可读性没问题，但断行拉低档次。",
+    "layout": "截图可清楚看到主文案因 fontSize=20 + 容器宽 116 不够，自动换行成两行，第二行仅一个'气'字孤悬。其余元素（状态徽章、底部 hint）均在卡片内、未溢出。Column 使用 spaceBetween 布局，整体未越界，但 hero_line 高度被设为 42、双行 20px 字号叠加占用过多纵向空间，使底部 hint 与卡片底边距离偏紧，底部锚定不够从容。换行属于明显的排版失误。",
+    "issues": [
+      "hero_line 文本 '85%雨 看天气' 在 116 宽度 / fontSize=20 下被强制换行成两行，第二行只剩'气'一字",
+      "用户明确要求'一行带数字的话'，实际渲染违反该视觉约束",
+      "maxLines 设为 2 允许了换行，未能保护受保护文本的单行呈现",
+      "status 字体色 #ffccffcc 通道排列略异常（ARGB），文字略偏色",
+      "hero_line height 42 加上 status 24 + 8×2 itemMargin + hint 18，已逼近 140 高度，纵向余量偏紧"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_181\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_181\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"status\",\"hero_line\",\"hint\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a6f73\",0],[\"#ff39b6a3\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.weather\",\"abilityName\":\"com.huawei.weather.MainAbility\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.statusText }}\",\"styles\":{\"width\":72,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/weather/rainChance}% 雨 看天气\"}},\"styles\":{\"width\":116,\"height\":24,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.hint }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_181\",\"value\":{\"taxi\":{\"statusText\":\"连接成功\",\"hint\":\"点整卡查看天气\"},\"weather\":{\"rainChance\":85}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-08-sleep-143",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "用户四点诉求：①文字叠在背景图上—深色渐变背景已实现，文字清晰浮于其上，满足；②深睡数字会变—'94'以大号白字突出呈现，数据绑定正确，满足；③点一下跳app—onClick 事件与 deepLink 参数原样接入，root 整卡片与 action 按钮都接了同一个事件，但截图里 action 按钮完全是一个空白胶囊，文字'跳App'不可见，用户实际上看不出有可点击动作，诉求实质未落地；④能从日历读作息—'日历作息'来源文案已显示，'23:20 入睡'也读自数据模型，但截图中'睡'字被截掉只剩'23:20 入'，信息不完整。整体而言核心信息大多到位，但 CTA 不可见和 bedtime 截断两处使指令落实打了折扣。",
+    "aesthetic": "深蓝渐变背景与白色主数字搭配在视觉上是有质感、有夜晚感的，标题—副标题—主数值—单位—底栏的字阶层次也算清楚。但截图中右下角只有一个空白的浅蓝胶囊，看不到'跳App'三个字，让整个底部看起来像渲染失败；同时'23:20 入'的截断也显得仓促不专业。综合下来，背景层做得好，但按钮区是观感上最大的瑕疵。",
+    "layout": "截图中最显眼的两个问题：①底部左侧文本'23:20 入睡'被截断为'23:20 入'，最后一字'睡'消失，是 bedtime 容器 width:48 装不下 fontSize:12 的'23:20 入睡'(约 60px)所致；②底部右侧 Button 容器是一个完整胶囊形状，但内部没有任何文字渲染出'跳App'，从截图看就是一块空的浅蓝圆角矩形—热区虽然存在，但 CTA 文字不可读等同于视觉上没有 CTA，这是最严重的布局/可读性事故。其余元素（标题、副标题、94、分钟）排布整齐、未见重叠与越界。"
+  },
+  "issues": [
+    "底部右侧 Button '跳App' 文字在截图中完全不可见，按钮呈空白胶囊状，CTA 失效（很可能与 fontWeight 写成字符串 'medium' 有关）",
+    "底部左侧 bedtime 文本 '23:20 入睡' 被截断为 '23:20 入'，末字 '睡' 丢失，width:48 在 fontSize:12 下装不下 8 字符内容",
+    "content Column 自身 children 总高 (headline 38 + deepBlock 40 + footer 24 + 16 间距 + 20 内边距 = 138) 已超过 116 高度，依赖 spaceBetween 压缩间距，长内容下风险高",
+    "source 副标题与 title 同宽 96 并紧贴主数字 94 块，三层信息全靠 spaceBetween 撑开，缺乏视觉呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sleep_143\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sleep_143\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"ambient\",\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff11131a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://calendarapp/router/scheduleSleep\"}}]},{\"id\":\"ambient\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"linearGradient\":{\"angle\":160,\"colors\":[[\"#ff161b2d\",0],[\"#ff253d62\",1]]}}},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"headline\",\"deepBlock\",\"footer\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"headline\",\"component\":\"Column\",\"children\":[\"title\",\"source\"],\"itemMargin\":2,\"styles\":{\"width\":96,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"source\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.source }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"deepBlock\",\"component\":\"Row\",\"children\":[\"deepValue\",\"deepUnit\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"end\"}},{\"id\":\"deepValue\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.deepMinutes }}\",\"styles\":{\"width\":58,\"height\":40,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"deepUnit\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.unit }}\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer\",\"component\":\"Row\",\"children\":[\"bedtime\",\"action\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"bedtime\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.bedtime }}\",\"styles\":{\"width\":54,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.sleep.actionText }}\",\"styles\":{\"width\":38,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://calendarapp/router/scheduleSleep\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sleep_143\",\"value\":{\"sleep\":{\"title\":\"深睡时长\",\"source\":\"日历作息\",\"deepMinutes\":94,\"unit\":\"分钟\",\"bedtime\":\"23:20 入睡\",\"actionText\":\"跳App\"}}}}"
+  ]
+}

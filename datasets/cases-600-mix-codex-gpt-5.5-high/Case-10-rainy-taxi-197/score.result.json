@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-10-rainy-taxi-197",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户原始诉求的五点核心要素（深圳天气+温度、左侧天气/右侧'查看详细天气'按钮跳天气App、底部排队/等车时间横排小卡、橙色提醒、浅蓝浅灰雨天天底色）均在 DSL 中做了协议级落实，尺寸 2x4、catalogId、version、updateDataModel.path='/'、onClick.call/args 与 eventCandidates 完全一致。但截图中存在两处明显指令落实缺失：(1) 按钮文字'查看详细天气'被截断显示为'查看详细...'，未把完整 CTA 文案交付给用户；(2) 雨天图标在截图中仅呈现为一块浅灰占位矩形，未成功渲染成有效图像，rainIcon 资源未生效。",
+    "aesthetic": "配色层面做得较好：浅蓝（#EAF4FB）卡底呼应雨天天感、白色信息面板+蓝色品牌色（#0A59F7）作为温度与按钮主色、橙色（#FFE7C2 底 + #C45A00 文字）作为排队提醒，配色克制和谐。字号层级清晰（标题14/温度20/辅文10），底部两小卡左右对齐统一。扣分点在于：(1) 天气面板左侧本应出现的雨滴图标在截图中是一块浅灰矩形，留下明显的视觉空缺，破坏精致感；(2) 按钮文字被截断为'查看详细...'带省略号，CTA 视觉不完整。",
+    "layout": "截图中可直接观察到的排版问题有两处，且都涉及受保护元素：(1) 右侧主 CTA 按钮文字'查看详细天气'被截断为'查看详细...'，属于核心可点击元素文字被裁切，是必须扣分的严重布局缺陷——根本原因是 Button width=104 不足以容纳 6 个 14 号中文字符（理论需求≈84vp 文字+按钮内边距≥108vp，可用仅 104vp），属尺寸设计错误；(2) 雨滴图标位置（weather_panel 内 28x28 区域）在截图中是一块浅灰占位矩形，虽未引起重叠/溢出，但作为布局元素它未承载信息，导致天气信息面板出现明显的视觉空洞。其余部分：root Column 高度 140、top_row 高 70、bottom_row 高 34，垂直方向 12+70+10+34+12=138 ≤140，未溢出；底部 queue_card/wait_card 各 132 宽+间距 12=276 与内容区等宽，对齐正确；两小卡内部文字均完整可读。"
+  },
+  "issues": [
+    "右侧 Button 宽度 104vp 不足以容纳 '查看详细天气'（6 个 14 号中文字符），截图中按钮文字被截断为 '查看详细...'，核心 CTA 文字被裁切",
+    "rainIcon 资源（resources/base/media/icon_weather_rain.png）在截图中未渲染，左侧天气面板内图标位置显示为浅灰占位矩形，留下视觉空洞",
+    "weather_panel 宽度 160 中 rain_icon(28) + itemMargin(8) + weather_info(104) = 140，再加左右 padding 各 10 = 160，刚好撑满但 weather_info 没有留白裕度",
+    "detail_btn 内部文字与容器宽度不匹配，应通过加宽按钮（120+）或缩字（fontSize 12-13）解决截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_rainy_taxi_197\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_rainy_taxi_197\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFEAF4FB\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"detail_btn\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":72,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Row\",\"children\":[\"rain_icon\",\"weather_info\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":146,\"height\":72,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"rain_icon\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.assets.rainIcon }}\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"weather_info\",\"component\":\"Column\",\"children\":[\"title_text\",\"temp_text\",\"weather_text\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.title }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.temperatureText }}\",\"styles\":{\"width\":86,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.weatherText }}\",\"styles\":{\"width\":86,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_btn\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.taxi.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.weather\",\"abilityName\":\"com.huawei.hmos.weather.MainAbility\",\"uri\":\"weather://city/shenzhen\"}}],\"styles\":{\"width\":120,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"padding\":{\"left\":8,\"right\":8}}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"queue_card\",\"wait_card\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"queue_card\",\"component\":\"Column\",\"children\":[\"queue_text\",\"queue_level\"],\"itemMargin\":2,\"styles\":{\"width\":133,\"height\":40,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#FFFFE7C2\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"queue_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.queueText }}\",\"styles\":{\"width\":109,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFC45A00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"queue_level\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.queueLevel }}\",\"styles\":{\"width\":109,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99C45A00\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wait_card\",\"component\":\"Column\",\"children\":[\"wait_label\",\"wait_text\"],\"itemMargin\":2,\"styles\":{\"width\":133,\"height\":40,\"padding\":{\"left\":12,\"right\":12,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"wait_label\",\"component\":\"Text\",\"content\":\"等车时间\",\"styles\":{\"width\":109,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99182431\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"wait_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.taxi.waitText }}\",\"styles\":{\"width\":109,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF182431\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_rainy_taxi_197\",\"value\":{\"taxi\":{\"title\":\"深圳雨天\",\"weatherText\":\"小雨\",\"temperatureText\":\"24°C\",\"queueText\":\"排队8人\",\"queueLevel\":\"人数偏多\",\"waitText\":\"预计等12分钟\",\"actionText\":\"查看详细天气\"},\"assets\":{\"rainIcon\":\"resources/base/media/icon_weather_rain.png\"}}}}"
+  ]
+}

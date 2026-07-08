@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-069",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求显示专注时长（48分钟）、点一下跳到 app、看到已完成状态——截图左侧大字号显示'48分钟'、绿色徽章显示'已完成'、右侧绿色环图也呈现进度，'查看'按钮与卡片整片都绑定了 clickToDeeplink 事件，事件 call/args 与 TaskSpec 完全一致；指令各项均落实。轻微扣分点：'已完成'在同一张卡片中重复出现两次（左侧徽章 + 环内文字），信息冗余而非缺失。",
+    "aesthetic": "整体采用浅绿到白的渐变作为背景，配色和谐，绿色系字体对比清晰，主次字号（16 / 32 / 14）层级明确。但环图 Progress 组件渲染出明显的灰色方形底（backgroundColor 影响了 bounding box 而非仅作为环形轨道），与卡片整体清新风格冲突，视觉上比较突兀；'已完成'在徽章与环内文字上重复出现也削弱了信息密度。",
+    "layout": "截图观察：左侧标题/数值/徽章三段 Column 排布整齐，文字无截断；右侧环图与按钮垂直居中分布，按钮热区充足（28vp 高度），底部无溢出风险，元素之间无堆叠遮挡。唯一瑕疵是 side_panel 内 Column 实际占用约 124（68+12+28 + 16 padding）已超过其声明的 116 高度，仅靠 justifyContent:center 视觉凑齐，未发生实际裁切但略显紧。环内文字与环轨可读，未被裁切。"
+  },
+  "issues": [
+    "环图 Progress 的 backgroundColor 渲染为完整灰色方块背景，而非仅作为环形轨道，破坏卡片视觉统一",
+    "'已完成'在徽章与环内文字上重复出现，造成信息冗余",
+    "side_panel 内容纵向占用 124，超过声明的 116 高度，靠居中勉强对齐，存在潜在溢出风险",
+    "环内文字与环轨背景对比度偏弱，'已完成' 灰绿色文字在浅灰环轨上可读性一般"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_069\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_069\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#fff0fdf4\",0],[\"#ffffffff\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus/record\"}}]},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title\",\"duration\",\"status\"],\"itemMargin\":8,\"styles\":{\"width\":154,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":12,\"bottom\":12},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":154,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.durationText }}\",\"styles\":{\"width\":154,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ff14532d\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":76,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffd9f99d\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"meter\",\"action\"],\"itemMargin\":8,\"styles\":{\"width\":110,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"meter\",\"component\":\"Stack\",\"children\":[\"ring\",\"ring_label\"],\"styles\":{\"width\":72,\"height\":72,\"alignContent\":\"center\"}},{\"id\":\"ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.focus.progressValue }}\",\"total\":\"{{ $__dataModel.focus.progressTotal }}\",\"styles\":{\"type\":\"ring\",\"width\":72,\"height\":72,\"color\":\"#ff22c55e\",\"backgroundColor\":\"#00000000\"}},{\"id\":\"ring_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.progressValue }}/{{ $__dataModel.focus.progressTotal }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff14532d\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":84,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff22c55e\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"clock://focus/record\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_069\",\"path\":\"/\",\"value\":{\"focus\":{\"mock\":true,\"title\":\"专注时长\",\"durationText\":\"48分钟\",\"statusText\":\"已完成\",\"progressValue\":48,\"progressTotal\":60,\"actionText\":\"查看\"}}}}"
+  ]
+}

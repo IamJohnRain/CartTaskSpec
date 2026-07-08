@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-06-memory-clean-111",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户明确要求展示'清理手机'日程事件和点击看详细。截图中底部行仅显示'今日 20:00'和被截断的'查看'，关键的'清理手机'事件标题被裁切完全未呈现，'查看详情'也只剩'查看'。其他诉求基本满足：深红到橙色的急迫感渐变背景、无真实图片、3个'废'字色块作为垃圾篓语义图标、'系统垃圾 1.2GB'动态数值、红色'空间耗尽'告警、onClick 事件绑定完整。扣分主要来自事件标题与'详情'两处关键文本未真正落到截图上。",
+    "aesthetic": "深红到橙色的斜向渐变很好地营造了急迫感，配色和谐。白色文字在深色背景上清晰可读。红色'空间耗尽'告警条视觉突出。但底部行的'查看'链接色（#fffff2b8）太淡，几乎与背景融合，CTA 视觉权重不足。3个'废'字色块作为图标虽合规（无真实图、用纯色块拼）但形式稍显生硬。整体留白尚可，但中下区域略显拥挤。",
+    "layout": "截图最明显的问题是底部 calendar_row 的文本截断：左侧 event_text 宽度 72 装不下'今日 20:00 清理手机'整段文本，'清理手机'三个字被裁切不可见；右侧 detail_text 宽度 24 装不下 4 字'查看详情'，被截断为'查看'。这是两处受保护文本（事件标题、CTA）的明确截断，需重扣分。顶部 hero 中'系统垃圾 1.2GB'被换行成两行（'系统垃圾'/'1.2GB'）可接受但不算优雅。卡片边界和圆角整体正常，无元素溢出到 140×140 之外。"
+  },
+  "issues": [
+    "底部 event_text 宽度 72 不足以容纳'今日 20:00 清理手机'整段文本，'清理手机'事件标题被裁切不可见",
+    "底部 detail_text 宽度 24 不足以容纳'查看详情'4 字，被截断为'查看'，CTA 信息丢失",
+    "'查看'链接色 #fffff2b8 过淡，视觉上几乎不可见，CTA 引导性不足",
+    "'系统垃圾 1.2GB'在 56 宽的 metric 区域内被迫换行成两行，影响阅读节奏",
+    "root 节点与 calendar_row 节点同时绑定 onClick，存在事件重复触发风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_memory_clean_111\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_memory_clean_111\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero\",\"alert\",\"calendar_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff2b1114\",0],[\"#ff8f1d1d\",0.66],[\"#ffff7a1a\",1]]}},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/calendar/event/entityId\"}}}}]},{\"id\":\"hero\",\"component\":\"Row\",\"children\":[\"bins\",\"metric\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"bins\",\"component\":\"Row\",\"children\":[\"bin_1\",\"bin_2\",\"bin_3\"],\"itemMargin\":3,\"styles\":{\"width\":52,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"bin_1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.iconText }}\",\"styles\":{\"width\":15,\"height\":34,\"padding\":{\"top\":8,\"bottom\":6,\"left\":0,\"right\":0},\"borderRadius\":5,\"backgroundColor\":\"#33ffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#fffff2e5\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bin_2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.iconText }}\",\"styles\":{\"width\":15,\"height\":38,\"padding\":{\"top\":10,\"bottom\":8,\"left\":0,\"right\":0},\"borderRadius\":5,\"backgroundColor\":\"#55ffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bin_3\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.iconText }}\",\"styles\":{\"width\":15,\"height\":32,\"padding\":{\"top\":7,\"bottom\":5,\"left\":0,\"right\":0},\"borderRadius\":5,\"backgroundColor\":\"#2effffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffd8c2\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric\",\"component\":\"Column\",\"children\":[\"title\",\"waste\"],\"itemMargin\":2,\"styles\":{\"width\":56,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.title }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#fffff2e5\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"waste\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.wasteText }}\",\"styles\":{\"width\":56,\"height\":24,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"alert\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.memory.alertText }}\",\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":10,\"backgroundColor\":\"#ffff2d2d\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"calendar_row\",\"component\":\"Column\",\"children\":[\"cal_line1\",\"cal_line2\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":38,\"padding\":{\"left\":8,\"right\":8,\"top\":5,\"bottom\":5},\"borderRadius\":10,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/calendar/event/entityId\"}}}}]},{\"id\":\"cal_line1\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.todayLabel + ' ' + $__dataModel.calendar.event.time + ' ' + $__dataModel.calendar.event.title }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cal_line2\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.event.detailText }} ›\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ffffeb3b\",\"textAlign\":\"end\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_memory_clean_111\",\"value\":{\"memory\":{\"title\":\"急速清理\",\"wasteText\":\"系统垃圾 1.2GB\",\"alertText\":\"空间耗尽\",\"iconText\":\"废\"},\"calendar\":{\"todayLabel\":\"今日\",\"event\":{\"entityName\":\"calendar_event\",\"entityId\":\"calendar-cleanup-111\",\"title\":\"清理手机\",\"time\":\"20:00\",\"detailText\":\"查看详情\"}},\"state\":{\"level\":\"alert\"}}}}"
+  ]
+}

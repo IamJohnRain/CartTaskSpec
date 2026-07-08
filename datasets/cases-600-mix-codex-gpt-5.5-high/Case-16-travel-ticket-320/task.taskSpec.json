@@ -1,0 +1,63 @@
+{
+  "userQuery": "行程卡左边放个火车头或者车站大图当主视觉,右边从上往下堆:第一行'G7次 北京南→上海虹桥'大标题,第二行'10:24 出发',第三行'已耗时 02:13'(这个数字要动态),第四行'距离到达还剩 47 分钟'(这个也要动态拼接)。整张卡点进去跳到日历看事件全貌。背景用睡眠场景那种从深蓝到淡紫的氛围渐变,图标用场景库里的火车和时钟语义图标。下面再来一排横向并排的小卡片,比如'检票口B12'、'座位12车08A'、'餐车已售罄',横向重复三四块。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": {
+            "path": "/data/calendar/items/0/entityId"
+          }
+        }
+      }
+    }
+  ],
+  "dataModel": {
+    "value": {
+      "trip": {
+        "routeTitle": "G7次 北京南→上海虹桥",
+        "departText": "10:24 出发",
+        "elapsed": "02:13",
+        "remainingMinutes": 47,
+        "visualIcon": "resources/base/media/icon_time.png"
+      },
+      "summary": [
+        {
+          "label": "检票口B12"
+        },
+        {
+          "label": "座位12车08A"
+        }
+      ],
+      "data": {
+        "calendar": {
+          "items": [
+            {
+              "entityName": "calendar",
+              "entityId": "rail-g7-20260705",
+              "title": "G7次 北京南→上海虹桥",
+              "dtStart": "10:24",
+              "dtEnd": "13:24",
+              "eventLocation": "北京南站"
+            }
+          ]
+        }
+      },
+      "state": {
+        "loading": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "assetRef": "time_icon",
+      "src": "resources/base/media/icon_time.png",
+      "use": "time semantic icon",
+      "description": "时间语义图标，用作列车行程的主视觉提示。",
+      "bindTo": "/trip/visualIcon",
+      "static": true
+    }
+  ]
+}

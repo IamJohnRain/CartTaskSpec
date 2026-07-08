@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-001-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.98,
+  "reasons": {
+    "instruction": "用户要求做耳机播控卡片、左右耳显示电量、点击按钮跳转。截图清晰展示'耳机播控'标题、'每日歌单'/'华为音乐'曲目信息、左右耳电量82%/76%及进度条、'打开歌单'蓝色按钮。Button.onClick 已正确绑定 TaskSpec.eventCandidates 的 clickToDeeplink 至华为音乐合法 deeplink。size=2x4、root width/height=300/140、borderRadius=22、clip=true、padding=12、catalogId/version/updateDataModel.path 均满足硬约束。'status' 字段未在卡片中可视化呈现，但该字段为隐式语义信息，截图无明显遗漏。",
+    "aesthetic": "截图整体观感克制专业：浅紫→浅蓝对角渐变背景柔和，右侧半透明白色电量面板与左侧形成清晰层次；'每日歌单' 18pt 600 字重为卡片最强字重（与电池数值 20pt 700 形成两个等量级信息锚点，稍有竞争但可接受）；蓝紫主色与白色文字对比度高，文字可读性良好；左右耳数值、标签、进度条三段式排版整齐对齐。留白密度适中，电池面板内 8vp padding 让进度条与数值不显拥挤。",
+    "layout": "截图未观察到任何元素堆叠重叠、文字截断或溢出：root 300x140 内容区 276x116 内，info_col(158)+itemMargin(12)+battery_panel(106)=276 横向完美填满；info_col 纵向 18+8+24+8+18+8+32=116 填满；battery_panel 内部 title(18)+itemMargin(8)+ear_row(74)=100 在 116-16(padding) 内容区内填满。'82'/'76' 主数值完整显示，未被裁切；'打开歌单' 按钮底边距卡片底约 12vp，符合锚定规范。ear_row 内 left_col(41)+itemMargin(8)+right_col(41)=90，在 90 宽 ear_row 内紧凑但未溢出，进度条 36 宽居中显示。"
+  },
+  "issues": [
+    "TaskSpec 中的 status 字段('合法音乐入口')未在卡片任何位置可视化呈现",
+    "info_col 与 battery_panel 同为强信息区块（18pt track vs 20pt 电池值），最强字重存在两个等量级锚点，轻微竞争视觉焦点",
+    "open_button 宽 92、CTA 文本'打开歌单'留白偏紧，热区接近但未达 40vp 理想值"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"headset_music_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"headset_music_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"info_col\",\"battery_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#F4ECFF\",0],[\"#E6F0FF\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"track_text\",\"artist_text\",\"open_button\"],\"itemMargin\":8,\"styles\":{\"width\":158,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.title }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"track_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.track }}\",\"styles\":{\"width\":158,\"height\":24,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"artist_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.artist }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.headset.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":104,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"battery_panel\",\"component\":\"Column\",\"children\":[\"battery_title\",\"ear_row\"],\"itemMargin\":8,\"styles\":{\"width\":106,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#66FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"battery_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.status }}\",\"styles\":{\"width\":90,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#7A4A8F\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ear_row\",\"component\":\"Row\",\"children\":[\"left_col\",\"right_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":90,\"height\":74,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"left_value\",\"left_label\",\"left_progress\"],\"itemMargin\":4,\"styles\":{\"width\":41,\"height\":74,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"left_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.leftEar.batteryText }}\",\"styles\":{\"width\":41,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"left_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.leftEar.label }}\",\"styles\":{\"width\":41,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"left_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.headset.leftEar.battery }}\",\"total\":100,\"styles\":{\"width\":36,\"height\":6,\"type\":\"linear\",\"color\":\"#AC49F5\",\"backgroundColor\":\"#330A59F7\",\"borderRadius\":3}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"right_value\",\"right_label\",\"right_progress\"],\"itemMargin\":4,\"styles\":{\"width\":41,\"height\":74,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"right_value\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.rightEar.batteryText }}\",\"styles\":{\"width\":41,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_label\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.headset.rightEar.label }}\",\"styles\":{\"width\":41,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_progress\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.headset.rightEar.battery }}\",\"total\":100,\"styles\":{\"width\":36,\"height\":6,\"type\":\"linear\",\"color\":\"#AC49F5\",\"backgroundColor\":\"#330A59F7\",\"borderRadius\":3}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"headset_music_card\",\"path\":\"/\",\"value\":{\"headset\":{\"title\":\"耳机播控\",\"track\":\"每日歌单\",\"artist\":\"华为音乐\",\"status\":\"合法音乐入口\",\"leftEar\":{\"label\":\"左耳\",\"battery\":82,\"batteryText\":\"82%\"},\"rightEar\":{\"label\":\"右耳\",\"battery\":76,\"batteryText\":\"76%\"},\"actionText\":\"打开歌单\"}}}}"
+  ]
+}

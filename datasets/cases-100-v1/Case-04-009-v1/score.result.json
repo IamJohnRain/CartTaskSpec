@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-009-v1",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户明确要求：专注卡片、一键免打扰、番茄钟、白噪音，截图全部呈现：左侧'专注模式'+'免打扰待开启'+绿色'开启专注'按钮，右侧'番茄钟 25分钟 短休5分钟'和'白噪音 雨声 进入后选择播放'两个信息卡。onClick 完整使用 clickToDeeplink 与 eventCandidates 一致，dataModel 路径正确，协议合规。轻微扣分：标题/副标题宽度 110 略紧，未做留白弹性裕度。",
+    "aesthetic": "截图配色克制和谐：淡奶油色卡片底 + 薄荷绿主面板 + 白色子卡 + 深绿主色 CTA，渐变自然，文字对比度足够清晰。字号层级 18/16/14/12/10 分布合理，主标题与两个 16pt 主数值(25分钟/雨声)形成主从，CTA 圆角胶囊型专业。整体留白适中，无空旷感。仅略有提升空间：右侧白色子卡之间无明显分隔可加 Divider 强化节奏。",
+    "layout": "截图无堆叠/截断/溢出：左侧主面板内 4 个子元素 title(20)+subtitle(16)+dnd(18)+button(28) 加 itemMargin 与 padding 8 共 94，落在 116 高度内居中无裁切。'专注模式'/'一键安静进入工作流'/'免打扰待开启'/'开启专注' 全部完整显示。右侧 detail_col 上下两个 56 高子卡，itemMargin 4 合计 116，恰好填满。'番茄钟/25分钟/短休5分钟'与'白噪音/雨声/进入后选择播放'三行文字均完整呈现。底部按钮距卡片底边约 12vp 合规。整体左右边界对称，无元素越界。",
+    "issues": [
+      "右侧两个白色子卡 padding 仅 2vp，文字距离卡边过近，视觉略显局促",
+      "右侧两子卡之间缺少 Divider 视觉分隔，节奏感弱",
+      "左侧主面板与右侧 detail_col 之间无视觉呼应/连接元素，略显割裂",
+      "副标题宽度 110 虽能容纳 8 个中文字符但无安全余量，扩展文案时易截断"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_04_009_focus_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_04_009_focus_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"detail_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF4F7F5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\",\"dnd_text\",\"focus_button\"],\"itemMargin\":6,\"styles\":{\"width\":130,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#FFE6F4EF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":114,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.subtitle }}\",\"styles\":{\"width\":114,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"dnd_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.dndStatus }}\",\"styles\":{\"width\":114,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF007D58\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"focus_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":104,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF007D58\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"detail_col\",\"component\":\"Column\",\"children\":[\"tomato_row\",\"noise_row\"],\"itemMargin\":6,\"styles\":{\"width\":134,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"tomato_row\",\"component\":\"Column\",\"children\":[\"tomato_title\",\"tomato_duration\",\"tomato_hint\"],\"itemMargin\":2,\"styles\":{\"width\":134,\"height\":55,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"tomato_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomatoTitle }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tomato_duration\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomatoDuration }}\",\"styles\":{\"width\":122,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tomato_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.tomatoHint }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_row\",\"component\":\"Column\",\"children\":[\"noise_title\",\"noise_name\",\"noise_hint\"],\"itemMargin\":2,\"styles\":{\"width\":134,\"height\":55,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"noise_title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noiseTitle }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_name\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noiseName }}\",\"styles\":{\"width\":122,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_hint\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.noiseHint }}\",\"styles\":{\"width\":122,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_04_009_focus_card\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"subtitle\":\"一键安静进入工作流\",\"dndStatus\":\"免打扰待开启\",\"tomatoTitle\":\"番茄钟\",\"tomatoDuration\":\"25分钟\",\"tomatoHint\":\"短休5分钟\",\"noiseTitle\":\"白噪音\",\"noiseName\":\"雨声\",\"noiseHint\":\"进入后选择播放\",\"actionText\":\"开启专注\"}}}}"
+  ]
+}

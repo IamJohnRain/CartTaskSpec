@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-241",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.9,
+  "reasons": {
+    "instruction": "用户要求的五项信息中，标题'服药打卡'、连接状态'设备已连上'、今日服药次数'今日 2/3 次'和已打勾的复选框均在截图中可见，跳转事件 onClick 也已正确挂载 clickToDeeplink。但截图中复选框旁的标签'已服药'被截成'...'，天气文本'天气读取中'被截成'天气读'，两条信息语义都不完整，属关键信息缺失。alarm_icon 素材使用正确；尺寸/catalogId/version/updateDataModel 协议合规。",
+    "aesthetic": "浅绿渐变背景配色和谐，深绿主色与浅绿副色层级清晰，主指标字号 20pt 加粗突出。但底部行中央的'...'省略号以及被截断的'天气读'在视觉上像异常内容，明显破坏观感；半透明白色 softBand 与底部行叠加也略显多余，底部行整体留白显得局促。",
+    "layout": "截图中可观察到三处明显排版问题：1) 复选框右侧的标签'已服药'被压缩为三个点'...'，文字被截断；2) 天气文本'天气读取中'宽度仅 46vp，在 fontSize 12 下需要约 60vp，导致右端被裁剪为'天气读'；3) 底部行用 spaceBetween 让两个本就放不下的文本分别靠左/靠右，反而让两段被截断的文字挤在中间形成视觉断裂。softBand(y80-h36) 与底部行(y90-120) 大幅重叠，干扰了底部行的可读性。底部 30vp 高的单行布局试图承载复选框+标签+天气三段信息，必然溢出。"
+  },
+  "issues": [
+    "复选框标签'已服药'在截图中被截断为'...'",
+    "天气文本'天气读取中'被截断为'天气读'",
+    "底部行 spaceBetween 布局让两段被截断文本相互挤压",
+    "softBand 半透明带与底部行区域重叠，影响可读性",
+    "底部行高度 30vp 不足以同时承载复选框+标签+天气三段内容"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_health_reminder_241\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x2\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_health_reminder_241\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"angle\":180,\"colors\":[[\"#FFEAF7F0\",0],[\"#FFD9F0E2\",0.58],[\"#FFC5E4D2\",1]]},\"alignContent\":\"center\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]},{\"id\":\"content\",\"component\":\"Column\",\"children\":[\"topRow\",\"doseText\",\"bottomBlock\"],\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"topRow\",\"component\":\"Row\",\"children\":[\"alarmIcon\",\"statusCol\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alarmIcon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"statusCol\",\"component\":\"Column\",\"children\":[\"titleText\",\"connectText\"],\"itemMargin\":1,\"styles\":{\"width\":88,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.title }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF182820\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"connectText\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.reminder.connectedText }}\",\"styles\":{\"width\":88,\"height\":11,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF2E7D4F\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"doseText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"今日 ${/reminder/takenCount}/${/reminder/targetCount} 次\"}},\"styles\":{\"width\":116,\"height\":28,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FF153C2A\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"bottomBlock\",\"component\":\"Column\",\"children\":[\"checkRow\",\"weatherRow\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":52,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"checkRow\",\"component\":\"Row\",\"children\":[\"doneCheck\",\"checkHint\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"doneCheck\",\"component\":\"Checkbox\",\"label\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/reminder/checkLabel}\"}},\"select\":{\"path\":\"/reminder/checked\"},\"styles\":{\"width\":64,\"height\":24,\"selectedColor\":\"#FF36B36A\",\"unSelectedColor\":\"#FFFFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"checkHint\",\"component\":\"Text\",\"content\":\"今日打卡\",\"styles\":{\"width\":46,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF345C45\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weatherRow\",\"component\":\"Row\",\"children\":[\"weatherDot\",\"weatherText\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weatherDot\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":6,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#FF36B36A\"}},{\"id\":\"weatherText\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/data/weather/current/condition}\"}},\"styles\":{\"width\":106,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF345C45\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_health_reminder_241\",\"value\":{\"reminder\":{\"title\":\"服药打卡\",\"connectedText\":\"设备已连上\",\"takenCount\":2,\"targetCount\":3,\"checked\":true,\"checkLabel\":\"已服药\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"天气读取中\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":true}}}}"
+  ]
+}

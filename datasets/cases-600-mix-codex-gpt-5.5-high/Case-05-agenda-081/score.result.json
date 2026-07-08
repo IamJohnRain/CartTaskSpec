@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-081",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户三大诉求均已落地：会议楼层信息以'A座 12层 1206会议室'呈现、日历来源通过'日历提醒'标签呼应、点击入会通过'进入会议'按钮并挂载正确的 clickToDeeplink 事件（参数原样来自 eventCandidates）。但截图中左上时间面板的 '今天 14:30' 被截断为只剩 '今天'，时间信息这一关键字段丢失，导致用户看不到会议具体时间，是明显的指令落实瑕疵。硬约束方面：size=2x4、root=300x140、catalogId/version/updateDataModel 全部正确，协议合规。",
+    "aesthetic": "整体配色温润，米色底（#fff7f2e8）+ 棕褐色重点色（#ff7d4e24）形成统一暖色系；白色日期胶囊与背景对比清晰，标题'产品周会'用 18px 粗体作为唯一最强字重，层级分明。'会议室楼层已读取'提示文字与右下方棕色'进入会议'按钮形成视觉平衡。无明显空旷或过密，间距舒适。",
+    "layout": "主要问题：截图中左上日期面板（width 82, 内 padding 8+8）实际可用宽度仅 66，但 time 文本在 fontSize=14 下承载'今天 14:30'（含空格与冒号）理论宽约 70-75px，渲染时被裁切为仅'今天'两字，丢失 '14:30'。这是关键受保护文本（时间）被截断的明显问题。其它部分布局干净：底部分割行 floorHint(154) + gap(12) + join(110) = 276 恰好对齐，顶部 datePanel(82) + gap(12) + info(182) = 276 也对齐，无组件溢出卡片边界，无 Stack 遮挡，CTA 按钮 110x40 热区充足。"
+  },
+  "issues": [
+    "截图中左上时间文本 '今天 14:30' 被裁切为只剩 '今天'，'14:30' 部分被截断丢失",
+    "datePanel 宽度 82 不足以容纳 14px 字号下的完整时间字符串",
+    "time 文本 width=66 在 fontSize=14 下溢出可用宽度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_agenda_081\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_agenda_081\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top\",\"bottom\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f2e8\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"stretch\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/agenda-081\"}}]},{\"id\":\"top\",\"component\":\"Row\",\"children\":[\"datePanel\",\"info\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":64,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"datePanel\",\"component\":\"Column\",\"children\":[\"time\",\"mark\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":64,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.time }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff7d4e24\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"mark\",\"component\":\"Text\",\"content\":\"日历提醒\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"title\",\"room\"],\"itemMargin\":6,\"styles\":{\"width\":168,\"height\":52,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.title }}\",\"styles\":{\"width\":168,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"room\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.calendar.room }}\",\"styles\":{\"width\":168,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom\",\"component\":\"Row\",\"children\":[\"floorHint\",\"join\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":42,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"floorHint\",\"component\":\"Text\",\"content\":\"会议室楼层已读取\",\"styles\":{\"width\":154,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"join\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.calendar.joinText }}\",\"styles\":{\"width\":110,\"height\":40,\"borderRadius\":14,\"backgroundColor\":\"#ff7d4e24\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.calendar\",\"abilityName\":\"com.huawei.calendar.MainAbility\",\"uri\":\"calendar://event/agenda-081\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_agenda_081\",\"value\":{\"calendar\":{\"title\":\"产品周会\",\"time\":\"今天 14:30\",\"room\":\"A座 12层 1206会议室\",\"joinText\":\"进入会议\"}}}}"
+  ]
+}

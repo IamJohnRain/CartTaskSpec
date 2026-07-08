@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-07-sports-event-130",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "用户三项核心诉求——可点击进 App、从日历读比赛日程、红色紧急提示——在结构上均有落实：根节点 onClick 指向 clickToIntent（ViewCalendarEvent），Button 也带了相同事件；数据源来自 /data/calendar.items[0]；红色 hero 块+「紧急」徽章构成视觉上的红色紧急提示。但截图显示开始时间「20:00」被截成「20:0」、描述「开赛前30分钟入场，关键红色提醒」被截成「…关键红色提」，关键时间与提醒内容都残缺，指令信息的实际可读性受损，扣分。",
+    "aesthetic": "红/粉双层配色与卡片内外的圆角呼应协调，hero 红块与浅粉底形成清晰的紧急层级；标题加粗、end_time 红色、location 灰色、desc 深红形成清晰的字重/颜色阶梯，方向正确。但因时间与描述被截断、底部「进App」按钮下半圆角被卡片 clip 切平，整体精致感与专业感被破坏，视觉上不像一张完成品。",
+    "layout": "截图存在三处明确的布局问题：1) 左侧红块内「20:00」受 fontSize 32 与 width 68 限制，渲染成「20:0」，最末一位 0 被裁切；2) 右侧 description「开赛前30分钟入场，关键红色提醒」在 width 176 / fontSize 12 下文本宽度超出容器，被裁成「…关键红色提」，末字「醒」丢失；3) info 列总内容高度 22+18+18+28+3*6=104 超过其 height 100，bottom_row 实际渲染位置被推到卡片底部 clip 边界，「进App」按钮下沿的圆角被切平。三处均属关键内容（主指标/说明/CTA）被截断或覆盖，严重违反受保护文本不得被裁的原则。"
+  },
+  "issues": [
+    "开始时间 20:00 在 68px 宽、fontSize 32 的容器中被截断为「20:0」",
+    "描述文本「开赛前30分钟入场，关键红色提醒」在 176px 宽、fontSize 12 的容器中被截断为「…关键红色提」",
+    "info 列子项总高 104 超过 height 100，导致 bottom_row 中「进App」按钮下沿被卡片 clip:true 切掉圆角",
+    "hero 高度 92、info 高度 100 与 main 高度 116 未对齐，hero 在 main 中垂直居中后上下留白不均"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_sports_130\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_sports_130\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"alert_bg\",\"main\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fffff7f7\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]},{\"id\":\"alert_bg\",\"component\":\"Row\",\"children\":[],\"styles\":{\"width\":276,\"height\":120,\"borderRadius\":18,\"backgroundColor\":\"#ffffebeb\"}},{\"id\":\"main\",\"component\":\"Row\",\"children\":[\"hero\",\"info\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":120,\"alignItems\":\"center\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"start_time\",\"source_text\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":104,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#fff23030\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.alertText }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"start_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtStart }}\",\"styles\":{\"width\":72,\"height\":30,\"fontSize\":24,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.ui.sourceText }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"info\",\"component\":\"Column\",\"children\":[\"title\",\"meta_row\",\"desc\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":104,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].title }}\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":17,\"fontWeight\":700,\"fontColor\":\"#ff1f1f1f\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meta_row\",\"component\":\"Row\",\"children\":[\"end_time\",\"location\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"end_time\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].dtEnd }}\",\"styles\":{\"width\":38,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#fff23030\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].eventLocation }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"desc\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].description }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff990000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"remind\",\"cta\"],\"itemMargin\":12,\"styles\":{\"width\":176,\"height\":26,\"alignItems\":\"center\"}},{\"id\":\"remind\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.calendar.items[0].remindTime[0] }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff666666\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"cta\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.ui.actionText }}\",\"styles\":{\"width\":72,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#fff23030\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"},\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":{\"path\":\"/data/calendar/items/0/entityId\"}}}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_sports_130\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar_event\",\"entityId\":\"mock-sports-event-130\",\"title\":\"城市杯半决赛\",\"eventLocation\":\"南城体育中心\",\"description\":\"开赛前30分钟入场，关键红色提醒\",\"dtStart\":\"20:00\",\"dtEnd\":\"21:45\",\"importantEventType\":2,\"remindTime\":[\"提前30分钟\"]}]}},\"state\":{\"loading\":false},\"ui\":{\"alertText\":\"紧急\",\"sourceText\":\"日历赛程\",\"actionText\":\"进App\"}}}}"
+  ]
+}

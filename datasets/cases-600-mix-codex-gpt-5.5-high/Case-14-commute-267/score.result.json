@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-14-commute-267",
+  "scores": {
+    "instruction": {
+      "score": 7.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求'一行带数字'、'点开跳到应用'、'红色危险提示'。截图中可见主指标'拥堵指数 87分'以红色呈现，'看天气'按钮 onClick 已配置 clickToDeeplink 事件并原样使用 eventCandidates 中的 uri，三个核心诉求基本落实。但'危险'徽章实际使用橙色（#ffed6f21）而非红色，与用户明确'红色危险提示'略有偏差，扣 0.5；'!' 圆形警示标也偏橙色，红色危险氛围可更突出；数据模型所有字段均被使用，协议合规（size 2x4、width:300、height:140、borderRadius:22、catalogId、version、updateDataModel.path:/、value 原样匹配）。",
+    "aesthetic": "截图整体观感良好：浅灰卡片底色 + 白色纸面板形成层次，红橙渐变按钮与红色主指标呼应危险主题，'!' 圆形轻底色作为补充警示。字号层级清晰（20pt 主指标 > 16pt 标题 > 12pt 徽章/提示），只有一个最强字重（800 红色主指标），间距舒适。但'危险'徽章用橙色与下方红色主指标存在色相冲突，'红色危险提示'的整体视觉一致性可再强化。",
+    "layout": "截图中无文字截断、无元素堆叠、无组件溢出：左侧纸面板内'危险'徽章+标题行、'拥堵指数 87分'主指标、'建议避开主路'提示三行布局清晰对齐；右侧竖向分割线、'!' 圆标、'看天气'按钮居中排列；按钮底边到卡片底边留白约 10-12vp，在合理范围内。唯一可关注点是按钮'看天气'在 79px 宽度下文字略紧凑，'气'字底部小笔画略显贴边，但未发生实质截断，不构成扣分项。"
+  },
+  "issues": [
+    "'危险'徽章背景色为 #ffed6f21（橙色），与用户'红色危险提示'要求存在色相偏差",
+    "'!' 警示圆标使用 #19ed6f21 浅橙底 + #ffed6f21 橙色字，红色警示强度可加强",
+    "open_button 宽 79px 内放 14pt 的'看天气'3 字，文字与按钮左右内边距较紧，可微调"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_commute_267\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_commute_267\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"paper_panel\",\"divider\",\"action_area\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"title_row\",\"metric_line\",\"hint_text\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"shadow\":{\"radius\":8,\"color\":\"#18000000\",\"offsetX\":0,\"offsetY\":2},\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"alert_badge\",\"title_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":152,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.alertText }}\",\"styles\":{\"width\":52,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.title }}\",\"styles\":{\"width\":92,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"metric_line\",\"component\":\"Text\",\"content\":{\"call\":\"formatString\",\"args\":{\"value\":\"${/commute/metricLabel} ${/commute/riskNumber}${/commute/riskUnit}\"}},\"styles\":{\"width\":152,\"height\":34,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.commute.routeHint }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"vertical\":true,\"strokeWidth\":1,\"width\":1,\"height\":88,\"color\":\"#33000000\"}},{\"id\":\"action_area\",\"component\":\"Column\",\"children\":[\"alert_mark\",\"open_button\"],\"itemMargin\":12,\"styles\":{\"width\":79,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"alert_mark\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":38,\"height\":38,\"borderRadius\":19,\"backgroundColor\":\"#19e84026\",\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffe84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.commute.actionText }}\",\"styles\":{\"width\":79,\"height\":34,\"borderRadius\":17,\"linearGradient\":{\"angle\":90,\"colors\":[[\"#ffe84026\",0],[\"#ffed6f21\",1]]},\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"padding\":{\"left\":6,\"right\":6}},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_commute_267\",\"value\":{\"commute\":{\"title\":\"通勤提醒\",\"metricLabel\":\"拥堵指数\",\"riskNumber\":\"87\",\"riskUnit\":\"分\",\"alertText\":\"危险\",\"routeHint\":\"建议避开主路\",\"actionText\":\"看天气\"}}}}"
+  ]
+}

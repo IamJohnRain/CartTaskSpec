@@ -1,0 +1,38 @@
+{
+  "case_id": "Case-26-group-buy-512",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 2.1,
+  "reasons": {
+    "instruction": "截图中可见的元素严重不足：1) 用户明确要求的纵向 3 家店拼单列表（蜜雪/喜茶/霸王 + 口味 + 勾选框）完全没有渲染出来，中间是大片空白的奶茶色背景；2) 用户要求人数不足用黄色提示，但截图中徽章是红色 (#E84026)；3) 渐变色偏纯紫 (#564AF7→#AC49F7)，并非用户要求的傍晚到深夜蓝紫渐变；4) 用户要求的 🍵🧊 图标完全缺失（且协议禁止 emoji，需用其他方式表达）；5) 仅音乐 deeplink 一个事件落实（听歌按钮），日历 deeplink 缺失（虽 TaskSpec 未提供事件，但未做任何视觉/交互暗示）。Headline 文字、奶茶色背景、听歌按钮事件这三项基本符合，但核心交付物（3 家店列表）完全缺席，指令遵从度极低。",
+    "aesthetic": "从截图看：奶茶色背景 (#FFF3E7) 氛围感正确；顶部蓝紫渐变 pill 视觉上算优雅，白色加粗 '还差2人' 焦点清晰；底部红色 '人数不' 与蓝色 '听' 两个胶囊在留白空间里显得孤立不平衡，红色徽章与奶茶色背景对比强烈但与紫色 hero 缺乏色彩呼应。但因核心内容缺失，中间大段空白让整体观感空洞，'呼吸感'不是这样做的。文字 '人数不足' / '听歌等单' 被裁切，视觉上像未完成品。",
+    "layout": "截图中存在多处严重布局问题：1) 订单列表区域（应为 3 行 Row）完全空白，模板绑定 (order_item_tpl 高度 12) 与 formatString 表达式可能未生效，导致三行订单渲染失败；2) 底部 warning_text 宽度 50vp 内放 12pt 4 个汉字 '人数不足' 被截断为 '人数不'；3) 底部 music_button 宽度 60vp 内放 12pt '听歌等单' 被截断为 '听'，CTA 文字严重截断；4) 受保护文本（人数不足、听歌等单）均发生截断，违反不得依赖 ellipsis/clip 隐藏受保护文本的硬规则；5) 中部列表完全空缺，与 hero/footer 之间产生约 50vp 死区，破坏整体节奏。"
+  },
+  "issues": [
+    "订单列表（蜜雪/喜茶/霸王 + 口味 + 勾选）完全未渲染，模板绑定可能失败",
+    "人数不足徽章颜色为红色 (#E84026)，用户明确要求黄色",
+    "顶部渐变 #564AF7→#AC49F7 是纯紫色，未体现傍晚到深夜的蓝紫渐变",
+    "底部 '人数不足' 文字被裁断为 '人数不'，违反受保护文本不可截断",
+    "底部 '听歌等单' 文字被裁断为 '听'，CTA 严重残缺",
+    "用户要求的 🍵🧊 图标完全缺失（协议禁止 emoji，但需用其它视觉元素替代）",
+    "中间订单区空缺导致 hero 与 footer 之间出现大段死区，'呼吸感'失真",
+    "formatString call 用作 Text.content 的写法在当前渲染管线中疑似未生效"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"group_buy_milk_tea_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"group_buy_milk_tea_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_band\",\"order_list\",\"footer_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF3E7\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero_band\",\"component\":\"Column\",\"children\":[\"headline_text\"],\"itemMargin\":0,\"styles\":{\"width\":120,\"height\":28,\"padding\":2,\"borderRadius\":14,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#2C4DD1\",0],[\"#5C36C7\",0.5],[\"#8A2A8C\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"headline_text\",\"component\":\"Text\",\"content\":\"还差2人\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"order_list\",\"component\":\"Column\",\"children\":[\"o1\",\"o2\",\"o3\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"o1\",\"component\":\"Row\",\"children\":[\"c1\",\"t1\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"c1\",\"component\":\"Checkbox\",\"select\":false,\"styles\":{\"width\":12,\"height\":12,\"selectedColor\":\"#564AF7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"t1\",\"component\":\"Text\",\"content\":\"蜜雪 · 柠檬冰\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"o2\",\"component\":\"Row\",\"children\":[\"c2\",\"t2\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"c2\",\"component\":\"Checkbox\",\"select\":true,\"styles\":{\"width\":12,\"height\":12,\"selectedColor\":\"#564AF7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"t2\",\"component\":\"Text\",\"content\":\"喜茶 · 多肉葡萄\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"o3\",\"component\":\"Row\",\"children\":[\"c3\",\"t3\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"c3\",\"component\":\"Checkbox\",\"select\":false,\"styles\":{\"width\":12,\"height\":12,\"selectedColor\":\"#564AF7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"t3\",\"component\":\"Text\",\"content\":\"霸王 · 伯牙绝弦\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer_row\",\"component\":\"Row\",\"children\":[\"warning_text\",\"music_button\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"人数不足\",\"styles\":{\"width\":54,\"height\":18,\"padding\":2,\"borderRadius\":9,\"backgroundColor\":\"#FFFAB300\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#E58A4500\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"music_button\",\"component\":\"Button\",\"label\":\"听歌等单\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":60,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#330A59F7\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"group_buy_milk_tea_card\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"headline\":\"还差2人\",\"warning\":\"人数不足\",\"orders\":[{\"store\":\"蜜雪\",\"flavor\":\"柠檬冰\",\"selected\":false},{\"store\":\"喜茶\",\"flavor\":\"多肉葡萄\",\"selected\":true},{\"store\":\"霸王\",\"flavor\":\"伯牙绝弦\",\"selected\":false}]},\"data\":{\"calendar\":{\"items\":[]}},\"state\":{\"loading\":true}}}}"
+  ]
+}

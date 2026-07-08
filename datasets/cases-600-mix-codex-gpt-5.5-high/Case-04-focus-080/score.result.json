@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-080",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "指令要求'睡觉前放松卡片'、'左右并排'、'中间环形数据'、'已连接状态'、'柔和夜晚渐变背景'、'不用图片用文字色块'，这些均在截图中落实：左右两个色块面板+中间紫色环形进度，配以浅色暖紫到浅蓝渐变底，绿色'已连接'正向状态条，无任何图片素材。但右侧面板的状态说明'卧室设备在线'实际渲染成'卧室设备在'、右侧备注'白噪音低音量'实际渲染成'白噪音低'，关键文字被截断，信息传达不完整，扣分。",
+    "aesthetic": "整体配色柔和，浅米→淡紫→淡蓝的135°渐变契合'夜晚放松'主题；前景紫色文字在浅色面板上对比清晰；'已连接'绿色chip与左下'灯光已调暗'淡紫chip、右下'白噪音低'淡蓝chip形成色彩呼应，留白和对齐也较舒适。但右面板文字被截断破坏了整体观感的一致性，扣分。",
+    "layout": "截图中右侧面板存在明显文字截断：状态说明'卧室设备在线'最右一个'线'字被裁掉只显示'卧室设备在'；右下方备注'白噪音低音量'末尾'音量'两字被裁掉只显示'白噪音低'。这两个都是受保护的功能信息。问题根源是右面板宽82、padding 8+8=16、内容区仅66，却塞入了6个汉字的文本（≈72），同时alignItems:'end' + textAlign:'end' 把文字推向面板右缘，加剧截断。左侧'灯光已调暗'chip虽然能勉强容下但也很贴边。其余区域无堆叠/越界。"
+  },
+  "issues": [
+    "右面板'卧室设备在线'被截断为'卧室设备在'，缺少'线'字",
+    "右面板'白噪音低音量'被截断为'白噪音低'，缺少'音量'两字",
+    "右面板 alignItems:'end' + status_detail textAlign:'end' 把文字推向右缘，是截断的次要诱因",
+    "右面板可用宽度不足（66）相对于6汉字文本（约72）",
+    "左侧'灯光已调暗'chip也接近贴边，存在被裁切风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"focus_080_sleep_relax_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"focus_080_sleep_relax_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"center_meter\",\"right_panel\"],\"itemMargin\":3,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F2FF\",\"linearGradient\":{\"angle\":135,\"colors\":[[\"#FFFFF8F1\",0],[\"#FFE8E4FF\",0.55],[\"#FFD9ECFF\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"phase_text\",\"ambient_chip\"],\"itemMargin\":7,\"styles\":{\"width\":88,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#8CFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.title }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#FF433B6B\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"phase_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.phase }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF6E668C\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"ambient_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.leftNote }}\",\"styles\":{\"width\":72,\"height\":24,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#FFEFE8FF\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF5A4E88\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"center_meter\",\"component\":\"Stack\",\"children\":[\"sleep_ring\",\"meter_text_col\"],\"styles\":{\"width\":88,\"height\":116,\"alignContent\":\"center\"}},{\"id\":\"sleep_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.sleep.progressValue }}\",\"total\":\"{{ $__dataModel.sleep.progressTotal }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#FF8C79D8\",\"width\":88,\"height\":88}},{\"id\":\"meter_text_col\",\"component\":\"Column\",\"children\":[\"progress_value_text\",\"progress_label_text\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"progress_value_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.progressText }}\",\"styles\":{\"width\":58,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FF433B6B\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_label_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.progressLabel }}\",\"styles\":{\"width\":58,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF7A7295\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_chip\",\"status_detail\",\"right_note\"],\"itemMargin\":7,\"styles\":{\"width\":94,\"height\":116,\"padding\":{\"left\":6,\"right\":6,\"top\":12,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#80FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_chip\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.statusText }}\",\"styles\":{\"width\":78,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#FFDDF6EA\",\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#FF1F7A57\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_detail\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.statusDetail }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FF5E6D75\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_note\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.sleep.rightNote }}\",\"styles\":{\"width\":82,\"height\":24,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#FFE4F4FF\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF426B82\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"focus_080_sleep_relax_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡前放松\",\"phase\":\"夜晚准备\",\"progressLabel\":\"入睡进度\",\"progressValue\":68,\"progressTotal\":100,\"progressText\":\"68%\",\"statusText\":\"已连接\",\"statusDetail\":\"卧室设备在线\",\"ambientText\":\"柔和夜晚渐变\",\"leftNote\":\"灯光已调暗\",\"rightNote\":\"白噪音低音量\"}}}}"
+  ]
+}

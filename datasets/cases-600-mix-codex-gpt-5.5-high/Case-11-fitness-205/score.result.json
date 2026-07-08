@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-11-fitness-205",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.6,
+  "reasons": {
+    "instruction": "用户要求徒步卡片、字在背景图上、点跳app、读日程、已连接。截图中：标题'今日徒步'、状态'已连接'、副标题'日程已连接'、按钮'打开运动健康'均正确呈现，点击事件 clickToDeeplink 来自 eventCandidates 已落实。但'读日程'诉求未真正完成——右侧日程面板只显示'日程'标签，看不到日程标题'徒步安排'和时间'09:30-12:00'，日程条目未渲染出来。此外 schedule_item 组件使用了未经授权的事件 clickToIntent（eventCandidates 中仅有 clickToDeeplink），属于协议违规。dataModel 路径、size、catalogId、version 等硬约束均合规。",
+    "aesthetic": "截图中绿色渐变背景与徒步主题契合，色彩和谐；白色标题'今日徒步'在深绿背景上对比度足、可读性良好；状态胶囊'已连接'与白色按钮'打开运动健康'形成清晰的视觉锚点。字号层级（20/12/12/14）合理，仅标题使用 700 字重，主次分明。但右侧面板因日程条目未渲染而显得空旷，只露出一个跑步图形 glyph，视觉上不够饱满，留白偏多。",
+    "layout": "截图中可见的核心布局问题：右侧'日程'面板内只显示了'日程'文字标签和跑步图形（背景图），但 schedule_list 模板循环下的'徒步安排'标题和'09:30-12:00'时间完全未渲染，导致日程信息缺失。背景图 Image 定位 left:180 top:12 86x86 与右侧日程面板区域重叠（面板约从 x=176 开始），即便 opacity=0.28 仍占据视觉空间。shade 组件 #22000000 覆盖整个 276x116 区域加重了叠层感。可见元素本身无文字截断、无溢出卡片边界，按钮热区充足，但日程内容缺失是显著的渲染/布局失败。"
+  },
+  "issues": [
+    "schedule_list 模板中 schedule_title 的 content 使用了 {\"path\":\"title\"} 对象字面量，并非合法的文本模板字符串，导致标题 '徒步安排' 未渲染",
+    "schedule_time 使用了硬编码索引 {{ $__dataModel.data.calendar.items[0].dtStart + '-' + $__dataModel.data.calendar.items[0].dtEnd }}，在 List 模板上下文中应使用当前 item 字段 {{ dtStart }}-{{ dtEnd }}",
+    "schedule_item 组件使用了 clickToIntent 事件，不在 eventCandidates 中，属于协议违规事件",
+    "背景图 Image 86x86 位于 left:180 top:12，与右侧日程面板 (side Column) 区域大幅重叠，使右侧面板内容（背景 glyph）视觉上压过日程文字",
+    "右侧 side 面板背景色 #26ffffff（15% 白）透明度偏低，与背景图叠加后日程区域视觉层次不够清晰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_fitness_205\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_fitness_205\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"background\",\"shade\",\"content\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff0a7d5a\",0],[\"#ff51b56d\",1]]},\"backgroundColor\":\"#ff0a7d5a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"background\",\"component\":\"Image\",\"src\":\"{{ $__dataModel.fitness.background }}\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\",\"opacity\":0.20,\"margin\":{\"left\":210,\"top\":2}}},{\"id\":\"shade\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":276,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#1a000000\"}},{\"id\":\"content\",\"component\":\"Row\",\"children\":[\"hero\",\"side\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"hero\",\"component\":\"Column\",\"children\":[\"status\",\"title\",\"subtitle\",\"action\"],\"itemMargin\":6,\"styles\":{\"width\":152,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"status\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.status }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff0a7d5a\",\"backgroundColor\":\"#eeffffff\",\"borderRadius\":10,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"title\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.title }}\",\"styles\":{\"width\":152,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.fitness.subtitle }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.fitness.actionText }}\",\"styles\":{\"width\":118,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff0a7d5a\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}]},{\"id\":\"side\",\"component\":\"Column\",\"children\":[\"schedule_label\",\"schedule_list\"],\"itemMargin\":6,\"styles\":{\"width\":112,\"height\":100,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#40ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ddffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_list\",\"component\":\"Column\",\"children\":{\"componentId\":\"schedule_item\",\"path\":\"/data/calendar/items\"},\"styles\":{\"width\":96,\"height\":68,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_item\",\"component\":\"Column\",\"children\":[\"schedule_title\",\"schedule_time\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ title }}\",\"styles\":{\"width\":96,\"height\":24,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ dtStart }}-{{ dtEnd }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_fitness_205\",\"value\":{\"fitness\":{\"title\":\"今日徒步\",\"subtitle\":\"日程已连接\",\"status\":\"已连接\",\"actionText\":\"打开运动健康\",\"background\":\"resources/base/media/icon_run.png\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"hike-plan-205\",\"title\":\"徒步安排\",\"dtStart\":\"09:30\",\"dtEnd\":\"12:00\",\"eventLocation\":\"城市绿道\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

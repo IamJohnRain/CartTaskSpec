@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-09-004",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.3,
+  "reasons": {
+    "instruction": "卡片概念契合用户'看我家那边天气+提前一天提醒'诉求，尺寸2x4、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel path='/'与value原样匹配TaskSpec等硬约束全部满足，care.triggerText='明天下雨'与care.advice='明天下雨提醒妈别出门买菜了'绑定正确。但关键问题：location_text='{{ prefectureName }}家里天气'与condition_text='{{ condition }} · 关节留意'使用模板后拼接字面量，渲染器整段被当字面量输出并被maxLines:1+textOverflow:none截断为'{{ $__dataModel.'/'{{ $__dataModel.dat'，'我家那边'地点与'阴 关节留意'天气上下文均丢失；dataModel.coldLevel='较易发'未被绑定，关节炎预警信息缺位；care.triggerText仅'明天下雨'，未覆盖用户'降温或下雨'二选一提醒的另一条场景。",
+    "aesthetic": "两栏布局(白底weather_panel+浅灰外底)、蓝色temp与红色trigger形成清晰主次对比，字重仅700为最强、集中在location/temp/care_title/trigger，14/28/12/14/18/14字号落在合法阶梯，整体克制专业。但location_text与condition_text渲染出大段'{{ $__dataModel.'字面量，严重破坏美观；advice_text在132宽折2行(12字÷9字/行)、未触发maxLines:3上限；留白因weather_panel内子项实际受溢出挤压并不宽松。",
+    "layout": "根Row宽300=12+12+12+132+132恰好填满，垂直padding 12+12+116=140闭合。weather_panel宽132×高116、padding 10→内容区112×96；列子项高18+34+18+18=88，3个itemMargin(6)=18，子项占用合计106>96，纵向溢出10。care_panel宽132×高116、padding 0→内容区132×116；列子项20+24+48=92，2个itemMargin(8)=16，合计108≤116成立。weather_panel溢出叠加模板字面量截断，导致受保护文本(地点、当前天气)在渲染截图中直接退化为'{{ $__dataModel.'/'{{ $__dataModel.dat'占位符，location完全丢失、condition仅剩残段。"
+  },
+  "issues": [
+    "location_text='{{ $...prefectureName }}家里天气'模板后拼接字面量，渲染整段当字面量截断为'{{ $__dataModel.'，'深圳家里天气'完全丢失",
+    "condition_text='{{ $...condition }} · 关节留意'同样模板+字面量失败，渲染为'{{ $__dataModel.dat'，'阴 关节留意'上下文丢失",
+    "weather_panel Column高116、padding 10→内容区96；4子项高18+34+18+18=88加3个itemMargin(6)=18，总占用106>96溢出10",
+    "dataModel.coldLevel='较易发'未被任何组件绑定，关节炎预警信息缺位",
+    "care.triggerText='明天下雨'单一场景，未体现用户'降温或下雨'二选一提醒的另一支线",
+    "dataModel.daily[].rainProbabilityPercent 85% 未被任何组件使用，下雨强度信号缺失"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"mother_weather_care_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"mother_weather_care_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"weather_panel\",\"care_panel\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF7F8FA\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"location_row\",\"temp_text\",\"coldlevel_text\",\"tomorrow_text\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"location_row\",\"component\":\"Row\",\"children\":[\"prefecture_text\",\"district_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"prefecture_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.prefectureName }}\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"district_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.location.districtName }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.temperatureText }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"coldlevel_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.weather.current.coldLevel }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"tomorrow_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.tomorrowForecast }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"care_panel\",\"component\":\"Column\",\"children\":[\"care_title\",\"trigger_text\",\"advice_text\"],\"itemMargin\":6,\"styles\":{\"width\":132,\"height\":116,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"care_title\",\"component\":\"Text\",\"content\":\"提前一天提醒\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"trigger_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.triggerText }}\",\"styles\":{\"width\":132,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFC73426\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.care.advice }}\",\"styles\":{\"width\":132,\"height\":48,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#CC000000\",\"maxLines\":3,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"mother_weather_care_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山区\",\"prefectureName\":\"深圳\"},\"current\":{\"temperatureText\":\"24°C\",\"condition\":\"阴\",\"coldLevel\":\"较易发\"},\"daily\":[{\"weekday\":\"今天\",\"condition\":\"阴\",\"temperatureRangeText\":\"24° / 29°\",\"rainProbabilityPercent\":\"40%\"},{\"weekday\":\"明天\",\"condition\":\"小雨\",\"temperatureRangeText\":\"20° / 25°\",\"rainProbabilityPercent\":\"85%\"}],\"updatedAt\":\"mock\"},\"care\":{\"tomorrowForecast\":\"明天 小雨 20° / 25°\",\"triggerText\":\"明天下雨\",\"advice\":\"明天下雨提醒妈别出门买菜了\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

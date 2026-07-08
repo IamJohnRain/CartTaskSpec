@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-061",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户要求做一个有按钮的专注模式卡片，点击跳到应用，能看到已完成。截图中：标题'专注模式'、'深度专注'、'45分钟'、'今日18:20'均完整呈现；右侧绿色渐变面板展示了'已完成'状态徽章和白色 CTA 按钮；onClick 事件 clickToDeeplink 的 args 与 eventCandidates 完全一致；尺寸 2x4、catalogId、version 均符合协议；未使用图片素材。主要扣分点：CTA 按钮文字被截断显示为'打开...'，未能完整呈现'打开应用'，属于关键 CTA 文本不完整。",
+    "aesthetic": "配色整体和谐：白底纸面面板 + 深灰文字 + 绿青渐变行动区形成清晰的视觉层次；标题与副标题字重区分合理（700/600/500），主次分明；圆角与留白较为舒适。但右侧'已完成'徽章采用 #33ffffff（20% 白）半透明底 + 纯白字，在绿青渐变上对比度偏低，文字略有发糊感；'打开...'的截断让按钮的精致感被破坏。",
+    "layout": "截图中可观察到的核心问题：1）右侧行动按钮的 label 被截断为'打开...'，原本应显示的'打开应用'无法完整呈现，是受保护 CTA 文本的明显截断违规；按钮 width=70、fontSize=12，加上 Button 组件内部 padding 后可用文本宽度不足以容纳 4 个汉字。2）左侧 paper_panel 内部 4 行文字（22+22+18+16=78）加上 3 个 itemMargin(8*3=24) 与 padding(24) 合计约 126，超过 paper_panel 高度 116，但实际渲染未见明显重叠，可能由文本自动压缩。3）'已完成'徽章与'打开应用'按钮在垂直方向间距合适，未见重叠或溢出卡片边界。"
+  },
+  "issues": [
+    "右侧 CTA 按钮 label 被截断为'打开...'，受保护的 CTA 文本不完整，违反'受保护文本不得依赖 ellipsis/clip 隐藏'原则",
+    "按钮宽度 70 与字号 12 不匹配 Button 组件内部 padding，导致 4 字中文'打开应用'无法完整显示",
+    "'已完成'徽章使用 #33ffffff 20% 半透明白底 + 纯白字，在绿青渐变上对比度偏低，可读性略差",
+    "paper_panel 高度 116 与内部 4 行文字 + margin + padding 的总占用 126 存在 10vp 理论溢出，依赖渲染器自动压缩"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_focus_061\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"size\":\"2x4\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_focus_061\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"paper_panel\",\"action_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":12,\"bottom\":12},\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff8fafc\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"paper_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"session_text\",\"duration_text\",\"time_text\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":116,\"padding\":{\"left\":12,\"right\":12,\"top\":10,\"bottom\":10},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"stretch\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.title }}\",\"styles\":{\"width\":136,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff64748b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"session_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.sessionName }}\",\"styles\":{\"width\":136,\"height\":26,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ff0f172a\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.durationText }}\",\"styles\":{\"width\":136,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff334155\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.finishTime }}\",\"styles\":{\"width\":136,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff94a3b8\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"done_mark\",\"open_button\"],\"itemMargin\":12,\"styles\":{\"width\":104,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":12,\"bottom\":10},\"borderRadius\":18,\"linearGradient\":{\"angle\":135,\"colors\":[[\"#ff22c55e\",0],[\"#ff14b8a6\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"done_mark\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.focus.statusText }}\",\"styles\":{\"width\":88,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#a6ffffff\",\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.focus.actionText }}\",\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ff166534\",\"padding\":{\"left\":4,\"right\":4},\"maxLines\":1,\"textOverflow\":\"none\"},\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}]}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_focus_061\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"statusText\":\"已完成\",\"sessionName\":\"深度专注\",\"durationText\":\"45分钟\",\"finishTime\":\"今日18:20\",\"actionText\":\"打开应用\",\"completed\":true}}}}"
+  ]
+}

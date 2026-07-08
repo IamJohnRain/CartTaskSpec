@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-11-008",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户明确要求显示今日步数、消耗卡路里、完成目标百分比环形图、达标状态(绿色/未达标还差多少步)，DSL均已落实：title_text=步行上班、steps_text=9360步、calories_text=消耗338千卡、ring_stack(goal_ring+percent_text)显示94%环形进度、未达标显示remainingText=还差640步、状态色statusColor=#FF2E8B57绿色，onClick clickToDeeplink的call/args原样取自eventCandidates；size=2x4(300x140)、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/且value与TaskSpec一致，硬约束均满足。主要扣分：1) steps_text 受保护主指标'9360步'中'步'字因宽度溢出被截断(渲染图只显示'9360'，单位丢失)；2) action_button backgroundColor使用{{}}动态绑定可能未在渲染引擎生效，按钮视觉上几乎透明不可见。",
+    "aesthetic": "整体配色和谐：浅绿底#FFF3FBF6 + 白色卡片 + 绿色强调#FF2E8B57构成健康主题色系；嵌套圆角(外22/内16)层次清晰；32pt主指标层级突出。但存在以下问题：1) action_button渲染后背景几乎不可见，白字浮在浅绿底上几乎不可读，是全卡最显眼的视觉故障；2) title_text、steps_text、percent_text、remain_text、status_text 五处都使用 fontWeight=700，最强字重不唯一，主次层级被弱化；3) right_col 内部 itemMargin=8 加上子项 56+18+32=106 已超过容器 116-0=116，密度偏紧，留白不足；4) '已同步'与'去锻炼'视觉权重反差过大。",
+    "layout": "按预算公式逐项核算：1) root Row 横向 = 12+12+12+116+148 = 300 ✓，纵向 = 12+12+116 = 140 ✓；2) left_col Column 纵向 = 10+10+6×2+18+34+18 = 102 ≤ 116 ✓；3) steps_text 宽 96 装 '9360步'(估算 4×0.6×32 + 1×32 = 76.8+32 = 108.8) 溢出 12.8，'步' 单位被截断(受保护主指标单位丢失，严重问题)；4) right_col Column 纵向 = 0+0+8×2+56+18+32 = 122 > 可用 116，溢出 6vp，bottom_row 受挤压；5) top_row 横向 = 0+0+10+56+82 = 148 ✓ 恰好填满无溢出；6) 底部动作区外框底边距卡片底边约 12vp，在 10-14vp 安全范围内 ✓；7) 按钮热区 32 ≥ 24vp ✓。综合：受保护主指标单位被截断(溢出 12.8) + right_col 高度溢出 6vp，整体扣重分。"
+  },
+  "issues": [
+    "steps_text 宽 96 放不下 '9360步' 在 fontSize=32 下(估算 108.8 > 96)，'步' 单位被截断，主指标显示为 '9360'",
+    "right_col Column 子项总高 122 > 可用 116，溢出 6vp，bottom_row 受挤压",
+    "action_button 的 backgroundColor 使用 {{ $__dataModel.data.fitness.statusColor }} 动态绑定，渲染后背景几乎透明不可见，白字与浅绿底对比度极低",
+    "title_text、steps_text、percent_text、remain_text、status_text 五处均使用 fontWeight=700，最强字重不唯一",
+    "right_col 内部 itemMargin=8 加上子项总高 106 已逼近容器上限 116，密度偏紧",
+    "right_col 中 '完成目标' 标签与 '已同步' 文本视觉信息冗余，分散了主指标注意力"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"case_11_008_walk_steps_calories\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140,\"borderRadius\":22,\"clip\":true}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"case_11_008_walk_steps_calories\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_col\",\"right_col\"],\"itemMargin\":12,\"wrap\":\"noWrap\",\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF3FBF6\",\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"steps_text\",\"calories_text\"],\"itemMargin\":6,\"styles\":{\"width\":132,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.fitness.title }}\",\"styles\":{\"width\":112,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\"}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.fitness.stepsText }}\",\"styles\":{\"width\":112,\"height\":32,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.data.fitness.statusColor }}\"}},{\"id\":\"calories_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.fitness.caloriesText }}\",\"styles\":{\"width\":112,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"top_row\",\"status_text\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"ring_stack\",\"goal_col\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":132,\"height\":56,\"alignItems\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"goal_ring\",\"percent_text\"],\"styles\":{\"width\":56,\"height\":56\"}},{\"id\":\"goal_ring\",\"component\":\"Progress\",\"value\":\"{{ $__dataModel.data.fitness.goalPercent }}\",\"total\":100,\"styles\":{\"width\":56,\"height\":56,\"type\":\"ring\",\"color\":\"{{ $__dataModel.data.fitness.ringColor }}\",\"backgroundColor\":\"{{ $__dataModel.data.fitness.ringTrackColor }}\",\"strokeWidth\":7}},{\"id\":\"percent_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.fitness.goalPercentText }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.data.fitness.ringColor }}\",\"textAlign\":\"center\"}},{\"id\":\"goal_col\",\"component\":\"Column\",\"children\":[\"goal_label\",\"remain_text\"],\"itemMargin\":2,\"styles\":{\"width\":68,\"height\":48,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"goal_label\",\"component\":\"Text\",\"content\":\"完成目标\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\"}},{\"id\":\"remain_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.fitness.remainingText }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.data.fitness.statusColor }}\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.data.fitness.statusText }}\",\"styles\":{\"width\":132,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"{{ $__dataModel.data.fitness.statusColor }}\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"sync_text\",\"action_button\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":132,\"height\":30,\"alignItems\":\"center\"}},{\"id\":\"sync_text\",\"component\":\"Text\",\"content\":\"{{ $__dataModel.state.loading ? '同步中' : '已同步' }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ $__dataModel.data.fitness.actionText }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":70,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF2E8B57\",\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"case_11_008_walk_steps_calories\",\"path\":\"/\",\"value\":{\"data\":{\"fitness\":{\"title\":\"步行上班\",\"stepsText\":\"9360步\",\"caloriesText\":\"消耗338千卡\",\"goalPercent\":94,\"goalPercentText\":\"94%\",\"remainingSteps\":640,\"remainingText\":\"还差640步\",\"goalReached\":false,\"statusText\":\"快达标了\",\"statusColor\":\"#FF2E8B57\",\"ringColor\":\"#FF2E8B57\",\"ringTrackColor\":\"#FFDDE8E1\",\"actionText\":\"去锻炼\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}
