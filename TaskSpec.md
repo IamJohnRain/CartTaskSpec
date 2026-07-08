@@ -131,6 +131,25 @@ A2UI 模型应从 `userQuery` 判断哪些事件需要变成可点击入口。�
 }
 ```
 
+对应的DataModel：
+
+```json
+{
+  "data": {
+    "weather": {
+      "location": {
+        "name": "上海"
+      },
+      "current": {
+        "temperatureText": "26℃",
+        "weatherText": "多云"
+      }
+    }
+  }
+}
+```
+生成的DSL要将sampleValue作为默认值填入最后的updateDataModel中，作为样例数据保证直接渲染结果的美观
+
 ### `assetCandidates`
 
 素材候选白名单。它不规定素材最终做背景、图标、插图还是封面。
