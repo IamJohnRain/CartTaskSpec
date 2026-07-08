@@ -772,7 +772,8 @@ def export_excel(case_dirs: list[Path], dataset: Path,
         lay = scores.get("layout", {}) or {}
         wt = result.get("weighted_total") if has_score else None
         issues = (result.get("issues", []) if has_score else []) or []
-        reasons = (result.get("reasons", {}) if has_score else {}) or {}
+        _raw_reasons = result.get("reasons") if has_score else None
+        reasons = _raw_reasons if isinstance(_raw_reasons, dict) else {}
         row_idx = ws.max_row + 1
 
         # 读取用户原始 query（容错缺失）
