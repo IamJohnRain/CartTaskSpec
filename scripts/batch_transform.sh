@@ -18,7 +18,7 @@ if [ -z "$PY" ]; then
 fi
 echo "使用 Python: $PY"
 
-BASE_DIR="${BASE_DIR:-datasets/cases-600-mix}"
+BASE_DIR="${BASE_DIR:-datasets/cases-600-mix-codex-gpt-5.5-high}"
 
 if [ ! -d "${BASE_DIR}" ]; then
   echo "error: BASE_DIR 不存在: ${BASE_DIR}" >&2
@@ -43,7 +43,7 @@ for CASE_DIR in "${BASE_DIR}"/*/; do
   }
   total=$((total + 1))
   echo ">>> [${total}] ${BASE_DIR}/${CASE_NAME}"
-  if $PY taskspec_to_chat_completions.py \
+  if $PY scripts/taskspec_to_chat_completions.py \
       "${CASE_DIR}/task.taskSpec.json" \
       -q "${CASE_DIR}/query.txt" \
       --genui_dsl "${CASE_DIR}/card.dsl.jsonl" \
