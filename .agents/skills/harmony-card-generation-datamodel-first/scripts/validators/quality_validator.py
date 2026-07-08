@@ -158,6 +158,38 @@ class QualityValidator(BaseValidator):
                 if width is not None and width < min_size or height is not None and height < min_size:
                     penalties += 8
                     reporter.add("error", "LAYOUT_BUTTON_TOO_SMALL", "quality", "genui", line=2, json_pointer=f"/updateComponents/componentsById/{component_id}/styles", actual={"width": styles.get("width"), "height": styles.get("height")}, expected=f">= {min_size}", message="Button 可点击视觉尺寸不能小于最小值。")
+                safety = rules.layout.get("buttonRenderSafety", {})
+                threshold_font = numeric(safety.get("fontSizeThreshold")) or 14
+                min_height = numeric(safety.get("minHeightForDefaultFont")) or 32
+                vertical_reserve = numeric(safety.get("verticalReserve")) or 10
+                button_font = font_size or 14
+                if height is not None and button_font >= threshold_font and height < min_height:
+                    penalties += 5
+                    reporter.add(
+                        "warning",
+                        "LAYOUT_BUTTON_VERTICAL_FIT_RISK",
+                        "quality",
+                        "genui",
+                        line=2,
+                        json_pointer=f"/updateComponents/componentsById/{component_id}/styles",
+                        actual={"height": styles.get("height"), "fontSize": styles.get("fontSize")},
+                        expected=f"fontSize >= {threshold_font} 时 height >= {min_height}",
+                        message="Button 高度对真实渲染过紧，14fp 及以上 CTA 容易出现文字基线偏移或上下裁切。",
+                        fix_hint="将按钮高度提高到 32vp 以上，或把 CTA 字号降到 12fp 并确认文案仍完整可读。",
+                    )
+                elif height is not None and height < button_font + vertical_reserve:
+                    penalties += 3
+                    reporter.add(
+                        "warning",
+                        "LAYOUT_BUTTON_VERTICAL_FIT_RISK",
+                        "quality",
+                        "genui",
+                        line=2,
+                        json_pointer=f"/updateComponents/componentsById/{component_id}/styles",
+                        actual={"height": styles.get("height"), "fontSize": styles.get("fontSize")},
+                        expected=f"height >= fontSize + {vertical_reserve}",
+                        message="Button 高度缺少真实渲染的上下安全余量，可能导致 CTA 文案贴边或被遮挡。",
+                    )
             if component_type == "Progress" and styles.get("type") in {"ring", "eclipse", "scaleRing"}:
                 if numeric(styles.get("width")) != numeric(styles.get("height")):
                     penalties += 4
@@ -259,10 +291,13 @@ class QualityValidator(BaseValidator):
             if width is not None:
                 required = estimate_text_width(text, font)
                 if component_type == "Button":
-                    required += 16
+                    required += numeric(rules.layout.get("buttonRenderSafety", {}).get("horizontalPaddingReserve")) or 24
                 if required > width * max_lines:
                     penalties += 4
-                    reporter.add("warning", "QUALITY_SCORE_LOW", "quality", "genui", line=2, json_pointer=f"/updateComponents/componentsById/{component_id}", actual=text, message="静态文本估算可能放不下当前宽度。", fix_hint="增加宽度、改为两行并预留高度，或缩短非受保护文案。")
+                    code = "LAYOUT_BUTTON_LABEL_FIT_RISK" if component_type == "Button" else "QUALITY_SCORE_LOW"
+                    message = "Button 文案估算宽度缺少真实渲染安全余量，容易省略、挤压或裁切。" if component_type == "Button" else "静态文本估算可能放不下当前宽度。"
+                    hint = "增加按钮宽度、缩短 CTA 到 2-4 个中文，或改用更宽的 2x4 动作区。" if component_type == "Button" else "增加宽度、改为两行并预留高度，或缩短非受保护文案。"
+                    reporter.add("warning", code, "quality", "genui", line=2, json_pointer=f"/updateComponents/componentsById/{component_id}", actual={"text": text, "requiredWidth": round(required, 2), "width": width}, message=message, fix_hint=hint)
             if styles.get("textOverflow") in set(rules.layout.get("protectedTextOverflow", [])):
                 penalties += 5
                 reporter.add("error", "QUALITY_SCORE_LOW", "quality", "genui", line=2, json_pointer=f"/updateComponents/componentsById/{component_id}/styles/textOverflow", actual=styles.get("textOverflow"), message="受保护文本不应依赖 ellipsis/clip/marquee。")

@@ -24,6 +24,7 @@ class RuleRegistry:
         self.event_schema = self._load_json(self.schemas_dir / "event.click.schema.json", {})
         self.allowed_components = self._allowed_components()
         self.asset_allowlist = self._asset_allowlist()
+        self.dark_monochrome_asset_paths = self._dark_monochrome_asset_paths()
         self.allowed_color_hex = self._allowed_color_hex()
 
     def _load_json(self, path: Path, fallback: Any) -> Any:
@@ -52,7 +53,18 @@ class RuleRegistry:
         asset_doc = self.skill_dir / "reference" / "design" / "asset-library.md"
         if asset_doc.exists():
             text = asset_doc.read_text(encoding="utf-8")
-            result.update(re.findall(r"`(resources/base/media/[^`]+\.svg)`", text, re.I))
+            result.update(re.findall(r"`(resources/base/media/[^`]+\.(?:svg|png))`", text, re.I))
+        return result
+
+    def _dark_monochrome_asset_paths(self) -> set[str]:
+        result = set(self.asset.get("darkMonochromeSvg", {}).get("paths", []))
+        asset_doc = self.skill_dir / "reference" / "design" / "asset-library.md"
+        if asset_doc.exists():
+            text = asset_doc.read_text(encoding="utf-8")
+            for match in re.finditer(r"\|\s*`(resources/base/media/[^`]+\.svg)`\s*\|\s*([^|\n]+)\|", text, re.I):
+                path, description = match.groups()
+                if "黑色" in description or "黑白" in description:
+                    result.add(path)
         return result
 
     def _allowed_color_hex(self) -> set[str]:
