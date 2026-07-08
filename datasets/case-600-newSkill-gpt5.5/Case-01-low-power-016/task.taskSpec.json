@@ -1,0 +1,137 @@
+{
+  "userQuery": "我每天出门前都要检查手机还有多少电和今天要办的事,老是忘。做个卡片,上面放电池图标做主视觉,下面纵向排列几个待办日程项,每项能勾选绑定。卡片读取天气预报显示今天天气,也要能点击进入具体的日程事件详情。简洁素净的卡片表面,整体氛围背景,不要渐变。电量低于20%时待办项显示橙色注意状态。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-002"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "device": {
+        "battery": {
+          "percentText": {
+            "type": "string",
+            "description": "手机当前剩余电量展示文本。",
+            "sampleValue": "18%"
+          },
+          "level": {
+            "type": "number",
+            "description": "手机当前剩余电量百分比数值，用于判断低电状态。",
+            "sampleValue": 18
+          },
+          "icon": {
+            "type": "string",
+            "description": "低电模式电池主视觉图标路径，来自素材候选。",
+            "sampleValue": "resources/base/media/icon_electricity.png"
+          }
+        }
+      },
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "今天当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "今天当前温度展示文本。",
+            "sampleValue": "26°C"
+          }
+        },
+        "daily": [
+          {
+            "condition": {
+              "type": "string",
+              "description": "今天白天天气现象。",
+              "sampleValue": "多云"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "今天温度范围展示文本。",
+              "sampleValue": "24°/31°"
+            }
+          }
+        ]
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条日程详情页索引项唯一标识符。",
+              "sampleValue": "cal-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条待办日程标题。",
+              "sampleValue": "带伞"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条日程开始时间。",
+              "sampleValue": "08:30"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "第一条待办日程是否已勾选。",
+              "sampleValue": false
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条日程详情页索引项唯一标识符。",
+              "sampleValue": "cal-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条待办日程标题。",
+              "sampleValue": "取文件"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条日程开始时间。",
+              "sampleValue": "09:30"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "第二条待办日程是否已勾选。",
+              "sampleValue": false
+            }
+          }
+        ]
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "数据是否仍在加载。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合作为手机剩余电量和低电提醒的主视觉。",
+      "bindTo": "/data/device/battery/icon"
+    }
+  ]
+}

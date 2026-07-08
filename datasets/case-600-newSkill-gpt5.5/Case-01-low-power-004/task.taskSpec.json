@@ -3,34 +3,19 @@
   "size": "2x4",
   "eventCandidates": [
     {
-      "call": "clickToDeeplink",
+      "call": "clickToIntent",
       "args": {
-        "bundleName": "com.huawei.hmos.settings",
-        "abilityName": "com.huawei.hmos.settings.MainAbility",
-        "uri": "battery"
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
       }
     }
   ],
   "dataModelSchema": {
-    "data": {
-      "calendar": {
-        "items": {
-          "type": "array",
-          "description": "日历中与低电量相关的提醒事项列表",
-          "sampleValue": [
-            {
-              "entityName": "calendar",
-              "entityId": "sample-low-power-001",
-              "title": "快没电了",
-              "dtStart": "18:30",
-              "dtEnd": "18:45",
-              "description": "低电量提醒"
-            }
-          ]
-        }
-      }
-    },
-    "battery": {
+    "power": {
       "levelText": {
         "type": "string",
         "description": "当前电量百分比展示文本",
@@ -43,20 +28,43 @@
       },
       "statusText": {
         "type": "string",
-        "description": "低电量状态说明",
-        "sampleValue": "低电量"
-      },
-      "hintText": {
-        "type": "string",
-        "description": "省电建议提示",
-        "sampleValue": "建议开启省电"
+        "description": "低电状态提醒文案",
+        "sampleValue": "电量偏低"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "近期日历提醒列表",
+          "sampleValue": [
+            {
+              "entityName": "日历",
+              "entityId": "sample-calendar-001",
+              "title": "会议前充电",
+              "dtStart": "18:30",
+              "dtEnd": "19:00"
+            }
+          ]
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历提醒是否仍在加载",
+        "sampleValue": false
       }
     }
   },
   "assetCandidates": [
     {
-      "src": "resources/base/media/battery_leaf_fill.svg",
-      "description": "电池与绿叶组合图标，适用于低电模式、省电模式和当前电量状态。"
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合低电模式卡片中作为电量状态的主视觉锚点，PNG 彩色素材。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合表达从日历读取到的提醒事项，PNG 彩色素材。"
     }
   ]
 }
