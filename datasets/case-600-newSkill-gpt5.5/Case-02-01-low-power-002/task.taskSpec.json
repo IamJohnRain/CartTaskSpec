@@ -1,0 +1,103 @@
+{
+  "userQuery": "能点开导航找充电宝的，能读天气，提示我快没电了吧",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/navigation/nearestPowerBank/latitude} }}",
+            "longitude": "{{ ${/navigation/nearestPowerBank/longitude} }}"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "card": {
+      "title": {
+        "type": "string",
+        "description": "低电模式卡片标题",
+        "sampleValue": "低电提醒"
+      },
+      "batteryText": {
+        "type": "string",
+        "description": "当前电量展示文本",
+        "sampleValue": "18%"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "低电状态提示文案",
+        "sampleValue": "快没电了"
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名",
+            "sampleValue": "湾仔"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名",
+            "sampleValue": "香港"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "28°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "天气预报列表",
+          "sampleValue": []
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "天气更新时间",
+          "sampleValue": ""
+        }
+      }
+    },
+    "navigation": {
+      "actionLabel": {
+        "type": "string",
+        "description": "导航按钮文案",
+        "sampleValue": "找充电宝"
+      },
+      "nearestPowerBank": {
+        "latitude": {
+          "type": "string",
+          "description": "最近可导航充电宝位置纬度",
+          "sampleValue": "22.2798"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "最近可导航充电宝位置经度",
+          "sampleValue": "114.1749"
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "天气数据是否加载中",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

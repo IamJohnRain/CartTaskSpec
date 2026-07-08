@@ -1,0 +1,50 @@
+{
+  "userQuery": "弄个卡片吧，按钮能进系统设置，电量数字会变，能读日历提醒快没电了",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModel": {
+    "value": {
+      "battery": {
+        "value": 20,
+        "status": "电量低"
+      },
+      "data": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "evt-001",
+              "title": "团队周会",
+              "dtStart": "14:00",
+              "dtEnd": "14:30"
+            }
+          ]
+        }
+      },
+      "state": {
+        "loading": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "use": "battery-icon",
+      "description": "电池图标，适用场景：低电模式，作为卡片头部主视觉图标，提示当前电量状态。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "use": "calendar-icon",
+      "description": "日历实心图标，黑色，图形为带格线的日历本造型，适用场景：日程管理、下一日程标识。"
+    }
+  ]
+}

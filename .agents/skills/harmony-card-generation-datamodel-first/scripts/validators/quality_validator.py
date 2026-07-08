@@ -39,8 +39,8 @@ class QualityValidator(BaseValidator):
         if not isinstance(styles, dict):
             reporter.add("error", "LAYOUT_ROOT_SIZE_MISSING", "quality", "genui", line=2, json_pointer=f"/updateComponents/componentsById/{context.root_id}/styles", message="root.styles 必须是 object。")
             return 20
-        root_width = resolve_dimension(styles.get("width"), expected["width"])
-        root_height = resolve_dimension(styles.get("height"), expected["height"])
+        root_width = numeric(styles.get("width"))
+        root_height = numeric(styles.get("height"))
         if root_width != expected["width"] or root_height != expected["height"]:
             penalties += 8
             reporter.add(
@@ -51,8 +51,8 @@ class QualityValidator(BaseValidator):
                 line=2,
                 json_pointer=f"/updateComponents/componentsById/{context.root_id}/styles",
                 actual={"width": styles.get("width"), "height": styles.get("height")},
-                expected={"width": expected["width"], "height": expected["height"], "outerFill": "matchParent"},
-                message="root 必须声明与尺寸一致的 width/height；外层可使用 matchParent，校验按基准尺寸解析。",
+                expected={"width": expected["width"], "height": expected["height"]},
+                message="root 必须声明与 CardSpec 尺寸一致的卡片比例虚拟像素，不能使用 matchParent。",
             )
         if numeric(styles.get("borderRadius")) != expected["borderRadius"] or styles.get("clip") is not True:
             penalties += 5
@@ -114,7 +114,7 @@ class QualityValidator(BaseValidator):
                 penalties += 2
                 reporter.add("warning", "DSL_FIELD_FORBIDDEN", "quality", "genui", line=2, json_pointer=f"/updateComponents/componentsById/{component_id}/styles", actual=extra, message="styles 中存在组件目录未声明的字段。")
             for field in ("width", "height"):
-                if component_id != context.root_id and is_match_parent(styles.get(field)):
+                if is_match_parent(styles.get(field)):
                     penalties += 8
                     reporter.add(
                         "error",
@@ -124,8 +124,8 @@ class QualityValidator(BaseValidator):
                         line=2,
                         json_pointer=f"/updateComponents/componentsById/{component_id}/styles/{field}",
                         actual=styles.get(field),
-                        expected="仅 createSurface 和 root.styles 的 width/height 可使用 matchParent",
-                        message="matchParent 只允许用于外围卡片大小；内部组件必须保持可静态预算的数值宽高。",
+                        expected="数值宽高或可静态推导的约束",
+                        message="本 skill 生成的 Form 卡片不使用 matchParent；组件必须保持可静态预算的数值宽高。",
                     )
             font_size = numeric(styles.get("fontSize"))
             if font_size is not None and int(font_size) not in allowed_font_sizes:

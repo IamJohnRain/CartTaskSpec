@@ -1,0 +1,101 @@
+{
+  "userQuery": "给我弄个有比例的卡数字会变点地图找充电宝读日程红色警告",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/powerBank/latitude} }}",
+            "longitude": "{{ ${/powerBank/longitude} }}"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "power": {
+      "title": {
+        "type": "string",
+        "description": "低电量警告标题",
+        "sampleValue": "低电预警"
+      },
+      "percentageText": {
+        "type": "string",
+        "description": "当前电量百分比展示文本",
+        "sampleValue": "18%"
+      },
+      "percentage": {
+        "type": "number",
+        "description": "当前电量数值，用于进度比例",
+        "sampleValue": 18
+      },
+      "total": {
+        "type": "number",
+        "description": "电量比例总值",
+        "sampleValue": 100
+      },
+      "modeText": {
+        "type": "string",
+        "description": "低电状态下的省电建议",
+        "sampleValue": "建议开启省电"
+      }
+    },
+    "powerBank": {
+      "nearestText": {
+        "type": "string",
+        "description": "最近共享充电宝点位的简短距离文案",
+        "sampleValue": "充电宝 180m"
+      },
+      "latitude": {
+        "type": "string",
+        "description": "最近共享充电宝点位纬度",
+        "sampleValue": "22.543096"
+      },
+      "longitude": {
+        "type": "string",
+        "description": "最近共享充电宝点位经度",
+        "sampleValue": "114.057865"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "title": {
+              "type": "string",
+              "description": "下一条日程标题",
+              "sampleValue": "下一日程"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下一条日程开始时间",
+              "sampleValue": "15:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合低电模式卡片中的电量状态识别。"
+    },
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "充电/闪电图标，适合展示附近充电宝或充电入口。"
+    }
+  ]
+}

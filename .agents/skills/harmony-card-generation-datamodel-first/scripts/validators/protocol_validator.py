@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .base import BaseValidator, expression_like, is_empty_required_value, is_json_pointer
+from .base import BaseValidator, expression_like, is_empty_required_value, is_json_pointer, is_match_parent
 
 
 class ProtocolValidator(BaseValidator):
@@ -101,6 +101,21 @@ class ProtocolValidator(BaseValidator):
                 message="createSurface.catalogId 不在允许列表中。",
                 fix_hint="使用协议声明的 Form catalogId。",
             )
+
+        for field in ("width", "height"):
+            if is_match_parent(create.get(field)):
+                reporter.add(
+                    "error",
+                    "LAYOUT_MATCH_PARENT_SCOPE_INVALID",
+                    "hard",
+                    "genui",
+                    line=1,
+                    json_pointer=f"/createSurface/{field}",
+                    actual=create.get(field),
+                    expected="2x2 写 140；2x4 的 width 写 300、height 写 140",
+                    message="createSurface.width/height 必须明确写卡片比例虚拟像素，不能使用 matchParent。",
+                    fix_hint="按 CardSpec suggestSize 把 createSurface 尺寸改为对应数值。",
+                )
 
         surface_ids = [create.get("surfaceId"), update.get("surfaceId"), data.get("surfaceId")]
         if all(not is_empty_required_value(surface_id) for surface_id in surface_ids) and len(set(surface_ids)) != 1:

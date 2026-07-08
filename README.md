@@ -128,7 +128,7 @@ python validate_generated_card.py --response response.json --spec examples\paren
 1. 数据集dsl抽取到指定目录
 ```bash
 rm -rf /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases/*
-bash scripts/flatten_cards.sh -o /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases -i datasets/cases-600-mix-codex-gpt-5.5-high/ 
+bash scripts/flatten_cards.sh -o /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases -i datasets/case-600-newSkill-gpt5.5/ 
 ```
 
 2. 从模拟器中获取渲染结果
