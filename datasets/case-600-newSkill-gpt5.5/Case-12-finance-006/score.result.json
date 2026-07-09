@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-12-finance-006",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.4,
+  "reasons": {
+    "instruction": "用户三个明确诉求均落实：截图中'¥1,280'以32px大字号展示余额数字；'去处理'蓝色按钮携带正确 onClick 事件（call/args 原样来自 eventCandidates）；'快没钱了'红色警示文案配合铃铛图标实现低余额提醒。dataModel 路径合法、所有字段均渲染可见，size=2x4、catalogId、version、updateDataModel.path=/ 等硬约束均满足。",
+    "aesthetic": "截图整体观感干净专业：白底卡片配两个浅灰圆角面板形成分组；红色'快没钱了'与蓝色'去处理'按钮形成主操作焦点；'¥1,280'使用 32px 粗体作为唯一最强视觉锚点，标题 14px/次要说明 12px 形成清晰层级；留白合理、对齐统一。轻微不足是警示标题'快没钱了'与主数值同为 700 字重，最强字重出现两处。",
+    "layout": "截图无任何堆叠、截断或溢出：左右两面板（162+1+101=264，加 padding 与 margin 后 276）刚好填满根容器宽度；纵向上 title/value/caption 与 warning_header/desc/button 均居中对齐无挤压；'¥1,280'、'提醒线 ¥1,500'、'快没钱了'、'低于提醒线'、'去处理'全部完整显示无截断；'去处理'按钮热区 85x32 满足 24vp 下限；按钮底边到卡片底边约 15vp，在 2x4 允许范围（≤16vp）内；中间竖向 Divider 居中且未被遮挡。"
+  },
+  "issues": [
+    "警示标题'快没钱了'与主数值'¥1,280'同为 fontWeight=700，违反'同一卡片只保留一个最强字重'的层级原则",
+    "warning_panel 内部 itemMargin=6 在 116 高度内偏紧，'低于提醒线'与'去处理'按钮视觉上略贴"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"balance_panel\",\"split_divider\",\"warning_panel\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"balance_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"primary_caption\"],\"itemMargin\":6,\"styles\":{\"width\":162,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/finance/accountName} }}\",\"styles\":{\"width\":142,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/balanceDisplay} }}\",\"styles\":{\"width\":142,\"height\":44,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/finance/thresholdText} }}\",\"styles\":{\"width\":142,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"split_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":92,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"warning_panel\",\"component\":\"Column\",\"children\":[\"warning_header\",\"warning_desc\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":101,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"warning_header\",\"component\":\"Row\",\"children\":[\"warning_icon\",\"warning_title\"],\"itemMargin\":4,\"styles\":{\"width\":85,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"warning_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_fill.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"warning_title\",\"component\":\"Text\",\"content\":\"{{ ${/finance/warningText} }}\",\"styles\":{\"width\":61,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"warning_desc\",\"component\":\"Text\",\"content\":\"{{ ${/finance/reminderText} }}\",\"styles\":{\"width\":85,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/finance/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"finance-ledger-entry\"}}}],\"styles\":{\"width\":85,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"finance\":{\"accountName\":\"账户余额\",\"balanceDisplay\":\"¥1,280\",\"thresholdText\":\"提醒线 ¥1,500\",\"warningText\":\"快没钱了\",\"reminderText\":\"低于提醒线\",\"actionLabel\":\"去处理\"}}}}"
+  ]
+}

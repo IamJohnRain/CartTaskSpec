@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-10-rainy-taxi-011",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "截图中可见主视觉雨滴（云+雨滴组合图）位于左上、步数 8200 步、'腿快废了'、'今日步数'、中间胶囊行显示 18°C / 湿 92% / 等 12 分、底部红色 '注意:可能延迟' 提示以及 '去地铁' 按钮。全部用户明确要求的字段均已落地，蓝紫渐变也符合下雨天氛围。事件 clickToIntent / StartNavigate / dstLocation / trafficpe 等参数与 eventCandidates 完全一致。仅有 1 处轻微瑕疵：'湿92%' 这种 Chinese 缩写表述略生硬，但语义上仍可读。",
+    "aesthetic": "蓝紫渐变方向自然，配色和谐，符合雨天氛围。白色文字在渐变背景上对比度尚可。字号层级清晰（20/10/10），主指标 8200 步为最强字重。底部动作行因 '注意:可能延迟' 折行导致节奏略显凌乱；中间胶囊行 '18°C 湿92% 等12分' 信息密度偏高、'湿92%' 拼接不够优雅；云雨图标雨滴颗粒偏小，主视觉稍微弱化。整体克制专业但仍有打磨空间。",
+    "layout": "截图中可观察到：1）底部动作行 '注意:可能延迟' 因宽度仅 52 导致在红框中折成 '注意:可能 / 延迟' 两行（line 1: 注意:可能；line 2: 延迟），与 '去地铁' 按钮并排时整体节奏被打断；2）'去地铁' 按钮文字完整显示，CTA 热区充足（约 32vp 高），点击区未被遮挡；3）Header 区云雨图标与步数组左右并排，无重叠；4）中间胶囊行 18°C/湿92%/等12分 三个文本框紧凑但未溢出。整体无严重溢出与截断，但 delay_notice 折行是明确的视觉问题，需修正。"
+  },
+  "issues": [
+    "截图中 '注意:可能延迟' 因宽度 52/fontSize 10 不够而折成两行，应拓宽并改为单行显示。",
+    "中间胶囊行 '湿92%' 直接拼接不够优雅，可改用 '湿度 92%' 或图标化。",
+    "雨滴图标中雨滴颗粒过小，主视觉氛围稍弱。",
+    "顶部 '腿快废了' 与 '8200 步' / '今日步数' 在窄列中略显拥挤，可微调字重或行距。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"metric_row\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#46b1e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"rain_icon\",\"step_group\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":54,\"alignItems\":\"center\"}},{\"id\":\"rain_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/rain.png\",\"styles\":{\"width\":44,\"height\":44,\"objectFit\":\"contain\"}},{\"id\":\"step_group\",\"component\":\"Column\",\"children\":[\"fatigue_text\",\"steps_text\",\"step_label\"],\"itemMargin\":2,\"styles\":{\"width\":68,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"fatigue_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/mobility/fatigueText} }}\",\"styles\":{\"width\":68,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/mobility/todayStepsText} }}\",\"styles\":{\"width\":68,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"step_label\",\"component\":\"Text\",\"content\":\"今日步数\",\"styles\":{\"width\":68,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"metric_temp\",\"metric_humidity\",\"metric_wait\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"padding\":2,\"borderRadius\":11,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\"}},{\"id\":\"metric_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metric_humidity\",\"component\":\"Text\",\"content\":\"{{ '湿度' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":38,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metric_wait\",\"component\":\"Text\",\"content\":\"{{ '等' + ${/data/taxi/queueEtaShort} }}\",\"styles\":{\"width\":34,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"delay_notice\",\"map_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"delay_notice\",\"component\":\"Text\",\"content\":\"{{ ${/data/taxi/delayNotice} }}\",\"styles\":{\"width\":68,\"height\":32,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"map_button\",\"component\":\"Button\",\"label\":\"去地铁\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/data/transit/nearestMetro/latitude} }}\",\"longitude\":\"{{ ${/data/transit/nearestMetro/longitude} }}\"},\"trafficpe\":\"Bus\"}}}],\"styles\":{\"width\":44,\"height\":32,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"18°C\",\"humidityPercent\":92}},\"mobility\":{\"todayStepsText\":\"8200步\",\"fatigueText\":\"腿快废了\"},\"taxi\":{\"queueEtaShort\":\"12分\",\"delayNotice\":\"注意:可能延迟\"},\"transit\":{\"nearestMetro\":{\"latitude\":\"22.5431\",\"longitude\":\"114.0579\"}}}}}}"
+  ]
+}

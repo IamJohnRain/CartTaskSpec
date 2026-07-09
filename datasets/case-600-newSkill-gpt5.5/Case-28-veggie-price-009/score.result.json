@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-28-veggie-price-009",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "截图中清晰可见标题'菜价比价'、主状态'已比完'、摘要'3家已比 · 省¥6.8'以及CTA按钮'打开买菜'，四个 schema 字段全部完整呈现；左上角正确加载了对勾日历 SVG 图标；按钮 onClick 使用了 taskSpec 中原样的 clickToDeeplink + bundleName/abilityName/uri；尺寸 2x2、catalogId/v0.9、updateDataModel.path='/' 均合规。略扣分是因为用户语义上更关心'点一下跳转'的可点击感，按钮的视觉热区足够（32vp 高），但没有进一步强化（无图标/无光晕/无'↗'等跳转暗示）。",
+    "aesthetic": "截图整体观感干净专业：白→淡绿渐变与'已比完'主文字、按钮同色系形成呼应，配色克制和谐，前景文字在背景上对比清晰。字号层级 14/20/12/14 有层次。但存在两个小问题：①标题 700 与主值 800 同时存在两个强字重，未严格遵守'同一卡片只保留一个最强字重'原则；②整体留白偏紧，header 16vp、support 18vp 之间的视觉呼吸略弱。",
+    "layout": "截图观察：所有元素均完整显示在 140×140 卡片内，无文字截断、无堆叠重叠、CTA 文字'打开买菜'底边完整；按钮热区 32vp 满足 ≥24vp 的要求；底部按钮底到卡片底约 12vp，未超过 16vp 上限。竖向累加 12+16+4+30+4+18+4+1+4+32+12=137，留 3vp 余量偏紧但未溢出。胶囊摘要'3家已比 · 省¥6.8'在 100vp 文本区内（11 个字符估算约 91vp）显示完整、未被裁切。主要扣分点在于竖向间距几乎贴底，没有任何容错空间；若运行时字号微调有溢出风险。"
+  },
+  "issues": [
+    "两个强字重并存：title_text fontWeight=700 与 primary_value fontWeight=800 违反'同一卡片只保留一个最强字重'的规范",
+    "竖向布局 5 行 + 4 个 4vp gap，总占用 137vp，仅余 3vp 容错，间距偏紧",
+    "header_row 高度 16vp 与 16vp 图标等高，title_text 文字底部贴边，纵向视觉呼吸不足",
+    "未对'点击跳转'语义做视觉强化（按钮缺少箭头/图标暗示 deeplink）",
+    "Divider 紧贴胶囊下沿，与按钮上沿距离过近，视觉分组不够清晰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"support_row\",\"divider_line\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",0.5],[\"#bddb69\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"status_icon\",\"title_text\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/comparison/title} }}\",\"styles\":{\"width\":98,\"height\":20,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/comparison/statusText} }}\",\"styles\":{\"width\":120,\"height\":28,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"support_row\",\"component\":\"Row\",\"children\":[\"summary_text\"],\"styles\":{\"width\":120,\"height\":20,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":10,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/comparison/summaryText} }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"divider_line\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.maicai\",\"abilityName\":\"\",\"uri\":\"maicai://price-comparison/result\"}}],\"styles\":{\"width\":120,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"comparison\":{\"title\":\"菜价比价\",\"statusText\":\"已比完\",\"summaryText\":\"3家已比 · 省¥6.8\"},\"action\":{\"label\":\"打开买菜\"}}}}"
+  ]
+}

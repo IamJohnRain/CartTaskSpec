@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-29-elderly-care-016",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "截图中卡片完整呈现了用户要求的渐变背景（蓝→橙）、太阳图标（来自sunny.png资产）、主文本'今天紫外线强/不建议外出'和副文本'已取消 下午3:00 广场舞'，且 onClick 已正确关联 eventCandidates 中的 clickToDeeplink 与天气App uri。但用户明确写出的 ⚠ 警告符号未出现在主文本中（DSL 用模板拼接 '今天紫外线' + uvIndex + ' 不建议外出' 时把 ⚠ 漏掉了），'紧急感强一点'的视觉表达也偏弱——渐变色饱和度、图标尺寸都未明显强化以体现风险感，与用户意图存在偏差。",
+    "aesthetic": "从截图看，蓝→橙渐变过渡自然平滑，白色主文字（800字重）在橙底上对比清晰、可读性好；字重层级（主文粗/副文细）区分明确，留白与对齐较规整，140x140 内没有视觉拥挤。但缺少对'紧急'语义的强化设计——没有红色警示色、没有警告徽章或边框，46px 图标在卡内也偏小，整体观感更偏'温和提醒'而非用户期望的'强风险提示'。",
+    "layout": "截图无任何文字截断、堆叠或溢出：主文本'今天紫外线强/不建议外出'完整呈现为两行、副文本'已取消 下午3:00 广场舞'单行未被裁切，组件均落在 140x140 边界内。但用户要求'中间一个大图标'在截图中的执行有偏差——由于 Column 垂直居中 + itemMargin=6 的关系，46px 图标自然落在卡片上半部，视觉重心偏顶部，没有真正处于垂直中线；下方留白略多，让'中间'感被削弱。"
+  },
+  "issues": [
+    "主文本未包含用户明确写出的 ⚠ 警告符号（模板字符串拼接时漏写）",
+    "图标尺寸 46x46 偏小，未满足'大图标'的诉求",
+    "渐变饱和度与色相偏温和，'紧急感强一点'的视觉张力不足",
+    "因 Column 布局使图标落在卡片上半部，未真正处于'中间'位置",
+    "副文本 fontSize 10 略偏小，'已取消'这种关键状态在橙底上对比有限"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"primary_text\",\"support_text\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#3aa7df\",0],[\"#ff5722\",1]]}}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/sunny.png\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\"}},{\"id\":\"primary_text\",\"component\":\"Text\",\"content\":\"{{ '今天紫外线' + ${/data/weather/current/uvIndex} + ' 不建议外出' }} ⚠\",\"styles\":{\"width\":120,\"height\":40,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} + ' ' + ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":120,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#fff3e0\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"uvIndex\":\"强\"}},\"calendar\":{\"items\":[{\"title\":\"广场舞\",\"dtStart\":\"下午3:00\",\"description\":\"已取消\"}]}}}}"
+  ]
+}

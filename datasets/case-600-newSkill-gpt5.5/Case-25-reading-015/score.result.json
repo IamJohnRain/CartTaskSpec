@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-25-reading-015",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "用户'今日阅读清单卡,简洁白底别加装饰'等诉求基本全部精准落实：纯白底无任何装饰；顶部'今日待读 3 本'以 18px/700 大号粗体呈现；下方纵列三本书《追风筝的人》《小王子》《局外人》依次完整显示；每本书前有 16×16 圆角小方框勾选控件，selectedColor 为深色 #e5000000，符合'勾上变深色'的语义；onClick 调起 clickToDeeplink 跳音乐 App 的事件 URI 与 TaskSpec.eventCandidates 完全一致；dataModel 三本书 title/entityId/readState 字段均正确绑定；尺寸 2x4（300×140）、catalogId 'ohos.a2ui.extended.catalog'、version v0.9、updateDataModel.path='/' 等硬约束全部合规。无图、无 emoji、无多余元素。",
+    "aesthetic": "纯白底 + 纯黑文字对比强烈、阅读性极好；标题 18/700 与正文 14/400 与来源 12/400 字号字重层级清晰；复选框与书名水平基线对齐整齐；底部胶囊按钮浅灰底+深字色调克制，整体符合'简洁白底别加装饰'的设计要求。唯一瑕疵：截图中底部'听书'按钮在 width=56 宽度下两字之间出现轻微挤压/中段似有墨点粘连，视觉上不如 64-72 宽度的按钮清爽。",
+    "layout": "截图中可见：标题/三行书籍/底部来源+按钮自上而下完整呈现，无堆叠、无遮挡、无文字截断；三本书每行复选框与书名左右排布对齐良好且与父容器左缘对齐一致；底部'日历同步'与'听书'按钮以 spaceBetween 锚定在卡片内边距内，未越出 276 内容宽；底部按钮距离卡片底边约 12vp，在 2x4 推荐 10-14vp 区间。整张卡片无溢出、无遮挡、无截断问题。"
+  },
+  "issues": [
+    "底部'听书'按钮 width=56 偏紧，'听书'两字在 fontSize 12 下视觉上有轻微挤压感，中间似有墨点/粘连，缺少呼吸感",
+    "footer_row 高度 24 与按钮高度 24 一致，但来源文字行高 16 偏小，与按钮视觉重量略不匹配（次要）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_column\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"topStart\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"book_list\",\"footer_row\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/headerText} }}\",\"styles\":{\"width\":276,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"book_list\",\"component\":\"Column\",\"children\":[\"book_row_0\",\"book_row_1\",\"book_row_2\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":60,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"book_row_0\",\"component\":\"Row\",\"children\":[\"book_check_0\",\"book_text_0\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"book_check_0\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/0/entityId} }}\",\"select\":\"{{ ${/ui/readState/book0Checked} }}\",\"styles\":{\"width\":16,\"height\":16,\"shape\":\"rounded_square\",\"selectedColor\":\"#e5000000\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"book_text_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":254,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"book_row_1\",\"component\":\"Row\",\"children\":[\"book_check_1\",\"book_text_1\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"book_check_1\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/1/entityId} }}\",\"select\":\"{{ ${/ui/readState/book1Checked} }}\",\"styles\":{\"width\":16,\"height\":16,\"shape\":\"rounded_square\",\"selectedColor\":\"#e5000000\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"book_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":254,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"book_row_2\",\"component\":\"Row\",\"children\":[\"book_check_2\",\"book_text_2\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"book_check_2\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/2/entityId} }}\",\"select\":\"{{ ${/ui/readState/book2Checked} }}\",\"styles\":{\"width\":16,\"height\":16,\"shape\":\"rounded_square\",\"selectedColor\":\"#e5000000\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"book_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/title} }}\",\"styles\":{\"width\":254,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"footer_row\",\"component\":\"Row\",\"children\":[\"source_text\",\"listen_button\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/sourceText} }}\",\"styles\":{\"width\":200,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"listen_button\",\"component\":\"Button\",\"label\":\"听书\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":68,\"height\":26,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":13,\"paddingLeft\":10,\"paddingRight\":10}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日历事件\",\"entityId\":\"reading-001\",\"title\":\"《追风筝的人》\",\"dtStart\":\"09:00\",\"dtEnd\":\"10:00\"},{\"entityName\":\"日历事件\",\"entityId\":\"reading-002\",\"title\":\"《小王子》\",\"dtStart\":\"13:00\",\"dtEnd\":\"13:30\"},{\"entityName\":\"日历事件\",\"entityId\":\"reading-003\",\"title\":\"《局外人》\",\"dtStart\":\"20:00\",\"dtEnd\":\"20:40\"}]}},\"ui\":{\"headerText\":\"今日待读 3 本\",\"sourceText\":\"日历同步\",\"readState\":{\"book0Checked\":false,\"book1Checked\":false,\"book2Checked\":false}}}}}"
+  ]
+}

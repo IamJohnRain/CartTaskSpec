@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-17-queue-008",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户明确要求'红字提示我号快过'，但截图中'号快过'实际呈现为橙色（#ffed6f21）而非红色，属于关键语义偏离，扣分。其余诉求（排队卡、A032 号码、点一下跳APP、icon_alarm_clock 闹钟图标、四个字段齐全）均完整呈现；onClick 的 call/args 原样来自 eventCandidates，size=2x2、catalogId、version、updateDataModel.path='/ '等硬约束均满足。",
+    "aesthetic": "截图整体观感简洁：深色卡片背景配白色 A032 强焦点字，闹钟图标点缀黄色与橙色文字同色系略有一致感。但'号快过'使用橙色（接近 #ed6f21）而非用户要求的标准红色，与常规'过号提醒'的强警示视觉语言不一致，削弱了紧迫感和识别度；其余字体层级清晰，留白合理，对齐统一。",
+    "layout": "截图布局干净：头部 Row 容纳图标+标题，第二行 A032 大字号居中，第三行'号快过'警示文字居中，底部'打开APP'按钮完整可见，底边到卡片下沿留白约 8-10vp，符合 2x2 卡片规范。未观察到任何文字截断、堆叠重叠或溢出；按钮热区 32vp 充足；受保护文本（标题、主指标、CTA、警示）均完整可读。"
+  },
+  "issues": [
+    "用户明确要求'红字'，但 alert_text 实际为橙色 #ffed6f21，未使用真正的红色",
+    "橙色与黄色闹钟图标同属暖色系，缺少红黄/红白的强警示对比，弱化了'号快过'的紧迫感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"alert_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_badge\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_badge\",\"component\":\"Stack\",\"children\":[\"queue_icon\"],\"styles\":{\"width\":20,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"queue_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/serviceName} }}\",\"styles\":{\"width\":90,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/queue/currentNumber} }}\",\"styles\":{\"width\":116,\"height\":34,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/alertText} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/queue/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"queue\":{\"serviceName\":\"排队叫号\",\"currentNumber\":\"A032\",\"alertText\":\"号快过\",\"actionLabel\":\"打开APP\"}}}}"
+  ]
+}

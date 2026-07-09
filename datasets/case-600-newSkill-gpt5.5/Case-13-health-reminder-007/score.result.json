@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-13-health-reminder-007",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中可见左侧面板展示了喝水量（1250ml 主数值 + 蓝色进度条 + '目标 2000ml'），右侧面板展示了日历事件（服药提醒、21:20-21:30）、'即将超时'红色状态以及'打开闹钟'蓝色 CTA 按钮；'点开跳app'通过 Button 的 onClick.clickToDeeplink 原样使用 TaskSpec.eventCandidates 落地；滴水图标和闹钟图标分别使用了 drop_1.svg 与 alarm_fill_1.svg 资源；size=2x4、catalogId/version/updateDataModel.path 均合规。轻微扣分点：右侧面板未展示 calendar.items[0].remindTime（'10分钟后'）这一明示字段，导致'快超时提醒'的紧迫感仅靠红色文字传达，未与日程的 remindTime 显式关联。",
+    "aesthetic": "截图中整体配色克制：白底卡片 + 两块半透明灰圆角面板 + 蓝色进度条/CTA + 红色状态文字，色阶层级清晰；'1250ml' 用 32px 粗体作为最强字重，其余文本按 14/12px 阶梯递减，无字重混乱；左右两个面板留白均匀，元素对齐工整。唯一小瑕疵：'已饮'小字紧贴巨大的 '1250ml' 主值显得信息密度略冗余，可读性尚可但美观度略受影响。",
+    "layout": "截图显示所有内容均在 300x140 卡片边界内：左面板'1250ml 已饮'未截断、进度条完整、目标文字完整；右面板'即将超时/服药提醒/21:20-21:30/打开闹钟'四行均完整显示无重叠无溢出；CTA 按钮热区约 82x32vp（>24vp 可接受），按钮底边到卡片底边约 12vp 在合理区间；两面板之间有 10vp 间距，左右未贴边；未观察到 Stack 堆叠遮挡或文字被裁切的现象。"
+  },
+  "issues": [
+    "右侧面板未显示 calendar.items[0].remindTime（'10分钟后'），'快超时提醒'的紧迫感仅由红色'即将超时'承担，未与日程提醒文本关联",
+    "左侧'已饮'小字与 '1250ml' 主值并列显得冗余，建议调整文案或位置以减少视觉噪音",
+    "右面板宽度仅 94px，'打开闹钟'按钮 82x32 几乎贴满宽度，热区虽合规但视觉略显拥挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"water_header\",\"water_value_row\",\"water_progress\",\"target_text\"],\"itemMargin\":4,\"styles\":{\"width\":172,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#0c000000\"}},{\"id\":\"water_header\",\"component\":\"Row\",\"children\":[\"water_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":152,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"water_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/drop_1.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"喝水量\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"water_value_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":4,\"styles\":{\"width\":152,\"height\":38,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/hydration/currentMl} }}\",\"styles\":{\"width\":96,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"ml / 已饮\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"water_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/hydration/currentMl} }}\",\"total\":\"{{ ${/data/hydration/targetMl} }}\",\"styles\":{\"width\":152,\"height\":8,\"type\":\"linear\",\"color\":\"#46b1e3\"}},{\"id\":\"target_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/hydration/targetText} }}\",\"styles\":{\"width\":152,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"reminder_header\",\"event_title\",\"event_time\",\"remind_text\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":94,\"height\":116,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#19000000\"}},{\"id\":\"reminder_header\",\"component\":\"Row\",\"children\":[\"alarm_icon\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alarm_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/alarm_fill_1.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"即将超时\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":82,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"remind_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开闹钟\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":82,\"height\":28,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"hydration\":{\"currentMl\":1250,\"targetMl\":2000,\"amountText\":\"1250ml\",\"targetText\":\"目标 2000ml\"},\"calendar\":{\"items\":[{\"entityId\":\"calendar-demo-medicine-001\",\"title\":\"服药提醒\",\"dtStart\":\"21:20\",\"dtEnd\":\"21:30\",\"remindTime\":[\"10分钟后\"]}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

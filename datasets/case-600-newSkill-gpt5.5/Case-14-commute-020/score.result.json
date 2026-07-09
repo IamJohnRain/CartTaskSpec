@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-14-commute-020",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "用户明确要求'左边主视觉'并提到'上次图标太丑重做'，但截图中左侧仅有一个纯白圆形背板，完全看不到 icon_car.png 的汽车图标内容，主视觉缺失；同时'快迟到夜晚倒计时渐变'的需求仅靠背景深紫渐变勉强示意，倒计时文字本身没有渐变效果。右侧三项指标（3小时20分、5.3km、7.2）和'立即导航'按钮及 clickToIntent 事件均按契约正确落实。",
+    "aesthetic": "截图整体配色（深紫渐变+蓝色 CTA）较为和谐，字号层级清晰（倒计时最大、状态次之、指标小字），可读性良好。但左侧那个纯白圆盘没有承载任何图标，视觉上像一块空贴片，明显违和；并且右侧指标行中'公司 5.3km'与'堵车 7.2'字号不一致（5.3km 10pt、7.2 12pt），右半边视觉重量不够均衡。",
+    "layout": "截图中所有文字均完整显示，无截断、无溢出卡片边界、无元素堆叠遮挡；CTA 按钮宽度 116 正好匹配内容区宽度，距底约 12vp，留白合理。Row 横向核算：commute_info 68 + hero_panel 40 + margin 8 = 116 刚好等于 main_row 116，恰好不溢出。唯一可疑点是 hero_panel 高 78、但图标整体只占 40，居中后上下空 19vp，使左侧视觉重心偏高，略显空洞。"
+  },
+  "issues": [
+    "左侧白色圆形背板内完全看不到汽车图标，主视觉缺失，与用户'左边主视觉'和'上次图标太丑重做'诉求不符",
+    "倒计时'3小时20分'为单色白色加粗，未呈现'夜晚倒计时渐变'的渐变效果",
+    "distance_value 字号 10pt、traffic_value 字号 12pt，右侧两个并列指标字号不一致，视觉重量失衡",
+    "hero_panel 高度 78 远大于图标实际 40，垂直留白过多导致左半边视觉空洞"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff16162a\",0],[\"#5f3fbf\",0.55],[\"#a04ec0\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"commute_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":72,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Stack\",\"children\":[\"icon_glow\",\"icon_backplate\",\"nav_icon\"],\"styles\":{\"width\":44,\"height\":72,\"alignContent\":\"center\"}},{\"id\":\"icon_glow\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":44,\"height\":44,\"borderRadius\":22,\"backgroundColor\":\"#33ffd166\",\"maxLines\":1}},{\"id\":\"icon_backplate\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":36,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff0a59f7\",\"maxLines\":1}},{\"id\":\"nav_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"commute_info\",\"component\":\"Column\",\"children\":[\"status_text\",\"countdown_text\",\"metric_row\"],\"itemMargin\":3,\"styles\":{\"width\":64,\"height\":72,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/statusText} }}\",\"styles\":{\"width\":64,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffd166\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/countdownText} }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"distance_tile\",\"divider\",\"traffic_tile\"],\"itemMargin\":4,\"styles\":{\"width\":64,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"distance_tile\",\"component\":\"Column\",\"children\":[\"distance_label\",\"distance_value\"],\"itemMargin\":1,\"styles\":{\"width\":30,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"distance_label\",\"component\":\"Text\",\"content\":\"{{ ${/commute/distanceLabel} }}\",\"styles\":{\"width\":30,\"height\":9,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#aaffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"distance_value\",\"component\":\"Text\",\"content\":\"{{ ${/commute/distanceText} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":12,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":22,\"backgroundColor\":\"#44ffffff\"}},{\"id\":\"traffic_tile\",\"component\":\"Column\",\"children\":[\"traffic_label\",\"traffic_value\"],\"itemMargin\":1,\"styles\":{\"width\":25,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"traffic_label\",\"component\":\"Text\",\"content\":\"{{ ${/commute/trafficLabel} }}\",\"styles\":{\"width\":25,\"height\":9,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#aaffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"traffic_value\",\"component\":\"Text\",\"content\":\"{{ ${/commute/trafficIndexText} }}\",\"styles\":{\"width\":25,\"height\":14,\"fontSize\":12,\"fontWeight\":800,\"fontColor\":\"#ffffd166\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.5431\",\"longitude\":\"114.0579\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"commute\":{\"statusText\":\"快迟到\",\"countdownText\":\"3小时20分\",\"distanceLabel\":\"公司\",\"distanceText\":\"5.3km\",\"trafficLabel\":\"堵车\",\"trafficIndexText\":\"7.2\"},\"action\":{\"label\":\"立即导航\"}}}}"
+  ]
+}

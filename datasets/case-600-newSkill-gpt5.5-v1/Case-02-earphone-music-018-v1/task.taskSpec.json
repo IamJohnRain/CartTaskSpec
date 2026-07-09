@@ -1,0 +1,134 @@
+{
+  "userQuery": "我正在跑步呢耳机突然没声了，帮我弄个运动风格的桌面卡片。中间搞个仪表盘样式的环形数据当焦点，实时显示步数和左耳机电量15%，这时候电量颜色得是那种刺眼的红色告警状态，还要配个黄绿渐变的紧迫感背景。下面横向排开四个按钮，放跳过、暂停这些控制图标。我得点其中一个带有日程图标的按钮，直接查看等会儿9点半的视频会议日程，卡片整体弄点磨砂玻璃质感。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "fitness": {
+        "stepsText": {
+          "type": "string",
+          "description": "当前跑步过程中的步数展示文本。",
+          "sampleValue": "8,240"
+        }
+      },
+      "earphone": {
+        "leftBatteryValue": {
+          "type": "number",
+          "description": "左耳机当前电量数值，用于环形仪表进度。",
+          "sampleValue": 15
+        },
+        "batteryTotal": {
+          "type": "number",
+          "description": "耳机电量仪表总量。",
+          "sampleValue": 100
+        },
+        "leftBatteryText": {
+          "type": "string",
+          "description": "左耳机电量展示文本。",
+          "sampleValue": "15%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "耳机当前播放或连接状态摘要。",
+          "sampleValue": "无声"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历能力返回的日程列表。",
+          "items": {
+            "type": "object",
+            "description": "日程项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于查看日程详情。",
+                "sampleValue": "calendar-video-0930"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "视频会议"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "assets": {
+      "runIcon": {
+        "type": "string",
+        "description": "跑步运动图标素材路径。",
+        "sampleValue": "resources/base/media/figure_run.svg"
+      },
+      "skipIcon": {
+        "type": "string",
+        "description": "跳过或下一首控制图标素材路径。",
+        "sampleValue": "resources/base/media/fast_forward.svg"
+      },
+      "pauseIcon": {
+        "type": "string",
+        "description": "暂停控制图标素材路径。",
+        "sampleValue": "resources/base/media/pause_fill.svg"
+      },
+      "musicIcon": {
+        "type": "string",
+        "description": "音乐控制图标素材路径。",
+        "sampleValue": "resources/base/media/music_fill.svg"
+      },
+      "calendarIcon": {
+        "type": "string",
+        "description": "日程控制图标素材路径。",
+        "sampleValue": "resources/base/media/calendar_fill.svg"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合用于运动状态识别。",
+      "bindTo": "/assets/runIcon"
+    },
+    {
+      "src": "resources/base/media/fast_forward.svg",
+      "description": "快进图标，适合用于音乐跳过控制。",
+      "bindTo": "/assets/skipIcon"
+    },
+    {
+      "src": "resources/base/media/pause_fill.svg",
+      "description": "暂停图标，适合用于音乐暂停控制。",
+      "bindTo": "/assets/pauseIcon"
+    },
+    {
+      "src": "resources/base/media/music_fill.svg",
+      "description": "音乐图标，适合用于音乐播放控制入口。",
+      "bindTo": "/assets/musicIcon"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历图标，适合用于查看日程事件。",
+      "bindTo": "/assets/calendarIcon"
+    }
+  ]
+}

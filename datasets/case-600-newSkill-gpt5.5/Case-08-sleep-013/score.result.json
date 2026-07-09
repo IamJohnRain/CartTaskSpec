@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-08-sleep-013",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户明确诉求基本全部落实：深色纯色背景、紫色环形进度图、圆心红色'距离目标还差 1小时35分'文字、底部三张深睡/浅睡/REM 小卡片均可见，事件 clickToDeeplink 也正确绑定到底层 Stack。但中心红色文字明显溢出环内圆（详见 layout 扣分），使'圆心写警告'的语义没有完全成立，故扣分。",
+    "aesthetic": "整体配色协调，深色舞台风 + 紫色环 + 红色警告形成清晰对比，底部三张小卡片的标签/数值字号层级清楚。但圆环中心的红色文字字号偏大，与底部卡片的数值字号（fontSize 14 粗体）同质，最强字重出现多次；同时环中心文字被环线穿过，可读性略受影响。",
+    "layout": "截图中可清晰看到：环心红色文字'距离目标还差'左右两端明显溢出环的内圈边界、压到环的紫色描边上；下方的'1小时35分'更是几乎贴着环外圈，左右两端的'1'和'分'几乎触到甚至越过环的紫色描边。原因是 center_warning 列宽被设为 102px、文本宽 90px，远大于 74px 环的内圈直径（约 62px），导致 Stack 居中叠加时文字左右各超出环线约 8–14px。底部三张小卡片布局正常，无截断。"
+  },
+  "issues": [
+    "center_warning 列宽 102px 远大于环形 74px，导致中心文字明显溢出环内圆、压到环线",
+    "warning_value 文本宽度 90px、fontSize 14 时实际渲染宽度约 67px，仍超过环内圈 ~62px",
+    "环心文字与底部三个阶段卡片的数值同为 fontSize 14 / 700 字重，最强字重出现 4 次，层级不够克制",
+    "content_column 同时设置 justifyContent:'start' 与 alignItems:'center' 互相冲突（start 在 main axis，center 在 cross axis），属多余/矛盾样式"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_column\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff191a1c\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"hero_stack\",\"stage_row\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"hero_stack\",\"component\":\"Stack\",\"children\":[\"ring_track\",\"ring_progress\",\"center_warning\"],\"styles\":{\"width\":276,\"height\":74,\"alignContent\":\"center\"}},{\"id\":\"ring_track\",\"component\":\"Progress\",\"value\":\"{{ ${/meter/progressTotal} }}\",\"total\":\"{{ ${/meter/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"width\":74,\"height\":74,\"color\":\"#33ffffff\"}},{\"id\":\"ring_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/meter/progressValue} }}\",\"total\":\"{{ ${/meter/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"width\":74,\"height\":74,\"color\":\"#8c55c2\"}},{\"id\":\"center_warning\",\"component\":\"Column\",\"children\":[\"warning_prefix\",\"warning_value\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"warning_prefix\",\"component\":\"Text\",\"content\":\"{{ ${/meter/warningPrefix} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"warning_value\",\"component\":\"Text\",\"content\":\"{{ ${/meter/warningValue} }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"stage_row\",\"component\":\"Row\",\"children\":[\"deep_card\",\"light_card\",\"rem_card\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":34,\"alignItems\":\"center\"}},{\"id\":\"deep_card\",\"component\":\"Column\",\"children\":[\"deep_label\",\"deep_value\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"deep_label\",\"component\":\"Text\",\"content\":\"{{ ${/phases/deep/label} }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"deep_value\",\"component\":\"Text\",\"content\":\"{{ ${/phases/deep/value} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"light_card\",\"component\":\"Column\",\"children\":[\"light_label\",\"light_value\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"light_label\",\"component\":\"Text\",\"content\":\"{{ ${/phases/light/label} }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"light_value\",\"component\":\"Text\",\"content\":\"{{ ${/phases/light/value} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"rem_card\",\"component\":\"Column\",\"children\":[\"rem_label\",\"rem_value\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":34,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"rem_label\",\"component\":\"Text\",\"content\":\"{{ ${/phases/rem/label} }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"rem_value\",\"component\":\"Text\",\"content\":\"{{ ${/phases/rem/value} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"meter\":{\"progressValue\":345,\"progressTotal\":440,\"warningPrefix\":\"距离目标还差\",\"warningValue\":\"1小时35分\"},\"phases\":{\"deep\":{\"label\":\"深睡\",\"value\":\"1小时20分\"},\"light\":{\"label\":\"浅睡\",\"value\":\"3小时15分\"},\"rem\":{\"label\":\"REM\",\"value\":\"1小时10分\"}}}}}"
+  ]
+}

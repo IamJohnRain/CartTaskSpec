@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求'健身卡、点一下能跳app、能读天气'，截图中可见：标题'健身卡'清晰呈现，深色跑步图标正确调用 figure_run.svg；天气信息'26°C 多云'与'当前位置天气'通过 DataModel 绑定显示；底部绿色'去锻炼'按钮绑定 onClick，call 为 clickToDeeplink，args 中的 bundleName/abilityName/uri 完全等于 eventCandidates。size 为 2x2，root 140x140，borderRadius 18，clip:true，catalogId 'ohos.a2ui.extended.catalog'，version v0.9，updateDataModel.path='/' 均合规。素材 figure_run.svg 与 partly_cloudy.png 按语义正确使用。整体指令落实精准，扣 1 分是因为用户说'天气辅助'作为副标题属于自创文案，但不影响核心信息。",
+    "aesthetic": "截图中整体配色采用淡青绿到草绿的斜向渐变，色调和谐、自然，与'健身'主题契合。黑色跑步图标在浅绿图标框内对比清晰，天气面板采用半透明深色背景形成层次感。字体层级清晰：标题 18px 粗体最强，'26°C 多云' 12px 粗体次之，'天气辅助'与'当前位置天气' 10-12px 常规。文字与背景对比度足够，可读性好。按钮使用饱和绿与白字，对比鲜明。轻微扣分点：图标框背景略偏深，对黑色线性图标的可识别性略有影响；卡片整体留白稍紧。",
+    "layout": "从截图看，140x140 卡片内三段式布局（标题区 42 / 天气区 28 / 按钮区 32）整齐排列，无元素堆叠或重叠；标题'健身卡'、副标题'天气辅助'、天气'26°C 多云'与'当前位置天气'、按钮'去锻炼'文字均完整显示，未被裁切或截断。组件均在卡片边界内，未溢出。Stack 图标框层中 Image 居中显示，未遮挡关键信息。底部按钮下沿到卡片底边距离约为 12vp（padding 12 + 余 2），满足 2x2 不大于 16vp 的要求。轻微扣分：天气区与按钮区之间间距 6vp 略显局促，整体垂直留白可更舒展。"
+  },
+  "issues": [
+    "顶部图标框背景 #0c000000 叠加在绿渐变上使跑步图标略显暗沉，可改为更淡的描边或纯亮色以提高图标可识别度",
+    "卡片整体内容垂直占满 114/116，留白偏紧，顶部和天气区之间的呼吸感可加强",
+    "副标题'天气辅助'为模型自创文案，用户原始指令并未要求，可精简以让位更重要的天气位置信息"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"weather_panel\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#9fdbc6\",0],[\"#8fc88a\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"fitness_icon_frame\",\"title_group\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"fitness_icon_frame\",\"component\":\"Stack\",\"children\":[\"fitness_icon\"],\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"fitness_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/figure_run.svg\",\"styles\":{\"width\":26,\"height\":26,\"objectFit\":\"contain\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":2,\"styles\":{\"width\":72,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"健身卡\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"户外运动\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_panel\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_group\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":30,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":15,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"weather_group\",\"component\":\"Column\",\"children\":[\"weather_summary\",\"weather_location\"],\"itemMargin\":2,\"styles\":{\"width\":78,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_summary\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":78,\"height\":14,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_location\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' · 适宜运动' }}\",\"styles\":{\"width\":78,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去锻炼\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":120,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

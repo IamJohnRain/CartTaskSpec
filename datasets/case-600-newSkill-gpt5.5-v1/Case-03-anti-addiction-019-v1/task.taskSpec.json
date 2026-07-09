@@ -1,0 +1,101 @@
+{
+  "userQuery": "帮我做一个应用使用汇总卡片，背景用跟天气环境相关的渐变色。把今天的各个应用使用时长做个可以上下滚动的重复列表，不同应用用不同底色区块区分开，右上角显示读取的天气数据，底部放个勿扰模式的系统开关，列表里显示绿色的“已达成目标”正向状态，纯文字色块就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气能力返回的区县名称，用于标识当前天气数据位置。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    },
+    "usage": {
+      "apps": {
+        "type": "array",
+        "description": "今天各应用使用时长摘要，按使用时长或关注优先级排序。",
+        "sampleValue": [
+          {
+            "name": "视频",
+            "durationText": "45分钟",
+            "statusText": "已达成目标"
+          },
+          {
+            "name": "游戏",
+            "durationText": "30分钟",
+            "statusText": "已达成目标"
+          },
+          {
+            "name": "社交",
+            "durationText": "28分钟",
+            "statusText": "已达成目标"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个应用使用条目。",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "应用分类或应用名称。",
+              "sampleValue": "视频"
+            },
+            "durationText": {
+              "type": "string",
+              "description": "今天该应用的使用时长展示文本。",
+              "sampleValue": "45分钟"
+            },
+            "statusText": {
+              "type": "string",
+              "description": "该应用使用目标的正向状态展示文本。",
+              "sampleValue": "已达成目标"
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "dndLabel": {
+        "type": "string",
+        "description": "勿扰模式开关标签。",
+        "sampleValue": "勿扰"
+      },
+      "dndEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式当前是否开启。",
+        "sampleValue": false
+      },
+      "dndStatusText": {
+        "type": "string",
+        "description": "勿扰模式当前状态说明。",
+        "sampleValue": "勿扰模式未开启"
+      }
+    }
+  },
+  "assetCandidates": []
+}

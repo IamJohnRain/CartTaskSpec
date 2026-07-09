@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-27-utility-bill-011",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户要求的核心信息大部分已呈现：标题'水电缴费'、三笔账单纵向堆叠、电费'还剩47%'、水费'5天后缴费'、燃气'待支付'、日历'周日午后有空'、点击跳转音乐的 onClick 已挂在 root 上、底色浅黄到红的渐变已生效、闪电/水滴/火焰 SVG 图标都已绑定。但用户明确要求'有快过期的账单要标红提醒'，截图中水费状态'5天后缴费'和燃气状态'待支付'均显示为深黑色而非红色（DSL 中通过 {{ ${.../statusColor} }} 表达式绑定的 #FFE84026 实际未渲染为红色），导致最关键的警示诉求缺失，扣 3 分。",
+    "aesthetic": "截图中卡片整体观感良好：浅黄到红的斜向渐变（RightBottom 方向）自然有层次，白色账单面板与彩色底形成清晰对比，标题加粗、状态文字加粗形成统一字重梯度，留白与对齐也较合理。扣分点：右上角'轻音乐'提示颜色过淡（#99000000 在暖色渐变上识别度偏低），且由于状态文字的红警示色未渲染出来，原本应该出现的'红色告警点'在视觉上完全缺失，缺少了用户预期中的视觉焦点。",
+    "layout": "截图中各元素均落在 140x140 卡片边界内，未观察到文字截断、组件溢出或堆叠重叠：header_row（20 高）+ itemMargin 6 + bill_panel（72 高）+ itemMargin 6 + calendar_row（12 高）= 116，正好等于 140-12*2 的内容区，纵向严丝合缝。白色账单面板内部三行 Row 各 16 高，icon 12 + label 24 + status 60 + 4*2 margin = 104，与面板内容宽 116-6*2 完全对齐。底部'日历：周日午后有空'也清晰位于面板下方渐变背景上，未越界。整体布局干净，仅 calendar_row 文字略贴近右侧边距，但未发生截断。"
+  },
+  "issues": [
+    "水费状态'5天后缴费'和燃气状态'待支付'在截图中未渲染为红色警示色（#FFE84026），而是深黑色，违背用户'有快过期的账单要标红提醒'的明确诉求",
+    "fontColor 上的表达式 {{ ${/data/utility/bills/water/statusColor} }} 在当前渲染管线中未被正确求值为颜色值，建议改为直接色值 #FFE84026 以保证视觉落地",
+    "右上角'轻音乐'提示字色 #99000000 在橙红渐变上对比度偏弱，识别度不足",
+    "水滴图标渲染为简单的圆形轮廓而非典型的水滴形状，与'水'的语义关联略弱（属于 asset 资源选择问题）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"bill_panel\",\"calendar_row\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#F5DC62\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#F5DC62\",0],[\"#F9BC64\",0.62],[\"#E64566\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"music_hint\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"水电缴费\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"music_hint\",\"component\":\"Text\",\"content\":\"轻音乐\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#CC000000\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"bill_panel\",\"component\":\"Column\",\"children\":[\"electric_row\",\"water_row\",\"gas_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":72,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"clip\":true}},{\"id\":\"electric_row\",\"component\":\"Row\",\"children\":[\"electric_icon\",\"electric_label\",\"electric_status\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"electric_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bolt_fill.svg\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"electric_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/utility/bills/electricity/label} }}\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"electric_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/utility/bills/electricity/statusText} }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"water_row\",\"component\":\"Row\",\"children\":[\"water_icon\",\"water_label\",\"water_status\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"water_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/drop_1.svg\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"water_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/utility/bills/water/label} }}\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"water_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/utility/bills/water/statusText} }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"gas_row\",\"component\":\"Row\",\"children\":[\"gas_icon\",\"gas_label\",\"gas_status\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"gas_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/flame_fill.svg\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"gas_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/utility/bills/gas/label} }}\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"gas_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/utility/bills/gas/statusText} }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"calendar_row\",\"component\":\"Text\",\"content\":\"{{ '日历：' + ${/data/calendar/availability/nextFreeSlotText} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"utility\":{\"bills\":{\"electricity\":{\"label\":\"电费\",\"statusText\":\"还剩47%\"},\"water\":{\"label\":\"水费\",\"statusText\":\"5天后缴费\",\"statusColor\":\"#FFE84026\"},\"gas\":{\"label\":\"燃气\",\"statusText\":\"待支付\",\"statusColor\":\"#FFE84026\"}}},\"calendar\":{\"availability\":{\"nextFreeSlotText\":\"周日午后有空\"},\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"sample-calendar-001\",\"title\":\"家庭采购\",\"dtStart\":\"周六 10:00\",\"dtEnd\":\"周六 11:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

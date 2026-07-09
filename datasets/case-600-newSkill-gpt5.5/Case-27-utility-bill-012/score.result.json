@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-27-utility-bill-012",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中可见浅米色卡片底，左侧蓝色水滴色块含大号'水'字与'水电'小标签，右上分区为白色信息卡（标题'水电缴费'+主信息'已用电量327度'），右上状态卡显示绿色'余额充足'与灰色'已确认'，下方横向排列三个色块小指标（黄色'电'、蓝色'水'、绿色'燃气'），底部灰色文字'本月电费已缴'。用户明确点名的字段与结构均完整呈现，全部使用文字+色块无图片。协议约束（size=2x4、catalogId、version、updateDataModel）均合规。eventCandidates 为空故无 onClick 合理。唯一轻微偏差：用户原文'💧大水滴图标'被合理替换为色块化的'水'字符（因协议禁 emoji），属必要替换，不扣分。",
+    "aesthetic": "截图配色协调：浅米色底（#fff1f3f5）与蓝色水滴色块、白色信息卡、淡紫状态卡、黄/蓝/绿三色指标形成层次。文字在各自底色上对比清晰可读，'已用电量327度'为黑色加粗主信息，'余额充足'为绿色突出，'水电缴费'/'已确认'/'本月电费已缴'使用低对比灰色形成次级信息——字重层级清晰，仅一个最强字重。三个小指标胶囊形圆角统一。轻微不足：底部'本月电费已缴'字号 10pt 偏小，视觉重量略弱；'水'字符在蓝色水滴块中视觉占比较大但与下方'水电'对齐良好。",
+    "layout": "截图中未观察到元素堆叠重叠或文字被截切。顶部左右分区（64+8+204=276）刚好填满 276 内容区；信息卡'已用电量327度'（7 字×16pt 约 112vp）在 124 宽卡内完整显示；状态卡'余额充足'+'已确认'上下排列在 72×72 卡内未溢出；三指标 86+8+86+8+88=276 恰好铺满 276 行宽。底部'本月电费已缴'（10pt）水平居中于卡片，垂直方向距卡底留白约 10vp。整体在 140 高度内布局紧凑而未越界，垂直占用 12+72+4+24+4+12+12=140 精确吻合。唯一极轻微问题：第三个指标宽度 88 与前两个 86 存在 2vp 差异，肉眼几乎不可见。"
+  },
+  "issues": [
+    "三个小指标色块宽度 86/86/88 不完全一致，建议统一为 86 或均分宽度以提升视觉一致性",
+    "底部'本月电费已缴'字号 10pt 偏小，建议上调至 12pt 以提升可读性与视觉权重",
+    "状态卡'已确认'使用 #99000000 半透明灰与白色面板对比度偏弱，可改用更深一档"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_section\",\"metric_row\",\"paid_status\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"top_section\",\"component\":\"Row\",\"children\":[\"drop_panel\",\"right_split\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":72,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"drop_panel\",\"component\":\"Column\",\"children\":[\"drop_glyph\",\"drop_label\"],\"itemMargin\":2,\"styles\":{\"width\":64,\"height\":72,\"padding\":[6,6,6,6],\"borderRadius\":24,\"backgroundColor\":\"#86c5e3\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"drop_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/bill/iconText} }}\",\"styles\":{\"width\":52,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"drop_label\",\"component\":\"Text\",\"content\":\"{{ ${/bill/iconLabel} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_split\",\"component\":\"Row\",\"children\":[\"info_panel\",\"status_panel\"],\"itemMargin\":8,\"styles\":{\"width\":204,\"height\":72,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"usage_text\"],\"itemMargin\":6,\"styles\":{\"width\":124,\"height\":72,\"padding\":[10,6,10,6],\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/cardTitle} }}\",\"styles\":{\"width\":112,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"usage_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/usageText} }}\",\"styles\":{\"width\":112,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"balance_status\",\"confirm_text\"],\"itemMargin\":6,\"styles\":{\"width\":72,\"height\":72,\"padding\":[10,4,10,4],\"borderRadius\":16,\"backgroundColor\":\"#190a59f7\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"balance_status\",\"component\":\"Text\",\"content\":\"{{ ${/bill/balanceStatus} }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"confirm_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/confirmText} }}\",\"styles\":{\"width\":64,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"metric_electric\",\"metric_water\",\"metric_gas\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"metric_electric\",\"component\":\"Text\",\"content\":\"{{ ${/bill/metrics/0/label} }}\",\"styles\":{\"width\":86,\"height\":24,\"padding\":[4,8,4,8],\"borderRadius\":12,\"backgroundColor\":\"#f7ce00\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metric_water\",\"component\":\"Text\",\"content\":\"{{ ${/bill/metrics/1/label} }}\",\"styles\":{\"width\":86,\"height\":24,\"padding\":[4,8,4,8],\"borderRadius\":12,\"backgroundColor\":\"#46b1e3\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metric_gas\",\"component\":\"Text\",\"content\":\"{{ ${/bill/metrics/2/label} }}\",\"styles\":{\"width\":86,\"height\":24,\"padding\":[4,8,4,8],\"borderRadius\":12,\"backgroundColor\":\"#64bb5c\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"paid_status\",\"component\":\"Text\",\"content\":\"{{ ${/bill/paidStatus} }}\",\"styles\":{\"width\":276,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"bill\":{\"iconText\":\"水\",\"iconLabel\":\"水电\",\"cardTitle\":\"水电缴费\",\"usageText\":\"已用电量327度\",\"balanceStatus\":\"余额充足\",\"confirmText\":\"已确认\",\"metrics\":[{\"label\":\"电\"},{\"label\":\"水\"},{\"label\":\"燃气\"}],\"paidStatus\":\"本月电费已缴\"}}}}"
+  ]
+}

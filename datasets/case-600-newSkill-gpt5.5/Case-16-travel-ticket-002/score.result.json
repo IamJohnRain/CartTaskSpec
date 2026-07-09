@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-16-travel-ticket-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图中可见完整呈现高铁行程信息：标题'G1234 高铁'、时间'08:16-12:28'、站点'北京南-上海虹桥'，且 header 配以 tram_fill.svg 列车图标；onClick 正确绑定 clickToIntent 并通过 {{...}} 表达式读取 entityId，与 eventCandidates 原样一致；root shell 140x140、borderRadius 18、clip true、catalogId 与 version 协议项均合规。略有减分：'高铁行程'是模型自加的标签，TaskSpec 中并未定义此字段，但信息层面无害；标题 'G1234 高铁' 内部间距略紧但仍可读。",
+    "aesthetic": "截图整体观感清爽：浅蓝渐变背景（#fff1f3f5→#86c5e3）柔和不抢戏，trip_panel 用低透明黑作底营造玻璃卡感，主信息'G1234 高铁'用 16/700 黑字形成最强字重，下方时间与站点用 12 号次级灰度形成清晰层级，底部'查看车票'蓝底白字按钮是唯一彩色焦点，符合'一个最强字重+一个最强色'的克制原则。扣分点：trip_panel 背景 #0c000000 透明度仅 5%，在浅色渐变上几乎不可见，缺少明确的'卡中卡'分隔感；header 文字 #99000000 在浅底上对比度偏弱。",
+    "layout": "从截图看：root padding 12、Column itemMargin 6，纵向累加 12+22+6+54+6+28+12=140 恰好填满，无溢出；header_row、trip_panel、action_hint 三个 Row/Column 在垂直方向上等距对齐，文字均未截断；底部'查看车票'按钮到卡片底边距约 12vp，符合 2x2 8-12vp 要求；Button 热区高度 28vp，可点击区域合理。trip_panel 内部三行文字居中、字号阶梯 16/12/12 清晰，无重叠无截断。扣分点：'G1234 高铁'标题靠右已贴近 trip_panel 右内边距，视觉上略拥挤；'查看车票'按钮热区 28vp 接近 24vp 最小值，理想 40vp 仍有提升空间。"
+  },
+  "issues": [
+    "trip_panel 背景 #0c000000 透明度仅 5%，在浅蓝渐变上几乎不可见，缺少明确的'卡中卡'层次感",
+    "header 文字 '高铁行程' 使用 #99000000，在浅底上对比度偏弱",
+    "'G1234 高铁' 标题靠右已接近 trip_panel 内边距，视觉略拥挤",
+    "'查看车票' Button 热区 28vp 接近最小值，理想应在 36-40vp",
+    "TaskSpec 中并未定义 '高铁行程' 标题文本，模型自加静态标题略有多余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"trip_panel\",\"action_hint\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#86c5e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"train_glyph\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"train_glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/tram_fill.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":90,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"trip_panel\",\"component\":\"Column\",\"children\":[\"primary_time\",\"station_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":60,\"borderRadius\":14,\"backgroundColor\":\"#1a0a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"primary_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":108,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"station_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_hint\",\"component\":\"Row\",\"children\":[\"action_text\"],\"styles\":{\"width\":116,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#ff0a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":\"查看车票\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_train_001\",\"title\":\"G1234 高铁\",\"dtStart\":\"08:16\",\"dtEnd\":\"12:28\",\"eventLocation\":\"北京南-上海虹桥\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

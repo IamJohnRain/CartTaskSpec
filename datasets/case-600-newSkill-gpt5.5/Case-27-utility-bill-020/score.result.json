@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-27-utility-bill-020",
+  "scores": {
+    "instruction": {
+      "score": 4.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.1,
+  "reasons": {
+    "instruction": "用户明确要求展示3条未缴账单（电费、水费、燃气费）且逾期的燃气费整行标红加⚠，但截图中只能看到电费3天、水费3天两行，第三行（⚠燃气费/红色高亮逾期行）完全不可见，用户核心诉求未满足；标题\"缴费提醒\"、主提示\"还有3天就要缴费\"、右上角\"设提醒\"按钮、事件 deeplink 绑定均已落实；卡片整体紫底渐变符合\"夜晚蓝紫渐变\"氛围；纯文字色块无图片要求也满足。",
+    "aesthetic": "浅紫→蓝紫渐变背景观感尚可，白色主标题和主提示文字在紫色背景上对比清晰可读，红色\"立即缴费\"按钮与紫色背景搭配有视觉冲击；但截图中右上角\"设提醒\"按钮内的\"设提醒\"三个字出现明显镜像/反向渲染现象（看上去像\"提醒设\"），下方\"立即缴费\"按钮内的\"立\"字也出现镜像/错位，文字渲染异常严重拉低整体观感；且因第三行被裁切导致卡片下方留白区域被截断显得不完整。",
+    "layout": "截图清晰显示：root 内容区 116×116 内分配了 header_row(24) + primary_value(40) + bill_list(44) + 两个 4vp 间距 = 116，但 bill_list 实际需要 3×24+2×2=76 的高度才能容纳3行账单，而只分配了 44，导致第三条逾期账单行被 clip:true 截掉；按钮内文字出现镜像/反排现象，按钮热区虽 24vp 达标但因文字渲染异常实际可识别度差；排版整体呈现\"上半部分完整、下半部分截断\"的明显布局事故。"
+  },
+  "issues": [
+    "bill_list 高度仅分配 44，但内容需 76，第三条逾期账单行（⚠燃气费/红底）被卡片 clip 完全裁切不可见",
+    "右上角\"设提醒\"按钮内文字渲染出现镜像/反向现象（视觉上读作\"提醒设\"）",
+    "三条\"立即缴费\"按钮内\"立\"字出现镜像/错位，影响可读性",
+    "按钮高度 24vp 在 2x2 高密度布局下挤压严重，与减小后的 16vp 文本仍有 8vp 上下留白浪费",
+    "title_text 宽度 48 在 116 宽容器内、紧贴设提醒按钮，挤压感强"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"bill_list\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#c386f0\",0],[\"#8981f7\",1]]},\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"reminder_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"reminder_button\",\"component\":\"Button\",\"label\":\"{{ ${/card/reminderLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":56,\"height\":20,\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":10}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/card/primaryText} }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textAlign\":\"start\",\"lineHeight\":18}},{\"id\":\"bill_list\",\"component\":\"List\",\"children\":[\"bill_row_0\",\"bill_row_1\",\"bill_row_2\"],\"space\":4,\"styles\":{\"width\":116,\"height\":56,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"bill_row_0\",\"component\":\"Row\",\"children\":[\"bill_name_0\",\"pay_button_0\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"backgroundColor\":\"{{ ${/bills/0/rowBackgroundColor} }}\",\"borderRadius\":6,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"paddingLeft\":6,\"paddingRight\":4}},{\"id\":\"bill_name_0\",\"component\":\"Text\",\"content\":\"{{ ${/bills/0/displayName} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"{{ ${/bills/0/nameColor} }}\",\"maxLines\":1}},{\"id\":\"pay_button_0\",\"component\":\"Button\",\"label\":\"{{ ${/bills/0/payLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"utilitypay://pay/electric\"}}],\"styles\":{\"width\":56,\"height\":16,\"fontSize\":8,\"fontWeight\":\"medium\",\"fontColor\":\"{{ ${/bills/0/payTextColor} }}\",\"backgroundColor\":\"{{ ${/bills/0/payBackgroundColor} }}\",\"borderRadius\":8}},{\"id\":\"bill_row_1\",\"component\":\"Row\",\"children\":[\"bill_name_1\",\"pay_button_1\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"backgroundColor\":\"{{ ${/bills/1/rowBackgroundColor} }}\",\"borderRadius\":6,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"paddingLeft\":6,\"paddingRight\":4}},{\"id\":\"bill_name_1\",\"component\":\"Text\",\"content\":\"{{ ${/bills/1/displayName} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"{{ ${/bills/1/nameColor} }}\",\"maxLines\":1}},{\"id\":\"pay_button_1\",\"component\":\"Button\",\"label\":\"{{ ${/bills/1/payLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"utilitypay://pay/water\"}}],\"styles\":{\"width\":56,\"height\":16,\"fontSize\":8,\"fontWeight\":\"medium\",\"fontColor\":\"{{ ${/bills/1/payTextColor} }}\",\"backgroundColor\":\"{{ ${/bills/1/payBackgroundColor} }}\",\"borderRadius\":8}},{\"id\":\"bill_row_2\",\"component\":\"Row\",\"children\":[\"bill_name_2\",\"pay_button_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"backgroundColor\":\"{{ ${/bills/2/rowBackgroundColor} }}\",\"borderRadius\":6,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"paddingLeft\":6,\"paddingRight\":4}},{\"id\":\"bill_name_2\",\"component\":\"Text\",\"content\":\"{{ ${/bills/2/displayName} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"{{ ${/bills/2/nameColor} }}\",\"maxLines\":1}},{\"id\":\"pay_button_2\",\"component\":\"Button\",\"label\":\"{{ ${/bills/2/payLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"utilitypay://pay/gas\"}}],\"styles\":{\"width\":56,\"height\":16,\"fontSize\":8,\"fontWeight\":\"medium\",\"fontColor\":\"{{ ${/bills/2/payTextColor} }}\",\"backgroundColor\":\"{{ ${/bills/2/payBackgroundColor} }}\",\"borderRadius\":8}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"缴费提醒\",\"primaryText\":\"还有3天\\n就要缴费\",\"reminderLabel\":\"设提醒\"},\"bills\":[{\"displayName\":\"电费 3天\",\"payLabel\":\"立即缴费\",\"rowBackgroundColor\":\"#19ffffff\",\"nameColor\":\"#ffffffff\",\"payBackgroundColor\":\"#e64566\",\"payTextColor\":\"#ffffffff\"},{\"displayName\":\"水费 3天\",\"payLabel\":\"立即缴费\",\"rowBackgroundColor\":\"#19ffffff\",\"nameColor\":\"#ffffffff\",\"payBackgroundColor\":\"#e64566\",\"payTextColor\":\"#ffffffff\"},{\"displayName\":\"⚠燃气费\",\"payLabel\":\"立即缴费\",\"rowBackgroundColor\":\"#e64566\",\"nameColor\":\"#ffffffff\",\"payBackgroundColor\":\"#ffffffff\",\"payTextColor\":\"#e64566\"}]}}}"
+  ]
+}

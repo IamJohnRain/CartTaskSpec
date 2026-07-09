@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-005",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "截图中清晰呈现了用户全部诉求：标题'智能喂食器'、右上角'已连接'状态药丸、左侧带进度环的'68%'出粮比例、'出粮比例'标签、'当前配比 40g/餐'与'18:30 下次出粮'、底部'打开应用'按钮。Button.onClick 已正确绑定 clickToDeeplink/petfeeder://settings，call 与 args 与 eventCandidates 一致。size 2x4、catalogId、version、updateDataModel.path 均为 \"/\" 且 value 与 dataModel 匹配，协议合规。",
+    "aesthetic": "截图中深色背景配绿色（#5ba854）作为成功/进行状态点缀，整体色调统一克制。字号阶梯清晰：标题 14 加粗、68% 主指标 20 加粗、说明文字 12-14、辅助灰 12，前景白色在深色底上对比充分。状态药丸采用半透明白底+绿描边+绿字，层次合理。留白适中，两列布局对齐整齐。仅小幅瑕疵：进度环内的 68% 数字相对 64x64 环可再放大以增强主指标权重，整体观感专业。",
+    "layout": "截图无堆叠、无截断、无溢出。Root 300x140 padding 12 留出 276x116 内容区。header_row 24 + margin 8 + main_row 84 = 116 正好填满。标题 176 宽内 5 个汉字 (14 号) 充裕；状态药丸 72 宽容纳'已连接'居中无截断。main_row 中 meter_col(88) + 12gap + info_col(176) = 276 严格相等。info_col 内 6vp 间距下三行 (18+18+32=68) 加 12 gap 仍能容下 84。底部按钮 92x32 距卡片底边约 8-10vp，CTA 热区充足。唯一可观察小问题是主指标 68% 字 24 高度在 64x64 环内略偏小但无截断。"
+  },
+  "issues": [
+    "进度环内 '68%' 字号(20)相对 64x64 环略小，主指标权重可再提升",
+    "info_col 子项 6vp 间距下三行总高 68+12=80 < 84，配 meter_col 时底部留白稍不均（截图视觉可接受）",
+    "状态药丸与主区域绿色色值一致，可考虑用更深一档绿作为强调色差异（轻微）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_pill\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/device/name} }}\",\"styles\":{\"width\":176,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":72,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#ff5ba854\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/device/connectionText} }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff5ba854\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_col\",\"info_col\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_col\",\"component\":\"Column\",\"children\":[\"meter_stack\",\"ratio_label\"],\"itemMargin\":4,\"styles\":{\"width\":88,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"ratio_progress\",\"primary_value\"],\"styles\":{\"width\":64,\"height\":64,\"alignContent\":\"center\"}},{\"id\":\"ratio_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/device/feedRatio} }}\",\"total\":\"{{ ${/device/feedRatioTotal} }}\",\"styles\":{\"width\":64,\"height\":64,\"type\":\"ring\",\"color\":\"#ff5ba854\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/device/feedRatioText} }}\",\"styles\":{\"width\":56,\"height\":28,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"ratio_label\",\"component\":\"Text\",\"content\":\"{{ ${/device/ratioLabel} }}\",\"styles\":{\"width\":64,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"portion_text\",\"next_feed_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"portion_text\",\"component\":\"Text\",\"content\":\"{{ ${/device/portionText} }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"next_feed_text\",\"component\":\"Text\",\"content\":\"{{ ${/device/nextFeedText} }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/device/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"petfeeder://settings\"}}],\"styles\":{\"width\":100,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#26ffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"智能喂食器\",\"connectionText\":\"已连接\",\"feedRatio\":68,\"feedRatioTotal\":100,\"feedRatioText\":\"68%\",\"ratioLabel\":\"出粮比例\",\"portionText\":\"当前配比 40g/餐\",\"nextFeedText\":\"18:30 下次出粮\",\"actionText\":\"打开应用\"}}}}"
+  ]
+}

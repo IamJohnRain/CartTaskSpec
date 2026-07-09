@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-13-health-reminder-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "用户五条诉求（喝水提醒主题、字叠在背景上、数字可变化、点击进 app、显示已完成）在截图中均有明确呈现：标题'喝水提醒'清晰、'6杯'数字以数据绑定形式显示在蓝色进度环中央、'已完成'状态文字醒目、按压区使用 clickToDeeplink 事件并使用 TaskSpec 中的闹钟 bundleName/abilityName。素材使用 drop_1.svg 与 alarm_fill_1.svg 符合 assetCandidates 语义。尺寸 2x2、root 宽高 140、borderRadius 18、clip true、padding 12、catalogId/version/updateDataModel.path 均合规。仅在视觉细节上略有不足，故扣 1 分。",
+    "aesthetic": "截图中蓝→青绿的对角渐变背景清爽、与喝水主题契合；'6杯'用 20pt 粗体压在蓝色环上形成清晰的'字叠在背景'效果，'已完成'作为最强字重主信息层级明确。但存在两个明显瑕疵：（1）底部'打开提醒'按钮内的 alarm_fill_1.svg 在偏暗的 rgba(0,0,0,0.1) 底色上几乎呈现为一个深色团块，图标细节难以辨识；（2）顶部 drop_1.svg 仅为 16x16，水滴造型偏小不够精致。整体配色和层级合格但按钮区可读性偏弱，扣 1.5 分。",
+    "layout": "截图整体未出现溢出/裁切：140x140 容器内 12+12 padding 留白合适，header_row(20)+6+main_row(58)+6+action_pill(26)=116 正好填满内容区。'6杯'叠在环上、'已完成'/'已喝'/'目标8杯'三行在右侧 50 宽列内字大小 14/12/12 阶梯清晰无截断。底部动作区外框底边到卡片底边 12vp，符合 2x2 ≤16vp 规范，按钮热区约 26vp 满足 ≥24vp 下限。'已完成'文字紧贴进度环右侧、右侧文字栏宽 50 略窄，主信息与环之间留白偏少为可观察到的最明显不足；除此之外无堆叠/截断。"
+  },
+  "issues": [
+    "顶部 leading_icon 仅 16x16，水滴图标在小尺寸下辨识度偏低，建议放大到 18x18",
+    "底部 action_pill 内的 alarm_fill_1.svg 在 #19000000 透明底上呈深色团块，闹钟图标细节不可辨，建议将按钮背景提高到 #26000000 并加深描边到 #4d000000，同时将图标放大到 18x18",
+    "右侧 fact_column 宽 50 偏窄，'已完成'文字与进度环右缘视觉上几乎相连，建议加宽到 52 或减小环到 56 以增加呼吸感",
+    "action_pill 内部 padding 10 偏小，左右内边距可加大到 12 让文字与图标更舒展"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"action_pill\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#92d6cc\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"leading_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"leading_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_gauge\",\"fact_column\"],\"itemMargin\":10,\"styles\":{\"width\":116,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_gauge\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_ring\",\"meter_value\"],\"styles\":{\"width\":54,\"height\":54,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":8,\"total\":8,\"styles\":{\"type\":\"ring\",\"color\":\"#330a59f7\",\"width\":54,\"height\":54}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/meter/progressValue} }}\",\"total\":\"{{ ${/meter/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ff0a59f7\",\"width\":54,\"height\":54}},{\"id\":\"meter_value\",\"component\":\"Text\",\"content\":\"{{ ${/meter/centerLabel} }}\",\"styles\":{\"width\":54,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"fact_column\",\"component\":\"Column\",\"children\":[\"fact_label\",\"fact_value\",\"fact_meta\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"fact_label\",\"component\":\"Text\",\"content\":\"{{ ${/meter/caption} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"fact_value\",\"component\":\"Text\",\"content\":\"{{ ${/support/line1} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"fact_meta\",\"component\":\"Text\",\"content\":\"{{ ${/support/line2} }}\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_pill\",\"component\":\"Row\",\"children\":[\"action_icon\",\"action_text\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":12,\"right\":12},\"borderRadius\":13,\"backgroundColor\":\"#26000000\",\"borderWidth\":1,\"borderColor\":\"#4d000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"喝水提醒\"},\"asset\":{\"primaryIcon\":\"resources/base/media/drop_1.svg\",\"actionIcon\":\"resources/base/media/alarm_fill_1.svg\"},\"meter\":{\"progressValue\":6,\"progressTotal\":8,\"centerLabel\":\"6杯\",\"caption\":\"已喝\"},\"support\":{\"line1\":\"已完成\",\"line2\":\"目标8杯\"},\"action\":{\"label\":\"打开提醒\"}}}}"
+  ]
+}

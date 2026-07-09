@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-29-elderly-care-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户四项诉求均在截图中得到落实：(1) 文字叠背景图效果明确，背景为 icon_weather1.png 太阳云朵图；(2) '多云 28°C' 一行带数字的天气信息清晰可见；(3) 绿色按钮 '拨打 8001' 配 onClick clickToCallPhone(13800008001) 事件，args 原样来自 eventCandidates；(4) 天气文案可读。dataModel 字段 contact.name='妈妈'、phoneTail='8001'、weather.condition='多云'、temperatureText='28°C' 全部正确绑定。size=2x2、root 140x140、borderRadius=18、catalogId/version/updateDataModel.path 均合规。assetCandidates 使用了天气图标作为背景，符合 '亲人关怀场景的天气雨伞图标' 语义。略扣分是因为用户说'一行带数字'，但截图实际呈现的是 '多云 28°C'，'多云'两个字占用较多行宽，在 2x2 小尺寸下让'数字行'的紧凑感略受影响。",
+    "aesthetic": "截图整体观感良好：深色径向渐变（#191a1c → 蓝灰 #467794）配太阳云朵背景，层次自然；白色文字在深色背景上对比度足，可读性好；绿色 CTA 按钮 (#5ba854) 与冷色背景形成温暖点缀，色相和谐；视觉层级清晰——标题 14px 600、主信息 20px 800、按钮 14px medium，主字重唯一。略扣分是天气行的 '多' 字正好压在大太阳光晕上，文字底色被橙黄光晕部分透出，影响了主信息行的纯净度；scrim 用 Text+' ' 字符模拟蒙层（#66000000）虽可达效果但不够专业，可考虑用 Stack 子项或提升不透明度。",
+    "layout": "截图布局基本成立，未见文字截断或卡片边界溢出：title_text 18vp、weather_line 26vp、action_button 32vp，加 itemMargin=8 与 8vp 上下内边距，Column 内容总高 18+8+26+8+32=92vp，居中放置在 116vp 内容区无溢出。Stack 三层（bg_icon → scrim → content_panel）层级正确，content_panel 在最上层，未遮挡关键信息。底部 '拨打 8001' 按钮外底边距卡片底约 12vp，符合 2x2 规范。Button 宽 96vp、高 32vp，热区充足。略扣分是 weather_line '多云 28°C' 文字与背景太阳图形有视觉交叠（'多' 字处），主数值行虽未截断但纯净度被背景图形削弱；scrim 半透明 40% 让背景图标透出，影响主信息层级。"
+  },
+  "issues": [
+    "截图中 weather_line '多云' 的'多'字与背景太阳光晕重叠，主信息行视觉纯净度略受影响",
+    "scrim 用 Text 组件 + ' ' 字符 + backgroundColor 模拟蒙层是非典型做法，且 40% 透明度偏低，可考虑加深至 55%-65% 以提升主信息对比度",
+    "content_panel padding 8vp + itemMargin 8vp 间距略紧，title 与 weather_line 之间视觉上略拥挤",
+    "title_text '妈妈 关怀' 顶端紧贴 scrim 上沿，留白略显局促"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"scrim\",\"content_panel\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#467794\",1]]},\"alignContent\":\"center\"}},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":140,\"height\":140,\"objectFit\":\"cover\",\"opacity\":0.85}},{\"id\":\"scrim\",\"component\":\"Stack\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":16,\"backgroundColor\":\"#a6000000\"},\"children\":[]},{\"id\":\"content_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"weather_line\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":8},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/contact/name} + ' 关怀' }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":100,\"height\":28,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ '拨打 ' + ${/contact/phoneTail} }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"13800008001\"}}],\"styles\":{\"width\":96,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff5ba854\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"contact\":{\"name\":\"妈妈\",\"phoneTail\":\"8001\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\"},\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"多云\"}}}}}}"
+  ]
+}

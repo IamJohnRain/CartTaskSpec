@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-21-stocks-009",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "用户要求盈亏卡片、数字可变化、点击可卖出、亏太多红色提示。截图可见卡片展示了标题'持仓盈亏'、比例'-4.8%'、主数值'¥-860'、警示文字'亏损过大'、渐变'卖出'按钮，数据通过{{}}表达式绑定pnlText/pnlRatioText实现可变，onClick正确引用了clickToDeeplink事件。但用户明确要求的'亏太多就红色提示'在截图中没有体现：警示文字'亏损过大'以及主数值'¥-860'均渲染为深色（#e5000000），而alertColor绑定值#ffed6f21（橙红色）并未实际生效，红色警示这一关键诉求未落地，扣分。",
+    "aesthetic": "截图整体配色干净（白底+橙红渐变按钮），字号层级清晰（32/14/12），排版整齐。但有两个美观问题：1）警示文字'亏损过大'本应是橙红色以强化风险感知，实际渲染为深色，与渐变按钮的橙红色系形成色温割裂；2）卡片内容明显聚集在上半部分，下半部分约40%区域为空白白底，视觉重心严重偏上，留白分布极不均衡，影响整体观感。",
+    "layout": "截图中卡片内容（从'持仓盈亏'到'卖出'按钮）只占用了卡片顶部约60%区域，底部约40%是连续的空白白底——这是因为main_column的justifyContent设为'start'，且内容总高度100+间距16=116刚好填满116的内容区，但视觉上内容紧贴顶部而下方空洞。无文字截断、无元素重叠、按钮热区充足（116x32），但垂直分布严重失衡是2x2小卡片中很突出的布局问题，需要居中或增加内容来平衡。"
+  },
+  "issues": [
+    "警示文字'亏损过大'未渲染为橙红色（用户明确要求'亏太多红色提示'），fontColor的动态绑定未生效",
+    "主数值'¥-860'同样为深色，损失金额未用红色强化，与'亏损过大'警示缺乏视觉呼应",
+    "卡片底部约40%区域为空白，main_column采用justifyContent:'start'导致内容全部贴顶，垂直空间未合理利用",
+    "2x2小卡片仅有5行信息密度偏低，可考虑加入股票名称/代码或迷你走势以填充视觉"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_column\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"header_row\",\"top_divider\",\"primary_value\",\"alert_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"ratio_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"持仓盈亏\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"ratio_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/position/pnlRatioText} }}\",\"styles\":{\"width\":44,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"top_divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/position/pnlText} }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/position/alertText} }}\",\"styles\":{\"width\":116,\"height\":15,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"卖出\",\"enabled\":\"{{ ${/data/position/actionEnabled} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"stockapp://trade/sell\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"borderRadius\":16,\"linearGradient\":{\"direction\":\"Right\",\"colors\":[[\"#ed6f21\",0],[\"#e64566\",1]]}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"position\":{\"pnlText\":\"¥-860\",\"pnlRatioText\":\"-4.8%\",\"alertText\":\"亏损过大\",\"alertColor\":\"#ffed6f21\",\"actionEnabled\":true}}}}}"
+  ]
+}

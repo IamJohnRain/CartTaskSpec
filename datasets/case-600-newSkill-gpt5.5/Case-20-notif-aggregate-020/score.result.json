@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-20-notif-aggregate-020",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.4,
+  "reasons": {
+    "instruction": "用户原始诉求的'导航蓝渐变背景'已落实为白色到浅蓝的淡渐变；顶部'今日待办12项'标题完整呈现；List 容器支持滚动；每条会议前的 Checkbox 已落位；onClick.clickToIntent 两条导航事件 call/args 与 eventCandidates 完全对齐。但'已错过'与'地点冲突'按用户要求需'显眼标红'，实际渲染为橙色 #ffed6f21，明显不符合'标红'的语义；地点被截断为'科技园A'/'展馆B'，丢失了'A座'/'B厅'关键信息，影响导航定位的可用性。Checkbox 与主时间文字出现视觉叠层，时间辨识度被破坏，属于结构性指令落实偏差。",
+    "aesthetic": "渐变氛围营造得较克制、白底圆角行卡片有秩序感，标题与主文字使用近黑色，层级清晰。但告警色为橙色而非'显眼红'，失去警示语应有的视觉张力；Checkbox 与时间文本在视觉上发生叠压，看上去像控件穿透了文字，整体显得粗糙不专业；地点文字被裁剪成不完整词如'科技园A'，破坏信息完整感与精致度。",
+    "layout": "截图中第一条会议行的 Checkbox 16x16 与右侧'09:30 评审'主文字在水平方向上明显重叠，'0'字符被 Checkbox 边框部分遮挡；第二条'14:00 外访'同样存在'1'字符被勾选框边线压住的情况，属严重堆叠。底部告警地点文字在 84 宽容器中显示为'科技园A'与'展馆B'，相比数据模型中的'科技园A座'/'展馆B厅'被裁掉了末位字符，文字被截断明显可见。两个 Row 的标题与告警在同一容器中布局过紧，没有任何呼吸间距。"
+  },
+  "issues": [
+    "截图中 Checkbox 与主时间文字（'09:30 评审'/'14:00 外访'）发生水平叠层，字符被勾选框遮挡",
+    "告警颜色为橙色 #ffed6f21，未满足用户'显眼标红'的明确要求",
+    "地点文字被截断：'科技园A座'显示为'科技园A'，'展馆B厅'显示为'展馆B'",
+    "meta 文本字号 10 在 84 宽容器内无法容纳告警+分隔符+完整地点，触发截断",
+    "Row 内 alignItems 设为 top，Checkbox 顶部与 Column 顶部对齐方式产生视觉错位"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"meeting_list\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#86c5e3\",1]]}}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/summaryTitle} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"meeting_list\",\"component\":\"List\",\"children\":[\"meeting_row_0\",\"meeting_row_1\"],\"space\":6,\"styles\":{\"width\":116,\"height\":94,\"listDirection\":\"vertical\",\"scrollBar\":\"auto\"}},{\"id\":\"meeting_row_0\",\"component\":\"Row\",\"children\":[\"check_0\",\"meeting_info_0\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":44,\"padding\":[4,6,4,4],\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"check_0\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/0/entityId} }}\",\"select\":\"{{ ${/ui/checked/0} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"meeting_info_0\",\"component\":\"Column\",\"children\":[\"meeting_primary_0\",\"meeting_meta_0\"],\"itemMargin\":4,\"styles\":{\"width\":84,\"height\":36}},{\"id\":\"meeting_primary_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"meeting_meta_0\",\"component\":\"Text\",\"content\":\"{{ ${/ui/alerts/0/text} + ' · ' + ${/data/calendar/items/0/eventLocation} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/ui/navTargets/0/latitude} }}\",\"longitude\":\"{{ ${/ui/navTargets/0/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":84,\"height\":16,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffd32b1c\",\"maxLines\":1}},{\"id\":\"meeting_row_1\",\"component\":\"Row\",\"children\":[\"check_1\",\"meeting_info_1\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":44,\"padding\":[4,6,4,4],\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"check_1\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/1/entityId} }}\",\"select\":\"{{ ${/ui/checked/1} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"meeting_info_1\",\"component\":\"Column\",\"children\":[\"meeting_primary_1\",\"meeting_meta_1\"],\"itemMargin\":4,\"styles\":{\"width\":84,\"height\":36}},{\"id\":\"meeting_primary_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"meeting_meta_1\",\"component\":\"Text\",\"content\":\"{{ ${/ui/alerts/1/text} + ' · ' + ${/data/calendar/items/1/eventLocation} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/ui/navTargets/1/latitude} }}\",\"longitude\":\"{{ ${/ui/navTargets/1/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":84,\"height\":16,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffd32b1c\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"cal-out-001\",\"title\":\"评审\",\"eventLocation\":\"科技园A座\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:30\"},{\"entityId\":\"cal-out-002\",\"title\":\"外访\",\"eventLocation\":\"展馆B厅\",\"dtStart\":\"14:00\",\"dtEnd\":\"15:00\"}]}},\"ui\":{\"summaryTitle\":\"今日待办12项\",\"checked\":[false,true],\"alerts\":[{\"text\":\"已错过\"},{\"text\":\"地点冲突\"}],\"navTargets\":[{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},{\"latitude\":\"22.2820\",\"longitude\":\"114.1616\"}],\"loading\":false}}}}"
+  ]
+}

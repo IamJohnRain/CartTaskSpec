@@ -1,0 +1,104 @@
+{
+  "userQuery": "给我做一个磨砂质感的长期目标卡片，带点时间夜晚流逝的渐变效果，中间是个圆环显示“考研倒计时 45 天”，背景读取天气数据用“❄”做图标，上下纵向重复排列我每天的专注时间段，比如“08:00-10:00 英语”、“14:00-16:00 政治”，点卡片能跳到天气应用看适不适合出门背书。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称，用于显示当前天气所在位置。",
+            "sampleValue": "海淀"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "-2°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雪"
+          }
+        }
+      }
+    },
+    "goal": {
+      "title": {
+        "type": "string",
+        "description": "长期目标名称。",
+        "sampleValue": "考研倒计时"
+      },
+      "daysLeft": {
+        "type": "number",
+        "description": "距离目标日期剩余天数。",
+        "sampleValue": 45
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "倒计时环形进度当前值。",
+        "sampleValue": 55
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "倒计时环形进度总值。",
+        "sampleValue": 100
+      }
+    },
+    "focusSessions": {
+      "type": "array",
+      "description": "当天专注时间段摘要，卡片固定展示前两条。",
+      "sampleValue": [
+        {
+          "time": "08:00-10:00",
+          "subject": "英语"
+        },
+        {
+          "time": "14:00-16:00",
+          "subject": "政治"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "string",
+            "description": "专注时间段。",
+            "sampleValue": "08:00-10:00"
+          },
+          "subject": {
+            "type": "string",
+            "description": "该时间段的学习科目。",
+            "sampleValue": "英语"
+          }
+        }
+      }
+    },
+    "asset": {
+      "weatherIcon": {
+        "type": "string",
+        "description": "天气雪花图标素材路径。",
+        "sampleValue": "resources/base/media/snow.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/snow.png",
+      "description": "彩色雪花天气图标，适合表示雪天、寒冷天气和出行前天气提示。",
+      "bindTo": "/asset/weatherIcon"
+    }
+  ]
+}

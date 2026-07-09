@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-28-veggie-price-011",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户核心诉求：顶部大字号'今日菜价'标题醒目；价格区灰底、日历区绿底、按钮区红底，三个区域底色区分明显；红色按钮'存储价格数据待处理'颜色高对比、视觉强调到位；onClick 事件正确指向 com.huawei.hmos.settings 系统的存储设置；日历时间 17:30 正确通过 DataModel 表达式读出；纵向排列了价格行；无渐变。扣分点：1)用户原句提到🥬emoji，但协议明令禁止 emoji，模型遵守协议故未渲染，需在 D1 给予小扣分（无法完全落实的字段属用户表达 vs 协议冲突）；2)用户说'几行'，截图里只有 2 行菜价(白菜 3.2元、青菜 2.8元)，'几'通常指 3+，略显不足。",
+    "aesthetic": "从截图看：1)四级字重层次清晰(18pt 标题/12pt 价格/12ft 日历/10pt 按钮)，最强字重唯一为标题 700，符合单一最强字重原则；2)红/绿/灰/白四色块对比鲜明，红按钮视觉抓眼，符合'做明显点'诉求；3)前景黑字在各色背景上均清晰可读；4)卡片整体居中靠上、留白合理。扣分点：分区底色种类偏多(灰+绿+红+白)略感花哨；按钮字号 10pt 偏小但可读；卡片本身边框在白底画布上几乎不可见，无明显卡片轮廓感(白底卡套白底)，轻微扣分。",
+    "layout": "截图实测布局：标题'今日菜价'顶部对齐、未被裁切；分两条横向分隔线一条在标题与价格区之间、一条在价格区与日历行之间(略细但可见)；价格两行垂直堆叠、对齐整齐；'买菜 日历 17:30'绿色条完整呈现，17:30 数据正确读出；底部红色按钮完整不裁切、距底边约 12-14vp，处于安全锚定区；所有元素均在 140×140 卡片边界内，未见元素溢出/堆叠/重叠；按列宽核算：root 12+22+1+61+26+12+itemMargin*4(2)=142,稍超 140 但渲染宽容通过。扣分点：底部按钮距底边算上 padding 仅 12vp 但视觉上更接近 14-16vp，底部空白略显局促(因为标题和分区间距占了 1+2=3vp，挤压底部空间)；分隔线颜色 #33000000(20%黑) 略细不够'明显分块'。"
+  },
+  "issues": [
+    "用户要求'🥬'前缀的菜价行，但协议禁止 emoji，截图无 emoji 显示",
+    "用户说'中间纵向重复排几行'，截图仅 2 行菜价(白菜、青菜)，'几'通常含 3+ 之意",
+    "divider_top 与 divider_mid 颜色 #33000000(20% 黑) 偏淡，在白底上视觉分隔感不够强",
+    "卡片根背景为 #ffffffff(纯白)，在白底画布上几乎无轮廓感，无法形成'卡片'视觉边界",
+    "底部红按钮距卡片底边约 12vp，按钮热区高度 26vp 紧贴 24vp 安全线，无额外呼吸空间",
+    "Row 内 price_value 文字'3.2元'/'2.8元'设 textAlign:end，但 Row 已用 justifyContent:spaceBetween，存在双重定位策略(轻微冗余)"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"divider_top\",\"market_panel\",\"storage_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff7f4ee\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日菜价\",\"styles\":{\"width\":124,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":124,\"height\":1,\"strokeWidth\":1,\"color\":\"#88000000\"}},{\"id\":\"market_panel\",\"component\":\"Column\",\"children\":[\"price_row_1\",\"price_row_2\",\"price_row_3\",\"divider_mid\",\"schedule_row\"],\"itemMargin\":1,\"styles\":{\"width\":124,\"height\":72,\"padding\":2,\"borderRadius\":8,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"price_row_1\",\"component\":\"Row\",\"children\":[\"price_1_name\",\"price_1_value\"],\"styles\":{\"width\":120,\"height\":14,\"borderRadius\":4,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"price_1_name\",\"component\":\"Text\",\"content\":\"白菜\",\"styles\":{\"width\":50,\"height\":14,\"margin\":{\"left\":4},\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"price_1_value\",\"component\":\"Text\",\"content\":\"3.2元\",\"styles\":{\"width\":50,\"height\":14,\"margin\":{\"right\":4},\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"price_row_2\",\"component\":\"Row\",\"children\":[\"price_2_name\",\"price_2_value\"],\"styles\":{\"width\":120,\"height\":14,\"borderRadius\":4,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"price_2_name\",\"component\":\"Text\",\"content\":\"青菜\",\"styles\":{\"width\":50,\"height\":14,\"margin\":{\"left\":4},\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"price_2_value\",\"component\":\"Text\",\"content\":\"2.8元\",\"styles\":{\"width\":50,\"height\":14,\"margin\":{\"right\":4},\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"price_row_3\",\"component\":\"Row\",\"children\":[\"price_3_name\",\"price_3_value\"],\"styles\":{\"width\":120,\"height\":14,\"borderRadius\":4,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"price_3_name\",\"component\":\"Text\",\"content\":\"土豆\",\"styles\":{\"width\":50,\"height\":14,\"margin\":{\"left\":4},\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"price_3_value\",\"component\":\"Text\",\"content\":\"2.5元\",\"styles\":{\"width\":50,\"height\":14,\"margin\":{\"right\":4},\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"divider_mid\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"color\":\"#88000000\"}},{\"id\":\"schedule_row\",\"component\":\"Row\",\"children\":[\"schedule_label\",\"schedule_time\"],\"styles\":{\"width\":120,\"height\":15,\"borderRadius\":4,\"backgroundColor\":\"#bddb69\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"买菜\",\"styles\":{\"width\":32,\"height\":15,\"margin\":{\"left\":4},\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ '日历 ' + ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":80,\"height\":15,\"margin\":{\"right\":4},\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"storage_button\",\"component\":\"Button\",\"label\":\"存储价格数据待处理\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":124,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#ffe84026\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-buy-001\",\"title\":\"买菜\",\"dtStart\":\"17:30\",\"dtEnd\":\"18:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

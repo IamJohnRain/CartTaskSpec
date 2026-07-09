@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-23-countdown-018",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见：左侧深色块承载主题信息（标题'结婚纪念日'、日期'2016.07.09'、绿色'已达成'状态徽标、'日历同步'来源），右侧白色块承载环形进度与文案'携手走过的73%'及'十周年纪念'说明，背景为蓝紫渐变，所有数据均通过 {{ ${...} }} 从 DataModel 读取，Progress 组件挂载了 clickToDeeplink 事件，参数原样来自 eventCandidates。size=2x4、catalogId、version、updateDataModel.path=/ 等硬约束全部满足。唯一轻微遗憾是左侧深色块叠加的是半透明黑色而非显式品牌色块，'主题色'语义稍弱。",
+    "aesthetic": "截图整体观感良好：蓝紫渐变作为夜晚氛围底色，右侧白色块提供清爽对比，绿色'已达成'徽标点缀恰到好处；字号层级清晰（标题14/700、日期12/400、状态徽标12/700、来源10/400），仅标题与徽标为最强字重，符合'只保留一个最强字重'的进阶建议略偏（两个700），但视觉未显冲突。前景文字在渐变上对比清晰，浅色面板上的深色文字可读性良好。留白密度舒适，对齐统一。",
+    "layout": "截图中未观察到元素堆叠重叠、文字被截断或组件溢出卡片边界：左面板内4个文本项纵向排列整齐（高度合计约 18+16+24+14+3*8=96 + padding 20 = 116，刚好填满），右面板内 ring(60) + 间距 6 + 文案 36 + 间距 8 + 说明 16 + padding 20 ≈ 116，尺寸贴合。环形进度 60×60 热区充足；'携手走过的73%' 在 52×36 容器中以 2 行换行显示，未被裁切。卡内边距与底边距均在协议范围内。唯一微瑕：'携手走过的73%' 换行后视觉重心略偏，换成单行会更利落。"
+  },
+  "issues": [
+    "左侧深色块实际是叠在渐变上的半透明遮罩，未使用显式品牌主题色作为底色，与'主题色块'语义略有偏差",
+    "右侧'携手走过的73%'在 52px 宽容器中换行为 2 行，视觉上略碎，可加宽容器或调小字号实现单行",
+    "标题与状态徽标同时使用 fontWeight=700，存在两个最强字重，与'一张卡片只保留一个最强字重'的最佳实践相违"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#5f58c7\",0.55],[\"#7a5cc6\",1]]},\"alignContent\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"date_text\",\"status_text\",\"source_text\"],\"itemMargin\":8,\"styles\":{\"width\":126,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#cc1a1740\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":106,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"date_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":106,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/view/statusText} }}\",\"styles\":{\"width\":64,\"height\":24,\"padding\":{\"top\":4,\"right\":8,\"bottom\":4,\"left\":8},\"borderRadius\":12,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"日历同步\",\"styles\":{\"width\":106,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#80ffffff\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"meter_row\",\"desc_text\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"progress_ring\",\"progress_copy\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":60,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/view/progressPercent} }}\",\"total\":\"{{ ${/view/progressTotal} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"display_settings\"}}],\"styles\":{\"width\":60,\"height\":60,\"type\":\"ring\",\"color\":\"#8c55c2\"}},{\"id\":\"progress_copy\",\"component\":\"Text\",\"content\":\"{{ '携手走过的' + ${/view/progressText} }}\",\"styles\":{\"width\":64,\"height\":36,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2}},{\"id\":\"desc_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"anniversary-001\",\"title\":\"结婚纪念日\",\"dtStart\":\"2016.07.09\",\"dtEnd\":\"2016.07.09\",\"description\":\"十周年纪念\"}]}},\"view\":{\"progressPercent\":73,\"progressTotal\":100,\"progressText\":\"73%\",\"statusText\":\"已达成\"}}}}"
+  ]
+}

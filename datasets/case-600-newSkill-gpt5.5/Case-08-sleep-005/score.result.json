@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-sleep-005",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户要求睡眠卡片，顶部带数字、点击跳app、读日历、提醒'快撑不住'。截图中可见：顶部行'2项安排'满足'带数字'，'去设置'按钮配置了clickToDeeplink事件满足'跳app'，info_panel读取了calendar数据（items[0]）满足'读日历'，'快撑不住'主警示文案满足'提醒'诉求。但存在数据绑定瑕疵：next_event_text的表达式把dtStart与已经包含时间的title拼接，导致截图中出现'07:30 07:30 早会'，时间重复，明显是字段语义理解错误，扣分。",
+    "aesthetic": "紫色渐变背景过渡自然，白色文字在深紫底上对比清晰，可读性尚可。但有两个明显问题：1) 头部icon_box的白色背景框内sleep_icon未呈现有效图像，截图中只是一个空白白方块，破坏了睡眠主题氛围；2) 下一项文案'07:30 07:30 早会'时间重复，文字不专业。整体配色合格但细节粗糙，缺少睡眠主题的视觉暗示。",
+    "layout": "截图显示无元素堆叠重叠，header_row(24高)、info_panel(48高)、action_button(32高)纵向相加104加上12间距正好填满140高，无溢出。文字未被截断，'快撑不住'、'2项安排'、'去设置'均完整可读。'去设置'按钮底边距卡片底约12vp，符合2x2卡片8-12vp的底部安全区间。布局工整，公式核算与截图一致。"
+  },
+  "issues": [
+    "next_event_text将dtStart与title拼接，但title已包含时间前缀，导致截图中'07:30 07:30 早会'时间重复",
+    "header_row中icon_box的白色背景框内sleep_icon未显示有效图像（截图仅为白方块），破坏睡眠主题",
+    "缺少明确的'睡眠'主题文案或标题，用户说的是睡眠卡片但卡片中除图标外无睡眠相关文字提示"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"info_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#2A1B6B\",0],[\"#6A3AC8\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"sleep_icon\",\"count_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_sleep.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ size(${/data/calendar/items}) + '项安排 · 该休息了' }}\",\"styles\":{\"width\":86,\"height\":20,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"warning_text\",\"next_event_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":48,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#26FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"快撑不住\",\"styles\":{\"width\":104,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"next_event_text\",\"component\":\"Text\",\"content\":\"{{ '下一项：' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-demo-001\",\"title\":\"07:30 早会\",\"dtStart\":\"07:30\",\"dtEnd\":\"08:00\"},{\"entityId\":\"calendar-demo-002\",\"title\":\"09:00 站会\",\"dtStart\":\"09:00\",\"dtEnd\":\"09:20\"}]}}}}"
+  ]
+}

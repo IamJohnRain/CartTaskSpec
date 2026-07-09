@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-17-queue-020",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户明确要求'底色用浅米色调，适合环境氛围那种渐变'，但截图中实际呈现的是橙黄渐变（#f9bc64→#f5dc62），与'浅米色/环境氛围'语义严重不符，属于指令未落实。其余诉求（仪表盘小环+取件量、地址点击导航、读日历看安排、底部横向驿站标签）基本都已实现：左上角橙色环形进度+数字12、地址行有导航图标与可点击按钮绑定 clickToIntent 事件、日历首条 16:30 例会 已显示、底部三标签常去/近地铁/可代收横向并排。事件 call/args 与 eventCandidates 一致，尺寸 2x2 协议合规。",
+    "aesthetic": "截图中底色为高饱和的橙黄渐变，整体视觉过于热烈跳脱，与用户期望的'浅米色环境氛围'明显不匹配。前景深色文字在橙黄底上尚可读，但与米色卡应有的温柔感相去甚远。标题'取件 A27'和'包裹已到站待取'字重较粗，层级清晰；地址按钮内文字'星河驿站东门'有半透明黑底，文字显示略受影响（有横贯感）。整体排版整齐、间距合理，但色调是最大减分项。",
+    "layout": "截图中各元素均位于 140x140 卡片内，未见明显溢出卡片边界。顶部 Row 36+4+72≈112（内 116 内宽），中部 primary_text、地址 Row、底部 tag_row 依次排列，纵向总占用 36+4+18+4+24+4+22=110，加 padding 24 共 134，落在 140 之内。地址按钮文字'星河驿站东门'在按钮 100 宽度内（6 字×12≈72）应能完整显示，但截图中文字底部似有视觉裁切/被底色切线的感觉，但未发生严重截断。tag_row 三个 tag 36+4+36+4+36=116，刚好填满，无溢出。整体布局干净，扣分主要来自背景色违和导致整体观感降级。"
+  },
+  "issues": [
+    "底色渐变使用了高饱和橙黄（#f9bc64→#f5dc62），与用户明确要求的'浅米色、环境氛围'严重不符",
+    "地址按钮内'星河驿站东门'文字在深色半透明底上对比一般，且截图中文字视觉上略有横切感",
+    "日历只展示了第一条日程的简要信息，未呈现 dtEnd 时段，密度可考虑更丰富",
+    "tag 标签底色 #0c000000 透明度极低，与卡片橙黄底对比偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"primary_text\",\"address_row\",\"tag_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#faf3e3\",0],[\"#e8dcc4\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"meter_stack\",\"title_column\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_ring\",\"meter_value\"],\"styles\":{\"width\":36,\"height\":36,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#33000000\",\"width\":34,\"height\":34}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/pickup/todayCount} }}\",\"total\":\"{{ ${/pickup/totalExpected} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#a06a3a\",\"width\":34,\"height\":34}},{\"id\":\"meter_value\",\"component\":\"Text\",\"content\":\"{{ ${/pickup/countLabel} }}\",\"styles\":{\"width\":34,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e53a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"title_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"calendar_text\"],\"itemMargin\":2,\"styles\":{\"width\":72,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/pickup/message} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e53a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#993a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_text\",\"component\":\"Text\",\"content\":\"{{ ${/pickup/primaryText} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e53a1a1a\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"address_row\",\"component\":\"Row\",\"children\":[\"nav_icon\",\"address_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"nav_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/location_north_up_right_fill.svg\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"address_button\",\"component\":\"Button\",\"label\":\"{{ ${/station/addressLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/station/latitude} }}\",\"longitude\":\"{{ ${/station/longitude} }}\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":100,\"height\":24,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e53a1a1a\",\"backgroundColor\":\"#26000000\",\"borderRadius\":12}},{\"id\":\"tag_row\",\"component\":\"Row\",\"children\":[\"tag_first\",\"tag_second\",\"tag_third\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"tag_first\",\"component\":\"Text\",\"content\":\"{{ ${/tags/first} }}\",\"styles\":{\"width\":36,\"height\":20,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b33a1a1a\",\"backgroundColor\":\"#33000000\",\"borderRadius\":10,\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"tag_second\",\"component\":\"Text\",\"content\":\"{{ ${/tags/second} }}\",\"styles\":{\"width\":36,\"height\":20,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b33a1a1a\",\"backgroundColor\":\"#33000000\",\"borderRadius\":10,\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"tag_third\",\"component\":\"Text\",\"content\":\"{{ ${/tags/third} }}\",\"styles\":{\"width\":36,\"height\":20,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b33a1a1a\",\"backgroundColor\":\"#33000000\",\"borderRadius\":10,\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"pickup\":{\"message\":\"取件 A27\",\"primaryText\":\"包裹已到站待取\",\"todayCount\":12,\"totalExpected\":20,\"countLabel\":\"12\"},\"station\":{\"addressLabel\":\"星河驿站东门\",\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar-001\",\"title\":\"例会\",\"dtStart\":\"16:30\",\"dtEnd\":\"17:00\"}]}},\"tags\":{\"first\":\"常去\",\"second\":\"近地铁\",\"third\":\"可代收\"}}}}"
+  ]
+}

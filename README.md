@@ -146,10 +146,11 @@ Remove-Item -Recurse -Path "D:\tmp\a2ui\a2ui-render-shots\"
 
 3. 使用大模型对结果进行打分，同时反思迭代
 ```shell
-python scripts/build_score.py -d datasets/cases-600-mix-codex-gpt-5.5-high/ -v datasets/case-600-newSkill-gpt5.5/ -j 10
+python scripts/build_score.py -d /d/tmp/a2uitest/ -v /d/tmp/a2uitest-v1/ -j 10
 ```
 
 4. 输出分数报告
 ```
-python scripts/build_score.py -d datasets/cases-600-mix-codex-gpt-5.5-high/ -x datasets/cases-600-mix-codex-gpt-5.5-high/cases-600-mix-codex-gpt-5.5-high.xlsx
+python scripts/build_score.py -d datasets/case-600-newSkill-gpt5.5/ -x datasets/case-600-newSkill-gpt5.5/case-600-newSkill-gpt5.5.xlsx
 ```
+

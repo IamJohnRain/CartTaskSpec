@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-30-pet-feeder-007",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户四点诉求均在截图中可验证：(1) 喂食清单标题'喂食清单'清晰可见；(2) 两个可勾选项'早粮'(已勾)/'晚粮'(未勾) 通过 Checkbox 呈现勾选状态；(3) 余粮数字'2.4kg'以加粗大字号展示，并通过 {{/feeder/remainingText}} 绑定数据可动态变化；(4) '天气'按钮带 onClick.clickToDeeplink 事件，call 与 args 原样来自 eventCandidates。截图右上'多云'额外呼应天气主题。尺寸 140x140、catalogId、version、updateDataModel.path='/' 等硬约束均满足。",
+    "aesthetic": "截图整体观感克制专业：深色右下角紫调渐变背景与白色文字对比清晰，可读性良好；'2.4kg'大号白字、'喂食清单'加粗白字形成清晰字号阶梯；绿色对勾底板在深色背景中识别度高。略不足：图标白底圆角矩形与底部'天气'按钮的半透明白色块同时存在，视觉节奏略有重复；'多云'灰色文字在紫调区域对比稍弱。",
+    "layout": "截图显示无任何元素溢出 140x140 卡片边界、无文字截断、无堆叠遮挡：头部'图标+标题+天气'横向并排整齐；两个 Checkbox 纵向间距均匀；底部'余粮/2.4kg'与'天气'按钮左右分布合理，按钮热区 62x32 充足。受保护字段（标题、CTA'天气'、主指标'2.4kg'、任务名）均完整呈现。仅有的小瑕疵是底部按钮底边距卡片下沿约 8vp，处在合理范围内。整体排版干净。",
+    "improved_notes": "原始 DSL 各项布局计算（header 20+6+58+6+26=116，bottom 48+6+62=116，column 总高 114+24=138）均落在 116/140 容差内，无需结构性调整；改进版仅微调颜色对比与对齐，让'多云'略提亮、checkbox 间距更舒展。"
+  },
+  "issues": [
+    "右上'多云'文字使用 #99FFFFFF（≈60%不透明白色），落在右下紫色渐变区时对比度偏低，建议提到 #B3FFFFFF 以上",
+    "icon_shell 白色底板与底部'天气'按钮的 #19FFFFFF 半透明白底视觉元素重复，节奏略显雷同",
+    "task_0/task_1 高度 23 在视觉上略显紧凑，勾选态绿色方块与文字 baseline 间距可更舒展"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"task_list\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#FF191A1C\",0],[\"#FF202224\",0.55],[\"#634794\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_shell\",\"title_text\",\"weather_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"icon_shell\",\"component\":\"Stack\",\"children\":[\"check_icon\"],\"styles\":{\"width\":20,\"height\":20,\"borderRadius\":6,\"backgroundColor\":\"#E5FFFFFF\",\"alignContent\":\"center\"}},{\"id\":\"check_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/title} }}\",\"styles\":{\"width\":58,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":26,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"task_list\",\"component\":\"Column\",\"children\":[\"task_0\",\"task_1\"],\"itemMargin\":5,\"styles\":{\"width\":116,\"height\":52,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"task_0\",\"component\":\"Checkbox\",\"label\":\"{{ ${/feeder/tasks/0/title} }}\",\"value\":\"morning\",\"group\":\"feedTasks\",\"select\":\"{{ ${/feeder/tasks/0/done} }}\",\"styles\":{\"width\":116,\"height\":23,\"selectedColor\":\"#FF5BA854\",\"unSelectedColor\":\"#33FFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"task_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/feeder/tasks/1/title} }}\",\"value\":\"evening\",\"group\":\"feedTasks\",\"select\":\"{{ ${/feeder/tasks/1/done} }}\",\"styles\":{\"width\":116,\"height\":23,\"selectedColor\":\"#FF5BA854\",\"unSelectedColor\":\"#33FFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"grain_col\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"grain_col\",\"component\":\"Column\",\"children\":[\"grain_label\",\"grain_value\"],\"itemMargin\":2,\"styles\":{\"width\":48,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"grain_label\",\"component\":\"Text\",\"content\":\"余粮\",\"styles\":{\"width\":48,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"grain_value\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/remainingText} }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":62,\"height\":32,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"喂食清单\",\"tasks\":[{\"title\":\"早粮\",\"done\":true},{\"title\":\"晚粮\",\"done\":false}],\"remainingText\":\"2.4kg\"},\"data\":{\"weather\":{\"current\":{\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

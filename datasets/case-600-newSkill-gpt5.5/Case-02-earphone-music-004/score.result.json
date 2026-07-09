@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-02-earphone-music-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求：①耳机卡（标题'耳机音乐'已渲染）；②按钮要有（'打开音乐'白色胶囊按钮已渲染）；③点进去能跳app（Button.onClick 使用了 eventCandidates 中的 clickToDeeplink 及完整 uri，参数原样）；④提醒快没电（'18%'中心标签 + '快没电''及时充电'两行提示均已渲染）。size 2x2、catalogId、version、updateDataModel.path/值等硬约束均满足。仅极小瑕疵：进度环填充段在截图中不够醒目。",
+    "aesthetic": "截图中暖橙色径向渐变与白色主文字对比度好，整体观感专业克制；标题/进度/事实列/按钮四层结构清晰；字号阶梯 12/14/20 合理且主字重只有一个（14/20 加粗），对齐统一。扣分点：①进度环 18% 的高亮弧与半透明轨道对比偏弱（白色叠加白色），视觉上读不出'快没电'的紧迫感；②'电量'与'及时充电'用 #99ffffff 在橙色背景上略偏灰，可读但缺乏状态色。",
+    "layout": "截图未观察到任何文字裁切、堆叠或溢出。Column 纵向核算：12(padding-top)+18(header)+6(margin)+54(main)+6(margin)+32(button)+12(padding-bottom)=140 恰好贴合；Row 横向：54+8+54=116 与 main_row 宽度一致。按钮底边到卡片底边=12vp，落在 8-12vp 区间。受保护文本（标题'耳机音乐'、状态'快没电'、CTA'打开音乐'、主指标'18%'）均完整可见，Stack 叠层未遮盖关键信息。整体布局干净。"
+  },
+  "issues": [
+    "进度环 18% 高亮弧与 #33ffffff 半透明轨道均为白色系，截图中填充段不够醒目，弱化了'快没电'的警示感",
+    "事实列的'电量'和'及时充电'辅助文字使用 #99ffffff（约60%不透明白），在橙色背景上略灰，可考虑降低不透明度或改用更柔的暖白以提升精致感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffed6f21\",0],[\"#f9a01e\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\"],\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_gauge\",\"fact_column\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_gauge\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_ring\",\"meter_value\"],\"styles\":{\"width\":54,\"height\":54,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#1affffff\",\"width\":54,\"height\":54}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/meter/progressValue} }}\",\"total\":\"{{ ${/meter/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":54,\"height\":54}},{\"id\":\"meter_value\",\"component\":\"Text\",\"content\":\"{{ ${/meter/centerLabel} }}\",\"styles\":{\"width\":54,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"fact_column\",\"component\":\"Column\",\"children\":[\"fact_label\",\"fact_value\",\"fact_meta\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"fact_label\",\"component\":\"Text\",\"content\":\"{{ ${/meter/caption} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"fact_value\",\"component\":\"Text\",\"content\":\"{{ ${/support/line1} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"fact_meta\",\"component\":\"Text\",\"content\":\"{{ ${/support/line2} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"耳机音乐\"},\"meter\":{\"progressValue\":18,\"progressTotal\":100,\"centerLabel\":\"18%\",\"caption\":\"电量\"},\"support\":{\"line1\":\"快没电\",\"line2\":\"及时充电\"},\"action\":{\"label\":\"打开音乐\"}}}}"
+  ]
+}

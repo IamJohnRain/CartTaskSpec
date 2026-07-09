@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-012",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.3,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户明确诉求基本都得到落实：橙色紧迫渐变背景、环形图显示 82% 存储、两条带图标+勾选的待清理项（视频/图片）、日历风险提示（明日会议拍照空间紧张）、跳系统存储设置按钮；onClick 事件原样来自 eventCandidates，资源素材也分别对应视频和图片。但底部主 CTA「存储设置」文字底部被明显裁切（截图中显示成「存储设罢」），导致主操作文字不可完整识别，扣分；另用户提到「磨砂质感」在截图中仅表现为平滑橙色渐变，未能体现质感，扣少许分。",
+    "aesthetic": "截图中橙色渐变方向自然、与紧迫主题契合，环形图白色描边在橙底上对比清晰，「可清 3.8GB」「18GB 可用」等次级文字层级合理。但底部白色按钮内「存储设置」文字底部被截断（看起来像「存储设罢」），严重影响主 CTA 的视觉可读性，是该卡片最明显的美观瑕疵；环形图与右侧清理项的对齐稍显偏紧，整体留白略不均衡。",
+    "layout": "截图中可观察到：①底部 Button 高度 24vp 内放 12px 文字，文字底部被裁切，最后一字「置」下边缺失；②清理列 cleanable_text「可清 3.8GB」与「18GB 可用」在视觉上呈左右并列但左列文字偏上、右列文字偏下，未严格水平对齐；③左上角环形图占满 56×56 与右侧两个 20 高的勾选行高度不匹配，造成 main_row 上下空白分布不对称。其余元素均无明显溢出，文字未超卡片边界。综合存在 CTA 文字裁切这一核心布局问题，扣较多分。"
+  },
+  "issues": [
+    "底部主 CTA Button 文字「存储设置」底部被裁切，最后一字「置」下半部分缺失，呈「存储设罢」样",
+    "用户要求的「磨砂质感」在截图中未体现，仅为平滑橙色渐变",
+    "左侧 18GB 可用 与右侧 可清 3.8GB 水平基线不齐，视觉对齐不统一",
+    "环形图 56×56 与右侧两个 20 高度的勾选行高度差较大，main_row 内上下留白不均"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"risk_text\",\"settings_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_col\",\"cleanup_col\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":68,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_col\",\"component\":\"Column\",\"children\":[\"meter_stack\",\"available_text\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":68,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"usage_ring\",\"used_percent_text\"],\"styles\":{\"width\":56,\"height\":54,\"alignContent\":\"center\"}},{\"id\":\"usage_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/storage/usedPercent} }}\",\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":56,\"height\":56}},{\"id\":\"used_percent_text\",\"component\":\"Text\",\"content\":\"{{ ${/storage/usedPercentText} }}\",\"styles\":{\"width\":44,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"available_text\",\"component\":\"Text\",\"content\":\"{{ ${/storage/availableText} }}\",\"styles\":{\"width\":58,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"cleanup_col\",\"component\":\"Column\",\"children\":[\"video_row\",\"photo_row\",\"cleanable_text\"],\"itemMargin\":3,\"styles\":{\"width\":54,\"height\":68,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"video_row\",\"component\":\"Row\",\"children\":[\"video_icon\",\"video_check\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":20,\"padding\":{\"left\":2,\"right\":2},\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"video_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/play_fill.svg\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":4}},{\"id\":\"video_check\",\"component\":\"Checkbox\",\"label\":\"{{ ${/cleanup/items/0/name} }}\",\"value\":\"{{ ${/cleanup/items/0/name} }}\",\"select\":\"{{ ${/cleanup/items/0/selected} }}\",\"styles\":{\"width\":36,\"height\":18,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"photo_row\",\"component\":\"Row\",\"children\":[\"photo_icon\",\"photo_check\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":20,\"padding\":{\"left\":2,\"right\":2},\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"photo_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_watermark.png\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":4}},{\"id\":\"photo_check\",\"component\":\"Checkbox\",\"label\":\"{{ ${/cleanup/items/1/name} }}\",\"value\":\"{{ ${/cleanup/items/1/name} }}\",\"select\":\"{{ ${/cleanup/items/1/selected} }}\",\"styles\":{\"width\":36,\"height\":18,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"cleanable_text\",\"component\":\"Text\",\"content\":\"{{ ${/cleanup/cleanableText} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"risk_text\",\"component\":\"Text\",\"content\":\"明日{{ ${/data/calendar/items/0/title} }}空间紧张\",\"styles\":{\"width\":116,\"height\":14,\"borderRadius\":7,\"backgroundColor\":\"#33ffffff\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"settings_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/settingsLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"padding\":{\"top\":4,\"bottom\":4}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"storage\":{\"usedPercent\":82,\"usedPercentText\":\"82%\",\"availableText\":\"18GB 可用\"},\"cleanup\":{\"items\":[{\"name\":\"视频\",\"selected\":true},{\"name\":\"图片\",\"selected\":true}],\"cleanableText\":\"可清 3.8GB\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日程\",\"entityId\":\"calendar_meeting_photo_001\",\"title\":\"会议拍照\",\"dtStart\":\"10:00\",\"dtEnd\":\"11:00\"}]}},\"action\":{\"settingsLabel\":\"存储设置\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

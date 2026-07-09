@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-30-pet-feeder-010",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.3,
+  "reasons": {
+    "instruction": "用户要求做喂食器提醒卡、点击导航去宠物店、要红色警告，三项诉求均完整落地：截图中红色告警面板承载 title/status/detail/portion，右侧面板含 storeHint 与橙色 '导航' 按钮，onClick 的 call/args 原样使用 eventCandidates 中的 clickToDeeplink 与 petstore://nearby/navigation；尺寸 2x4（300x140）、catalogId、version、updateDataModel 全部合规。仅有极轻微可改进点：portion 文本在红底上用 60% 白字虽可见但对比度略显不足，storeHint 在浅灰底用 60% 黑字对比度也偏弱。",
+    "aesthetic": "截图整体配色和谐：红色告警面板传递警告语义，橙红色 CTA 与背景形成同色系但更亮的关系，白色文字在红底上清晰，'余粮不足' 用 20pt 加粗做强层级，'喂食器提醒' 14pt 次级标题，再以 12pt 弱化 detail/portion，层级清晰；右侧浅灰面板与橙按钮形成主次关系，留白舒适，对齐统一。仅小幅扣分：portion 与 storeHint 的弱化色对比度略低，右侧面板因高度 116 但内容仅约 80 而使 storeHint 与按钮整体居中后上下各留较多空隙，视觉密度略疏。",
+    "layout": "截图无堆叠/截断/溢出：红色面板宽 188、右侧 80，加 gap=8 与两侧 padding=12 恰为 300；面板内 padding=10 + 4 行文本(18+24+18+18) + 3×gap=6 = 96，加 20 上下 padding 共 116 严丝合缝。'距下一餐 15 分钟'、'今日已喂 2/3 餐'、'附近宠物店'、'导航' 全部完整可读；'导航' 按钮 64×36 接近推荐 40vp 热区；底部锚定在卡片内合理范围。唯一可微调：右面板在 116 高度内只容纳约 80 高度内容，居中后上下各有 ~18 空隙略显空旷（不算缺陷）。"
+  },
+  "issues": [
+    "portion_text 用 99ffffff（约 60% 白）在红底上对比度偏低，弱化层级的同时略影响可读性",
+    "store_hint 用 99000000（60% 黑）在浅灰底上对比度也偏弱",
+    "action_panel 高度 116 但内容仅约 80，居中后上下各留较多空隙，视觉密度略疏",
+    "action_button 高度 36 略低于理想 40vp 热区，可微调"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"alert_panel\",\"action_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fffafafa\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\",\"detail_text\",\"portion_text\"],\"itemMargin\":6,\"styles\":{\"width\":188,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#ffe84026\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/title} }}\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/status} }}\",\"styles\":{\"width\":168,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"detail_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/detail} }}\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"portion_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/portion} }}\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"store_hint\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":80,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#f2f2f3\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"store_hint\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/storeHint} }}\",\"styles\":{\"width\":64,\"height\":32,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"textAlign\":\"center\",\"maxLines\":2}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/feeder/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"petstore://nearby/navigation\"}}],\"styles\":{\"width\":64,\"height\":40,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffed6f21\",\"borderRadius\":20}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"喂食器提醒\",\"status\":\"余粮不足\",\"detail\":\"距下一餐 15 分钟\",\"portion\":\"今日已喂 2/3 餐\",\"storeHint\":\"附近宠物店\",\"actionLabel\":\"导航\"}}}}"
+  ]
+}

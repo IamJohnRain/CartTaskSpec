@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-23-countdown-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中清晰呈现了倒计时主体'还有 23 天'（含数字的一行话）、纪念日标题'结婚纪念日'、目标日'08月01日'、'本机日历'来源以及绿色'拨打电话'按钮。点击事件 onClick.call=clickToCallPhone、args.phoneNumber=10086 与 eventCandidates 完全一致；DataModel 路径 /data/calendar/items/0/* 与 /contact/phoneNumber 表达正确，updateDataModel.path='/' 与 value 完整还原。2x4 尺寸、catalogId、version、clip 等硬约束均满足。仅微瑕：日历读取未显示 dtEnd 之外的更丰富字段（itemMargin/dtEnd 已用，但日期范围信息不够显眼）。",
+    "aesthetic": "截图整体观感较好：橙黄渐变背景温暖和谐，深色文字与背景对比清晰可读。32pt 倒计时主数值作为唯一最强字重，层级分明；右侧半透明深色面板营造出'信息抽屉'的层次感，绿色按钮在橙底上跳脱醒目。留白节奏舒适，左主右辅的布局对齐统一。微调空间：'本机日历'/'全天'字号 12pt 偏小且与左侧 caption 区分度一般，可通过字重或颜色进一步拉开。",
+    "layout": "截图未观察到任何文字截断、元素堆叠或溢出：标题'结婚纪念日'完整显示，主数值'还有 23 天'未被裁切，'倒计时纪念日'与'目标日 08月01日'分行清晰；右侧面板内'本机日历'、'全天'、绿色按钮均完整呈现，按钮未被裁切。底部按钮底边距卡片底边约 10vp（在 2x4 推荐 10-14vp 范围内）。Row 宽度 164+12+100=276 与 content_row 276 一致，无溢出风险。整体布局干净稳定。"
+  },
+  "issues": [
+    "右侧面板内 source_text 与 time_text 字号均为 12pt 且字重接近（600/400），视觉层级略弱",
+    "主列中'倒计时纪念日'为静态文案，与'目标日 08月01日'功能重复，可考虑合并或差异化",
+    "按钮热区高度 32vp 良好，但宽度 84vp 在 4 字符汉字下偏紧，长文案易贴边"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9a01e\",0],[\"#f9bc64\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"date_line\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":164,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":164,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"date_line\",\"component\":\"Text\",\"content\":\"{{ '目标日 ' + ${/data/calendar/items/0/dtStart} + ' · ' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"source_text\",\"divider\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":100,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"borderWidth\":1,\"borderColor\":\"#33000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/senderName} }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":60,\"height\":1,\"backgroundColor\":\"#33000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"拨打电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/phoneNumber} }}\"}}],\"styles\":{\"width\":80,\"height\":34,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"结婚纪念日\",\"description\":\"还有 23 天\",\"dtStart\":\"08月01日\",\"dtEnd\":\"全天\",\"senderName\":\"本机日历\",\"entityId\":\"calendar-anniversary-001\",\"importantEventType\":2}]}},\"contact\":{\"phoneNumber\":\"10086\"}}}}"
+  ]
+}

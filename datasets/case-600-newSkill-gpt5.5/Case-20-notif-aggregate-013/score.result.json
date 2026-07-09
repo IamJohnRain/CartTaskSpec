@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-20-notif-aggregate-013",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "用户要求天气主视觉在上、分组用分隔线、倒计时格式'距离X还有Y天'、白底+顶部深蓝紫渐变+临近项标黄、文字字符做图标+纵向排列。截图中：天气块、渐变、纵向布局、字符图标(夜/钉/课)、白色背景、分隔线、黄色提醒等均落实，onClick 也按 eventCandidates 写好。但用户最强调的'距离交作业还有3天'格式被截断，黄色行只剩'距离交作业还有'(丢'3天')，灰色行只剩'距离小测还有1'(丢'天')——核心倒计时信息未完整呈现，严重扣分。另外'临近'的判定与原色并不严格匹配(1天更临近却为灰,3天反而为黄)，按字面'临近的标黄'应让1天行变黄。",
+    "aesthetic": "紫色渐变协调，黄色高亮与灰色低亮形成清晰的紧急度层级，文字在背景上对比清晰可读。但两张消息行尾部倒计时'3天'/'天'被截断破坏整体观感；卡片下半部留有大片空白(约 40-50px 高度)使整体显得头重脚轻、不够紧凑专业。",
+    "layout": "截图中两张消息行的倒计时数字被右端裁切：黄行'距离交作业还有'后缺少'3天'，灰行'距离小测还有1'后缺少'天'，这是 Row 内 message_text 宽度 88 不足以容纳 8 个中文字+数字(估算约 91px)导致的硬截断。卡片下半部(约 50px 高度)为完全空白，而上方内容区被压缩在顶部约 100px 内——root Column justifyContent:'start' 把三块堆在顶部，但 hero_panel+divider+message_panel 三块总高 108+padding 24+itemMargin 8=140 理论上填满，实际渲染仍可见大量空白，说明 root 实际高度并未被填满或卡片显示比例异常。底部消息行没有共享下边距锚定到卡片边缘。"
+  },
+  "issues": [
+    "黄色消息行倒计时'3天'被右端裁切，仅显示'距离交作业还有'",
+    "灰色消息行倒计时'天'被右端裁切，仅显示'距离小测还有1'",
+    "message_text 宽度(88)与字号(12)不匹配完整文本宽度(≈91px)，应缩字号或加宽容器",
+    "卡片底部约 1/3 区域为空白，hero_panel 与 message_panel 占比过小，视觉重心偏高",
+    "'临近标黄'逻辑与数据不符：1天比3天更临近，但3天行被标黄",
+    "message_panel 整体挂一个 onClick，两行共享同一 entityId，无法分别跳转到各自日程"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_panel\",\"hero_divider\",\"message_panel\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"weather_glyph\",\"weather_value\",\"weather_place\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":68,\"padding\":{\"top\":4,\"right\":6,\"bottom\":4,\"left\":6},\"borderRadius\":14,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#3a3a8c\",0],[\"#6a3aa0\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/ui/glyphs/weather} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":108,\"height\":20,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_place\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#a8c8e8ff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"hero_divider\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#22000000\"}},{\"id\":\"message_panel\",\"component\":\"Column\",\"children\":[\"message_row_1\",\"group_divider\",\"message_row_0\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":49,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"message_row_0\",\"component\":\"Row\",\"children\":[\"source_glyph_0\",\"message_text_0\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":20,\"padding\":{\"left\":3,\"right\":3},\"borderRadius\":8,\"backgroundColor\":\"#0a000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}]}},{\"id\":\"source_glyph_0\",\"component\":\"Text\",\"content\":\"{{ ${/ui/glyphs/source0} }}\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":13,\"fontWeight\":800,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"message_text_0\",\"component\":\"Text\",\"content\":\"{{ '距离' + ${/data/calendar/items/0/title} + '还有' + ${/ui/messages/0/daysLeftText} }}\",\"styles\":{\"width\":98,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"group_divider\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#22000000\"}},{\"id\":\"message_row_1\",\"component\":\"Row\",\"children\":[\"source_glyph_1\",\"message_text_1\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":20,\"padding\":{\"left\":3,\"right\":3},\"borderRadius\":8,\"backgroundColor\":\"#f5dc62\",\"justifyContent\":\"start\",\"alignItems\":\"center\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/1/entityId} }}\"}}}]}},{\"id\":\"source_glyph_1\",\"component\":\"Text\",\"content\":\"{{ ${/ui/glyphs/source1} }}\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":13,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"message_text_1\",\"component\":\"Text\",\"content\":\"{{ '距离' + ${/data/calendar/items/1/title} + '还有' + ${/ui/messages/1/daysLeftText} }}\",\"styles\":{\"width\":98,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"海淀\"},\"current\":{\"temperatureText\":\"19°C\",\"condition\":\"多云\"}},\"calendar\":{\"items\":[{\"entityId\":\"calendar-homework-001\",\"senderName\":\"钉钉群\",\"title\":\"交作业\",\"dtStart\":\"07-12\"},{\"entityId\":\"calendar-review-002\",\"senderName\":\"班级群\",\"title\":\"小测\",\"dtStart\":\"07-10\"}]}},\"ui\":{\"glyphs\":{\"weather\":\"夜\",\"source0\":\"钉\",\"source1\":\"课\"},\"messages\":[{\"daysLeftText\":\"3天\"},{\"daysLeftText\":\"1天\"}]},\"state\":{\"loading\":false}}}}"
+  ]
+}

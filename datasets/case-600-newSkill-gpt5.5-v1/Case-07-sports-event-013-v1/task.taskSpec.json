@@ -1,0 +1,135 @@
+{
+  "userQuery": "下个月要跑三场越野赛，做个深色舞台风倒计时卡片，左边一张赛事海报图，右边横向列出三场比赛\"距离XX赛还有N天\"，比赛日下雨就标橙色\"注意天气\"，点比赛项进日历看赛程，整体夜间深蓝到紫色的渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/races/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/races/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/races/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "races": {
+      "type": "array",
+      "description": "下个月三场越野赛的倒计时、雨天提示和日历事件标识。",
+      "sampleValue": [
+        {
+          "name": "云岭赛",
+          "daysText": "23天",
+          "warningText": "注意天气",
+          "warningColor": "#ffd94838",
+          "panelColor": "#19ffffff",
+          "entityId": "trail-race-yunling-20260801"
+        },
+        {
+          "name": "溪谷赛",
+          "daysText": "34天",
+          "warningText": "无雨",
+          "warningColor": "#99ffffff",
+          "panelColor": "#19ffffff",
+          "entityId": "trail-race-xigu-20260812"
+        },
+        {
+          "name": "海岸赛",
+          "daysText": "48天",
+          "warningText": "注意天气",
+          "warningColor": "#ffd94838",
+          "panelColor": "#19ffffff",
+          "entityId": "trail-race-haian-20260826"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单场越野赛倒计时条目。",
+        "sampleValue": {
+          "name": "云岭赛",
+          "daysText": "23天",
+          "warningText": "注意天气",
+          "warningColor": "#ffd94838",
+          "panelColor": "#19ffffff",
+          "entityId": "trail-race-yunling-20260801"
+        },
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "越野赛短名称，用于拼接距离某场比赛的倒计时文案。",
+            "sampleValue": "云岭赛"
+          },
+          "daysText": {
+            "type": "string",
+            "description": "距离比赛开始的剩余天数展示文本。",
+            "sampleValue": "23天"
+          },
+          "warningText": {
+            "type": "string",
+            "description": "比赛日天气提示；雨天展示注意天气，非雨天展示简短天气状态。",
+            "sampleValue": "注意天气"
+          },
+          "warningColor": {
+            "type": "string",
+            "description": "天气提示文字颜色；雨天使用橙色警示，非雨天使用次级浅色。",
+            "sampleValue": "#ffd94838"
+          },
+          "panelColor": {
+            "type": "string",
+            "description": "赛事行深色磨砂背板颜色。",
+            "sampleValue": "#19ffffff"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "日历中对应赛事日程的唯一标识，用于点击进入赛程详情。",
+            "sampleValue": "trail-race-yunling-20260801"
+          }
+        }
+      }
+    },
+    "poster": {
+      "type": "object",
+      "description": "赛事海报区域的短标题和副标题。",
+      "sampleValue": {
+        "title": "越野赛",
+        "subtitle": "下月三场"
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "海报主标题。",
+          "sampleValue": "越野赛"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "海报副标题，概括赛事数量和时间范围。",
+          "sampleValue": "下月三场"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动/跑步彩色图标，适合作为越野赛倒计时卡片左侧赛事海报的主视觉锚点。"
+    }
+  ]
+}

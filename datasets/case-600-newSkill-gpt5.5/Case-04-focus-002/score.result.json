@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-002",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图中可见用户四项核心诉求均已落实：日历日程以\"时间+标题\"形式呈现（09:30 需求评审、15:00 写周报），Checkbox 组件支持勾选且完成态以绿色填充+白色对勾明确标出（写周报已勾），设置按钮（设置）以 onClick 跳转到 settings 深链，番茄钟核心字段（25:00 倒计时、进度条、本轮专注 caption）齐全。size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=\"/\" 均符合硬约束。轻微扣分：updateDataModel.value 中多了 TaskSpec.dataModelSchema 未声明的 state.loading 字段，违反 value 必须原样等于 TaskSpec.dataModel.value 的约束。",
+    "aesthetic": "截图整体观感良好：紫色渐变（#5f58c7→#8c55c2）方向自然，过渡柔和；白色主标题与 25:00 数字在紫底上对比清晰可读；左面板（半透明白底 #19ffffff）与右面板形成层次区分；完成态的绿色填充 Checkbox 配色与紫色背景形成高识别度对比。设置按钮采用半透明胶囊样式与主色协调。字号层级合理（标题 16、计时 20、caption 12），主字重集中在 25:00 数字与标题两处，克制得当。",
+    "layout": "截图未发现任何堆叠、重叠、溢出或文字截断问题。header_row 高 32 + itemMargin 8 + main_row 高 76 = 116，加 padding 12*2=24 正好填满 140 高度；main_row 横向 92(左) + 8 + 176(右) = 276 正好填满可用宽度，无溢出。两个 Checkbox 标签（09:30 需求评审 / 15:00 写周报）均完整显示未被截断。设置按钮、25:00 主指标、进度条、本轮专注 caption 四个受保护元素均完整可读。底部 actions 区（设置按钮底边）到卡片底边距离约 14vp，在 2x4 允许的 10-14vp 范围内。"
+  },
+  "issues": [
+    "updateDataModel.value 中包含 TaskSpec.dataModelSchema 未声明的 state.loading 字段，违反 'value 必须原样等于 TaskSpec.dataModel.value' 的硬约束",
+    "已完成任务（15:00 写周报）仅靠 Checkbox 填充色标识完成态，文本本身未做降透明或删除线等额外视觉弱化，与未完成任务文字视觉权重相同，完成态感略弱",
+    "主面板右半部分（tasks_panel）底部存在轻微留白空洞感（76 高但仅两条任务占用约 60 高度），不过不构成溢出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5f58c7\",0],[\"#8c55c2\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_group\",\"setting_button\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Row\",\"children\":[\"focus_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":190,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"focus_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"专注番茄钟\",\"styles\":{\"width\":150,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"setting_button\",\"component\":\"Button\",\"label\":\"设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":68,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33317af7\",\"borderRadius\":16}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"focus_panel\",\"tasks_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":76,\"alignItems\":\"center\"}},{\"id\":\"focus_panel\",\"component\":\"Column\",\"children\":[\"timer_text\",\"focus_progress\",\"focus_caption\"],\"itemMargin\":4,\"styles\":{\"width\":92,\"height\":76,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"timer_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/remainingText} }}\",\"styles\":{\"width\":76,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"focus_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/focus/progressValue} }}\",\"total\":\"{{ ${/focus/progressTotal} }}\",\"styles\":{\"width\":76,\"height\":6,\"type\":\"linear\",\"color\":\"#ff317af7\"}},{\"id\":\"focus_caption\",\"component\":\"Text\",\"content\":\"{{ ${/focus/caption} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"tasks_panel\",\"component\":\"Column\",\"children\":[\"task_check_0\",\"task_check_1\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":76,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"task_check_0\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"value\":\"task_0\",\"group\":\"today_tasks\",\"select\":\"{{ ${/focus/tasks/0/done} }}\",\"styles\":{\"width\":160,\"height\":27,\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#33ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"task_check_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"value\":\"task_1\",\"group\":\"today_tasks\",\"select\":\"{{ ${/focus/tasks/1/done} }}\",\"styles\":{\"width\":160,\"height\":27,\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#33ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_event_001\",\"title\":\"需求评审\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"eventLocation\":\"会议室A\"},{\"entityId\":\"calendar_event_002\",\"title\":\"写周报\",\"dtStart\":\"15:00\",\"dtEnd\":\"15:30\",\"eventLocation\":\"办公桌\"}]}},\"focus\":{\"remainingText\":\"25:00\",\"progressValue\":18,\"progressTotal\":25,\"caption\":\"本轮专注\",\"tasks\":[{\"done\":false},{\"done\":true}]}}}}"
+  ]
+}

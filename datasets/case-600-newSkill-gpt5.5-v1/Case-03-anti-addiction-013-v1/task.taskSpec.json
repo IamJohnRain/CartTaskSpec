@@ -1,0 +1,120 @@
+{
+  "userQuery": "给小孩做学习管控卡片，左右分两个不同底色区域，左边信息区纵向排列着好几个受限的娱乐应用，比如游戏和视频，右侧动作区上方有醒目的红色“超时违规”状态。前面放些勾选框，勾选状态要能双向绑定，选中的应用会被直接锁掉。读取下日历行程，要是周末就留个跳转系统设置的按钮，让我能手动给他加点玩耍时长，纵向多列几个任务项方便挨个勾选。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "control": {
+      "title": {
+        "type": "string",
+        "description": "学习管控卡片标题",
+        "sampleValue": "管控"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "当前防沉迷状态文案",
+        "sampleValue": "超时违规"
+      },
+      "weekendText": {
+        "type": "string",
+        "description": "是否处于周末的提示文案",
+        "sampleValue": "周末可调整"
+      },
+      "actionText": {
+        "type": "string",
+        "description": "进入系统健康使用 App 设置页的操作文案",
+        "sampleValue": "加时"
+      },
+      "apps": {
+        "type": "array",
+        "description": "受限娱乐应用列表，勾选后对应应用会被锁定",
+        "sampleValue": [
+          {
+            "name": "游戏",
+            "locked": true
+          },
+          {
+            "name": "视频",
+            "locked": true
+          },
+          {
+            "name": "短娱",
+            "locked": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个受限应用",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "受限娱乐应用名称",
+              "sampleValue": "游戏"
+            },
+            "locked": {
+              "type": "boolean",
+              "description": "应用是否已被勾选并锁定",
+              "sampleValue": true
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历行程查询结果",
+          "sampleValue": [
+            {
+              "entityId": "calendar-weekend-001",
+              "title": "周末学习计划",
+              "dtStart": "09:00",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar-weekend-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "周末学习计划"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_timing.png",
+      "description": "防沉迷计时图标，适合表达应用时长、学习管控和超时限制状态。"
+    }
+  ]
+}

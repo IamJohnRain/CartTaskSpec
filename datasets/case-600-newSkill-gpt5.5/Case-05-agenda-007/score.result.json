@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-007",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求'整个显示时间的卡片，点一下打开日历看看今天有啥会'。截图显示卡片完整呈现了当前时间 09:30、日期 7月9日 周四、以及下一条日程 14:00 产品评审，时间显示醒目、日程摘要到位。onClick 已绑定到 eventCandidates 中的 clickToDeeplink 事件（calendar bundle），符合点击打开日历的诉求。size 为 2x2、createSurface 尺寸 140x140、catalogId/version/updateDataModel 均合规。唯一轻微遗憾是 dtEnd 没有在卡片中展示（但 schema 中 dtStart 已足够代表'有会'），以及没有用 entityId 传参到事件中，但这不在用户明确诉求内，不扣重分。",
+    "aesthetic": "截图整体观感干净专业。配色采用白到暖橙的线性渐变，时间主数值 09:30 使用 32px 粗体黑色作为最强字重，'今天' 与 '产品评审' 为次级灰色文字，层级清晰，渐变自然。最下方 agenda_row 采用半透明白色 (#33ffffff) 圆角胶囊包裹 '14:00 产品评审'，与背景的橙色渐变形成柔和透叠，视觉有层次。轻微不足：右下角的橙色饱和度偏高，使得 '产品评审' 文字在橙区上对比度略有下降（#99000000 配橙底），但仍可读。字号阶梯 32/14/12 合理。整体留白舒适，对齐统一。",
+    "layout": "从截图看，垂直方向从上到下依次为：表头行（时钟图标+今天 16h）、主时间 09:30（36h）、日期说明 16h、分割线 1h、agenda_row 27h。配合 root 的 12 padding，Column 纵向总占用 12+16+4+36+4+16+4+1+4+27+12=136vp，未超出 140vp，无溢出。agenda_row 横向 116w，内含 next_time(42)+itemMargin(6)+next_title(56)+padding(12)=116vp，刚好填满。所有文字均完整可见，无截断、无省略号。主时间 09:30 居中，日期居中，agenda 胶囊左对齐，层次清楚。底部动作区（agenda_row 底边）距卡片底约 10vp，落在 8-12vp 的合理区间。无 Stack 遮挡问题，渐变在底层，信息在上层，关系正确。"
+  },
+  "issues": [
+    "右下角暖橙渐变饱和度偏高，导致 agenda_row 中 '产品评审' 文字在橙区部分对比度偏弱",
+    "agenda_row 背景 #33ffffff 半透明叠加在橙色渐变上，颜色一致性略受影响",
+    "未使用 entityId 传参到 clickToDeeplink（虽然 TaskSpec 中 eventCandidates 固定，但可考虑是否需要在卡片中呈现日程对应 entry）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"primary_caption\",\"divider_line\",\"agenda_row\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.calendar\",\"abilityName\":\"com.huawei.hmos.calendar.MainAbility\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fffafafa\",0],[\"#ffefece7\",0.55],[\"#f5d9a0\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"time_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"time_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_time.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今天\",\"styles\":{\"width\":94,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/time/displayTime} }}\",\"styles\":{\"width\":116,\"height\":36,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/time/dateLabel} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"divider_line\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#33000000\"}},{\"id\":\"agenda_row\",\"component\":\"Row\",\"children\":[\"next_time\",\"next_title\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":27,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":10,\"backgroundColor\":\"#80ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"next_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":38,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"next_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#cc000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"time\":{\"displayTime\":\"09:30\",\"dateLabel\":\"7月9日 周四\"},\"calendar\":{\"items\":[{\"entityId\":\"calendar-demo-001\",\"title\":\"产品评审\",\"dtStart\":\"14:00\",\"dtEnd\":\"15:00\"}]}}}}"
+  ]
+}

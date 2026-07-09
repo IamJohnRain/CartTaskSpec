@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-20-notif-aggregate-014",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户主要诉求：通知聚合卡+左侧磨砂主面板+竖向分隔线+纵向事件块+'距离X还有N'格式（'距离会议 还有15分钟' / '距离作业提 还有2天'）+点击主面板跳转歌单 deeplink 事件原样来自 eventCandidates+紧迫项（15分钟）标黄+夜晚紫色渐变+使用 icon_schedule.png 资源。扣分原因：第二块标题'距离作业提交'被截断为'距离作业提'，用户明确要求'距离X'格式完整呈现，关键字段'提交'二字丢失，视为指令未完全落实；事件块无单独图标，未充分使用'通知/日历/音乐库图标'。",
+    "aesthetic": "截图整体观感良好：紫色渐变(夜晚感)自然和谐，黄色高亮紧迫项与紫色冷调对比鲜明，左侧磨砂玻璃(#19ffffff 半透)有质感，分隔线纤细不抢戏。文字层级：标题'截止聚合'/主块标题 700 字重最强，副信息 600/500 弱化，留白密度尚可。扣分点：第二块标题被截断，'距离作业提'的截断边缘在视觉上显得不完整，破坏整体精致度。",
+    "layout": "截图存在一处明确文字截断：右侧第二块'距离作业提'——'距离作业提交'的'交'字被右边界裁掉（事件块宽 63、内边距 4 后文本可用 55，6 个中文字符在 fontSize 10 下约需 60，超出导致省略）。这是 D3 核心排查项，必须扣重分。其余布局成立：竖向 Row 布局合理，hero_panel(40)+divider(1)+deadline_col(63) 总和 116 刚好填满 140-24 内容区；事件块纵向排列(标题+剩余时间)清晰；底部事件块底边到卡片底边约 8-10vp，符合 2x2 规范。"
+  },
+  "issues": [
+    "截图中第二事件标题'距离作业提交'被截断为'距离作业提'，'交'字缺失（事件二内文本可用宽度 55 不足 6 个中文 10pt 的 ~60px 宽度）",
+    "事件块无单独图标，用户提到'可以用通知/日历/音乐库里的图标'，仅在左侧主面板用了 icon_schedule.png",
+    "hero_panel 内部'歌单''冷静'两个 10pt 标签排成 3 行密集文字，功能上是 deeplink 引导但视觉信息冗余（用户实际点击的是整块面板，文字应更克制）",
+    "deadline_col 宽 63 太窄，是导致截断的直接原因；可通过缩减 hero_panel 宽度（40→34）并降低 itemMargin(6→4)将事件区扩到 73"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"main_divider\",\"deadline_col\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5f58c7\",0],[\"#634794\",1]]},\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"hero_icon\",\"hero_label\",\"hero_music\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":34,\"height\":116,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"hero_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":26,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"hero_music\",\"component\":\"Text\",\"content\":\"听歌冷静\",\"styles\":{\"width\":26,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":108,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33ffffff\"}},{\"id\":\"deadline_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"event_one\",\"block_divider\",\"event_two\"],\"itemMargin\":4,\"styles\":{\"width\":73,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"截止聚合\",\"styles\":{\"width\":73,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"event_one\",\"component\":\"Column\",\"children\":[\"event_one_title\",\"event_one_left\"],\"itemMargin\":2,\"styles\":{\"width\":73,\"height\":40,\"padding\":4,\"borderRadius\":12,\"backgroundColor\":\"#f7ce00\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"event_one_title\",\"component\":\"Text\",\"content\":\"{{ '距离' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":65,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_one_left\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":65,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"block_divider\",\"component\":\"Divider\",\"styles\":{\"width\":73,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33ffffff\"}},{\"id\":\"event_two\",\"component\":\"Column\",\"children\":[\"event_two_title\",\"event_two_left\"],\"itemMargin\":2,\"styles\":{\"width\":73,\"height\":40,\"padding\":4,\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"event_two_title\",\"component\":\"Text\",\"content\":\"{{ '距离' + ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":65,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"event_two_left\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/description} }}\",\"styles\":{\"width\":65,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"会议\",\"description\":\"还有15分钟\",\"dtStart\":\"21:30\"},{\"entityId\":\"calendar-event-002\",\"title\":\"作业提交\",\"description\":\"还有2天\",\"dtStart\":\"周六\"}]}}}}"
+  ]
+}

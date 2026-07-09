@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-26-group-buy-011",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "截图中可见顶部大字'还差5元起送'正确呈现，右侧绿色胶囊'已达成起送额'状态徽标明确显示；中间横向排列三个勾选项（奶茶/柠檬茶已勾选，咖啡未勾选）符合诉求；底部半透明面板带日历时间'15:00'、事件'朋友下午茶'、以及'日历已确认'提示，呼应了日历读取需求；整卡为纯文字与色块、无图，满足'不用图'的要求。渐变从棕到紫具有夜晚氛围，size=2x4、root shell、catalogId、version、updateDataModel 协议均合规；eventCandidates 为空，无须落事件。扣分点：奶茶棕主题色偏淡，棕色比例较小、更偏紫红，'棕'的特征未充分体现。",
+    "aesthetic": "截图整体观感干净专业：白色主文字在深色渐变背景上对比清晰、读起来无障碍；绿色状态徽标与已勾选饮品的绿色对勾色相统一，传达'已达成'语义一致；底部半透明胶囊的留白与对齐也较舒适。扣分点：渐变起始色 #9e7349 在 300×140 的小卡上仅占左上一小块，棕色浓度不够，整体观感偏紫红而不太'奶茶棕'；渐变中段 #634794 与起始色差距偏大，过渡稍硬；底部胶囊中三个文字字重虽分级，但视觉上字距偏紧、'15:00'和'日历已确认'的对比度尚可但整体胶囊过满感。",
+    "layout": "截图中三行内容（标题行 34 / 饮品行 32 / 日历行 34）加上 padding 12 与 itemMargin 8 恰好填满 140 高度，未见任何截断、溢出或元素堆叠重叠；受保护的主数值'还差5元起送'、状态徽标'已达成起送额'、三个饮品名称、日历三段文字均完整显示，无 ellipsis 触发；CheckBox 热区 84×32 远大于 24vp 最小要求；底部胶囊底边到卡片底边约 10vp，符合 2x4 的 10-14vp 区间；左右边距对齐统一。轻微扣分：标题行中主数值右侧留白与状态徽标之间过渡略紧，视觉上'还差5元起送'距右端绿色徽标较近，但未发生重叠或截断。"
+  },
+  "issues": [
+    "渐变起始色 #9e7349 棕色浓度不足，导致'奶茶棕'主题色特征不明显，整体偏紫红",
+    "渐变中段 #634794 与起始色跨度大，过渡略生硬",
+    "顶部标题与右侧状态徽标视觉距离偏紧，缺少呼吸感",
+    "底部日历胶囊三段文字字距偏紧，信息密度略高"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"drink_row\",\"calendar_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#b8804d\",0],[\"#7a5275\",0.55],[\"#231a36\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"status_badge\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/remainingText} }}\",\"styles\":{\"width\":160,\"height\":34,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/statusText} }}\",\"styles\":{\"width\":96,\"height\":26,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#64bb5c\",\"borderRadius\":13,\"maxLines\":1}},{\"id\":\"drink_row\",\"component\":\"Row\",\"children\":[\"drink_milk_tea\",\"drink_lemon_tea\",\"drink_coffee\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"drink_milk_tea\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/drinks/0/name} }}\",\"value\":\"{{ ${/groupBuy/drinks/0/value} }}\",\"group\":\"drinks\",\"select\":\"{{ ${/groupBuy/drinks/0/selected} }}\",\"styles\":{\"width\":84,\"height\":32,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"drink_lemon_tea\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/drinks/1/name} }}\",\"value\":\"{{ ${/groupBuy/drinks/1/value} }}\",\"group\":\"drinks\",\"select\":\"{{ ${/groupBuy/drinks/1/selected} }}\",\"styles\":{\"width\":84,\"height\":32,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"drink_coffee\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/drinks/2/name} }}\",\"value\":\"{{ ${/groupBuy/drinks/2/value} }}\",\"group\":\"drinks\",\"select\":\"{{ ${/groupBuy/drinks/2/selected} }}\",\"styles\":{\"width\":84,\"height\":32,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"calendar_panel\",\"component\":\"Row\",\"children\":[\"event_time\",\"event_title\",\"event_note\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":34,\"padding\":[6,12,6,12],\"borderRadius\":16,\"backgroundColor\":\"#1affffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#eaffffff\",\"maxLines\":1}},{\"id\":\"event_note\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/calendarHint} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#a8ffffff\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-afternoon-tea-001\",\"title\":\"朋友下午茶\",\"dtStart\":\"15:00\",\"dtEnd\":\"16:30\",\"eventLocation\":\"奶茶店\"}]}},\"groupBuy\":{\"remainingText\":\"还差5元起送\",\"statusText\":\"已达成起送额\",\"calendarHint\":\"日历已确认\",\"drinks\":[{\"name\":\"奶茶\",\"value\":\"milk_tea\",\"selected\":true},{\"name\":\"柠檬茶\",\"value\":\"lemon_tea\",\"selected\":true},{\"name\":\"咖啡\",\"value\":\"coffee\",\"selected\":false}]}}}}"
+  ]
+}

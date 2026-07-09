@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-29-elderly-care-005",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.4,
+  "reasons": {
+    "instruction": "用户明确要求：1) 一个按钮（看天气红色按钮已呈现）；2) 点击进入应用（onClick 正确绑定 clickToDeeplink，call/args 原样来自 eventCandidates）；3) 能看天气（温度 29°、多云、红色预警、本地均展示）；4) 红色提示（红色预警 + 红色按钮）。size 2x2、catalogId、version、updateDataModel.path/value 均符合协议。资源 cloudy.png 正确使用。扣分点：截图中主温度 '29°C' 的 'C' 字符疑似因文本超宽被裁切，导致关键温度信息不完整。",
+    "aesthetic": "截图整体配色干净：白底 + 红色高亮（预警/按钮）符合天气预警语义；文字层级以 32pt 温度为最强字重，12pt 预警与 10pt 描述构成次级，信息层次清晰。扣分点：1) 温度 '29°C' 的 'C' 在截图中不可见，破坏主指标完整性；2) 卡片下半部有明显空白（约 20-30vp），留白不均，整体观感不够紧凑专业。",
+    "layout": "截图主要问题：1) 顶部温度 '29°C' 在 width=72、fontSize=32 容器下文本宽度估算约 70-77px，与容器宽度 72px 处于临界/溢出状态，截图中 '°' 紧贴右边缘而 'C' 缺失，疑被 root 的 clip:true 切掉，主指标受保护文本被截断，必须扣重分；2) 内容采用 justifyContent:'start'，所有元素堆在卡片上半部，下方留有大片空白，底部按钮距离卡片底边过近（视觉上感觉按钮'浮'在空白中），未充分利用 2x2 空间；3) 其余元素（红色预警条、本地、看天气按钮）排列整齐，无堆叠遮挡，无溢出卡片边界，按钮热区 116x32 满足 24vp 最低要求。"
+  },
+  "issues": [
+    "主温度 '29°C' 文本宽度超过 weather_info 列宽 72px，导致 'C' 被 root 的 clip 裁切，关键数值显示不完整",
+    "根 Column 使用 justifyContent:'start'，所有内容集中在卡片顶部，底部约 20-30vp 留白未被利用",
+    "温度字号 32pt 与容器宽度 72px 之间的安全余量不足，fontSize 应降至 26-28vp 以确保 '29°C' 完整呈现"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"alert_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"weather_info\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":0,\"styles\":{\"width\":72,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":72,\"height\":30,\"fontSize\":26,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":72,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"alert_panel\",\"component\":\"Row\",\"children\":[\"alert_line\",\"alert_text_col\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":30,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_line\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":20,\"color\":\"#ffe84026\"}},{\"id\":\"alert_text_col\",\"component\":\"Column\",\"children\":[\"alert_title\",\"alert_meta\"],\"itemMargin\":0,\"styles\":{\"width\":92,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":92,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":92,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看天气\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"本地\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\",\"alertLevel\":\"红色预警\"}}}}}}"
+  ]
+}

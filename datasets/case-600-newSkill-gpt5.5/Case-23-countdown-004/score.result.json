@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-23-countdown-004",
+  "scores": {
+    "instruction": {
+      "score": 8.3,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求生日倒计时、按钮可点、跳转日历、读取日程。截图清晰显示'12天'主倒计时数值、顶部'生日'标题+日历图标+'日历'按钮，底部展示'妈妈生日 7月21日'日程信息，事件 clickToIntent+ViewCalendarEvent 正确实现跳转日历诉求。轻微扣分：用户原话'点下数字会变'暗示点击应能改变倒计时数字，但当前按钮绑定的是跳转日历而非修改数值，缺少让数字直接变化的交互能力（eventCandidates 中也确实没有该事件，属于协议约束下合理降级，但与用户字面诉求有差距）。整体指令落实度高，尺寸/协议/catalogId/version/updateDataModel 全部合规。",
+    "aesthetic": "截图显示卡片采用白色到橙黄的对角渐变背景，与生日主题契合，暖色基调温馨。'12'使用 40px 橙色加粗字重作为视觉焦点，是全卡唯一最强字重，层级清晰。'生日'标题、'日历'按钮、底部'妈妈生日 7月21日'附文形成清晰三级层次。按钮使用 16px 圆角半透明灰背景，与卡片主色协调不抢戏。文字对比度足够，整体配色和谐、留白舒适、对齐统一，无明显土气或违和感。",
+    "layout": "截图显示 2x2 卡片（140x140）布局紧凑无溢出。顶部 Row 中日历图标+'生日'占左、'日历'按钮占右，两者间距合理未重叠。中间主区域'12'与'天'单位水平居中组合，'12'右对齐贴紧'天'，视觉重心稳定。底部'妈妈生日 7月21日'单行居中显示在 padding 内，未触及卡片底边（实际底边距约 12vp，在 2x2 的 8-12vp 合理范围）。所有受保护文本（标题、主数值、CTA、副文）均完整可见无截断，无元素堆叠遮挡，热区充足，布局干净。"
+  },
+  "issues": [
+    "用户明确提到'点下数字会变'，但当前按钮 onClick 仅绑定跳转日历事件（clickToIntent），未提供让倒计时数字直接变化的交互能力，与用户字面诉求存在偏差",
+    "primary_row 使用 alignItems:'bottom'，导致 '12' 文字底部对齐而 '天' 单位垂直位置略偏低，二者基线不齐（截图中 '12' 底部下沉、'天' 略上浮），视觉上略有不协调"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_row\",\"support_text\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#f9bc64\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_group\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"title_text\"],\"itemMargin\":4,\"styles\":{\"width\":52,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"生日\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"日历\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":56,\"height\":28,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":14}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":56,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#f9a01e\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"天\",\"styles\":{\"width\":20,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#f9a01e\",\"maxLines\":1}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} + ' · ' + ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"evt-birthday-2026\",\"title\":\"妈妈生日\",\"description\":\"12\",\"dtStart\":\"7月21日\"}]}}}}"
+  ]
+}

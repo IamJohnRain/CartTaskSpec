@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户四项明确诉求均落地：截图中可见跳动净值 1.2386（{{/data/fund/navText}} 绑定）、天气 26°C 多云、警告状态'已触发提醒'与涨跌幅 -0.42% 同行呈现，赎回按钮 onClick 完整引用 eventCandidates 中的 clickToDeeplink(uri: fund://redeem)。尺寸 2x2、catalogId/version/updateDataModel 全部符合硬约束。轻微扣分：净值'跳动'是依靠 navText 文本替换实现，并未在 DSL 中体现动画/过渡标记，交互动作被压缩为单一按钮（缺少'查看详情'等次级动作，2x2 体积限制下可接受但非完美）。",
+    "aesthetic": "截图整体观感良好：浅灰到橘色渐变背景与红色强调色和谐，'1.2386' 32pt 加粗黑色净值作为视觉焦点突出，标题、警告、天气形成清晰的字号阶梯（32/14/12/10），且仅一个最强字重。'稳健收益' 黑字与'警戒提醒' 红色胶囊在浅色背景上对比清晰可读。略有不足：'已触发提醒 -0.42%' 一行内塞了两段语义不同的信息，颜色单一偏红导致信息密度略高，缺少分组呼吸感。",
+    "layout": "截图中所有元素均完整呈现，未观察到文字截断、组件溢出或堆叠遮挡。Column 纵向占用 12+18+4+36+4+18+4+32+12=140 精确等于卡片高度，无溢出风险。'稳健收益' 与'警戒提醒' 胶囊在同一行内左对齐+居中，宽 58+4+54=116 等于内容宽，间距舒展。'26°C 多云' 与'赎回' 按钮在底行，按钮高 32、热区充足，底边距卡片底约 12vp（2x2 标准内）。唯一可挑剔处：'已触发提醒 -0.42%' 行内 warningText 与 changeText 用空格拼接，在 116 宽下尚可承载但略显拥挤，可考虑用竖线/空格强化分隔。"
+  },
+  "issues": [
+    "warningText 与 changeText 在同一 Text 节点内以空格拼接，截图中'已触发提醒 -0.42%' 视觉信息密度偏高、分组感弱",
+    "顶部 header_row 中'稳健收益'与'警戒提醒' 胶囊在最小宽度下无内边距预留，文字几乎贴边（截图尚可接受）",
+    "净值'跳动'效果仅靠 navText 文本值替换表达，DSL 内未注入动画/过渡意图"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"warning_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#f9bc64\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/name} }}\",\"styles\":{\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"警戒\",\"styles\":{\"width\":40,\"height\":20,\"paddingLeft\":8,\"paddingRight\":8,\"borderRadius\":10,\"backgroundColor\":\"#ffe84026\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/navText} }}\",\"styles\":{\"width\":116,\"height\":36,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"warning_row\",\"component\":\"Row\",\"children\":[\"warning_text\",\"change_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/warningText} }}\",\"styles\":{\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"change_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/changeText} }}\",\"styles\":{\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' · ' + ${/data/weather/current/condition} }}\",\"styles\":{\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"赎回\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"fund://redeem\"}}],\"styles\":{\"width\":60,\"height\":32,\"paddingLeft\":12,\"paddingRight\":12,\"borderRadius\":16,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"fund\":{\"name\":\"稳健收益\",\"navText\":\"1.2386\",\"changeText\":\"-0.42%\",\"warningText\":\"已触发提醒\"},\"weather\":{\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-04-focus-015",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求的要素大部分已在截图中可见：左侧睡眠月亮图标（带浅色圆角面板的黑色月牙）、右侧横向排列的三个白噪音标签（雨声/海浪/风声）、深蓝/紫色渐变夜间背景、橙色环形进度圈、中心红色字色告警文字'今日已超限'与'45分钟'，且全卡片无任何 Button/可点击元素，符合'不要那种能点击跳转的'。轻微扣分点：用户原话是'中间显示\"今日已超限45分钟\"'，实际拆成两行展示，虽信息完整但与原意有一行连续文案的偏差。dataModel/assetCandidates/无 onClick 等硬约束均满足。",
+    "aesthetic": "截图整体观感干净专业：深蓝→紫的渐变与'夜风'主题贴合；月牙图标在浅色面板上形成清晰对比，识别度好；红橙色（#ffdb6b42）告警文字在深底上醒目。轻微扣分：三个白噪音标签的背景色 #19ffffff 透明度仅约 10%，在深底上几乎只剩文字，缺乏'胶囊'质感，与环形进度圈的实色对比显得单薄；字号阶梯（标题 10、告警 12、标签 10）层级偏平，缺少更明显的主次。",
+    "layout": "截图未观察到元素堆叠/重叠/越界：月牙面板与选项列同行对齐，环形圈（74×74）起点 y≈54，底边 y≈128，恰好落在 padding:12 内的内容区下沿（128），未被裁切；'今日已超限'/'45分钟' 两行高度 16+2+16=34，居中堆叠在 74 高的环内，文字未被环遮挡。轻微扣分：环底非常贴近卡片底边，留白偏紧，视觉上略显'顶到边'；告警文字底行 '45分钟' 距离环下沿仅约 6-8vp，呼吸感不足；标签间宽度差异（20/24/20）让中间'海浪'与左右间距看起来略不均匀。"
+  },
+  "issues": [
+    "环形进度圈底边几乎贴到卡片 padding 下沿（128/140），底部留白偏紧，'45分钟' 文字距离环下沿过近",
+    "三个白噪音标签背景 #19ffffff 透明度太低，几乎看不出胶囊形状，视觉重量不足",
+    "用户要求'中间显示\"今日已超限45分钟\"'，当前拆为两行（'今日已超限' / '45分钟'），与原意有轻微偏差",
+    "标签宽度 20/24/20 不等，导致三标签视觉间距不均",
+    "整体字号层级偏平，标题与告警字号的对比可再加强"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"ring_stack\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#ff191a1c\",0],[\"#5550a6\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"moon_panel\",\"options_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"moon_panel\",\"component\":\"Stack\",\"children\":[\"moon_icon\"],\"styles\":{\"width\":32,\"height\":32,\"borderRadius\":10,\"backgroundColor\":\"#e5ffffff\",\"alignContent\":\"center\"}},{\"id\":\"moon_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/moonIcon} }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"options_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"noise_row\"],\"itemMargin\":4,\"styles\":{\"width\":76,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/title} }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"noise_row\",\"component\":\"Row\",\"children\":[\"noise_one\",\"noise_two\",\"noise_three\"],\"itemMargin\":4,\"styles\":{\"width\":76,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"noise_one\",\"component\":\"Text\",\"content\":\"{{ ${/noiseOptions/0/label} }}\",\"styles\":{\"width\":22,\"height\":16,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"noise_two\",\"component\":\"Text\",\"content\":\"{{ ${/noiseOptions/1/label} }}\",\"styles\":{\"width\":22,\"height\":16,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"noise_three\",\"component\":\"Text\",\"content\":\"{{ ${/noiseOptions/2/label} }}\",\"styles\":{\"width\":22,\"height\":16,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"focus_ring\",\"alert_text_col\"],\"styles\":{\"width\":66,\"height\":66,\"alignContent\":\"center\"}},{\"id\":\"focus_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/focus/progressValue} }}\",\"total\":\"{{ ${/focus/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffdb6b42\",\"width\":66,\"height\":66}},{\"id\":\"alert_text_col\",\"component\":\"Column\",\"children\":[\"alert_line_one\",\"alert_line_two\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_line_one\",\"component\":\"Text\",\"content\":\"{{ ${/focus/alertLine1} }}\",\"styles\":{\"width\":54,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffdb6b42\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_line_two\",\"component\":\"Text\",\"content\":\"{{ ${/focus/alertLine2} }}\",\"styles\":{\"width\":54,\"height\":13,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffdb6b42\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"title\":\"白噪音专注\",\"asset\":{\"moonIcon\":\"resources/base/media/moon_circle_fill.svg\"},\"noiseOptions\":[{\"label\":\"雨声\"},{\"label\":\"海浪\"},{\"label\":\"风声\"}],\"focus\":{\"progressValue\":78,\"progressTotal\":100,\"alertLine1\":\"今日已超限\",\"alertLine2\":\"45分钟\"}}}}"
+  ]
+}

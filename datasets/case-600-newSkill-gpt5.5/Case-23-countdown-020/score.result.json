@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-23-countdown-020",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求春节倒计时卡片，2x2尺寸，横向三模块，分别显示天气/时间/倒计时，文字符号当图标，主题色渐变背景，点击看日程。截图中可见：标题'春节倒计时'清晰呈现，横向三模块依次为'天/多云/26°C'、'时/09:30/07/09'、'春/212天/倒计时'，底部有'看日程'按钮，渐变背景为暖橙黄色调符合春节主题。事件通过onClick.clickToIntent调用ViewCalendarEvent，args来自eventCandidates。文字符号当图标（天、时、春）落实。指令基本全部满足，但'天'作为天气图标语义略弱（'天'更多指天/日），'倒计时'标签与卡片标题及主值'212天'略有信息重复。",
+    "aesthetic": "截图整体观感良好：橙黄渐变营造春节喜庆氛围，三个模块使用半透明白色卡片背景形成层次，白色前景文字在渐变上对比清晰。标题与按钮形成主次对比，按钮白色实心在彩色背景上视觉锚点明确。字重层级合理：标题14/700、主值12/600-700、辅助10/400。略有不足：'看日程'按钮距离卡片底边非常近（约8-10vp）显得略挤；三个模块高度56vp内嵌入了3行文字加间距，密度略高，整体留白偏紧。",
+    "layout": "截图无明显堆叠或文字截断。标题居中无截断；三个模块宽度各36vp+间距4vp，合计3*36+2*4=116vp正好等于内容区宽度，无溢出；模块内'多云'、'09:30'、'212天'主值完整显示；底部'看日程'按钮宽116vp高28vp清晰可见，无文字截断；按钮热区充足。仅有极轻微问题：第三模块的'倒计时'小字与卡片标题'春节倒计时'在视觉上略有重复，且模块内部行间距2vp偏紧凑。"
+  },
+  "issues": [
+    "天气模块图标'天'语义不够直观，更适合'气'/'云'等",
+    "第三模块meta文字'倒计时'与卡片标题'春节倒计时'及主值'212天'信息重复",
+    "按钮距卡片底边约8-10vp，对2x2来说虽在容差内但视觉略贴底",
+    "模块内3行文字+itemMargin 2vp，纵向密度偏高"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"module_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9a01e\",0],[\"#f9bc64\",0.55],[\"#f7ce00\",1]]},\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"春节倒计时\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"module_row\",\"component\":\"Row\",\"children\":[\"weather_module\",\"time_module\",\"countdown_module\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":56,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_module\",\"component\":\"Column\",\"children\":[\"weather_glyph\",\"weather_value\",\"weather_meta\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":56,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\"}},{\"id\":\"weather_glyph\",\"component\":\"Text\",\"content\":\"云\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":36,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"time_module\",\"component\":\"Column\",\"children\":[\"time_glyph\",\"time_value\",\"time_meta\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":56,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\"}},{\"id\":\"time_glyph\",\"component\":\"Text\",\"content\":\"时\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"time_value\",\"component\":\"Text\",\"content\":\"{{ ${/view/timeText} }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"time_meta\",\"component\":\"Text\",\"content\":\"{{ ${/view/dateText} }}\",\"styles\":{\"width\":36,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"countdown_module\",\"component\":\"Column\",\"children\":[\"countdown_glyph\",\"countdown_value\",\"countdown_meta\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":56,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\"}},{\"id\":\"countdown_glyph\",\"component\":\"Text\",\"content\":\"春\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"countdown_value\",\"component\":\"Text\",\"content\":\"{{ ${/view/countdown/daysText} }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"countdown_meta\",\"component\":\"Text\",\"content\":\"除夕\",\"styles\":{\"width\":36,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看日程\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"condition\":\"多云\",\"temperatureText\":\"26°C\"}},\"calendar\":{\"items\":[{\"entityId\":\"spring-festival-2027\",\"title\":\"春节\",\"dtStart\":\"00:00\",\"dtEnd\":\"23:59\"}]}},\"view\":{\"timeText\":\"09:30\",\"dateText\":\"07/09\",\"countdown\":{\"daysText\":\"212天\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

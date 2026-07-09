@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-012",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户要求的四大要素在截图中均可见：左侧白底圆角面板+巨大黑色音乐音符（music_fill.svg）作为主体；标题'睡眠音乐'、副标题'轻柔耳机播控'以及静态导航地址'一键导航到健身房'完整呈现；右侧横向排列了跳转导航（罗盘图标）、切歌（icon_right.png）、播报（铃铛）三个圆形按钮；onClick 已按 eventCandidates 原样映射（nav→健身路由，next/broadcast→音乐列表）。尺寸 2x4（300x140）、catalogId、version、updateDataModel 全部合规。轻微扣分：渐变色从 #ff202224（近黑）过渡到 #564af7（偏紫的蓝），与用户原话'深蓝色柔和渐变'在'深蓝'色调上略有偏差，更像深夜紫蓝而非纯正深蓝。",
+    "aesthetic": "整体观感干净、克制，符合'素净'的诉求：白底面板与深色背景形成强对比的视觉焦点，标题加粗白色、副标题淡色形成清晰的字重层级，留白合理。问题：1) 渐变右侧色 #564af7 偏紫，柔和度尚可但深蓝感不足；2) 中间的 icon_right.png 在截图中渲染为一个圈中带字母'R'，与两侧'方向针''铃铛'的语义图标相比显得突兀、不像'切歌'动作，弱化整体图标组的协调性；3) 副标题颜色 #99FFFFFF 在深色背景上偏灰白，可读性尚可但层次感略弱。",
+    "layout": "布局整体紧凑、平衡：卡片宽 300，padding 12 后内容区 276，hero_panel 96 + 间距 8 + info_col 172 = 276，无横向溢出；纵向 116 内四件内容（title 20+subtitle 16+nav 18+action 32）+ 三个 itemMargin 6 = 104，居中后上下各留约 6vp，节奏舒适。截图中标题/副标题/导航地址/三个圆形按钮均完整可见，未出现文字截断、Stack 遮挡或组件越界。底部动作行紧贴卡片内边距，触区 32x32 满足 24vp 最小热区。轻微观察：action_row 设为 justifyContent start、宽度 112，三个按钮紧密靠左，右侧留白略大，但属合理设计选择，不扣分。"
+  },
+  "issues": [
+    "渐变右侧色 #564af7 偏紫，未完全达到'深蓝柔和'的色调诉求",
+    "中间 icon_right.png 实际渲染为类似字母 R 的样式，语义传达不如左右两枚图标直观",
+    "副标题颜色 #99FFFFFF 在深色背景上偏灰，层次可再清晰",
+    "action_row 左对齐导致右半侧留白偏大，可考虑 space-between 或居中"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"info_col\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff0f1c3a\",0],[\"#ff2c4a8c\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Stack\",\"children\":[\"hero_music_icon\"],\"styles\":{\"width\":96,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"hero_music_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/music_fill.svg\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\",\"navigation_text\",\"action_row\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/title} }}\",\"styles\":{\"width\":172,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ ${/subtitle} }}\",\"styles\":{\"width\":172,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#bccaea\",\"maxLines\":1}},{\"id\":\"navigation_text\",\"component\":\"Text\",\"content\":\"{{ ${/navigationAddress} }}\",\"styles\":{\"width\":172,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"nav_action\",\"next_action\",\"broadcast_action\"],\"itemMargin\":12,\"styles\":{\"width\":172,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"nav_action\",\"component\":\"Stack\",\"children\":[\"nav_icon\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":32,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"nav_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/location_north_up_right_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"next_action\",\"component\":\"Stack\",\"children\":[\"next_icon\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":32,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"next_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_right.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"broadcast_action\",\"component\":\"Stack\",\"children\":[\"broadcast_icon\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":32,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"broadcast_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"title\":\"睡眠音乐\",\"subtitle\":\"轻柔耳机播控\",\"navigationAddress\":\"一键导航到健身房\"}}}"
+  ]
+}

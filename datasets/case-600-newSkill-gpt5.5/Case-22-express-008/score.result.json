@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-22-express-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求取件卡含距离数字、可点击导航、签收信息可见：截图中距离数字 320m 突出显示在白色信息面板内（满足'带距离数字'），蓝色'导航'按钮存在且 onClick 调用 clickToIntent / StartNavigate 并携带正确经纬度与 trafficpe=Walk（满足'点一下能导航过去'），绿色'已签收1件'徽章在标题右侧（满足'签收的也要看到'）；尺寸 140x140、catalogId/version/updateDataModel 等硬约束全部满足，根容器 padding/borderRadius/clip 设置正确。",
+    "aesthetic": "截图中橙色渐变背景与白底信息面板、绿色徽章、蓝色 CTA 按钮形成良好层次：标题'待取件'（深色 14pt 粗体）与主数值 320m（32pt 极粗黑）建立清晰双层字重，caption '北门驿站' 用中等灰度作为弱化补充，留白节奏基本舒适。略减分点：渐变饱和度偏高且与蓝绿补色按钮形成较强视觉竞争，整体配色略偏暖艳；信息面板 padding 左右 10vp 偏紧，使 320m 的'320'几乎贴左、'm'贴近右沿，呼吸感略欠。",
+    "layout": "截图中所有元素均落在 140x140 卡片内：12+20(标题行)+6+48(信息面板)+6+32(按钮)+12=136，纵向在 140 内安全通过；横向 116 内容区在 padding 12 下位于中央。标题'待取件'与绿色徽章'已签收1件'在同一行 116 宽度内不重叠、不截断；'320m'与'北门驿站'在白底面板内两行对齐清晰；蓝色'导航'按钮整宽 116、底边到卡片底边约 12vp（在 8-12vp 范围内合规）。未观察到元素堆叠/截断/裁切，热区充足。略减分点：320m 的'320'与'北门驿站'左侧几乎贴齐面板 padding 边缘，'m'右侧距面板内边距较小，视觉上略显拥挤。"
+  },
+  "issues": [
+    "信息面板内 '320m' 字号 32pt 偏大，'320' 左侧与面板内边距仅约 1-2vp 视觉贴边，'m' 右侧贴右内边距，留白偏紧",
+    "橙色渐变饱和度偏高，与蓝色按钮形成较强色相对比，建议降低渐变饱和度或换更柔和的暖色",
+    "状态徽章绿色 #ff64bb5c 与橙色渐变背景色相冲突度可接受，但整体卡片色彩对比已较强，可考虑弱化徽章背景以让主数值更突出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"info_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fbd3a4\",0],[\"#f4b27a\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/delivery/title} }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_badge\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":56,\"height\":20,\"padding\":{\"left\":6,\"right\":6},\"borderRadius\":10,\"backgroundColor\":\"#7fd49a\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/delivery/signedStatusText} }}\",\"styles\":{\"width\":44,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":48,\"padding\":{\"left\":12,\"right\":12,\"top\":4,\"bottom\":4},\"borderRadius\":16,\"backgroundColor\":\"#80ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/delivery/distanceText} }}\",\"styles\":{\"width\":92,\"height\":28,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/delivery/pickupPointName} }}\",\"styles\":{\"width\":92,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/delivery/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/delivery/pickupLatitude} }}\",\"longitude\":\"{{ ${/delivery/pickupLongitude} }}\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"delivery\":{\"title\":\"待取件\",\"distanceText\":\"320m\",\"pickupPointName\":\"北门驿站\",\"signedStatusText\":\"已签收1件\",\"actionLabel\":\"导航\",\"pickupLatitude\":\"22.543096\",\"pickupLongitude\":\"114.057865\"}}}}"
+  ]
+}

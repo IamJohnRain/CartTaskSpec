@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户四项核心诉求均在截图中清晰呈现：① 跑步图标 + 「跑步日程」标识身份；② 「晨跑」标题与「07:30-08:10」时间数字行；③ 「已完成」状态文字；④ 底部「打开应用」胶囊按钮绑定 clickToDeeplink，args 与 eventCandidates 完全一致。DataModel 从 /data/calendar/items/0 正确读取，assetCandidates 中 icon_run.png 用于身份图标。size 2x2、root 140x140、borderRadius 18、clip true、catalogId/version/updateDataModel.path 均合规。轻微扣分：按钮文案「打开应用」偏通用，未直接体现跳转到运动应用。",
+    "aesthetic": "截图中橙色径向/线性渐变背景饱和、过渡柔和；白色文字在暖橙底色上对比度充足、可读性高。字重层级清晰：标题「晨跑」与时间「07:30-08:10」使用 fontWeight 800 构成最强主信息，「跑步日程」「已完成」「打开应用」使用 600-700 收为次级，层次合理。胶囊按钮采用 #33ffffff 半透明白底 + 1px 描边，在主色背景上形成浮起感，整体克制专业。轻微扣分：状态文字「已完成」使用 60% 不透明白，位置略偏小，未做强突出。",
+    "layout": "截图自上而下各元素依次为：跑步图标+「跑步日程」(18高) →「晨跑」(18高) →「07:30-08:10」(20高) →「已完成」(18高) →「打开应用」按钮(26高)，配合 itemMargin 4，叠加 padding 12 后纵向总占用 = 12+18+4+18+4+20+4+18+4+26+12 = 140，与卡片高度精确吻合，无溢出无重叠。所有受保护文字（标题、时间、状态、CTA）均完整居中渲染，无截断无 ellipsis。底部「打开应用」按钮到卡片底边约 12vp，处于安全范围。scheduleHeader Row 内部 16(图标)+6(margin)+94(标签)=116，宽度对齐准确。整体排版工整、节奏舒适。"
+  },
+  "issues": [
+    "按钮文案「打开应用」过于通用，未直接体现跳转至健康/运动应用的语义",
+    "状态文字「已完成」使用 60% 透明白且字号较小，作为关键完成信号未被强突出",
+    "时间「07:30-08:10」中连接符为 ASCII 短横 '-'，可考虑使用全角 '–' 增强阅读节奏"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"scheduleHeader\",\"eventTitle\",\"timeText\",\"statusRow\",\"actionPill\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#ed955f\",1]]}}},{\"id\":\"scheduleHeader\",\"component\":\"Row\",\"children\":[\"scheduleIcon\",\"scheduleLabel\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"scheduleIcon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_run.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"scheduleLabel\",\"component\":\"Text\",\"content\":\"跑步日程\",\"styles\":{\"width\":94,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"eventTitle\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"timeText\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' – ' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"statusRow\",\"component\":\"Row\",\"children\":[\"statusDot\",\"statusText\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"statusDot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":10,\"height\":14,\"fontSize\":10,\"fontColor\":\"#ffd166\",\"textAlign\":\"center\"}},{\"id\":\"statusText\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe6cc\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"actionPill\",\"component\":\"Row\",\"children\":[\"actionText\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"打开运动\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_run_20260709_0730\",\"title\":\"晨跑\",\"dtStart\":\"07:30\",\"dtEnd\":\"08:10\",\"description\":\"已完成\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-09-weather-care-004",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "用户要求文字盖在背景图上、点击跳天气App、显示'已完成'。从截图看：数据模型字段（位置/温度/天气/空气质量/完成态）齐全，onClick 使用了原样的 clickToDeeplink 与 uri，'已完成'以胶囊徽章形式呈现，资源 partly_cloudy.png 也已挂上。但用户明确要求'文字盖背景图'，渲染结果却是云朵图标压在了 26°C 与'空气'文字之上，方向与诉求相反；同时受保护的关键信息（°C 与空气）被部分遮挡，按指令遵从度应明显扣分。",
+    "aesthetic": "蓝色渐变天空调色和谐，白色文字在蓝底上对比清晰，圆角胶囊状'已完成'视觉也较干净。但天气云朵图标浮在中央区域，把温度主数值的 °C 和 caption 中的'空气'两段都顶到了云体里面，显得脏且不专业，整体观感被这一处遮挡拖垮。",
+    "layout": "截图中可明确看到：root 是 Stack，子元素 weather_bg（76x76 图标）与 content_column（116x116 文字列）都默认在 Stack 中居中，导致图标恰好盖在主温度 26°C 的 °C 位置和'多云 · 空气良'中的'空气'两字上。这是典型的 Stack 层叠遮挡受保护文本问题，公式可交叉验证（图标中心与文字行高度重叠），属必须重扣的严重布局缺陷。底部'已完成'徽章未被遮挡，位置与热区可接受。"
+  },
+  "issues": [
+    "截图中天气云朵图标遮挡了'26°C'中的'°C'字符，主温度被截断",
+    "截图中云朵图标遮挡了 caption 行'多云 · 空气良'中的'空气'二字",
+    "root 使用 Stack 同时包含图标与文字 Column，两者在 140x140 容器内均居中，产生直接层叠冲突",
+    "用户要求'文字盖背景图'，但当前渲染是图片盖在文字之上，方向与指令相反",
+    "content_column 的 justifyContent:spaceBetween 在两个子项加 116 宽度下把标题、温度、caption 集中堆在中段，与中央图标碰撞风险极高"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"primary_caption\",\"status_text\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#46b1e3\",0],[\"#86c5e3\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_icon\"],\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + '天气' }}\",\"styles\":{\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"height\":38}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · 空气' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"height\":16}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/state/completionText} }}\",\"styles\":{\"width\":56,\"height\":24,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"良\"}}},\"state\":{\"completionText\":\"已完成\",\"loading\":false}}}}"
+  ]
+}

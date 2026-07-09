@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-29-elderly-care-018",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户主要诉求基本落实：截图中可见心形图标、左上标题'清晨关怀'+副标题'今日照护安排'，右上白色胶囊里有云朵图标和'15℃'，下方白色面板列出三条日程 08:00 测血压 / 12:00 午餐提醒 / 20:00 散步歌单，对应铃/日历/音符三个库图标，第一条带橙色'提醒'徽章，第三条散步歌单以蓝色文字表示可点击并挂载了 clickToDeeplink 跳音乐 App 的事件。size 2x4、catalogId、version、updateDataModel.path/value、事件 args 均符合协议。扣分点：用户写的是'心形❤'（红色爱心 emoji 语义），实际渲染为黑色实心 heart_fill.svg，与'暖心'的语义有所偏离；用户要求'可滚动重复列表'，DSL 用静态 Column 硬编码 3 行而非 List 模板循环，偏离了'重复列表'的语义。",
+    "aesthetic": "渐变方向从左上淡蓝过渡到右下暖黄，'清晨到正午'的隐喻成立，配色和谐。白色面板与圆角胶囊在彩色底上识别度高。文字层级基本清晰：18px 标题加粗作为最强字重，12px 正文为次级。但仍存在问题：心形图标为纯黑，色感略冷硬，缺少红色或暖色叠加，与'关怀'主基调割裂；天气胶囊、云图标与日历小图标（铃/日历/音符）整体偏素，信息密度高但视觉锚点稍弱；底部面板内三条 14vp 行 + 2vp itemMargin 显得局促，留白偏紧。",
+    "layout": "截图中卡片宽 300、高 140，root 圆角与裁切正常生效。顶部 Row 区域心形 48x48 与标题列、天气胶囊在水平方向并列排布，未见堆叠或截断；'清晨关怀'四个汉字在 18px 字号下完整显示，'今日照护安排'副标题完整；天气胶囊中云图标与'15℃'均居中显示，未被裁切。下方白色面板三条日程均完整显示：08:00 测血压 + 提醒徽章、12:00 午餐提醒、20:00 散步歌单（蓝色），文字未截断。整张卡片在 116vp 内容区内部分布合理，左右各 12vp 内边距到位，无元素溢出。唯一微瑕是面板底部到卡片底边的留白较顶部小，视觉重量略偏上。"
+  },
+  "issues": [
+    "心形图标渲染为纯黑色，未体现用户用红色❤ emoji 表达的'暖心'语义，建议叠加红色 tint 或在图标外套一个浅红圆形背景",
+    "用户要求'可滚动重复列表'，当前用静态 Column + 3 个硬编码 event_row_X，缺少 List 模板循环，不利于未来日程扩展",
+    "schedule_panel 内部三条行高 14vp、itemMargin 2vp，留白偏紧，可视舒适度可优化",
+    "标题列宽度 128 在 18px 字号下预留足够，但与心形图标间距 8vp 偏小，可适当拉开",
+    "可考虑将渐变方向改为 TopToBottom（淡蓝→暖黄）以更贴合'时间流逝'的隐喻"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"schedule_panel\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"TopToBottom\",\"colors\":[[\"#86c5e3\",0],[\"#f5dc62\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"hero_row\",\"weather_pill\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":52,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"heart_bg\",\"title_col\"],\"itemMargin\":10,\"styles\":{\"width\":180,\"height\":52,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"heart_bg\",\"component\":\"Stack\",\"children\":[\"heart_icon\"],\"styles\":{\"width\":52,\"height\":52,\"borderRadius\":26,\"backgroundColor\":\"#ffffeded\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"heart_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/heart_fill.svg\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\",\"tint\":\"#ffe84026\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"caption_text\"],\"itemMargin\":2,\"styles\":{\"width\":118,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"清晨关怀\",\"styles\":{\"width\":118,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"今日照护安排\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"weather_pill\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_temp\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":32,\"padding\":[4,8,4,8],\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":44,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"schedule_panel\",\"component\":\"List\",\"children\":[{\"componentId\":\"event_row\",\"path\":\"/data/calendar/items\"}],\"itemMargin\":3,\"styles\":{\"width\":276,\"height\":58,\"padding\":[5,8,5,8],\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"event_row\",\"component\":\"Row\",\"children\":[\"event_icon\",\"event_time\",\"event_title\",\"event_badge\"],\"itemMargin\":4,\"styles\":{\"width\":260,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"event_icon\",\"component\":\"Image\",\"src\":\"{{ ${item.icon} }}\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_badge\",\"component\":\"Text\",\"content\":\"提醒\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":7,\"textAlign\":\"center\",\"maxLines\":1\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"15℃\"}},\"calendar\":{\"items\":[{\"dtStart\":\"08:00\",\"title\":\"测血压\",\"icon\":\"resources/base/media/bell_fill.svg\"},{\"dtStart\":\"12:00\",\"title\":\"午餐提醒\",\"icon\":\"resources/base/media/calendar_fill.svg\"},{\"dtStart\":\"20:00\",\"title\":\"散步歌单\",\"icon\":\"resources/base/media/music_fill.svg\"}]}}}}"
+  ]
+}

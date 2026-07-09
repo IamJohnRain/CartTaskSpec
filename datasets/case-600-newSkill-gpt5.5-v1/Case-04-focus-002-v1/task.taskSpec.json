@@ -1,0 +1,122 @@
+{
+  "userQuery": "番茄钟卡片要能勾选任务嘛，点进去能设置，反正能从日历读日程，完成的标出来",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日从本地日历读取的日程任务列表，用于展示番茄钟待专注任务。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_event_001",
+              "title": "需求评审",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "会议室A"
+            },
+            {
+              "entityId": "calendar_event_002",
+              "title": "写周报",
+              "dtStart": "15:00",
+              "dtEnd": "15:30",
+              "eventLocation": "办公桌"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程任务。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，可用于打开日程详情。",
+                "sampleValue": "calendar_event_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "需求评审"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程通常为 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程通常为 HH:MM。",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点。",
+                "sampleValue": "会议室A"
+              }
+            }
+          }
+        }
+      }
+    },
+    "focus": {
+      "remainingText": {
+        "type": "string",
+        "description": "当前番茄钟剩余时间展示文本。",
+        "sampleValue": "25:00"
+      },
+      "progressValue": {
+        "type": "integer",
+        "description": "当前番茄钟已专注分钟数。",
+        "sampleValue": 18
+      },
+      "progressTotal": {
+        "type": "integer",
+        "description": "当前番茄钟目标分钟数。",
+        "sampleValue": 25
+      },
+      "caption": {
+        "type": "string",
+        "description": "当前专注轮次的短状态说明。",
+        "sampleValue": "本轮专注"
+      },
+      "tasks": {
+        "type": "array",
+        "description": "日历任务在番茄钟卡片中的勾选完成态。",
+        "sampleValue": [
+          {
+            "done": false
+          },
+          {
+            "done": true
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条任务的勾选状态。",
+          "properties": {
+            "done": {
+              "type": "boolean",
+              "description": "任务是否已完成，完成的任务在卡片中显示为已勾选。",
+              "sampleValue": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_focus.png",
+      "description": "专注模式图标，适合用于番茄钟或专注状态识别。"
+    }
+  ]
+}

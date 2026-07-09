@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-26-group-buy-012",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户要求'浅米色底'，截图实际呈现为白→黄→紫的强渐变，未满足浅米色底要求（仅有夜晚渐变概念）；已拼X杯动态数（已拼8杯）✓、天气跳转（看雨按钮带deeplink事件，原样取自eventCandidates）✓、日历取餐时间（20:30取）✓、风险提醒（快截单 12分红色）✓、左侧主视觉'茶'字✓、可滚动List✓、文字符号当图标✓均落实。但'右边勾选口味'是用户核心诉求，截图里两个Checkbox右侧的标签'三分糖''少冰'被截断成'...'，核心可勾选项信息不可见，属于关键诉求未完整呈现。",
+    "aesthetic": "截图整体配色为黄紫强渐变，与用户'浅米色底'期望差距较大，渐变过于饱和刺眼；左侧白色圆角面板与'茶'字黑体形成清晰对比，主指标'已拼8杯'字号20pt粗黑可读性良好；风险行红色文字在黄底上对比度尚可。'...'省略号明显破坏右侧勾选区美观，标签无法识别是最大的视觉缺陷；底部两行文字虽小但层级清晰。整体观感可用但风格与brief偏离，扣分点主要在背景色调与省略号。",
+    "layout": "截图中最严重的问题是右侧两个Checkbox的label'三分糖''少冰'被截断显示为'...'，受保护的勾选口味名称不可见，构成核心信息截断。List容器宽64，单个Checkbox宽64，Checkbox mark size 12+strokeWidth 2占用约16-20vp，留给3字中文标签的空间不足约36-40vp，在某些渲染下被ellipsize。其余元素：左侧'茶'(height 38)与'看雨'按钮(height 24)在44×72的panel中可容下，无重叠；底部分两行22+14=36，加padding后与140边界有约2vp呼吸；Stack叠层未遮挡关键内容。底部'pickup_risk'文字与卡片底边距离较近但未裁切。整体布局唯一硬伤即口味标签截断。"
+  },
+  "issues": [
+    "右侧List中两个Checkbox的label'三分糖'、'少冰'被截断为'...'，核心可勾选口味信息不可见",
+    "用户要求'浅米色底'，实际渲染为白→黄(#f5dc62)→紫(#8981f7)强饱和渐变，与brief不符",
+    "List宽度64过窄，无法容纳Checkbox+3字中文label，建议扩到72-78",
+    "左侧panel宽44、高72内'茶'(32pt height 38)与'看雨'(height 24)合计62，紧凑但未溢出",
+    "底部'pickup_risk'行使用单行maxLines:1兜底，文本'20:30取 快截单 12分'在116宽度下安全，未来增长可能溢出",
+    "无风险图标或视觉强调，'快截单 12分'仅靠红色字体传达风险感，缺少符号化标识"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_col\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff3df\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#00f5dc62\",0],[\"#55f5dc62\",0.55],[\"#558981f7\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"flavor_list\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":76,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Stack\",\"children\":[\"visual_col\"],\"styles\":{\"width\":38,\"height\":76,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"clip\":true}},{\"id\":\"visual_col\",\"component\":\"Column\",\"children\":[\"tea_glyph\",\"weather_link\"],\"itemMargin\":2,\"styles\":{\"width\":38,\"height\":76,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"tea_glyph\",\"component\":\"Text\",\"content\":\"茶\",\"styles\":{\"width\":38,\"height\":38,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"weather_link\",\"component\":\"Text\",\"content\":\"看雨\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":34,\"height\":22,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#190a59f7\",\"borderRadius\":10}},{\"id\":\"flavor_list\",\"component\":\"List\",\"children\":[\"flavor_0\",\"flavor_1\"],\"space\":6,\"styles\":{\"width\":76,\"height\":76,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"flavor_0\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/groupBuy/flavors/0/name} }}\",\"value\":\"{{ ${/data/groupBuy/flavors/0/value} }}\",\"group\":\"flavor\",\"select\":\"{{ ${/data/groupBuy/flavors/0/selected} }}\",\"styles\":{\"width\":76,\"height\":30,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2},\"fontSize\":12,\"fontColor\":\"#e5000000\",\"margin\":{\"left\":2}}},{\"id\":\"flavor_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/groupBuy/flavors/1/name} }}\",\"value\":\"{{ ${/data/groupBuy/flavors/1/value} }}\",\"group\":\"flavor\",\"select\":\"{{ ${/data/groupBuy/flavors/1/selected} }}\",\"styles\":{\"width\":76,\"height\":30,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2},\"fontSize\":12,\"fontColor\":\"#e5000000\",\"margin\":{\"left\":2}}},{\"id\":\"bottom_col\",\"component\":\"Column\",\"children\":[\"joined_count\",\"pickup_risk\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":40,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"joined_count\",\"component\":\"Text\",\"content\":\"{{ '已拼' + ${/data/groupBuy/joinedCupsText} }}\",\"styles\":{\"width\":120,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"pickup_risk\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '取 ' + ${/data/groupBuy/countdownText} }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"groupBuy\":{\"joinedCupsText\":\"8杯\",\"countdownText\":\"快截单 12分\",\"flavors\":[{\"name\":\"三分糖\",\"value\":\"sugar30\",\"selected\":true},{\"name\":\"少冰\",\"value\":\"less_ice\",\"selected\":true}]},\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar_pickup_001\",\"title\":\"奶茶取餐\",\"dtStart\":\"20:30\",\"dtEnd\":\"20:45\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

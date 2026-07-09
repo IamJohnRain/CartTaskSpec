@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-10-rainy-taxi-018",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "截图中可见雨滴图标、'当前雨量:中雨'与'12mm/h'、温度24°C/湿度88%色块、'查看详细'按钮均按要求呈现，事件 onClick.call/args 与 eventCandidates 一致。但用户明确要求'风速超6级标红危险:不建议骑行告警'，当前数据 windLevel=7 触发条件，截图中底部'危险:不建议骑行'色块呈现为深蓝/暗紫色调，并非红色或橙红色，DSL 中虽然写了条件表达式 '#ffed6f21 ? #ffed6f21 : #19000000'，但渲染端未执行该条件表达式，导致关键的'标红'告警语义未在截图中体现，是主要的指令落实缺陷。",
+    "aesthetic": "蓝紫到青色的对角渐变背景和谐，雨滴白底圆角色块、温度/湿度胶囊、右侧半透明白色面板与'查看详细'白色按钮形成良好的层次；文字白色在深色背景上对比清晰；字号阶梯 12/14/18/20 合理，主指标'12mm/h'与'7级'用粗体突出，整体克制专业。无明显土气或拥挤感。",
+    "layout": "截图显示 2x4 卡片 (300x140) 内左右分区完整：左侧 header_row(48) + metric_row(24) + alert_text(28) 加两个 8 间距合计 116 高度，恰好填满 116 内容区；右侧 18+22+32 加 8×2 间距合计 88，居中分布。元素未见溢出/裁切/堆叠；'温度24°C'与'湿度88%'两胶囊宽度 84+84+10 间距=178 与左区宽匹配；按钮热区 84x32 充足，底部按钮底边距卡片底约 12vp，符合规范。受保护文本（雨量、12mm/h、危险告警、7级、查看详细）均完整可见。"
+  },
+  "issues": [
+    "截图中底部'危险:不建议骑行'告警色块未按用户要求'标红'，实际渲染为深蓝紫色调，与上下方其他胶囊色调相近，缺乏警示性",
+    "alert_text 的 backgroundColor 使用了条件表达式 '{{ ... }}'，渲染端可能不支持此字段的条件表达式求值，导致降级为透明/默认色",
+    "如需在条件不满足时回退到非红状态，应通过双状态组件或拆分渲染策略实现；当前 case 数据 windLevel=7 恒大于 6，可直接使用静态红色"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_section\",\"right_section\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#46b1e3\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_section\",\"component\":\"Column\",\"children\":[\"header_row\",\"metric_row\",\"alert_text\"],\"itemMargin\":8,\"styles\":{\"width\":178,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_panel\",\"header_text_col\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"rain_icon\"],\"itemMargin\":0,\"styles\":{\"width\":44,\"height\":44,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"rain_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/drop_1.svg\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"header_text_col\",\"component\":\"Column\",\"children\":[\"rain_label\",\"rain_rate\"],\"itemMargin\":2,\"styles\":{\"width\":128,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"rain_label\",\"component\":\"Text\",\"content\":\"{{ '当前雨量:' + ${/data/weather/current/rainCondition} }}\",\"styles\":{\"width\":128,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"rain_rate\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/rainfallRateText} }}\",\"styles\":{\"width\":128,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"temp_text\",\"humidity_text\"],\"itemMargin\":10,\"styles\":{\"width\":178,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ '温度 ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":84,\"height\":24,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"humidity_text\",\"component\":\"Text\",\"content\":\"{{ '湿度 ' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":84,\"height\":24,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/windLevel} > 6 ? '危险:不建议骑行' : '风力适合短途出行' }}\",\"styles\":{\"width\":178,\"height\":28,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":14,\"backgroundColor\":\"#ffe53935\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_section\",\"component\":\"Column\",\"children\":[\"wind_label\",\"wind_value\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":88,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"wind_label\",\"component\":\"Text\",\"content\":\"当前风力\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"wind_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/windLevel} + '级' }}\",\"styles\":{\"width\":88,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"查看详细\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"rainCondition\":\"中雨\",\"rainfallRateText\":\"12mm/h\",\"temperatureText\":\"24°C\",\"humidityPercent\":88,\"windLevel\":7}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

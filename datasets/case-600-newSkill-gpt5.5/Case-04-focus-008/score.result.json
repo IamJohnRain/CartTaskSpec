@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-008",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见用户明确要求的跳转按钮'去番茄钟'已渲染为白色 CTA 胶囊，位于右侧动作区内；onClick 事件 call/args 原样取自 eventCandidates（clickToDeeplink + settings bundle + intelligent_scene_entry）。dataModel 五个字段（badge/title/subtitle/hint/actionLabel）均在截图中可见并完整呈现，专注图标 icon_focus.png 被用于徽标和动作区，size/catalogId/version/updateDataModel.path 协议均满足，扣 0.5 分因为用户语义上是要去'番茄钟 app'，但实际跳转目标是设置智能场景入口，存在轻微语义偏移。",
+    "aesthetic": "截图中卡片采用紫到浅紫的渐变背景，色调和谐统一；左侧文字层级清晰，主标题'番茄钟专注'加粗放大为最强字重，徽标/副标题/提示文字形成 12-18-12 的字阶。右侧动作区半透明白色面板与主背景形成层次对比，白色按钮与深色文字对比度高，可读性好。留白密度合理，无明显过密或空洞，扣 1.5 分因 hint 文字颜色稍淡（#99ffffff）在渐变背景上对比度略弱，且顶部 moon 图标与右侧动作区图标重复出现，轻微冗余。",
+    "layout": "截图中各元素均未出现堆叠重叠或溢出卡片边界。左侧 main_column 160 宽内文字无截断（标题 5 字、副标题 7 字、提示 10 字均完整显示），右侧 action_panel 104 宽内 42×42 图标与 88×34 按钮上下居中无溢出。root 高度 140 内 12 padding + 内容 116 完整容纳，无底部被裁切现象。按钮热区 88×34 接近 40vp 标准，可点击性满足。整体对齐以左列 start 对齐、动作区 center 对齐，左右两列视觉重量平衡。"
+  },
+  "issues": [
+    "用户语义是去'番茄钟 app'，deeplink 实际指向设置智能场景入口，存在轻微语义偏差",
+    "顶部徽标月亮图标与右侧动作区图标为同一资源 icon_focus.png 重复使用，视觉上略冗余",
+    "提示文字'轻触按钮打开专注入口'颜色 #99ffffff 在渐变背景上对比度略弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_column\",\"action_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#c386f0\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"focus_badge_row\",\"main_text_group\",\"hint_text\"],\"itemMargin\":8,\"styles\":{\"width\":160,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"focus_badge_row\",\"component\":\"Row\",\"children\":[\"focus_mark\",\"badge_text\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"focus_mark\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"badge_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/badge} }}\",\"styles\":{\"width\":130,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"main_text_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":4,\"styles\":{\"width\":160,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/title} }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/subtitle} }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/hint} }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"action_icon\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":104,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":42,\"height\":42,\"objectFit\":\"contain\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/focus/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":88,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"focus\":{\"badge\":\"专注模式\",\"title\":\"番茄钟专注\",\"subtitle\":\"一键进入专注计时\",\"hint\":\"轻触按钮打开专注入口\",\"actionLabel\":\"去番茄钟\"}}}}"
+  ]
+}

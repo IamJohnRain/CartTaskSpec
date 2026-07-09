@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-07-sports-event-004",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户明确要求'背景图上面写倒计时'，但截图中卡片背景仅为橙色渐变效果，assetCandidates 提供的 icon_run.png 资源未在画面中以任何形式呈现——该图片被设置在根 Stack 的 backgroundImage 字段，但 linearGradient 样式覆盖在其之上导致完全不可见。倒计时数字（12天）、点击跳转事件（clickToDeeplink 到 huaweischeme://healthapp/home/sport?sportType=2）以及赛事标题/底部支撑信息均已正确展示，数据绑定路径合规，事件参数原样来自 eventCandidates，尺寸/root shell/catalogId/version/updateDataModel 等硬约束均满足。核心素材未按预期呈现，是主要扣分点。",
+    "aesthetic": "截图整体观感良好：橙色渐变富有运动感，白色前景文字在渐变上对比清晰，'12'作为主指标字号最大、字重最强形成明确视觉焦点，'天'和'下一场'次级字重处理得当。支撑面板的半透明白色背景和细边框带来良好分区效果。但缺少背景图作为视觉锚点，使得整个卡片略显单调，缺少原本期望的图标装饰趣味，审美上略为平淡。",
+    "layout": "截图布局干净无问题：标题位于顶部、'12'主数值居中、'天'紧邻右侧、底部支撑面板完整呈现于下半区，所有文字均完整无截断，无元素堆叠重叠，无溢出卡片边界。底部支撑面板外框底边到卡片底边约 12vp，符合 2x2 标准的 8-12vp 区间。Stack 未遮挡任何受保护文字/CTA。整体留白密度舒适，对齐统一。"
+  },
+  "issues": [
+    "根 Stack 设置的 backgroundImage 资源 icon_run.png 被 linearGradient 完全覆盖，导致用户要求的'背景图'未在截图中以任何形式可见",
+    "icon_run.png 是 assetCandidates 提供的视觉锚点资源，按设计意图应当可见地呈现在卡片上",
+    "卡片整体视觉过于单调，缺少原本应由背景图提供的运动主题视觉趣味"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_layer\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ed6f21\",\"backgroundImage\":\"resources/base/media/icon_run.png\",\"alignContent\":\"center\"}},{\"id\":\"content_layer\",\"component\":\"Column\",\"children\":[\"header_row\",\"countdown_row\",\"support_panel\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"header_icon\"],\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"space-between\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"header_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_run.png\",\"styles\":{\"width\":16,\"height\":16,\"opacity\":0.75,\"objectFit\":\"contain\"}},{\"id\":\"countdown_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/countdown/value} }}\",\"styles\":{\"width\":76,\"height\":42,\"fontSize\":40,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"{{ ${/countdown/unit} }}\",\"styles\":{\"width\":24,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"support_panel\",\"component\":\"Row\",\"children\":[\"support_text_column\"],\"styles\":{\"width\":116,\"height\":42,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"support_text_column\",\"component\":\"Column\",\"children\":[\"support_label\",\"support_value\"],\"itemMargin\":2,\"styles\":{\"width\":96,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"support_label\",\"component\":\"Text\",\"content\":\"{{ ${/support/label} }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"support_value\",\"component\":\"Text\",\"content\":\"{{ ${/support/value} }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"赛事提醒\"},\"countdown\":{\"value\":\"12\",\"unit\":\"天\"},\"support\":{\"label\":\"下一场\",\"value\":\"今晚 20:00\"}}}}"
+  ]
+}

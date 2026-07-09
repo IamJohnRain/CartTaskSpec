@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-22-express-020",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "用户要求的快递卡基本落实：图（courier_box.png）+橙色暖色调主面板延展色调、两个横排包裹小卡片（'预计今天'+'18:30/20:15送达'）、日历按钮带'日'字符图标与onClick clickToIntent→ViewCalendarEvent+entityId='calendar-pickup-001'、天气文本'气温12°C注意保暖'、无渐变、图标用文字字符均到位。扣分：用户明确点名'大号快递车的图'，而assetCandidates里只提供了courier_box.png快递箱素材（不是车），模型只能使用箱子素材，这与用户'快递车'的明确诉求有偏差。",
+    "aesthetic": "截图整体观感干净克制：浅灰底+橙黄主面板+白色包裹卡+灰色按钮的配色和谐，无渐变。文字层级清晰：'今日派送'16号粗体最强、'包裹已上车'与时间次级、'注意保暖'最弱，只有一个最强字重。留白与对齐统一，左右边界对齐到位。唯一小瑕疵是包裹卡内'18:30送达/20:15送达'中'达'字非常贴近白色卡右边缘，视觉上略显局促。",
+    "layout": "截图显示各组件均在140×140卡片边界内，无元素溢出卡片、无Stack遮挡关键内容。Hero面板、包裹行、日历按钮、天气文本依次纵向排布，无截断。可观察到的微瑕：1）两个白色包裹卡右侧的'达'字几乎贴到卡片右边缘，肉眼可感'挤'；2）底部天气文本距卡片底边留白偏小，约4-6vp。"
+  },
+  "issues": [
+    "用户要求'大号快递车的图'，但assetCandidates只提供快递箱courier_box.png，模型只能用箱子素材，语义与用户'车'的诉求不符",
+    "包裹卡内'18:30送达/20:15送达'文本'达'字贴近白色卡右边缘，视觉局促",
+    "天气文本距卡片底边留白偏紧，约4-6vp",
+    "天气行未使用文字字符图标（如'天'），与用户'图标用文字字符'诉求结合日历'日'字符的风格不完全统一"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_panel\",\"package_row\",\"calendar_button\",\"weather_text\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\"}},{\"id\":\"hero_panel\",\"component\":\"Row\",\"children\":[\"hero_image\",\"hero_copy\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":36,\"padding\":{\"left\":0,\"right\":0,\"top\":0,\"bottom\":0},\"borderRadius\":14,\"backgroundColor\":\"#F9BC64\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"resources/base/media/courier_box.png\",\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"hero_copy\",\"component\":\"Column\",\"children\":[\"hero_status\",\"hero_sub_status\"],\"itemMargin\":2,\"styles\":{\"width\":70,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"hero_status\",\"component\":\"Text\",\"content\":\"{{ ${/view/heroStatus} }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hero_sub_status\",\"component\":\"Text\",\"content\":\"{{ ${/view/heroSubStatus} }}\",\"styles\":{\"width\":70,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"package_row\",\"component\":\"Row\",\"children\":[\"package_card_1\",\"package_card_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"package_card_1\",\"component\":\"Column\",\"children\":[\"package_1_label\",\"package_1_time\"],\"itemMargin\":0,\"styles\":{\"width\":56,\"height\":28,\"padding\":{\"left\":1,\"right\":1,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"package_1_label\",\"component\":\"Text\",\"content\":\"{{ ${/view/packages/0/label} }}\",\"styles\":{\"width\":54,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"package_1_time\",\"component\":\"Text\",\"content\":\"{{ ${/view/packages/0/timeText} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"package_card_2\",\"component\":\"Column\",\"children\":[\"package_2_label\",\"package_2_time\"],\"itemMargin\":0,\"styles\":{\"width\":56,\"height\":28,\"padding\":{\"left\":1,\"right\":1,\"top\":3,\"bottom\":3},\"borderRadius\":8,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"package_2_label\",\"component\":\"Text\",\"content\":\"{{ ${/view/packages/1/label} }}\",\"styles\":{\"width\":54,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"package_2_time\",\"component\":\"Text\",\"content\":\"{{ ${/view/packages/1/timeText} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"calendar_button\",\"component\":\"Button\",\"label\":\"{{ '日 ' + ${/view/pickupReminder} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":22,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":12}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ '天 气温' + ${/data/weather/current/temperatureText} + ${/view/weatherTip} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"view\":{\"heroStatus\":\"今日派送\",\"heroSubStatus\":\"包裹已上车\",\"packages\":[{\"label\":\"预计今天\",\"timeText\":\"18:30送达\"},{\"label\":\"预计今天\",\"timeText\":\"20:15送达\"}],\"pickupReminder\":\"明天有2个待取\",\"weatherTip\":\"注意保暖\"},\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"12°C\"}},\"calendar\":{\"items\":[{\"entityId\":\"calendar-pickup-001\",\"title\":\"快递待取提醒\",\"dtStart\":\"09:00\",\"dtEnd\":\"09:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

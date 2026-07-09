@@ -1,0 +1,81 @@
+{
+  "userQuery": "帮我弄个提醒 上面有行字带5点那种 点了能跳到日历app 从日历读日程",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的日程列表，按开始时间排序。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "项目同步提醒",
+              "dtStart": "17:00",
+              "dtEnd": "17:30",
+              "eventLocation": "会议室 A",
+              "remindTime": [
+                "提前10分钟"
+              ]
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开对应日程详情。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "项目同步提醒"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程使用 HH:MM 格式。",
+                "sampleValue": "17:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程使用 HH:MM 格式。",
+                "sampleValue": "17:30"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点。",
+                "sampleValue": "会议室 A"
+              },
+              "remindTime": {
+                "type": "array",
+                "description": "日程提醒时间文本列表。",
+                "sampleValue": [
+                  "提前10分钟"
+                ],
+                "items": {
+                  "type": "string",
+                  "description": "提醒时间文本。",
+                  "sampleValue": "提前10分钟"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

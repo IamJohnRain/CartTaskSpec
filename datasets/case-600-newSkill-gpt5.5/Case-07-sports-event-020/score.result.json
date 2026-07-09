@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-07-sports-event-020",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图中清晰可见顶部三场赛事名横排（铁三/马拉松/越野）以胶囊样式呈现，下方三行分别显示'本周重点：骑跑转换/长距离配速/爬升力量'与'距铁三还有47天/距马拉松还有101天/距越野还有143天'的固定+动态拼接倒计时，蓝色紫调主题明确，onClick 事件已绑定到健康运动 deepLink。扣分点：用户明确要求'星空氛围'，实际仅为蓝紫渐变背景，未体现星空点状装饰（受协议禁 emoji/SVG/网络图限制难以呈现，但仍可视作未完全落实诉求）。",
+    "aesthetic": "截图中蓝紫渐变背景过渡自然，三胶囊标题和三个半透明白底训练行在深色背景上层次清晰，白色文字在深蓝紫底上可读性良好，留白密度合理，无明显空洞或过密。扣分点：缺少真正'星空'的视觉点缀（如星光点），导致氛围感弱于用户原话期待；胶囊与行块风格统一但略显模板化，缺少图标或色彩对比突出主指标。",
+    "layout": "截图中卡片整体无任何堆叠或裁切：顶部三胶囊均匀分布且未越界，文字均完整显示（铁三/马拉松/越野未截断），下方三行训练信息左右两端'本周重点：…'和'距X还有Y天'并列展示均无溢出，focus 文本最大154宽度未触及倒计时110宽度，间距合理，底部留白约 6-10vp 满足锚定要求。整体排列整齐，水平基线对齐，CTA 行可点击热区充足（行高 26 + 内边距）。"
+  },
+  "issues": [
+    "未体现用户明确要求的'星空氛围'，仅使用蓝紫渐变背景，无星点/星轨等视觉元素",
+    "训练行中'本周重点：…'与倒计时文字视觉权重接近，倒计时未通过色彩/字号强化为主指标",
+    "顶部三个事件胶囊宽度 88 等分，未与各赛事名实际字数做差异适配，视觉略刻板",
+    "背景渐变方向 RightBottom 偏右下轻微变亮，与'星空'深邃感略冲突"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"events_panel\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"TopDown\",\"colors\":[[\"#ff0b0f2c\",0],[\"#ff1a2050\",0.45],[\"#ff2a1a55\",0.75],[\"#ff0d2a4a\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"event_name_0\",\"event_name_1\",\"event_name_2\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"event_name_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":72,\"height\":24,\"backgroundColor\":\"#26ffffff\",\"borderRadius\":12,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"event_name_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":72,\"height\":24,\"backgroundColor\":\"#26ffffff\",\"borderRadius\":12,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"event_name_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/title} }}\",\"styles\":{\"width\":72,\"height\":24,\"backgroundColor\":\"#26ffffff\",\"borderRadius\":12,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"events_panel\",\"component\":\"Column\",\"children\":[\"event_row_0\",\"event_row_1\",\"event_row_2\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":86}},{\"id\":\"event_row_0\",\"component\":\"Row\",\"children\":[\"focus_0\",\"countdown_0\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":276,\"height\":26,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#1affffff\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"focus_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"countdown_0\",\"component\":\"Text\",\"content\":\"{{ '距' + ${/data/calendar/items/0/title} + '还有' + ${/data/calendar/items/0/daysUntil} + '天' }}\",\"styles\":{\"width\":114,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff7ad6ff\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"event_row_1\",\"component\":\"Row\",\"children\":[\"focus_1\",\"countdown_1\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":276,\"height\":26,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#1affffff\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"focus_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/description} }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"countdown_1\",\"component\":\"Text\",\"content\":\"{{ '距' + ${/data/calendar/items/1/title} + '还有' + ${/data/calendar/items/1/daysUntil} + '天' }}\",\"styles\":{\"width\":114,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff7ad6ff\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"event_row_2\",\"component\":\"Row\",\"children\":[\"focus_2\",\"countdown_2\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":276,\"height\":26,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#1affffff\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"focus_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/description} }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"countdown_2\",\"component\":\"Text\",\"content\":\"{{ '距' + ${/data/calendar/items/2/title} + '还有' + ${/data/calendar/items/2/daysUntil} + '天' }}\",\"styles\":{\"width\":114,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff7ad6ff\",\"textAlign\":\"end\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"CalendarEvent\",\"entityId\":\"triathlon-event-2026\",\"title\":\"铁三\",\"description\":\"本周重点：骑跑转换\",\"dtStart\":\"08月25日\",\"dtEnd\":\"08月25日\",\"daysUntil\":\"47\"},{\"entityName\":\"CalendarEvent\",\"entityId\":\"marathon-event-2026\",\"title\":\"马拉松\",\"description\":\"本周重点：长距离配速\",\"dtStart\":\"10月18日\",\"dtEnd\":\"10月18日\",\"daysUntil\":\"101\"},{\"entityName\":\"CalendarEvent\",\"entityId\":\"trail-event-2026\",\"title\":\"越野\",\"description\":\"本周重点：爬升力量\",\"dtStart\":\"11月29日\",\"dtEnd\":\"11月29日\",\"daysUntil\":\"143\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

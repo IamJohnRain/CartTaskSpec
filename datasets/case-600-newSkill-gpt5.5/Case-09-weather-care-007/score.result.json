@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-weather-care-007",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户明确要求'字浮在背景图上'，但截图中 backgroundImage 资源 cloudy_turning_sunny.png 几乎完全不可见：root 叠了 backgroundColor(#467794) + backgroundImage + linearGradient(右下方渐变) 三层，再被 scrim 116x116 的 40% 黑色实心圆角盒子整块覆盖，文字实际浮在深色蒙层盒子上而非浮在背景图素材上,该核心视觉诉求未实现。日程字段(产品评审 / 10:30-11:00)在截图中清晰呈现，clickToDeeplink 事件按 eventCandidates 原样落实，icon_schedule.png 图标也已使用，扣分集中在背景图被完全遮蔽。",
+    "aesthetic": "蓝色渐变与白色文字在深底上的对比清晰可读，字号梯度 16/12/14 层次清楚，唯一的 800 字重集中在主指标'产品评审'上。但 scrim 制造的'盒中盒'视觉让画面显得笨重，assetCandidates 中'小云朵和太阳组合天气素材'本应作为视觉锚点却完全不见，整体缺乏记忆点与温度感。",
+    "layout": "截图中无文字截断、无元素堆叠重叠，标题/时间/CTA 完整呈现。Column 高度 18+4+38+4+16+4+32=116 等于容器 116 无溢出；Row 16+6+86=108 等于容器 108 无溢出；按钮 88x32 热区充足，底部距卡片底边 12vp 在 2x2 的 8-12vp 合理区间内，按钮文字'打开天气'底边无裁切。Stack 中 scrim 在下、内容在上层级正确，无遮挡关键文本。"
+  },
+  "issues": [
+    "背景图 cloudy_turning_sunny.png 被 root 的 backgroundColor + linearGradient + 40% 黑色 scrim 三层覆盖，截图中完全不可见，违背用户'字浮在背景图上'的核心诉求",
+    "scrim 为 116x116 实心黑色圆角盒，形成明显的'盒中盒'视觉，削弱文字悬浮感与卡片整体通透度",
+    "按钮文案'打开天气'与卡片展示的日程内容语义不一致(受 eventCandidates 仅有天气 deeplink 约束可接受，但应在标签上让用户感知到与日程相关)"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"scrim\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundImage\":\"resources/base/media/cloudy_turning_sunny.png\",\"backgroundImageSizeWithStyle\":\"cover\",\"alignContent\":\"center\"}},{\"id\":\"scrim\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":14,\"linearGradient\":{\"direction\":\"Top\",\"colors\":[[\"#00000000\",0],[\"#66000000\",1]]}}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"event_title\",\"time_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"padding\":{\"left\":4,\"right\":4},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日日程\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":38,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"wordBreak\":\"breakWord\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"cal-1001\",\"title\":\"产品评审\",\"dtStart\":\"10:30\",\"dtEnd\":\"11:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

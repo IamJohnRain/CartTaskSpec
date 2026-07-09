@@ -1,0 +1,67 @@
+{
+  "userQuery": "我爸一个人住,我特别担心他夜间出事,想做一个独居老人夜间安全卡。深色舞台风格,有点夜间那种氛围。分几块用分隔线:最上面固定写\"室内温度18°C 湿度42%\"(天气数据),中间可滚动的最近3天吃药记录列表,下面一个\"立即定位回家\"按钮触发地图导航,最底下红色告警\"昨晚3:24检测到12分钟无活动,请关注\"。不要渐变,纯色块和文字,深灰带点蓝的底色。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "室内或当前位置温度展示文本，用于夜间安全卡顶部环境信息。",
+            "sampleValue": "18°C"
+          },
+          "humidityPercent": {
+            "type": "number",
+            "description": "室内或当前位置相对湿度百分比数值。",
+            "sampleValue": 42
+          }
+        }
+      }
+    },
+    "ui": {
+      "medicationRecords": {
+        "type": "array",
+        "description": "最近3天吃药记录，用于卡片中部固定行滚动列表。",
+        "sampleValue": [
+          {
+            "recordText": "7月7日 21:00 已服药"
+          },
+          {
+            "recordText": "7月8日 21:05 已服药"
+          },
+          {
+            "recordText": "7月9日 20:58 待确认"
+          }
+        ],
+        "items": {
+          "recordText": {
+            "type": "string",
+            "description": "单日吃药记录展示文本。",
+            "sampleValue": "7月7日 21:00 已服药"
+          }
+        }
+      },
+      "alertText": {
+        "type": "string",
+        "description": "夜间无活动风险告警文本。",
+        "sampleValue": "昨晚3:24检测到12分钟无活动,请关注"
+      }
+    }
+  },
+  "assetCandidates": []
+}

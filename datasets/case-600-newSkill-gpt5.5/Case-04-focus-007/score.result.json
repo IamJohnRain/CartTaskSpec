@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-007",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户原始指令要求:整张专注统计卡片、数据比例(已完成 82%)、点击进入系统(已配置 clickToDeeplink)、能读日历(已从 calendar.items 读取)、显示已完成(已显示 statusText'已完成')。从截图看,标题、82% 环状进度、状态、时长、CTA、日历时间均已呈现,事件与数据绑定均按 TaskSpec 实现,所有硬约束(尺寸 2x2=140x140、catalogId、version、updateDataModel.path='/')均满足,assetCandidates.icon_focus.png 也已使用。唯一不足是日历时间尾部被截,日历信息呈现不完整,扣 1.5 分。",
+    "aesthetic": "从截图看,紫蓝渐变(#564af7→#8c55c2) 协调且克制,白/半透明白文字在渐变底色上可读性良好;82% 主数值最重字重 700,标题/时长 600,状态/时间降为 500/400,字重层级清晰且只有一个最强字重;圆形环、右侧三行文字、底部胶囊按钮的对齐与留白都较舒适。底部按钮使用 #19ffffff 玻璃质感,不抢戏。整体观感专业,但没有特别出彩的细节创新,给 8.0。",
+    "layout": "从截图中可观察到一项明确截断:右侧 fact_column(宽 50vp)中的 fact_meta 显示为'09:00-10',原始表达式为'09:00-10:00',末尾的':00'被裁掉。这是受保护文本(用户明确要求'能读日历'、要看到时间)在 maxLines:1 + textOverflow:none 约束下被容器裁切。其余元素:标题、月亮图标、82% 环、状态、时长、按钮均完整在卡片边界内,未发生堆叠或溢出。按钮热区 26vp ≥ 24vp,底部外边距约 8vp 落在合理区间。综合来看,时间被截是本次最严重的布局问题,扣 3.5 分。"
+  },
+  "issues": [
+    "fact_meta 文本 '09:00-10:00' 在宽 50vp、fontSize 12 的容器中被截断,截图中只显示 '09:00-10',用户要求的'能读日历'信息不完整。",
+    "fact_meta 同时承载了较多信息(开始-结束时间),在 2x2 卡片右侧 50vp 列内空间紧张,建议改用更短的日历字段或缩短字号。",
+    "header_row 的 title_text 宽度 94vp 足够但与 leading_icon 间距 itemMargin 6 偏紧,在图标较大时易贴边,可适当增加间距(可选)。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#8c55c2\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"leading_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"leading_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"专注统计\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_gauge\",\"fact_column\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_gauge\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_ring\",\"meter_value\"],\"styles\":{\"width\":58,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#33ffffff\",\"width\":58,\"height\":58}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/focus/completionPercent} }}\",\"total\":\"{{ ${/focus/completionTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":58,\"height\":58}},{\"id\":\"meter_value\",\"component\":\"Text\",\"content\":\"{{ ${/focus/completionText} }}\",\"styles\":{\"width\":58,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"fact_column\",\"component\":\"Column\",\"children\":[\"fact_label\",\"fact_value\",\"fact_meta\"],\"itemMargin\":2,\"styles\":{\"width\":50,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"fact_label\",\"component\":\"Text\",\"content\":\"{{ ${/focus/statusText} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"fact_value\",\"component\":\"Text\",\"content\":\"{{ ${/focus/durationText} }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"fact_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Row\",\"children\":[\"action_text\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":116,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":\"进专注\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"focus-20260709-001\",\"title\":\"深度专注\",\"dtStart\":\"09:00\",\"dtEnd\":\"10:00\"}]}},\"focus\":{\"completionPercent\":82,\"completionTotal\":100,\"completionText\":\"82%\",\"statusText\":\"已完成\",\"durationText\":\"2小时\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

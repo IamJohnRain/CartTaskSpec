@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-30-pet-feeder-002",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "用户明确要求'文字叠背景图上那种'，但截图中卡片背景为纯白色，cloudy_turning_sunny.png 背景图完全不可见，content_layer 上覆盖的 #99ffffff 半透明白底很可能将背景图遮盖住或渲染引擎未正确合成背景图与半透明层，导致核心视觉诉求未满足。标题'宠物喂食'、天气数据（温度/天气现象/空气质量/湿度/风力）、跳转事件 clickToDeeplink 均已正确落实，assetCandidates 中 partly_cloudy.png 用作天气图标、size 2x4、catalogId/version/updateDataModel 协议约束均符合要求，但背景图不可见是显著扣分项。",
+    "aesthetic": "截图中卡片呈现为大面积白底+少量文字与一个蓝色按钮的极简样式，整体观感平淡、缺乏视觉吸引力。'文字叠背景图'这一风格诉求未实现，使卡片失去了天气的氛围感与场景代入感。前景文字（黑/深灰）与白色背景的对比度尚可，字号层级（32/14/12）清晰，但缺少背景图的色彩衬托后整体显得寡淡，留白比例偏大、视觉密度偏低。",
+    "layout": "截图中各元素（标题、位置、天气图标、26°C 主值、副标题、湿度/风力、蓝色按钮）均完整可见，无文字截断、无元素堆叠重叠、无组件溢出卡片边界。header/main/bottom 三行布局对齐工整，底部'看天气'按钮底边距卡片底边约 12vp，处于规范范围内。整体排版干净、布局公式核算也基本成立，是该卡片表现最好的一项。"
+  },
+  "issues": [
+    "背景图 resources/base/media/cloudy_turning_sunny.png 在截图中完全不可见，content_layer 的 #99ffffff 白色半透明层将其遮盖或未正确合成",
+    "用户明确要求的'文字叠背景图上那种'视觉风格未实现，卡片呈现为纯白底",
+    "文字颜色（#e5000000、#99000000 深色）针对白底设计，若背景图可见将难以阅读，需调整为浅色文字并加深色蒙层",
+    "卡片整体留白偏大、视觉密度偏低，缺乏天气场景的氛围感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"scrim\",\"content_layer\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":0,\"borderRadius\":22,\"clip\":true,\"backgroundImage\":\"resources/base/media/cloudy_turning_sunny.png\",\"alignContent\":\"topStart\"}},{\"id\":\"scrim\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"backgroundColor\":\"#66000000\"}},{\"id\":\"content_layer\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"location_text\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"宠物喂食\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":184,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"primary_column\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":50,\"height\":50,\"objectFit\":\"contain\"}},{\"id\":\"primary_column\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":4,\"styles\":{\"width\":218,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":130,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · 空气' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":218,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"support_column\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"support_column\",\"component\":\"Column\",\"children\":[\"humidity_text\",\"wind_text\"],\"itemMargin\":2,\"styles\":{\"width\":180,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"humidity_text\",\"component\":\"Text\",\"content\":\"{{ '湿度 ' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":180,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"wind_text\",\"component\":\"Text\",\"content\":\"{{ '风力 ' + ${/data/weather/current/windLevel} + '级' }}\",\"styles\":{\"width\":180,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"优\",\"humidityPercent\":66,\"windLevel\":2},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

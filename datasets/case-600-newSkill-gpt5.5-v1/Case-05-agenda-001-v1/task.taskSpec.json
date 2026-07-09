@@ -1,0 +1,74 @@
+{
+  "userQuery": "帮我做个会议提醒,显示一行带时间的,点一下能进系统操作,还能显示天气",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "当天日历事件列表，卡片仅展示第一条会议提醒。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-sample-001",
+              "title": "项目例会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开系统日历事件详情。",
+                "sampleValue": "calendar-event-sample-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "会议或日程标题。",
+                "sampleValue": "项目例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，当天事件使用 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，当天事件使用 HH:MM 格式。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

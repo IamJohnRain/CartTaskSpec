@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-009",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户原始诉求为'整个图吧，点一下进相册，能看天气，提醒我快没空间了'。当前卡片：点击事件已挂在根节点并使用 TaskSpec 中规定的 clickToDeeplink+uri(album)，可进相册；天气温度 28°C 与'多云'已显示；存储警告'空间快满'已以红色呈现。但用户首句强调'整个图吧'，期望整卡以相册图片为主视觉，而当前实现以文字+天气图标为主，没有主相册图（dataModel 与 assetCandidates 也未提供相册图素材），主诉求'整图'未得到充分满足。事件/字段/素材使用与协议均合规，尺寸 2x2、140x140、catalogId、version、updateDataModel.path=/ 等硬约束全部满足。",
+    "aesthetic": "截图整体观感尚可：深色渐变背景从近黑过渡到紫色，配色和谐有质感；温度'28°C'是最大最亮的视觉锚点，'多云'副信息层级清晰；存储胶囊使用半透明白底+红色文字，警告感突出。底部'点按进相册'提示文字偏淡偏小（10pt、#99ffffff），作为可点击提示在深色渐变上可读性略弱；缺少一个能强化'这是相册卡'的视觉锚点；顶部 hero 区与底部提示之间留白略多。",
+    "layout": "截图未观察到文字截断、堆叠遮挡或越界：温度'28°C'完整显示无截断；'多云'副标题完整；存储胶囊左'存储提醒'+右'空间快满'排布整齐，左右未溢出；底部'点按进相册'居中未贴边。Column 纵向占用（12+58+8+30+8+12+12=140）正好填满 140 高度。Row 横向占用都在 116 内容区内。仅底部'点按进相册'字号仅 10pt、颜色 #99ffffff，作为受保护提示文字可读性偏弱，是截图里唯一可观察到的小瑕疵。"
+  },
+  "issues": [
+    "用户原话'整个图吧'未被充分实现：整卡未呈现相册主图，仍以文字信息为主",
+    "底部'点按进相册'提示字号仅 10pt、颜色 #99ffffff，作为受保护 CTA 提示文字可读性偏弱",
+    "存储胶囊内'存储提醒'标签与'空间快满'状态在 140 宽度下信息略冗余，可精简",
+    "顶部 hero 区下方留白偏多，存储胶囊与底部提示之间纵向节奏略散"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"storage_panel\",\"album_btn\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.photos\",\"abilityName\":\"com.huawei.hmos.photos.MainAbility\",\"uri\":\"album\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#5550a6\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":44,\"height\":44,\"objectFit\":\"contain\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":2,\"styles\":{\"width\":64,\"height\":46,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":64,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":64,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"storage_panel\",\"component\":\"Row\",\"children\":[\"storage_state\"],\"styles\":{\"width\":116,\"height\":28,\"padding\":[0,10,0,10],\"borderRadius\":14,\"backgroundColor\":\"#26d94838\",\"borderWidth\":1,\"borderColor\":\"#55d94838\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"storage_state\",\"component\":\"Text\",\"content\":\"{{ ${/ui/storageWarningText} }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffff6b6b\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"album_btn\",\"component\":\"Button\",\"label\":\"{{ ${/ui/albumHint} }}\",\"styles\":{\"width\":116,\"height\":26,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#7c4dff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"多云\"}}},\"ui\":{\"storageWarningText\":\"空间快满\",\"albumHint\":\"点按进相册\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

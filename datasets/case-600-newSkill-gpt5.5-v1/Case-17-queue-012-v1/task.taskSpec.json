@@ -1,0 +1,102 @@
+{
+  "userQuery": "帮我做个医院排队的卡片,横着排三块儿,中间用分隔线隔开:左边是当前叫号数,中间是环形显示等候人数(动态变化,比如前面还有12人),右边是手机电量显示(比如78%)。要加个\"立即拨打医院电话\"的按钮,还能读我日历里今天的就诊预约。整体风格想要那种从图片里延伸出来的感觉,带点仪表盘的味道。如果快轮到我了得用红色或橙色提醒一下,别让我错过了。背景来一个从绿到黄到红的紧迫感渐变。图标用文字字符就行,比如\"⚕\"或者\"⌚\"那种。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "01012345678"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "queue": {
+      "currentNumber": {
+        "type": "string",
+        "description": "医院当前正在叫到的号码展示文本。",
+        "sampleValue": "036"
+      },
+      "waitingCount": {
+        "type": "number",
+        "description": "当前用户前方仍在等待的人数。",
+        "sampleValue": 12
+      },
+      "waitingTotal": {
+        "type": "number",
+        "description": "环形等候进度的参考总人数。",
+        "sampleValue": 30
+      },
+      "waitingText": {
+        "type": "string",
+        "description": "等候人数的紧凑展示文本。",
+        "sampleValue": "12人"
+      },
+      "warningColor": {
+        "type": "string",
+        "description": "快轮到时用于主号和仪表的提醒颜色。",
+        "sampleValue": "#ffe84026"
+      }
+    },
+    "device": {
+      "batteryText": {
+        "type": "string",
+        "description": "手机电量百分比展示文本。",
+        "sampleValue": "78%"
+      }
+    },
+    "hospital": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "医院联系电话。",
+        "sampleValue": "01012345678"
+      },
+      "callLabel": {
+        "type": "string",
+        "description": "拨打医院电话动作的短按钮文案。",
+        "sampleValue": "拨打医院"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "今日就诊预约日程的唯一标识。",
+              "sampleValue": "calendar-visit-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "今日就诊预约标题。",
+              "sampleValue": "就诊预约"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "今日就诊预约开始时间。",
+              "sampleValue": "10:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "今日就诊预约结束时间。",
+              "sampleValue": "11:00"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，可用于表示今日就诊预约或日程入口。"
+    },
+    {
+      "src": "resources/base/media/phone_fill.svg",
+      "description": "电话实心图标，可用于表示拨打医院电话动作。"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合图标，可用于表示手机电量或节能状态。"
+    }
+  ]
+}

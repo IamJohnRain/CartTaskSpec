@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-anti-addiction-014",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "指令落实情况：紧迫感渐变（橙→金黄）已实现，clock_fill.svg 时钟图标作为主视觉已就位并居左放大呈现，竖向 App 列表（2 项）已实现，黄色风险徽标已添加，设闹钟按钮已配置 onClick 到 clickToDeeplink（参数与 eventCandidates 一致）。但截图中两条 App 行的「距离锁屏还有15分钟」被单行截断——第一行只渲染到「距离锁屏还有」、第二行只到「距离锁屏还有15」，用户明确要求的完整倒计时文案「15分钟」不可见，是关键信息缺失；日历作息（dtStart/dtEnd）也未体现在 UI 上。",
+    "aesthetic": "配色：橙黄 RightBottom 渐变很好地表达了紧迫感，时钟白底+黑图标对比清晰，黄色风险徽标与背景协调，设闹钟白色按钮在渐变上醒目。层级：防沉迷标题 14 号粗体为唯一最强字重，节奏清晰。问题：App 行采用半透明白底（#33ffffff）+ 白色文字，对比度偏低、识别吃力；标题「防沉迷」与时钟白板右侧贴得过近、留白偏紧；按钮底边距卡片下沿较近。",
+    "layout": "截图中关键问题：两条 App 行的「距离锁屏还有15分钟」被截断（受保护倒计时文本不可见），原因是把 title（短视频/游戏）+ 8 字描述拼成单行后超出 116px 内容宽。其余部分：root 140x140 / padding 12 / borderRadius 18 / clip true 合规，hero_row 内 40x40 时钟板 + 68x38 状态栏对齐良好，黄色风险徽标未被遮挡，设闹钟按钮高度 32vp、底边到卡片底约 12vp 合规，Stack 未遮盖关键内容。综合截断问题属于受保护文本被裁切，布局分大幅扣分。"
+  },
+  "issues": [
+    "App 列表两项的「距离锁屏还有15分钟」文案被单行截断，「15分钟」/「分钟」不可见（受保护文本被裁切）",
+    "App 行采用 title+description 横向拼接导致宽度超限，未做分行或缩短",
+    "App 行半透明白底（#33ffffff）与白色文字对比度偏低",
+    "dtStart/dtEnd 等日历作息字段未在 UI 任何位置体现"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"app_list\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",0.58],[\"#f5dc62\",1]]}}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"icon_plate\",\"status_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"icon_plate\",\"component\":\"Column\",\"children\":[\"clock_icon\"],\"styles\":{\"width\":30,\"height\":30,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"clock_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/clock_fill.svg\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"status_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"risk_text\"],\"itemMargin\":2,\"styles\":{\"width\":78,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/title} }}\",\"styles\":{\"width\":78,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"risk_text\",\"component\":\"Text\",\"content\":\"{{ ${/statusText} }}\",\"styles\":{\"width\":78,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#f7ce00\",\"borderRadius\":7,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"app_list\",\"component\":\"Column\",\"children\":[\"app_item_1\",\"app_item_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48}},{\"id\":\"app_item_1\",\"component\":\"Column\",\"children\":[\"app1_title\",\"app1_desc\"],\"itemMargin\":1,\"styles\":{\"width\":116,\"height\":22,\"backgroundColor\":\"#33ffffff\",\"borderRadius\":6,\"padding\":{\"left\":6,\"right\":6,\"top\":1,\"bottom\":1}}},{\"id\":\"app1_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":104,\"height\":10,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"app1_desc\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":104,\"height\":10,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"app_item_2\",\"component\":\"Column\",\"children\":[\"app2_title\",\"app2_desc\"],\"itemMargin\":1,\"styles\":{\"width\":116,\"height\":22,\"backgroundColor\":\"#33ffffff\",\"borderRadius\":6,\"padding\":{\"left\":6,\"right\":6,\"top\":1,\"bottom\":1}}},{\"id\":\"app2_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":104,\"height\":10,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"app2_desc\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/description} }}\",\"styles\":{\"width\":104,\"height\":10,\"fontSize\":9,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"设闹钟\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"title\":\"防沉迷\",\"statusText\":\"黄色风险\",\"data\":{\"calendar\":{\"items\":[{\"title\":\"短视频\",\"description\":\"距离锁屏还有15分钟\",\"dtStart\":\"21:00\",\"dtEnd\":\"21:15\",\"entityId\":\"calendar-limit-video\"},{\"title\":\"游戏\",\"description\":\"距离锁屏还有15分钟\",\"dtStart\":\"21:15\",\"dtEnd\":\"21:30\",\"entityId\":\"calendar-limit-game\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

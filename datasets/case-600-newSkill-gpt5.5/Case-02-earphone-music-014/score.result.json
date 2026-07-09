@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-02-earphone-music-014",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "截图基本呈现了用户要求的深色舞台风格纯文字卡片：左侧纵向排列听书任务（夜听/睡前听书/白噪放松/日程），右侧信息区（距睡眠2小时、电量5%）和动作区（听歌单按钮）分开；按钮 onClick 正确引用 eventCandidates；无任何图片。但有两处偏离指令：①用户明确要求'用红色字体标出快没电的危险状态'，截图里电量文字是橙色（#ffdb6b42）而非红色；②用户要求'关联一下我今晚的听书日历日程'，截图中'日程至'后应该拼接的结束时间 22:30 被截断丢失，未完整呈现日程范围。",
+    "aesthetic": "深色径向渐变（黑到紫）作为舞台风格底色表现合格，紫色按钮与背景呼应；字体层级有区分（标题白、辅文灰、警示橙红）。但左列文字'睡前听书'被拆成'22:00 睡/前听书'两行、中文词被腰斩，破坏整体美感；'日程至'末尾信息缺失显得突兀；左下角'日程至'灰色字与右列橙色字之间留白不对称，视觉重心略偏右。",
+    "layout": "截图中观察到的主要排版问题：①左列 '22:00 睡前听书' 在 48vp 窄列里因 maxLines=2 触发换行，被截断为'22:00 睡'与'前听书'两行，单词被劈开且第二行只有两个汉字，严重影响可读；②'日程至 22:30' 在 48vp 宽、maxLines=1 的约束下，整串被裁掉只显示'日程至'，关键结束时间丢失；③右列'距睡眠还有'因宽度紧张被换行成两行，挤压了下方的电池信息和按钮空间；④左右两列宽度分配不均（48+60）与内容负载不匹配导致左列超载。未见元素溢出卡片边界，也未见 Stack 堆叠遮挡，整体没有崩溃但有明显的文字截断与换行失控。"
+  },
+  "issues": [
+    "左列 '22:00 睡前听书' 在 48vp 宽 + maxLines=2 约束下被拆成 '22:00 睡' / '前听书'，单词被腰斩",
+    "'日程至 22:30' 因 maxLines=1 与窄列宽被截断为 '日程至'，结束时间 22:30 丢失",
+    "右列'距睡眠还有 2小时'被换行成两行，占用空间挤压下方电池与按钮",
+    "电量警示文字使用橙色 #ffdb6b42，用户明确要求红色字体",
+    "左右列宽分配（48+60）与内容负载不匹配，左列内容明显超载"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"task_column\",\"info_column\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":8,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#ff000000\",0.55],[\"#634794\",1]]},\"alignItems\":\"center\"}},{\"id\":\"task_column\",\"component\":\"Column\",\"children\":[\"task_title\",\"task_one\",\"task_time\",\"task_two\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":124,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"task_title\",\"component\":\"Text\",\"content\":\"夜听\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"task_one\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"task_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#88ffffff\",\"maxLines\":1}},{\"id\":\"task_two\",\"component\":\"Text\",\"content\":\"白噪放松\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"sleep_label\",\"sleep_value\",\"battery_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":124,\"padding\":0,\"justifyContent\":\"end\",\"alignItems\":\"start\"}},{\"id\":\"sleep_label\",\"component\":\"Text\",\"content\":\"距睡眠还有\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"sleep_value\",\"component\":\"Text\",\"content\":\"{{ ${/status/sleepHours} + '小时' }}\",\"styles\":{\"width\":60,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ '电量仅剩' + ${/status/batteryPercent} + '%' }}\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"听歌单\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":60,\"height\":28,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#8c55c2\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"睡前听书\",\"dtStart\":\"22:00\",\"dtEnd\":\"22:30\",\"entityId\":\"calendar-night-audio-001\"}]}},\"status\":{\"sleepHours\":\"2\",\"batteryPercent\":\"5\"}}}}"
+  ]
+}

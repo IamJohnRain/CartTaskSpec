@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-018",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "截图中可见：顶部以'¥'大字符作为主视觉（协议中明确允许用文本符号替代不可用的 emoji，可接受）；三块不同底色的色块纵向堆叠在右侧，分别为红、靛紫、青绿，对应'本月预算¥5000剩32%'、'距离发工资还有15天'、'距离月底剩12天'，内容齐全；夜晚深色渐变背景已落实；天气信息'多云 23°C'正常呈现。关键扣分项：用户明确要求'黄色风险提示'，但截图中的'黄色风险'胶囊底色渲染为红橙色（#E84026），并非黄色，与指令直接冲突。事件为空，符合契约。",
+    "aesthetic": "截图整体观感尚可：夜晚暗紫渐变和谐统一，前景白色文字在深底上对比清晰、阅读舒适；三个色块之间的色彩差异明显，层级清楚；字号梯度合理（40/14/12/10），主视觉'¥'突出且与下方的标题、天气、风险形成视觉节奏。扣分点：风险胶囊使用红橙色而非黄色，与'黄色风险'语义不符，且与上方的红色预算块色系撞色，削弱了'风险提示'的辨识度。",
+    "layout": "截图中没有看到元素堆叠重叠或文字被裁切的情况。'¥'主符号居中且完整；'理财夜报'、'多云 23°C'、'黄色风险'均完整呈现；右侧三块色块高度一致，标签与数值左右对齐，'本月预算¥5000/剩32%'未出现截断。底部到卡片底边有合理留白（约 10-12vp），满足 2x4 区间约束。左右两个子列宽 92+176+8=276 加上 padding 12 共 300，无横向溢出。唯一小瑕疵是 hero 列元素之间 itemMargin=4 略紧，但视觉上仍可接受。"
+  },
+  "issues": [
+    "风险提示胶囊背景色为 #E84026（红橙），与用户'黄色风险提示'指令直接冲突，应改为黄色/琥珀色",
+    "风险胶囊文字色 #E5000000（接近黑）与红橙底虽有对比，但语义与'黄色'标签自相矛盾",
+    "三块色块中预算块也使用红色，与红色风险胶囊色系撞色，弱化了'风险'在视觉上的独立辨识",
+    "hero 列上下间距 4vp 偏紧，可视情况微调以提升呼吸感（非必须）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#FF191A1C\",0],[\"#5550A6\",0.55],[\"#634794\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"hero_col\",\"metrics_col\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_col\",\"component\":\"Column\",\"children\":[\"hero_mark\",\"title_text\",\"weather_text\",\"risk_pill\"],\"itemMargin\":6,\"styles\":{\"width\":92,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_mark\",\"component\":\"Text\",\"content\":\"{{ ${/finance/visualMark} }}\",\"styles\":{\"width\":92,\"height\":44,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/finance/title} }}\",\"styles\":{\"width\":92,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#B3FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"risk_pill\",\"component\":\"Text\",\"content\":\"{{ ${/finance/riskHint} }}\",\"styles\":{\"width\":84,\"height\":22,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FF1A1A1A\",\"backgroundColor\":\"#FFFFC107\",\"borderRadius\":11,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"metrics_col\",\"component\":\"Column\",\"children\":[\"budget_tile\",\"payday_tile\",\"month_tile\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"budget_tile\",\"component\":\"Row\",\"children\":[\"budget_label\",\"budget_value\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":32,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#FFE0703A\",\"alignItems\":\"center\",\"justifyContent\":\"space_between\"}},{\"id\":\"budget_label\",\"component\":\"Text\",\"content\":\"{{ ${/finance/budgetLabel} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"budget_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/budgetValue} }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"payday_tile\",\"component\":\"Row\",\"children\":[\"payday_label\",\"payday_value\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":32,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#5F58C7\",\"alignItems\":\"center\",\"justifyContent\":\"space_between\"}},{\"id\":\"payday_label\",\"component\":\"Text\",\"content\":\"{{ ${/finance/paydayLabel} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"payday_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/paydayValue} }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"month_tile\",\"component\":\"Row\",\"children\":[\"month_label\",\"month_value\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":32,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#467794\",\"alignItems\":\"center\",\"justifyContent\":\"space_between\"}},{\"id\":\"month_label\",\"component\":\"Text\",\"content\":\"{{ ${/finance/monthEndLabel} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"month_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/monthEndValue} }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"end\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"finance\":{\"visualMark\":\"¥\",\"title\":\"理财夜报\",\"budgetLabel\":\"本月预算¥5000\",\"budgetValue\":\"剩32%\",\"paydayLabel\":\"距离发工资还有\",\"paydayValue\":\"15天\",\"monthEndLabel\":\"距离月底剩\",\"monthEndValue\":\"12天\",\"riskHint\":\"黄色风险\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"23°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

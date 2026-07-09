@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-07-sports-event-010",
+  "scores": {
+    "instruction": {
+      "score": 8.7,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.6,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求'赛事提醒'+'带数字一行'+'点开跳到应用'+'读日历日程'+'提醒快不行了'，截图中：左上角显示'赛事提醒'小标题，左中位置以超大字号呈现时间数字'19:30'，右侧按日程字段依次展示'城市篮球决赛/19:30-21:00/即将开始 · 15分钟前提醒'，底部白色按钮'打开应用'挂载了 clickToDeeplink 事件，args 与 eventCandidates 完全一致；dataModel.value 完整还原了 items 数组并被模板表达式正确读取。size=2x4、catalogId/version/updateDataModel.path 都符合协议。略有瑕疵：跑步图标占位偏小且辨识度一般；'提醒快不行了'这种紧急感仅靠文案表达，缺少视觉强化（如下划线/感叹号/渐变加重）。",
+    "aesthetic": "截图中橙色渐变（深橙→浅黄橙）整体观感运动感强、活力足，与赛事提醒场景契合；白色主文字与半透明白色辅助文字在橙色背景上对比清晰、可读性良好；左侧'19:30'与右侧'城市篮球决赛'形成两个清晰的视觉锚点，字号层级 32/16/14/12 阶梯合理，最强字重唯一（primary_time 700）。不足：左侧图标为单色线条小人，细节不足显得略空；右下方按钮纯白填充略显平淡，缺少微弱阴影或品牌色描边来强调点击感；左右两列的视觉重量不太对称（左侧留白偏多、右侧信息偏密）。",
+    "layout": "截图整体无堆叠、无文字截断、无组件溢出卡片边界：左侧 Column 三行（header_row 24+primary_time 38+primary_caption 16 + itemMargin 8*2 = 102）加上 padding 12*2=24 共 126vp，未超过 140 高度；右侧 Column 四行（20+18+18+32 + itemMargin 6*3=18 = 106）加 padding 12*2=24 共 130vp，仍在 140 内。横向 root padding 12*2 + itemMargin 12 + 112 + 152 = 300 正好填满。'城市篮球决赛'、'19:30-21:00'、'即将开始 · 15分钟前提醒'三行均完整呈现，'19:30'主时间数字无截断；按钮热区 96x32vp 满足 ≥24vp 要求且距离卡片底边约 10-12vp 合规。主要瑕疵是左侧'开赛时间'与右侧'即将开始'底部基线高度存在轻微不对齐（视觉上略不齐），整体已属干净。"
+  },
+  "issues": [
+    "跑步图标在卡片中占位 22x22 偏小，视觉锚点不够突出",
+    "右侧四个元素（标题/时段/提醒/按钮）纵向密度高于左侧，导致左右视觉重量略不平衡",
+    "按钮'打开应用'缺少微弱阴影或轻边框，立体感偏弱",
+    "'提醒快不行了'的紧急感仅靠'即将开始'文字呈现，缺少视觉强调（如底色条/感叹号/不同字色）",
+    "左侧'开赛时间'与右侧'即将开始'的基线在截图中并未严格水平对齐"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_col\",\"right_col\"],\"itemMargin\":14,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ee5f1c\",0],[\"#fbb025\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_time\",\"primary_caption\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"event_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":26,\"alignItems\":\"center\"}},{\"id\":\"event_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_run.png\",\"styles\":{\"width\":26,\"height\":26,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"赛事提醒\",\"styles\":{\"width\":76,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":108,\"height\":40,\"fontSize\":34,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"开赛时间\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"event_title\",\"event_time_range\",\"reminder_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":152,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":152,\"height\":22,\"fontSize\":17,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"event_time_range\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' – ' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ '⚠ ' + ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#fff2c2\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开应用\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":100,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#d24a00\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日程\",\"entityId\":\"calendar_event_sport_001\",\"title\":\"城市篮球决赛\",\"eventLocation\":\"中心体育馆\",\"dtStart\":\"19:30\",\"dtEnd\":\"21:00\",\"remindTime\":[\"15分钟后开赛·请就位\"]}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

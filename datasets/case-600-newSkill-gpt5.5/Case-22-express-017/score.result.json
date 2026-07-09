@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-017",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户明确要求'磨砂毛玻璃感',但截图中卡片背景使用的是 #fff1f3f5(几乎不透明的纯色灰),完全没有半透明叠加或背后内容透出的磨砂效果,该项指令未真正落实。横向并排两个面板块(已签收/派送中)已实现,数字用 DataModel 绑定符合'实时变'诉求,'天'按钮带 clickToDeeplink 事件落实'点天气跳App','签/派/天'文字字符作图标满足'文字字符当图标',未使用渐变符合'无渐变',尺寸 140x2、协议字段、事件参数原样来自 eventCandidates 等协议项均正确。",
+    "aesthetic": "截图中整体配色为浅灰底+白色面板+橙色字形,搭配尚可;但卡片背景是完全不透明的纯色,缺少磨砂毛玻璃应有的半透明层次与底色透出,导致整张卡观感非常'扁平、素卡'。字重层级尚可(标题 700、计数 700、状态 400),但橙色字形与背景同白底对比稍显突兀,没有其他视觉锚点(如圆点指示器、状态颜色区分),'已签收'和'派送中'两块几乎一致难以快速区分。天气按钮颜色 #19000000 极淡,几乎看不出是个可点击元素。",
+    "layout": "从截图看,所有元素均位于卡片边界内,无溢出/裁切/堆叠。标题'快递状态'与'天'按钮在顶部一行,两面板在下方一行,水平并排对齐居中。面板内 glyph(签/派)、count(12/3)、status(已签收/派送中)三行竖直居中分布,留白合适。两面板宽度 54+8+54=116 正好等于内容区宽,无挤压。唯一可观察的小问题是天气按钮高度仅 24,接近 24vp 热区下限,实际点按略显局促;另外'已签收'和'派送中'两行底部紧贴面板内 padding 6,显得底边余量偏小,但未实际截断。"
+  },
+  "issues": [
+    "卡片背景使用 #fff1f3f5 几乎不透明,无法呈现'磨砂毛玻璃感',应改为半透明白色让底色透出",
+    "两个面板视觉上几乎相同,缺少对'已签收/派送中'状态的视觉区分(如左侧对勾配色、右侧派送中蓝色/动效暗示)",
+    "天气按钮颜色 #19000000 透明度极低,在浅灰底上几乎不可见,缺少可点击暗示",
+    "面板内三行元素竖直堆叠且都使用居中,'签'与'12'都加粗,信息层级虽清晰但略显拥挤",
+    "橙色字形 #ed6f21 在白色面板上略偏暖,缺一点与'已签收'绿色调或'派送中'蓝色调的概念暗示"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"panels_row\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#7affffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_button\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/title} }}\",\"styles\":{\"width\":80,\"height\":24,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"天\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":34,\"height\":26,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#66000000\",\"borderRadius\":13}},{\"id\":\"panels_row\",\"component\":\"Row\",\"children\":[\"signed_panel\",\"delivering_panel\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":88,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"signed_panel\",\"component\":\"Column\",\"children\":[\"signed_glyph\",\"signed_count\",\"signed_status\"],\"itemMargin\":3,\"styles\":{\"width\":56,\"height\":88,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#d9ffffff\",\"borderWidth\":1,\"borderColor\":\"#22000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"signed_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/signed/glyph} }}\",\"styles\":{\"width\":44,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#2ea043\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"signed_count\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/signed/count} }}\",\"styles\":{\"width\":44,\"height\":30,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"signed_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/signed/statusText} }}\",\"styles\":{\"width\":44,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"delivering_panel\",\"component\":\"Column\",\"children\":[\"delivering_glyph\",\"delivering_count\",\"delivering_status\"],\"itemMargin\":3,\"styles\":{\"width\":56,\"height\":88,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#d9ffffff\",\"borderWidth\":1,\"borderColor\":\"#22000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"delivering_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/delivering/glyph} }}\",\"styles\":{\"width\":44,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#1f6feb\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"delivering_count\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/delivering/count} }}\",\"styles\":{\"width\":44,\"height\":30,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"delivering_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/delivering/statusText} }}\",\"styles\":{\"width\":44,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"express\":{\"title\":\"快递状态\",\"signed\":{\"glyph\":\"签\",\"count\":12,\"statusText\":\"已签收\"},\"delivering\":{\"glyph\":\"派\",\"count\":3,\"statusText\":\"派送中\"}}}}}}"
+  ]
+}

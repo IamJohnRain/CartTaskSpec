@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-009",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图中可见：标题'内存清理'完整呈现，右侧徽标'红色提示'作为警示元素存在，'83%'主指标、'内存已用'说明、'可清理 1.8GB'、'释放后台占用'辅助文案、'去清理'按钮均齐全；onClick 已按 eventCandidates 原样绑定 clickToDeeplink，icon_clear.png 素材作为标题图标和环形内部图标正确使用，size 2x4 与 root shell 协议合规。唯一扣分点：用户明确要求'红色提示那种'，而截图右上徽标、'可清理 1.8GB'文字、'去清理'按钮以及进度环颜色均为橙色 #ffed6f21，并非红色，警示色与用户字面诉求存在偏差。",
+    "aesthetic": "截图整体观感专业克制：浅灰卡片底配橙色重点色，和谐自然；字体层级清晰，'83%'(32号粗体) > '内存清理'(16号粗体) > '可清理 1.8GB'(12号粗体) > 辅助说明(10-12号常规)，最强字重只有一个。左右三段（环形、文本列、动作面板）间距均匀，留白合理，对齐统一。轻微不足：进度环中央的白色清理图标与橙色环对比偏弱，视觉上略显暗淡不抢眼；徽标底色与卡片底色接近，红色提示的警示感被弱化。",
+    "layout": "截图中未观察到任何文字截断、元素堆叠或溢出。Header 行（标题+徽标）左右分散对齐，徽标文字'红色提示'完整显示。Body 三列（72 环形 + 88 信息列 + 100 动作面板）横向 72+8+88+8+100=276 加上 itemMargin 与 padding 恰好在 300 之内，截图验证无挤压。'83%'主指标、'内存已用'、'可清理 1.8GB' 三行文字在 88 宽度内完整呈现；右侧面板'可清理 1.8GB'+'释放后台占用'+'去清理'按钮垂直排布，34 高度按钮热区充足；底部按钮距卡片底边约 10vp，符合 2x4 锚定要求。Stack 内图标与 Progress 环无遮挡关键信息。"
+  },
+  "issues": [
+    "用户明确要求'红色提示'，但徽标/进度环/按钮/辅助文字统一使用橙色 #ffed6f21，警示色与用户字面诉求不一致",
+    "进度环中央的白色清理图标在橙色环上对比度偏弱，视觉上略糊",
+    "徽标底色 #19000000 与卡片浅灰底对比小，'红色提示'作为警示元素的存在感被弱化",
+    "右侧动作面板上方重复出现'可清理 1.8GB'（与左列 reclaim_text 同文案），信息略有冗余"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_group\",\"alert_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_group\",\"component\":\"Row\",\"children\":[\"title_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/title} }}\",\"styles\":{\"width\":146,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/alertText} }}\",\"styles\":{\"width\":92,\"height\":24,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":12,\"backgroundColor\":\"#1ae53935\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"meter_stack\",\"info_column\",\"action_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":86,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"memory_ring\",\"meter_icon\"],\"styles\":{\"width\":72,\"height\":72,\"alignContent\":\"center\"}},{\"id\":\"memory_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/memory/usedPercent} }}\",\"total\":100,\"styles\":{\"width\":72,\"height\":72,\"type\":\"ring\",\"color\":\"#ffe53935\"}},{\"id\":\"meter_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\",\"reclaim_text\"],\"itemMargin\":4,\"styles\":{\"width\":88,\"height\":86,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/usedPercentText} }}\",\"styles\":{\"width\":88,\"height\":40,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/usedLabel} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"reclaim_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/reclaimText} }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"action_subhint\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":100,\"height\":86,\"padding\":8,\"borderRadius\":16,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#0c000000\"}},{\"id\":\"action_subhint\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/hintText} }}\",\"styles\":{\"width\":84,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/memory/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":84,\"height\":34,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe53935\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"memory\":{\"title\":\"内存清理\",\"usedPercent\":83,\"usedPercentText\":\"83%\",\"usedLabel\":\"内存已用\",\"reclaimText\":\"可清理 1.8GB\",\"alertText\":\"内存占用过高\",\"hintText\":\"释放后台占用\",\"actionText\":\"去清理\"}}}}}"
+  ]
+}

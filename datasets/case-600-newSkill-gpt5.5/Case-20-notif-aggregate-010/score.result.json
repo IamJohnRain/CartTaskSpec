@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-20-notif-aggregate-010",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户要求'背景图上叠文字'的卡片并能跳app。从截图看：紫色背景卡上正确显示了主标题'今日歌单'、副标题'30首推荐'和胶囊形'点开播放'入口；Stack 中通过 Image 叠放 icon_music.png 充当背景图素材，符合语义；root 上挂载的 onClick.call=clickToDeeplink 与 args 完整来自 eventCandidates.uri，事件落实。size 2x2（140x140，borderRadius 18，padding 12，clip true）符合硬约束；catalogId/version/updateDataModel.path='/'.value 与 dataModel 严格一致。不足：素材为彩色音乐音符 icon，与紫色背景对比强烈，作为'背景图'略显生硬，未真正做'背景'语义上的降饱和或叠暗处理。",
+    "aesthetic": "从截图看：紫色 #ac49f5 背景饱和度较高，白色主标题'今日歌单'和淡白副标题'30首推荐'对比度足够，可读性 OK；底部'点开播放'胶囊采用半透明白底+白字，胶囊造型克制。问题在于 icon_music.png 的音符为深灰/蓝紫实色，在亮紫背景上呈现为'贴片'状视觉噪声，与文字争夺视线；副标题与下方胶囊之间留白偏紧；整体只用了白色+紫色，色彩层级清晰但缺少克制感。",
+    "layout": "从截图观察：卡片四个角圆角与 12vp 内边距正常，所有文字与按钮均完整未被裁切：'今日歌单'4 字一行无截断、'30首推荐'4 字一行无截断、'点开播放'胶囊文字完整居中。Stack 默认居中导致 bg_icon(100x100) 与 content_column(116x116) 在中央重叠，音符主要露出在右半与中下区域，与左侧文字区、底部胶囊区有视觉穿插（可看到音符顶部位于副标题右侧、下端越至胶囊右下），但因内容_column 在 children 数组中位于 bg_icon 之后（层级更高），文字与胶囊未被遮挡；按钮热区约 76x28 略偏小但尚可接受。整体无溢出边界，但 Stack 同心叠放带来的视觉穿插略乱。"
+  },
+  "issues": [
+    "bg_icon 100x100 与 content_column 116x116 在 Stack 中同心叠放，音符实体与文字/按钮区出现视觉穿插，建议缩小音符并降透明",
+    "icon_music.png 为深色实心音符，在亮紫背景上对比过强，缺乏'背景图'应有的弱化处理",
+    "Stack 缺明确 alignContent 语义控制，children 默认居中导致背景与内容争夺中心区",
+    "action_hint 胶囊热区 76x28 接近下限，可读但偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"content_column\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ac49f5\",\"alignContent\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":72,\"height\":72,\"opacity\":0.28,\"objectFit\":\"contain\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"copy_group\",\"action_hint\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"space-between\",\"alignItems\":\"start\"}},{\"id\":\"copy_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":46,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/subtitle} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"{{ ${/card/actionHint} }}\",\"styles\":{\"width\":80,\"height\":30,\"padding\":[0,12,0,12],\"borderRadius\":15,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"今日歌单\",\"subtitle\":\"30首推荐\",\"actionHint\":\"点开播放\"}}}}"
+  ]
+}

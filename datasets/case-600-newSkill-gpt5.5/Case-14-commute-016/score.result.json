@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-14-commute-016",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 2.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.5,
+  "reasons": {
+    "instruction": "截图中可见'通勤指数''良好 8 / 6分''上海 24°C''避开高速/收费/偏好地铁''原线路事故封路''开始导航到公司'以及事件 clickToIntent+StartNavigate 均已配置；但天气行因宽度被裁切丢了'阴'字，'良好 86分'在 hero_col 中被强制折行为'良好 8'+'6分'，主分数被破坏；三个偏好勾选项的文本未真正'横向排'，而是被压成竖向微胶囊，信息基本可读但完全偏离用户原意。",
+    "aesthetic": "配色（淡灰磨砂底 + 蓝色按钮 + 橙色告警）本身协调，hero 用 18 号加粗做主视觉的方向也对，但截图里'良好 8'/'6分'在数字中间断行极其难看，三个偏好被压成 14×70 的细长药丸、字符一字一行纵向堆叠，视觉上像竖排的西文；整体信息密度与留白都不舒适，专业感被破坏。",
+    "layout": "截图明确显示三处严重排版问题：1) 左侧主视觉'良好 86分'在宽 62 的 hero_col 中以 breakAll 折行成'良好 8'和'6分'，主分数被腰斩；2) 天气行 width=62 装不下'上海 24℃ 阴'，'阴'被截掉只剩'上海 24°C'；3) 右侧 options_row 总宽仅 50，每项宽 14 配 maxLines=4+breakAll，导致'避开高速/避开收费/偏好地铁'被一字一行竖向拆成 4 行，整体呈 3 根细长竖条，与'横向排三个勾选项'完全相反。按钮与告警行无溢出问题。"
+  },
+  "issues": [
+    "hero_col 宽 62 不足以容纳 fontSize 18 的'良好 86分'，折行点在数字中间，破坏主指标",
+    "weather_text 宽 62 容纳不下'上海 24℃ 阴'，末尾'阴'被截断",
+    "options_row 三个 Text 宽 14，被迫逐字竖排，违反'横向排三个勾选项'指令",
+    "三个偏好项被画成 14×70 的细长竖向胶囊，不符合 chip 形态，视觉突兀",
+    "top_row 高 70、options_row 高 70，与下方 alert+button 共同占用导致中部信息挤压",
+    "action_button 底边到卡片底边约 20vp，超出 2x2 推荐的 8-12vp 区间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"alert_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"hero_col\",\"options_col\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"hero_col\",\"component\":\"Column\",\"children\":[\"index_label\",\"status_score\",\"weather_text\"],\"itemMargin\":2,\"styles\":{\"width\":72,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"index_label\",\"component\":\"Text\",\"content\":\"{{ ${/commute/indexLabel} }}\",\"styles\":{\"width\":72,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"status_score\",\"component\":\"Text\",\"content\":\"{{ ${/commute/statusText} }}\\u00a0{{ ${/commute/scoreText} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/weather/city} }}\\u00a0{{ ${/weather/temperatureText} }}\\u00a0{{ ${/weather/conditionText} }}\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"options_col\",\"component\":\"Column\",\"children\":[\"opt_avoid_highway\",\"opt_avoid_toll\",\"opt_prefer_subway\"],\"itemMargin\":2,\"styles\":{\"width\":40,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"opt_avoid_highway\",\"component\":\"Text\",\"content\":\"{{ ${/preferences/0/checkSymbol} }}\\u00a0{{ ${/preferences/0/label} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":7,\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"opt_avoid_toll\",\"component\":\"Text\",\"content\":\"{{ ${/preferences/1/checkSymbol} }}\\u00a0{{ ${/preferences/1/label} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":7,\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"opt_prefer_subway\",\"component\":\"Text\",\"content\":\"{{ ${/preferences/2/checkSymbol} }}\\u00a0{{ ${/preferences/2/label} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":7,\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/alert/icon} }}\\u00a0{{ ${/alert/message} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/destination/latitude} }}\",\"longitude\":\"{{ ${/destination/longitude} }}\"},\"trafficpe\":\"{{ ${/destination/trafficpe} }}\"}}}],\"styles\":{\"width\":116,\"height\":26,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"commute\":{\"indexLabel\":\"通勤指数\",\"statusText\":\"良好\",\"scoreText\":\"86分\"},\"weather\":{\"city\":\"上海\",\"temperatureText\":\"24℃\",\"conditionText\":\"阴\"},\"preferences\":[{\"checkSymbol\":\"✓\",\"label\":\"避开高速\"},{\"checkSymbol\":\"✓\",\"label\":\"避开收费\"},{\"checkSymbol\":\"✓\",\"label\":\"偏好地铁\"}],\"alert\":{\"icon\":\"!\",\"message\":\"原线路事故封路\"},\"action\":{\"label\":\"开始导航到公司\"},\"destination\":{\"latitude\":\"31.2304\",\"longitude\":\"121.4737\",\"trafficpe\":\"Bus\"}}}}"
+  ]
+}

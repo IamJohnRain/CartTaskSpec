@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-25-reading-008",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.3,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了听书场景所需的所有信息：状态'正在听'、作品名'三体有声书'、当前章节'第 12 章'、进度'已听 32 分钟'，以及底部明显的'继续听'白底按钮，点击事件已绑定 clickToDeeplink 且 args 与 eventCandidates 完全一致。尺寸 2x2、catalogId/version/updateDataModel.path 等硬约束均满足。资源 music_fill.svg 被正确用作左上角图标。无明显缺失。",
+    "aesthetic": "截图中卡片采用深色背景 + 浅灰图标方块 + 半透明白信息面板 + 高对比白色按钮的搭配，层次清晰。最强字重集中在'三体有声书'和'第 12 章'上，'正在听'和'已听 32 分钟'作为辅助信息以低饱和白呈现，配色克制专业。图标方块为纯中性灰略显平淡，可考虑引入品牌色增加视觉记忆点。",
+    "layout": "截图未观察到任何元素溢出、堆叠或文字截断。header_row(34)+gap8+info_panel(32)+gap8+action_button(32)=114，在 116 内容区内，布局完全成立。'三体有声书'五个汉字在 74 宽内正常显示；信息面板内'第 12 章'与'已听 32 分钟'两行排布居中且无重叠。白色 CTA 按钮位于底部正中，热区充足，按钮底边距卡片底约 14vp，介于 8–12vp 典型值与 16vp 上限之间，略有松弛但不影响可读性。整体无视觉破绽。"
+  },
+  "issues": [
+    "图标方块背景色为纯中性灰 #ffe5e5e5，缺少品牌色调，视觉记忆点略弱",
+    "按钮底边距卡片底约 14vp，略高于 8–12vp 的典型区间，底部留白略大"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"info_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_box\",\"title_group\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"icon_box\",\"component\":\"Stack\",\"children\":[\"music_icon\"],\"styles\":{\"width\":34,\"height\":34,\"borderRadius\":10,\"backgroundColor\":\"#ff6a4cff\",\"alignContent\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/music_fill.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"status_text\",\"title_text\"],\"itemMargin\":2,\"styles\":{\"width\":74,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/audiobook/statusLabel} }}\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/audiobook/title} }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"chapter_text\",\"progress_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":10,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"chapter_text\",\"component\":\"Text\",\"content\":\"{{ ${/audiobook/chapter} }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"progress_text\",\"component\":\"Text\",\"content\":\"{{ ${/audiobook/progressText} }}\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/audiobook/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"audiobook\":{\"statusLabel\":\"正在听\",\"title\":\"三体有声书\",\"chapter\":\"第 12 章\",\"progressText\":\"已听 32 分钟\",\"actionLabel\":\"继续听\"}}}}"
+  ]
+}

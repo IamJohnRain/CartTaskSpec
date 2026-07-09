@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-008",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "用户诉求全部落实：截图中可见'旅行足迹'主标题、绿色'已完成'状态徽章、带数字的'128张照片'主指标、'6城足迹'摘要、底部天气胶囊'青浦区 多云 29°C'，左侧飞机起飞 SVG 占据主体视觉；onClick 事件使用 clickToDeeplink，args 原样来自 eventCandidates，路径为 totemweather。尺寸 2x4(300x140) 正确，catalogId/version/updateDataModel 均符合协议，asset 正确绑定到 /ui/asset/travelImage。略扣 0.5 因整张卡 onClick 占据 root，理想中图像区与文字区都可独立点击体验略弱。",
+    "aesthetic": "紫蓝渐变背景过渡自然，浅色磨砂面板与黑色线性飞机图标形成清晰反差，文字层级分明：'128张照片'为最强字重(20px 700)，标题与状态徽章次之(14px 700/10px 500)，'6城足迹'为最弱辅助(12px 99FFFFFF)但仍可读。天气胶囊采用半透明白底与卡片整体观感协调。略扣分因'6城足迹'在蓝底上稍显轻飘，且天气胶囊宽度贴近右边界。",
+    "layout": "截图整体布局干净：左侧面板 160x116 完整容纳飞机图标且圆角统一(18)，右侧栏 104 宽度内 top_row(标题+徽章) 22 高、photo_summary 24 高、route_summary 18 高、weather_text 22 高，合计 86+itemMargin 6×3=104，恰好填满 116 高度的 column，未见文字截断、组件溢出或元素堆叠。底部天气胶囊与卡片底边距离合理，受保护文本(标题、状态、CTA、主指标)均完整可见。略扣 1.0 因 hero_panel 内 Image 使用 objectFit:contain，图标偏左下未完全居中于面板中心，且面板背景为浅色与卡片整体蓝紫主调有轻微割裂感。"
+  },
+  "issues": [
+    "左侧 hero_panel 中 Image 使用 objectFit:contain，飞机图标在面板内未能视觉居中",
+    "右侧 info_col 高度 116 与 4 个子项 + 3 个 itemMargin 实际总占用 104，余 12 留白分布靠底部，整体偏下",
+    "整张卡 onClick 落在 root 层，未区分图像区与文字区，交互热区语义不够明确",
+    "天气胶囊宽度未指定，在 104 宽 column 内可能因内容长度变化贴右边界"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"info_col\"],\"itemMargin\":12,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564AF7\",0],[\"#46B1E3\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Stack\",\"children\":[\"hero_image\"],\"styles\":{\"width\":160,\"height\":116,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#E5FFFFFF\",\"alignContent\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"{{ ${/ui/asset/travelImage} }}\",\"styles\":{\"width\":120,\"height\":96,\"objectFit\":\"contain\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"top_row\",\"photo_summary\",\"route_summary\",\"weather_text\"],\"itemMargin\":6,\"styles\":{\"width\":104,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":104,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/title} }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/ui/statusText} }}\",\"styles\":{\"width\":38,\"height\":18,\"padding\":{\"left\":4,\"right\":4,\"top\":2,\"bottom\":2},\"borderRadius\":9,\"backgroundColor\":\"#FF64BB5C\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"photo_summary\",\"component\":\"Text\",\"content\":\"{{ ${/ui/photoSummary} }}\",\"styles\":{\"width\":104,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"route_summary\",\"component\":\"Text\",\"content\":\"{{ ${/ui/routeSummary} }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' ' + ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":92,\"height\":22,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#26FFFFFF\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"ui\":{\"title\":\"旅行足迹\",\"statusText\":\"已完成\",\"photoSummary\":\"128张照片\",\"routeSummary\":\"6城足迹\",\"asset\":{\"travelImage\":\"resources/base/media/airplane_departure.svg\"}},\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦区\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

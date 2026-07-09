@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-011",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户要求左边显示当前电量和天气，但截图中主数值仅显示'18'，'%'符号因容器宽度36px、fontSize 20下被裁切；天气文本'多云 29°C'因weather_text宽度仅42px、maxLines:1而被截断为'多云'，'29°C'完全丢失，'当前电量和天气'的关键诉求只部分满足。右侧三个绿色色块+短标签+'均已关闭'汇总、下方大按钮、橙红紧迫渐变、无图片均已落实，事件onClick的call/args也与eventCandidates完全一致。尺寸140x140、catalogId、version、updateDataModel协议合规。",
+    "aesthetic": "截图中深色到橙红的对角线渐变营造出明显的舞台紧迫感，配色和谐；左/右两个半透明磨砂面板层次清晰，绿色色块与红色渐变背景对比鲜明且语义正确（表示已关闭安全状态）；橙色CTA按钮'切到省电模式'在底部非常醒目。整体字号层级（20/12/10）清晰，留白与对齐均较舒适，视觉专业度良好。",
+    "layout": "截图中存在两处明显的文字截断/裁切问题：1) 主数值'18%'在左侧面板中宽度仅36px，fontSize 20下右侧'%'贴边或被裁切，视觉上只看到'18'；2) 天气文本'多云 29°C'在width:42、fontSize 10、maxLines:1的约束下被截断为'多云'，'29°C'完全不可见。其余布局整洁，左右两面板对称，底部按钮热区充足，无堆叠遮挡关键内容。"
+  },
+  "issues": [
+    "左侧primary_value宽度36px不足以容纳fontSize 20下的'18%'，导致'%'被裁切",
+    "天气文本绑定'多云 29°C'在width:42容器中被maxLines:1截断为'多云'，'29°C'丢失",
+    "左侧面板宽度48px偏窄，无法同时容纳完整电量文本和完整天气文本",
+    "右侧swatch_row内部3个block宽度14px + itemMargin 4px = 50px，略超出right_panel内容区",
+    "summary_text宽度52px在right_panel宽度60px+padding 8下实际可用宽度不足，'均已关闭'贴边"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#FF191A1C\",0],[\"#FFDB6B42\",0.65],[\"#D64966\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":76,\"alignItems\":\"top\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"mode_status\",\"primary_value\",\"weather_text\"],\"itemMargin\":3,\"styles\":{\"width\":62,\"height\":76,\"padding\":5,\"borderRadius\":14,\"backgroundColor\":\"#19FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"mode_status\",\"component\":\"Text\",\"content\":\"{{ ${/power/modeStatus} }}\",\"styles\":{\"width\":46,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/power/levelText} }}\",\"styles\":{\"width\":52,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_title\",\"swatch_row\",\"summary_text\"],\"itemMargin\":4,\"styles\":{\"width\":46,\"height\":76,\"padding\":3,\"borderRadius\":14,\"backgroundColor\":\"#19FFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_title\",\"component\":\"Text\",\"content\":\"省电项\",\"styles\":{\"width\":40,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"swatch_row\",\"component\":\"Row\",\"children\":[\"bluetooth_block\",\"location_block\",\"brightness_block\"],\"itemMargin\":3,\"styles\":{\"width\":40,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"bluetooth_block\",\"component\":\"Column\",\"children\":[\"bluetooth_swatch\",\"bluetooth_label\"],\"itemMargin\":2,\"styles\":{\"width\":11,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"bluetooth_swatch\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":11,\"height\":10,\"borderRadius\":5.5,\"backgroundColor\":\"#FF5BA854\",\"fontSize\":10}},{\"id\":\"bluetooth_label\",\"component\":\"Text\",\"content\":\"{{ ${/optimizations/bluetooth/shortLabel} }}\",\"styles\":{\"width\":11,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"location_block\",\"component\":\"Column\",\"children\":[\"location_swatch\",\"location_label\"],\"itemMargin\":2,\"styles\":{\"width\":11,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"location_swatch\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":11,\"height\":10,\"borderRadius\":5.5,\"backgroundColor\":\"#FF5BA854\",\"fontSize\":10}},{\"id\":\"location_label\",\"component\":\"Text\",\"content\":\"{{ ${/optimizations/location/shortLabel} }}\",\"styles\":{\"width\":11,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"brightness_block\",\"component\":\"Column\",\"children\":[\"brightness_swatch\",\"brightness_label\"],\"itemMargin\":2,\"styles\":{\"width\":11,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"brightness_swatch\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":11,\"height\":10,\"borderRadius\":5.5,\"backgroundColor\":\"#FF5BA854\",\"fontSize\":10}},{\"id\":\"brightness_label\",\"component\":\"Text\",\"content\":\"{{ ${/optimizations/brightness/shortLabel} }}\",\"styles\":{\"width\":11,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/optimizations/summaryText} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FF5BA854\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"切到省电模式\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFED6F21\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"power\":{\"levelText\":\"18%\",\"modeStatus\":\"低电\"},\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\"}}},\"optimizations\":{\"bluetooth\":{\"shortLabel\":\"蓝\",\"stateText\":\"已关闭\"},\"location\":{\"shortLabel\":\"位\",\"stateText\":\"已关闭\"},\"brightness\":{\"shortLabel\":\"亮\",\"stateText\":\"已关闭\"},\"summaryText\":\"均已关闭\"}}}}"
+  ]
+}

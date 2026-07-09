@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-012",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "截图中可以看到：暗黑模式（深紫渐变背景）落实；左上有白底圆形静音图标（铃铛斜杠 SVG），左侧大字'冥想中'清晰显示；右上'白噪音'标签配'风声'、'雨声'两个胶囊选项；底部毛玻璃胶囊里显示'常去咖啡馆 / 中山路88号'及'导航'按钮；onClick 事件完整复刻 eventCandidates 中的 clickToIntent/StartNavigate。整体诉求落实完整。仅'几个'白噪音只给了 2 个，略显单薄但可接受。",
+    "aesthetic": "截图整体观感专业：深黑到深紫的渐变营造了较好的睡眠/冥想氛围，白色文字在深色背景上对比清晰、层级分明——'冥想中'为唯一最强字重（粗体大字），副信息字号阶梯合理。底部毛玻璃胶囊（#19FFFFFF）与主背景配合和谐。不足之处：噪声胶囊偏小、'白噪音'小标题与'风声/雨声'的视觉关系略弱；底部地址文字'中山路88号'几乎贴边，未来在更长地址上会出问题。",
+    "layout": "截图中各元素均未出现明显裁切或重叠：'冥想中'三字完整呈现，'风声/雨声'胶囊在容器内居中，底部'导航'按钮文字清晰。上下两段（top_row 70 + bottom_nav 38 = 108，padding 12 上下 = 132）略大于 140 - 12*2 = 116 的可用区，但截图未观察到实际溢出，应是 itemMargin 在 2x2 缩放下被自动压缩。底部胶囊距卡片底边约为 8-10vp，符合 2x2 规范。整体排版紧凑但无破坏性瑕疵。"
+  },
+  "issues": [
+    "噪声胶囊（风声/雨声）尺寸偏小（26x20），在 2x2 卡片中视觉权重不足",
+    "地址行'中山路88号'在 52px 宽 10pt 字号下宽度已贴满（≈52px），无安全余量",
+    "'白噪音'小标题与下方两个胶囊之间 itemMargin=6 偏紧，垂直节奏可以更舒展",
+    "顶部 left_focus 列宽 54、title_text 宽 54 与 '冥想中'（3 字 × 18pt ≈ 54）正好贴边，缺少 buffer"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_nav\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#634794\",0.58],[\"#5f58c7\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"left_focus\",\"noise_panel\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":66,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_focus\",\"component\":\"Column\",\"children\":[\"mute_plate\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":54,\"height\":66,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"mute_plate\",\"component\":\"Row\",\"children\":[\"mute_icon\"],\"styles\":{\"width\":24,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"mute_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_slash_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/focusState} }}\",\"styles\":{\"width\":54,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_panel\",\"component\":\"Column\",\"children\":[\"noise_label\",\"noise_row\"],\"itemMargin\":4,\"styles\":{\"width\":56,\"height\":66,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"noise_label\",\"component\":\"Text\",\"content\":\"白噪音\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"noise_row\",\"component\":\"Row\",\"children\":[\"noise_wind\",\"noise_rain\"],\"itemMargin\":4,\"styles\":{\"width\":56,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"noise_wind\",\"component\":\"Text\",\"content\":\"{{ ${/noise/windLabel} }}\",\"styles\":{\"width\":26,\"height\":22,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#26FFFFFF\",\"borderRadius\":11}},{\"id\":\"noise_rain\",\"component\":\"Text\",\"content\":\"{{ ${/noise/rainLabel} }}\",\"styles\":{\"width\":26,\"height\":22,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#26FFFFFF\",\"borderRadius\":11}},{\"id\":\"bottom_nav\",\"component\":\"Row\",\"children\":[\"address_col\",\"nav_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":40,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#19FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"address_col\",\"component\":\"Column\",\"children\":[\"place_name\",\"place_address\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"place_name\",\"component\":\"Text\",\"content\":\"{{ ${/place/name} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_address\",\"component\":\"Text\",\"content\":\"{{ ${/place/addressLine} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#CCFFFFFF\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"nav_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/navigateLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"31.2304\",\"longitude\":\"121.4737\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":48,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"focusState\":\"冥想中\",\"noise\":{\"windLabel\":\"风声\",\"rainLabel\":\"雨声\"},\"place\":{\"name\":\"常去咖啡馆\",\"addressLine\":\"中山路88号\"},\"action\":{\"navigateLabel\":\"导航\"}}}}"
+  ]
+}

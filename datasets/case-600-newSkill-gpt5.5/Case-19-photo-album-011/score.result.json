@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-19-photo-album-011",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "截图中可见深色背景、Hero 图标（受协议约束以本地 PNG 替代 🖼️ emoji 是合规做法）、'今日待清理 28 张'、三个勾选时段+日历摘要（会议/空档/备份）、中间 21:30-22:00 复选框呈蓝色选中态（与 /reminder/selectedSlot 双向绑定生效）、整卡 onClick 跳时钟、红色告警色块等用户明确诉求均已落实，事件 call/args 严格来自 eventCandidates。但因为 2x2 太小，标题被强行换行导致'张'字单独换行、时间段全部被截成两行（'21:00-' / '21:30'），信息虽然到了用户眼前，呈现却不够完整清晰，扣分。",
+    "aesthetic": "深色舞台风基调成立（#ff191a1c 近黑底），蓝色选中态与红色告警色块对比清晰，配色整体和谐。但截图里能看到三处明显的排版难看问题：① 标题'今日待清理 28' + 孤字'张'的换行；② 三个时段被截成 '21:00-/21:30'、'21:30-/22:00'、'22:00-/22:30'，dash 单独顶头非常难看；③ 红色告警色块里'本月已超出清理配额 12%'被截成'本月已超出清理配/额 12%'，'额'字孤行。整张卡片留白局促，字号层级勉强可读但多行断裂严重，专业感被破坏。",
+    "layout": "截图中清晰可见的硬伤——三处受保护文本均被强制换行/截断：① 顶部标题 '今日待清理 28' / '张'，'张' 被孤立到第二行；② 中部三个时段 '21:00-21:30'、'21:30-22:00'、'22:00-22:30' 在 36px 宽列里全部被 wordBreak:breakAll 截成两行，'21:00-' '21:30' 这种破法视觉上极差；③ 底部红色告警 '本月已超出清理配额 12%' 被截成 '本月已超出清理配' / '额 12%'，'额' 字单独换行。复选框 12x12 热区偏小但仍可点。整体布局存在多行文字截断、未遵守 116x116 内容区约束，扣重分。"
+  },
+  "issues": [
+    "标题 '今日待清理 28 张' 在 84px×28px 区域内被强制换行成 '今日待清理 28' + 孤字 '张'，破坏标题完整可读性",
+    "三个时段 '21:00-21:30' 等在 36px 列宽 + 10pt 字号下全部被 wordBreak 截成 '21:00-'/'21:30' 两行，dash 单独顶头不美观",
+    "底部红色告警 '本月已超出清理配额 12%' 在 116px 宽度下被截成 '本月已超出清理配'/'额 12%'，'额' 字孤行",
+    "2x2 (140x140) 内容区仅 116x116，硬塞水平 3 段时段+每段事件摘要+顶部标题+底部告警根本装不下，应该把三段时段改为竖向堆叠",
+    "复选框热区 12x12 偏小，理想应接近 24-32vp",
+    "整张卡片过度局促，根 padding 12 加上 3 个 4px itemMargin 进一步挤压内容区"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"slots_col\",\"alert_text\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"hero_image\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"{{ ${/assets/heroGlyph} }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/title} }}\",\"styles\":{\"width\":90,\"height\":24,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"slots_col\",\"component\":\"Column\",\"children\":[\"slot_0\",\"slot_1\",\"slot_2\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":60,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"slot_0\",\"component\":\"Row\",\"children\":[\"slot_0_check\",\"slot_0_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"slot_0_check\",\"component\":\"Checkbox\",\"value\":\"{{ ${/slots/0/timeRange} }}\",\"group\":\"cleanupSlot\",\"select\":\"{{ ${/reminder/selectedSlot} == ${/slots/0/timeRange} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff317af7\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"slot_0_text\",\"component\":\"Text\",\"content\":\"{{ ${/slots/0/timeRange} }}  ·  {{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"slot_1\",\"component\":\"Row\",\"children\":[\"slot_1_check\",\"slot_1_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"slot_1_check\",\"component\":\"Checkbox\",\"value\":\"{{ ${/slots/1/timeRange} }}\",\"group\":\"cleanupSlot\",\"select\":\"{{ ${/reminder/selectedSlot} == ${/slots/1/timeRange} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff317af7\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"slot_1_text\",\"component\":\"Text\",\"content\":\"{{ ${/slots/1/timeRange} }}  ·  {{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"slot_2\",\"component\":\"Row\",\"children\":[\"slot_2_check\",\"slot_2_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"slot_2_check\",\"component\":\"Checkbox\",\"value\":\"{{ ${/slots/2/timeRange} }}\",\"group\":\"cleanupSlot\",\"select\":\"{{ ${/reminder/selectedSlot} == ${/slots/2/timeRange} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff317af7\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"slot_2_text\",\"component\":\"Text\",\"content\":\"{{ ${/slots/2/timeRange} }}  ·  {{ ${/data/calendar/items/2/title} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/alertText} }}\",\"styles\":{\"width\":120,\"height\":20,\"padding\":{\"top\":3,\"right\":6,\"bottom\":3,\"left\":6},\"borderRadius\":10,\"backgroundColor\":\"#ffd94838\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"assets\":{\"heroGlyph\":\"resources/base/media/icon_clear.png\"},\"summary\":{\"title\":\"今日待清理 28 张\",\"alertText\":\"本月已超出清理配额 12%\"},\"reminder\":{\"selectedSlot\":\"21:30-22:00\"},\"slots\":[{\"timeRange\":\"21:00-21:30\"},{\"timeRange\":\"21:30-22:00\"},{\"timeRange\":\"22:00-22:30\"}],\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-2100\",\"title\":\"会议\",\"dtStart\":\"21:00\",\"dtEnd\":\"21:30\"},{\"entityId\":\"calendar-event-2130\",\"title\":\"空档\",\"dtStart\":\"21:30\",\"dtEnd\":\"22:00\"},{\"entityId\":\"calendar-event-2200\",\"title\":\"备份\",\"dtStart\":\"22:00\",\"dtEnd\":\"22:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

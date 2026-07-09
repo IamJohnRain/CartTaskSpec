@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-02-earphone-music-007",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户要求耳机卡、主体是图、带数字的一行话、点一下跳app。截图中可见：左侧主体为耳机图标（icon_earphone.png）、下方显示'今日已听 30 首'（含数字30）、右侧有蓝色'去听歌'按钮绑定 clickToDeeplink 事件，所有诉求基本落实。轻微扣分：用户说'点一下能跳app'更倾向整卡可点，模型仅在按钮上挂事件，整卡其他区域不可点；同时右侧多了一个用户未要求的紫色音符 icon_music.png 略冗余。协议层 createSurface/catalogId/version/updateDataModel 均合规。",
+    "aesthetic": "深色渐变背景克制有质感，白色正文与蓝色 CTA 按钮对比清晰可读，'去听歌'按钮为卡片最强视觉焦点，符合单一最强字重原则。但耳机图标在深灰背景下对比偏低、视觉份量偏弱（用户明确说'主体是图'，图标应更突出）；右侧紫色音符与卡片整体蓝白调略有色温冲突；左右两列内容密度不平衡，左密右疏。",
+    "layout": "截图中各元素均位于卡片边界内，未观察到文字被裁切、元素堆叠或组件溢出。耳机图标位于左列上部，'今日已听 30 首'位于左列底部（贴近卡片底边，留白偏紧但未越界）；右侧音符与按钮竖向居中，按钮热区约 34vp 可接受。轻微扣分：文字'今日已听 30 首'底部距卡片底边视觉上较近，icon 与文字之间留白偏大、icon 与文字未形成紧密图组；整体左右视觉重量不够均衡。"
+  },
+  "issues": [
+    "耳机主体图标在深色背景下对比度偏低，作为'主体是图'的角色份量不足",
+    "'今日已听 30 首'文字底部距卡片底边视觉上偏近，留白不舒适",
+    "耳机图标与下方文字间距偏大，未形成紧凑图组",
+    "用户说'点一下能跳app'暗示整卡可点，目前仅按钮可点击",
+    "右侧多出用户未要求的紫色音符图标，与整体蓝白调略冲突",
+    "左右两列内容密度不均（左侧图+文，右侧仅 icon+按钮），视觉重量不平衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"Right\",\"colors\":[[\"#FF191A1C\",0],[\"#FF202224\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"media_column\",\"action_column\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"media_column\",\"component\":\"Column\",\"children\":[\"earphone_image\",\"listening_line\"],\"itemMargin\":6,\"styles\":{\"width\":168,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"earphone_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":96,\"height\":76,\"objectFit\":\"contain\"}},{\"id\":\"listening_line\",\"component\":\"Text\",\"content\":\"{{ ${/music/listeningLine} }}\",\"styles\":{\"width\":168,\"height\":24,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_column\",\"component\":\"Column\",\"children\":[\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去听歌\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":88,\"height\":40,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF317AF7\",\"borderRadius\":20}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"music\":{\"listeningLine\":\"今日已听 30 首\"}}}}"
+  ]
+}

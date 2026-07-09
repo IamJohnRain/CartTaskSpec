@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-29-elderly-care-017",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.2,
+  "reasons": {
+    "instruction": "截图中可以看到卡片呈现了主要诉求元素：标题'奶奶服药'、左半边竖排早中晚三行带勾选框、右半边大绿色按钮、onClick绑定clickToCallPhone事件，电话号码来自数据模型。但有两个关键扣分点：(1) 右侧按钮文字本应为'打电话/提醒她'，截图中实际仅显示'打...'，关键CTA文本被截断，奶奶看不到完整按钮含义；(2) 用户明确要求'没勾的那几行标个待服用黄色提示'，截图中'待服用'行的背景色与'已服'行背景几乎无视觉差异，未呈现明显的黄色提示，违反'黄色提示'的核心要求。",
+    "aesthetic": "截图整体配色尚和谐：浅灰磨砂背景（#fff1f3f5）配合绿色按钮和深色文字，风格统一。但存在两个明显问题：(1) 右侧大绿色按钮上的文字'打...'严重截断，白色文字被剪到只剩一个不完整汉字，极大破坏按钮的视觉完整性和可点击感；(2) 黄色'待服用'提示块在截图中完全看不出黄色，三行状态块视觉差异极小，状态层次缺失。按钮区域空白占比大但文字不可读，浪费了视觉空间。",
+    "layout": "从截图中观察到三处明显排版问题：(1) 右侧按钮（52×116）文字被截断为'打...'，是最严重的布局失败——button宽度过窄装不下'打电话'三个字加上内边距，关键CTA不可用；(2) 左侧面板高度116内塞了4个元素（标题+3行），各行高度仅16，标题'奶奶服药'底边紧贴'早'行顶边，行间仅itemMargin=2，几乎没有呼吸空间；(3) 按钮上下大量留白被浪费（height=116）而宽度严重不足，比例严重失调。整体可读性差。"
+  },
+  "issues": [
+    "右侧按钮文字'打电话提醒她'被严重截断为'打...'，CTA不可读",
+    "'待服用'黄色提示背景在截图中几乎不可见，与'已服'背景无视觉差异",
+    "左侧面板高度116塞4个元素（标题+3行），各行高16、itemMargin仅2，间距过密",
+    "按钮宽52、高116的比例严重失调，宽度无法容纳3字中文+内边距",
+    "标题'奶奶服药'与第一行'早'之间距离过近，视觉上几乎相连"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"morning_row\",\"noon_row\",\"evening_row\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"morning_row\",\"component\":\"Row\",\"children\":[\"morning_check\",\"morning_time\",\"morning_status\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"morning_check\",\"component\":\"Checkbox\",\"value\":\"morning\",\"group\":\"medicine\",\"select\":\"{{ ${/medications/0/checked} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"morning_time\",\"component\":\"Text\",\"content\":\"{{ ${/medications/0/timeLabel} }}\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"morning_status\",\"component\":\"Text\",\"content\":\"{{ ${/medications/0/status} }}\",\"styles\":{\"width\":76,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"{{ ${/medications/0/statusBg} }}\",\"borderRadius\":9}},{\"id\":\"noon_row\",\"component\":\"Row\",\"children\":[\"noon_check\",\"noon_time\",\"noon_status\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"noon_check\",\"component\":\"Checkbox\",\"value\":\"noon\",\"group\":\"medicine\",\"select\":\"{{ ${/medications/1/checked} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"noon_time\",\"component\":\"Text\",\"content\":\"{{ ${/medications/1/timeLabel} }}\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"noon_status\",\"component\":\"Text\",\"content\":\"{{ ${/medications/1/status} }}\",\"styles\":{\"width\":76,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"{{ ${/medications/1/statusBg} }}\",\"borderRadius\":9}},{\"id\":\"evening_row\",\"component\":\"Row\",\"children\":[\"evening_check\",\"evening_time\",\"evening_status\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"evening_check\",\"component\":\"Checkbox\",\"value\":\"evening\",\"group\":\"medicine\",\"select\":\"{{ ${/medications/2/checked} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"evening_time\",\"component\":\"Text\",\"content\":\"{{ ${/medications/2/timeLabel} }}\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"evening_status\",\"component\":\"Text\",\"content\":\"{{ ${/medications/2/status} }}\",\"styles\":{\"width\":76,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"{{ ${/medications/2/statusBg} }}\",\"borderRadius\":9}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/contact/actionLine1} }}\\n{{ ${/contact/actionLine2} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/phoneNumber} }}\"}}],\"styles\":{\"width\":120,\"height\":26,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":12}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"奶奶服药\"},\"medications\":[{\"timeLabel\":\"早\",\"checked\":true,\"status\":\"已服\",\"statusBg\":\"#19000000\"},{\"timeLabel\":\"中\",\"checked\":false,\"status\":\"待服用\",\"statusBg\":\"#ffffeb3b\"},{\"timeLabel\":\"晚\",\"checked\":false,\"status\":\"待服用\",\"statusBg\":\"#ffffeb3b\"}],\"contact\":{\"phoneNumber\":\"13800000000\",\"actionLine1\":\"打电话\",\"actionLine2\":\"提醒她\"}}}}"
+  ]
+}

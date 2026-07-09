@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-16-travel-ticket-008",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户四个诉求均落地：'登机牌'标签与航班标题、登机口、时间构成登机牌信息；'一点跳app'由'跳转App'按钮承接，onClick.call=clickToDeeplink、args.uri=huaweischeme://healthapp/home/sport?sportType=2 与 eventCandidates 完全一致；'能看日历'通过 dtStart/eventLocation/title 三个日历字段绑定展示；'红色危险提示'由红底卡片+白色面板上的'危险提示'标题实现。协议层面 size=2x4、catalogId/version/updateDataModel 均正确，dtEnd 未使用属轻微信息缺漏。",
+    "aesthetic": "红色主背景契合'危险'主题语义，白色提示面板提供良好对比，'危险提示'橙色文字与红色主色形成层级。字号阶梯合理（32/18/14/12），主时间 08:45 视觉重量突出。不足在于右侧 alert_desc 仅 7 个汉字却以 maxLines:2 强制换行，导致'验'字独占第二行，视觉上不整齐；按钮热区颜色与卡片底色完全相同，缺乏边界感。",
+    "layout": "截图中可观察到两处问题：① 左侧主列标题'CA1234 登机'在 18px 字重 700 下宽度逼近 168px 容器，最末'机'字右缘被裁切/贴边；② 右侧白色面板描述文字'证件临期，请核验'因 maxLines:2 出现不雅换行——第一行'证件临期，请核'，第二行仅'验'一字单独成行。其余元素无堆叠重叠，按钮热区约 32vp 可点，左右边界清晰，底部到卡片底边距离合理。"
+  },
+  "issues": [
+    "主列标题 'CA1234 登机' 在 fontSize:18 / weight:700 / width:168 下，末字'机'右缘紧贴/轻微裁切容器右边界",
+    "alert_desc 描述'证件临期，请核验'因 maxLines:2 出现孤字换行，第二行仅'验'一字，视觉不整齐",
+    "按钮 backgroundColor 与卡片主背景色同为 #e64566，缺乏视觉边界区分（虽然有 borderRadius，但与红底融合）",
+    "dataModel 中 dtEnd=10:30 未在卡片中呈现，行程结束时间信息缺失"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_column\",\"alert_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#e64566\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"ticket_label\",\"flight_title\",\"boarding_time\",\"gate_text\"],\"itemMargin\":4,\"styles\":{\"width\":168,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"ticket_label\",\"component\":\"Text\",\"content\":\"登机牌\",\"styles\":{\"width\":168,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"flight_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":168,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"boarding_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":168,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"gate_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"alert_panel\",\"component\":\"Column\",\"children\":[\"alert_title\",\"alert_desc\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_title\",\"component\":\"Text\",\"content\":\"危险提示\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_desc\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":84,\"height\":32,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"跳转App\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":84,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#c81d3a\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-flight-001\",\"title\":\"CA1234 登机\",\"eventLocation\":\"T3 12号登机口\",\"description\":\"证件临期，请核验\",\"dtStart\":\"08:45\",\"dtEnd\":\"10:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

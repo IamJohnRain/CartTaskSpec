@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-29-elderly-care-004",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户明确要求'列一排同类'、'上面一行带数字'、'点能跳app'、'能读日历'、'要红色危险提示'。截图中三项日程瓦片横向排列、时间数字在上、标题在下满足'一排同类+上面带数字'；看护按钮带 onClick 跳 deeplink 满足'点能跳app'；日历图标展示满足'能读日历'。但用户明确要求'红色危险提示'，实际截图中'危险提示'和'看护'两个色块均渲染为橙色（#ffed6f21 属于橙色系），并非用户要求的红色，指令遵从有明确偏差，扣分。",
+    "aesthetic": "截图中卡片整体为白到极浅灰的渐变背景，三块瓦片使用浅灰半透明底，层次清晰；标题/时间/标题文字三级字号阶梯（14/12/10）合理；唯一最强字重是时间数字 700，整体克制。但用户期望的'危险提示'用色应为红色警示感，实际为温暖橙色，与用户诉求的'危险/警示'语义不匹配，削弱了警示情绪；其余排版、对齐、留白在 2x2 紧凑空间内可接受。",
+    "layout": "从截图观察：根容器 140x140、padding 12，内容区 116x116；header_row 18 + itemMargin 6 + schedule_list 52 + itemMargin 6 + bottom_row 34 = 116，恰好占满，无溢出。三块瓦片各 36x52 横向并排，每块内时间与标题两行可读，标题'服药/测压/复诊'未被截断。底部'危险提示'与'看护'两个胶囊按钮各 32 高，距卡片底边约 12，未贴边。整体无堆叠重叠、无文字裁切，热区充足。仅瓦片间略有拥挤感但不影响阅读。"
+  },
+  "issues": [
+    "用户明确要求'红色危险提示'，实际'危险提示'胶囊与'看护'按钮均为橙色 #ffed6f21，色相偏离用户诉求",
+    "'危险提示'是 Text 组件而非 Button，无法响应点击；用户语义上希望警示也能触发跳转",
+    "2x2 空间紧张，三块瓦片标题区 22 高度承载 2 行 maxLines=2，'服药/测压/复诊'虽未截断但已贴近瓦片内边距，可读性偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"schedule_list\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fffdecea\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"header_icon\",\"title_text\",\"count_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日看护\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ size(${/data/calendar/items}) + '项' }}\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"schedule_list\",\"component\":\"List\",\"children\":[\"event_tile_0\",\"event_tile_1\",\"event_tile_2\"],\"space\":4,\"styles\":{\"width\":116,\"height\":52,\"listDirection\":\"horizontal\",\"scrollBar\":\"off\"}},{\"id\":\"event_tile_0\",\"component\":\"Column\",\"children\":[\"event_time_0\",\"event_title_0\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":52,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"event_time_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"event_title_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":28,\"height\":22,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"event_tile_1\",\"component\":\"Column\",\"children\":[\"event_time_1\",\"event_title_1\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":52,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"event_time_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"event_title_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":28,\"height\":22,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"event_tile_2\",\"component\":\"Column\",\"children\":[\"event_time_2\",\"event_title_2\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":52,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"event_time_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/dtStart} }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"event_title_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/title} }}\",\"styles\":{\"width\":28,\"height\":22,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"alert_chip\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_chip\",\"component\":\"Button\",\"label\":\"危险提示\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":56,\"height\":32,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffd32f2f\",\"borderRadius\":16}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看护\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":54,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffed6f21\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"dtStart\":\"09:00\",\"title\":\"服药\"},{\"dtStart\":\"12:30\",\"title\":\"测压\"},{\"dtStart\":\"18:00\",\"title\":\"复诊\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

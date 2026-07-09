@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-015",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "截图中可见的核心信息基本到位：电量32%、闹钟07:30、内嵌白色小面板、紫蓝渐变背景、点击事件绑定到闹钟deeplink均已落实。但用户明确要求的'电量低于30%时显示橙色待处理'未生效——截图右上角'电量偏低'文字呈白色而非橙色，下方进度条也呈粉紫色而非警示橙色，binding未在渲染中正确解析。底部'几个常用图标'仅第三个闹钟图标正常显示，前两个（充电、省电）渲染为白色圆角方块（image未加载且有白色背景兜底），未能正确呈现三个不同图标。",
+    "aesthetic": "紫蓝渐变方向自然、整体冷色调符合夜晚氛围；白色内嵌面板在小尺寸卡片上提供清晰对比，视觉分层合理。但截图里底部三个'图标'中两个是同色白方块，缺乏区分感，让底部行看起来像占位符未加载；进度条呈粉紫色与用户期望的橙色警示色不一致，破坏低电警示语义；顶部电池图标同样渲染为白方块，与同区域白色'32%'大字在视觉上缺少图标装饰。配色整体和谐但关键状态色和图标缺失明显拉低完成度。",
+    "layout": "截图中最突出的布局问题是天气行文字被截断：明早天气完整文本为'明早 多云 24°/31°'，截图里仅显示到'24°/'，最后的'31°'被裁掉——说明weather_text容器宽度78在fontSize 12下不足以容纳约103px的内容，属于明显的文字截断。底部充电、省电两个图标渲染为白色圆角方块（image fallback + 白底），虽未重叠但与正常渲染的闹钟图标并列时出现'一实两虚'的不一致视觉。其余元素（电量大字、闹钟行、进度条）布局对齐良好，无堆叠或溢出。底部三个白方块图标在卡片下沿对齐，距离底边约8-10vp，符合锚定要求。"
+  },
+  "issues": [
+    "天气文字'24°/31°'被截断为'24°/'，受保护信息丢失",
+    "状态文字'电量偏低'应为橙色(#ffe84026)但渲染为白色，binding未生效",
+    "进度条color binding未生效，显示为粉紫色而非橙色警示色",
+    "顶部电池图标、底部充电/省电图标渲染为白色圆角方块（image未加载+白底兜底）",
+    "底部三个图标视觉不一致：仅闹钟图标正常显示"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"info_panel\",\"icon_row\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#ac49f5\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"battery_icon\",\"battery_value\",\"battery_status\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"battery_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_electricity.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/battery/percentText} }}\",\"styles\":{\"width\":40,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"battery_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/battery/statusText} }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"{{ ${/data/battery/statusColor} }}\",\"maxLines\":1}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"weather_row\",\"alarm_row\",\"battery_bar\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":54,\"padding\":2,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text\"],\"itemMargin\":4,\"styles\":{\"width\":112,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/0/weekday} + ' ' + ${/data/weather/daily/0/condition} + ' ' + ${/data/weather/daily/0/temperatureRangeText} }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"alarm_row\",\"component\":\"Row\",\"children\":[\"alarm_icon\",\"alarm_text\"],\"itemMargin\":4,\"styles\":{\"width\":112,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alarm_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"alarm_text\",\"component\":\"Text\",\"content\":\"{{ '闹钟 ' + ${/data/alarm/timeText} }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"battery_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/data/battery/percentValue} }}\",\"total\":100,\"styles\":{\"width\":112,\"height\":6,\"type\":\"capsule\",\"color\":\"#ffe84026\"}},{\"id\":\"icon_row\",\"component\":\"Row\",\"children\":[\"bottom_charge\",\"bottom_save\",\"bottom_alarm\"],\"itemMargin\":12,\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"bottom_charge\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_charge.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"bottom_save\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_save_power.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"bottom_alarm\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"battery\":{\"percentText\":\"32%\",\"percentValue\":32,\"statusText\":\"电量偏低\",\"statusColor\":\"#ffe84026\"},\"weather\":{\"daily\":[{\"weekday\":\"明早\",\"condition\":\"多云\",\"temperatureRangeText\":\"24°/31°\"}]},\"alarm\":{\"timeText\":\"07:30\"}}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-anti-addiction-018",
+  "scores": {
+    "instruction": {
+      "score": 7.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "截图显示主要诉求基本落实：标题'今日游戏时长已用尽'作为大字呈现、红色风险提示'临近 23:00 阈值风险'显示、三个横排静态操作项（锁屏/禁用/警告）齐备、底部蓝色主按钮'去系统应用管理改限制'明确且 onClick 事件参数与 eventCandidates 完全一致。但有两点偏差：1) 用户明确要求'暗黑系的风景照'作背景，截图中实际是黑→紫→蓝的线性渐变，并非风景照片，受 assetCandidates 仅有 hourglass 图标的限制，只能用渐变近似，氛围感不足；2) 用户要求'锁图标'，实际使用了 hourglass（沙漏+齿轮）图标，语义相近但字面不匹配。综合扣分。",
+    "aesthetic": "截图整体观感专业、克制：深紫蓝色渐变营造夜晚氛围，白色加粗大标题与背景对比强烈，可读性好；红色风险文字用作强调色，层级清晰；半透明胶囊芯片与蓝色主按钮配色协调。不足之处：右上角白色圆角方块作为图标底板面积偏大（80×48），在深色卡片中显突兀，与整体暗黑氛围有割裂感；'警告'芯片的背景色（#33ffffff）和字重（600）与其他两个芯片不一致，虽是渐变强调但视觉上略不统一。",
+    "layout": "截图中各元素基本无堆叠、无溢出：标题在 184×24 容器中以 fontSize 20 呈现'今日游戏时长已用尽'，9 个汉字约 180px 紧贴 184px 右边界，虽未截断但与右上图标底板距离过窄，呼吸感不足；三枚胶囊（54×24 ×3 + 8×2 间距 = 178px）居左排列在 276px 宽度内，未发生重叠；底部按钮 276×32 紧贴左右 padding 边缘，圆角与卡片圆角接近形成层次。底部动作区底边到卡片底边约 8-10vp，合规。整体布局成立但顶部拥挤感明显。"
+  },
+  "issues": [
+    "标题'今日游戏时长已用尽'在 184px 宽容器中以 20px 字号呈现，约 180px 宽度，与右侧图标底板间距过窄，建议降至 18px 提升呼吸感",
+    "用户要求'暗黑系风景照'背景，实际使用纯渐变，无图片层次，建议加深渐变端点色以更贴合'夜晚'氛围",
+    "用户要求'锁图标'，实际使用 hourglass（沙漏）图标，assetCandidates 不含锁图标，需在能力范围内接受",
+    "右上角白色图标底板（80×48）在深色卡片中过于突兀，建议缩小或改为半透明深色填充以融入氛围",
+    "'警告'芯片与其他两个芯片的 backgroundColor（#33 vs #19）和 fontWeight（600 vs 500）不一致，视觉上有小割裂",
+    "风险提示文字'临近 23:00 阈值风险'与标题左对齐位置一致，但与三个芯片左边缘未严格对齐（标题左缘 12+0=12vp，芯片左缘 12+0=12vp，OK），无问题"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"ops_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff0a0b16\",0],[\"#7c2a2c5c\",0.55],[\"#ff3b2a6b\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"headline_col\",\"icon_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":48,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"headline_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"risk_text\"],\"itemMargin\":4,\"styles\":{\"width\":188,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/status/title} }}\",\"styles\":{\"width\":188,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"risk_text\",\"component\":\"Text\",\"content\":\"{{ ${/status/riskText} }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffff5b5b\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"lock_icon\"],\"styles\":{\"width\":56,\"height\":48,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"lock_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/hourglass_fill.svg\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\"}},{\"id\":\"ops_row\",\"component\":\"Row\",\"children\":[\"lock_chip\",\"disable_chip\",\"warn_chip\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"lock_chip\",\"component\":\"Text\",\"content\":\"{{ ${/status/lockAction} }}\",\"styles\":{\"width\":54,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e8ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"disable_chip\",\"component\":\"Text\",\"content\":\"{{ ${/status/disableAction} }}\",\"styles\":{\"width\":54,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e8ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"warn_chip\",\"component\":\"Text\",\"content\":\"{{ ${/status/warnAction} }}\",\"styles\":{\"width\":54,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ff5b5b\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/status/buttonLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":276,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff2a6cf0\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"status\":{\"title\":\"今日游戏时长已用尽\",\"riskText\":\"临近 23:00 阈值风险\",\"lockAction\":\"锁屏\",\"disableAction\":\"禁用\",\"warnAction\":\"警告\",\"buttonLabel\":\"去系统应用管理改限制\"}}}}"
+  ]
+}

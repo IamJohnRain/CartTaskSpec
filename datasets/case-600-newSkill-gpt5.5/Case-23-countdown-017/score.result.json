@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-017",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户要求夜晚渐变、左侧主视觉叠层、右侧不同底色分区、可滚动列表、纵向多个纪念日、文字字符图标、点进详情。截图中夜晚紫色渐变背景已呈现，左侧'纪念日/倒计时'主视觉面板带有日历图标，右侧两张纪念日卡片(妈妈生日/结婚纪念)纵向排列均带 onClick 详情事件,数据绑定正确(anniv-mom-2026、anniv-wedding-2026),'月'字字符作为叠层水印可见,基本诉求落实。但'右侧不同底色分区'较弱——两张卡片一张纯白一张半透明白,视觉差异不明显,未形成清晰的'不同底色分区'层次;2x2 静态卡片无法表达'可滚动列表'与'纵向滚动'的动态语义;'月'字符水印颜色过淡(#19FFFFFF)几乎不可见,削弱'文字字符图标'的存在感。",
+    "aesthetic": "从截图看,夜晚紫色渐变(#5F58C7→#634794)配色和谐,主标题'纪念日'白色加粗在紫色背景上清晰可读,左侧主面板磨砂半透明白底圆角与右侧两张事件卡片形成层次。问题在于:(1)右侧两张事件卡片一张纯白一张半透明白,差异过小、未形成明显的色彩分区;(2)'月'字水印颜色过淡,在截图中几乎要凑近才看得见,失去了字符图标的装饰作用;(3)两张卡片内部的'查看详情'字号(10)偏小,信息层级感稍弱。整体克制专业但缺少亮点,属中上水平。",
+    "layout": "截图显示右侧第二张事件卡片'结婚纪念'底边被裁切——可观察到卡片底部圆角贴着/略超出卡片下边界,这是因为 event_column 高度 116 中塞入两张 56 高卡片+itemMargin 4,实际纵向占用为 4+56+4+56=120,超出 4vp。第二张卡片被 clip 截掉了底部约 4vp 圆角,这是一个明确的溢出/裁切问题。'月'字符 96x96 放在 140x140 根容器中央(未指定 position),在截图中位于右上方作为水印,未遮挡关键信息。左侧主面板 50x116 在 116 高度内能放下图标+两行文字,无溢出。整体布局因右侧 4vp 溢出而扣分。"
+  },
+  "issues": [
+    "event_column 纵向占用 120vp 超出容器 116vp,第二张事件卡片'结婚纪念'底部圆角被 clip 裁切约 4vp",
+    "右侧两张事件卡片底色差异不明显(纯白 vs 半透明白),未真正落实'不同底色分区'",
+    "'月'字字符水印颜色 #19FFFFFF 在深紫底上几乎不可见,文字字符图标存在感不足",
+    "2x2 静态卡片无法呈现'可滚动列表/纵向滚动'的动态语义,仅能静态罗列",
+    "第二张卡片'查看详情'在浅色卡上为半透明白,对比度偏低,可读性稍弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"night_mark\",\"content_row\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5F58C7\",0],[\"#634794\",1]]},\"alignContent\":\"center\"}},{\"id\":\"night_mark\",\"component\":\"Text\",\"content\":\"月\",\"styles\":{\"width\":72,\"height\":72,\"fontSize\":56,\"fontWeight\":700,\"fontColor\":\"#33FFFFFF\",\"textAlign\":\"center\",\"position\":\"absolute\",\"right\":8,\"top\":6}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"event_column\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"calendar_icon\",\"hero_title\",\"hero_caption\"],\"itemMargin\":4,\"styles\":{\"width\":50,\"height\":116,\"padding\":4,\"borderRadius\":16,\"backgroundColor\":\"#33FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\"}},{\"id\":\"hero_title\",\"component\":\"Text\",\"content\":\"纪念日\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"hero_caption\",\"component\":\"Text\",\"content\":\"倒计时\",\"styles\":{\"width\":42,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"event_column\",\"component\":\"Column\",\"children\":[\"event_card_0\",\"event_card_1\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"event_card_0\",\"component\":\"Column\",\"children\":[\"event_title_0\",\"event_date_0\",\"event_meta_0\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":60,\"height\":54,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"event_title_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"event_date_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"event_meta_0\",\"component\":\"Text\",\"content\":\"查看详情\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"event_card_1\",\"component\":\"Column\",\"children\":[\"event_title_1\",\"event_date_1\",\"event_meta_1\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/1/entityId} }}\"}}}],\"styles\":{\"width\":60,\"height\":54,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#E8E0FF\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"event_title_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"event_date_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"event_meta_1\",\"component\":\"Text\",\"content\":\"查看详情\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"anniv-mom-2026\",\"title\":\"妈妈生日\",\"dtStart\":\"08.21\",\"dtEnd\":\"全天\"},{\"entityId\":\"anniv-wedding-2026\",\"title\":\"结婚纪念\",\"dtStart\":\"10.03\",\"dtEnd\":\"全天\"}]}}}}"
+  ]
+}

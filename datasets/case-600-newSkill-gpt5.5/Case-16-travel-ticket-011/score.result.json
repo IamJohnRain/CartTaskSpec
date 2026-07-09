@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-16-travel-ticket-011",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图显示：卡片为2x2，标题'出发提醒'+计数'共2趟'、两个白色子卡横向并排、每个子卡含环形进度、内嵌数字+✈字符、'距离出发'/'还有3天''还有9天'文案齐全，事件onClick 指向 ViewCalendarEvent 与 eventCandidates 对齐。主要诉求全部落实。轻微扣分点：用户要求'图标用文字字符'，DSL 中确实使用了 ✈ (U+2708) 文本字符，但实际渲染时系统将其显示为彩色 emoji 飞机，与'别花哨''素净'风格略有冲突；渐变 #f9bc64→#ed955f 偏暖橙，与'别太亮'要求存在轻微距离。",
+    "aesthetic": "截图整体观感整洁：白底子卡配暖橙渐变背景对比清晰，'出发提醒'加粗深色与右上'共2趟'灰色辅助字层级分明，环形进度在内、数字加粗突出。但暖橙渐变饱和度偏高，与'运动紧迫感但别太亮'的克制感存在差距；✈ 字符在 Stack 内被渲染成较大尺寸的彩色 emoji 飞机，破坏了'简洁素净'的整体调性，视觉上略显突兀。",
+    "layout": "截图无明显堆叠/溢出/截断：两个子卡宽度 54vp 加上 8vp 间距在 116vp 内容区刚好放下；底部'还有3天''还有9天'完整显示未触底；环形 Progress 渲染在圆环顶部位置与数值 3/30、9/30 比例对应。Stack 内 Text '3✈'/'9✈' 与圆环居中对齐，文字未越出环框。轻微问题：✈ emoji 实际渲染宽度大于字体度量，与左侧数字间距偏紧，'距离出发'灰色文字在子卡中视觉略弱，但均不构成扣分项。"
+  },
+  "issues": [
+    "✈ 字符 (U+2708) 在鸿蒙渲染中显示为彩色 emoji 飞机，违反协议'禁止 emoji'，且与'素净'风格冲突",
+    "暖橙渐变 #f9bc64→#ed955f 饱和度偏高，偏离用户'别太亮'要求",
+    "环形 Progress 因 3/30、9/30 数值偏小，进度弧仅在 12 点钟位置出现一小段，视觉紧迫感弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"trip_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f1d9b3\",0],[\"#e2b58a\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"count_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"出发提醒\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ '共' + size(${/data/calendar/items}) + '趟' }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"trip_row\",\"component\":\"Row\",\"children\":[\"trip_card_0\",\"trip_card_1\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":92,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"trip_card_0\",\"component\":\"Column\",\"children\":[\"trip0_ring_stack\",\"trip0_phrase_top\",\"trip0_phrase_bottom\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":55,\"height\":92,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"trip0_ring_stack\",\"component\":\"Stack\",\"children\":[\"trip0_ring\",\"trip0_ring_label\"],\"styles\":{\"width\":42,\"height\":42,\"alignContent\":\"center\"}},{\"id\":\"trip0_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/calendar/items/0/countdownDays} }}\",\"total\":\"{{ ${/ui/countdownTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#c98a4b\",\"width\":42,\"height\":42}},{\"id\":\"trip0_ring_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/countdownDaysText} + '   →' }}\",\"styles\":{\"width\":38,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"trip0_phrase_top\",\"component\":\"Text\",\"content\":\"距离出发\",\"styles\":{\"width\":42,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"trip0_phrase_bottom\",\"component\":\"Text\",\"content\":\"{{ '还有' + ${/data/calendar/items/0/countdownDaysText} + '天' }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"trip_card_1\",\"component\":\"Column\",\"children\":[\"trip1_ring_stack\",\"trip1_phrase_top\",\"trip1_phrase_bottom\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/1/entityId} }}\"}}}],\"styles\":{\"width\":55,\"height\":92,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"trip1_ring_stack\",\"component\":\"Stack\",\"children\":[\"trip1_ring\",\"trip1_ring_label\"],\"styles\":{\"width\":42,\"height\":42,\"alignContent\":\"center\"}},{\"id\":\"trip1_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/calendar/items/1/countdownDays} }}\",\"total\":\"{{ ${/ui/countdownTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#c98a4b\",\"width\":42,\"height\":42}},{\"id\":\"trip1_ring_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/countdownDaysText} + '   →' }}\",\"styles\":{\"width\":38,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"trip1_phrase_top\",\"component\":\"Text\",\"content\":\"距离出发\",\"styles\":{\"width\":42,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"trip1_phrase_bottom\",\"component\":\"Text\",\"content\":\"{{ '还有' + ${/data/calendar/items/1/countdownDaysText} + '天' }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-trip-001\",\"title\":\"香港飞东京\",\"dtStart\":\"7/12 09:30\",\"dtEnd\":\"7/12 14:10\",\"countdownDays\":3,\"countdownDaysText\":\"3\"},{\"entityId\":\"calendar-trip-002\",\"title\":\"东京飞大阪\",\"dtStart\":\"7/18 16:20\",\"dtEnd\":\"7/18 17:40\",\"countdownDays\":9,\"countdownDaysText\":\"9\"}]}},\"ui\":{\"countdownTotal\":30},\"state\":{\"loading\":false}}}}"
+  ]
+}

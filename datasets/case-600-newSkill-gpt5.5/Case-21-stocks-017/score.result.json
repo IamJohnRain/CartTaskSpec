@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-017",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "用户明确诉求全部满足：截图中可见简洁的基金卡片、上下两道分隔线分区、中间环形图(绿色)、其右侧固定文字'已盈利+12.8%'、下方列表列出3只定投基金(沪深300/中证红利/易方达蓝筹及对应金额)、点击 root 可跳转到天气App(uri 参数与 eventCandidates 完全一致)。整体无渐变，使用纯色背景和文字色块。素材未涉及网络图/占位图,符合协议。硬约束全部满足:size 2x2、root 140x140、borderRadius 18、catalogId/version/updateDataModel.path 均合规。",
+    "aesthetic": "截图观感整体清爽专业:白底+黑字+绿色盈利强调,语义契合'盈利'。字重层级清晰(标题 14px/700 为主,辅助文字 10px/500 或 400)。'天气'色块用浅灰底+圆角,起到入口提示作用。配色和谐,无渐变,符合'文字色块'要求。扣分点:基金列表三行高度仅 10px,行间距视觉上略密,数字与名称挤在很小的高度里显得局促;主盈利文字 fontSize 仅 10px,作为关键指标略显轻,字号阶梯上与标题差距较大但视觉份量偏弱。",
+    "layout": "截图中所有内容均落在 140x140 卡片边界内,无溢出、无截断、无元素堆叠。环形图(46x46)与右侧'已盈利+12.8%'在同一行内垂直居中对齐,二者宽度 46+2+68=116 正好填满内容区。三行基金列表紧凑排列,名称左对齐、金额右对齐,排版整齐。上下两条 Divider 高度 1px,清晰分隔三段(标题/盈利指标/基金列表)。底部最后一行基金到卡片底边约 12-14vp,符合 2x2 卡片底部 8-12vp 锚定规范。未观察到文字被裁切或组件越界。"
+  },
+  "issues": [
+    "盈利主指标'已盈利+12.8%'字号仅 10px,作为核心展示数据视觉份量偏弱,理想可放大至 12-14px",
+    "基金列表三行高度 10px 偏紧凑,数字 ¥xxx/月 与名称贴得很近,可适度增加到 12-14px 提高可读性",
+    "标题'基金定投'与'天气'色块在同一行,布局成立但 '天气' 色块背景较浅,与普通文本区分度有限,可略加深以强化入口语义"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"divider_top\",\"meter_row\",\"divider_bottom\",\"fund_list\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_hint\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/title} }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/actionLabel} }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#22000000\",\"borderRadius\":9}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"progress_ring\",\"profit_col\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/portfolio/progress/value} }}\",\"total\":\"{{ ${/portfolio/progress/total} }}\",\"styles\":{\"width\":48,\"height\":48,\"type\":\"ring\",\"color\":\"#ff64bb5c\"}},{\"id\":\"profit_col\",\"component\":\"Column\",\"children\":[\"profit_text\"],\"styles\":{\"width\":64,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"profit_text\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/profitText} }}\",\"styles\":{\"width\":64,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1}},{\"id\":\"divider_bottom\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"fund_list\",\"component\":\"List\",\"children\":[\"fund_row_0\",\"fund_row_1\",\"fund_row_2\"],\"space\":1,\"styles\":{\"width\":116,\"height\":34,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"fund_row_0\",\"component\":\"Row\",\"children\":[\"fund_name_0\",\"fund_amount_0\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":11,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"fund_name_0\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/items/0/name} }}\",\"styles\":{\"width\":62,\"height\":11,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"fund_amount_0\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/items/0/amountText} }}\",\"styles\":{\"width\":50,\"height\":11,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"fund_row_1\",\"component\":\"Row\",\"children\":[\"fund_name_1\",\"fund_amount_1\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":11,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"fund_name_1\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/items/1/name} }}\",\"styles\":{\"width\":62,\"height\":11,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"fund_amount_1\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/items/1/amountText} }}\",\"styles\":{\"width\":50,\"height\":11,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"fund_row_2\",\"component\":\"Row\",\"children\":[\"fund_name_2\",\"fund_amount_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":11,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"fund_name_2\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/items/2/name} }}\",\"styles\":{\"width\":62,\"height\":11,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"fund_amount_2\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/items/2/amountText} }}\",\"styles\":{\"width\":50,\"height\":11,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"end\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"portfolio\":{\"title\":\"基金定投\",\"actionLabel\":\"天气\",\"profitText\":\"已盈利+12.8%\",\"progress\":{\"value\":72,\"total\":100},\"items\":[{\"name\":\"沪深300\",\"amountText\":\"¥320/月\"},{\"name\":\"中证红利\",\"amountText\":\"¥240/月\"},{\"name\":\"易方达蓝筹\",\"amountText\":\"¥180/月\"}]}}}}"
+  ]
+}

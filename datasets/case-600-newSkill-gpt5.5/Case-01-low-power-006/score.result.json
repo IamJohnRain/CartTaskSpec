@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-low-power-006",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "用户要求'列一排能关的东西'，截图中可见三个胶囊标签'亮度/定位/蓝牙'横向排成一排，完整呈现；'按一下能开省电模式'通过底部绿色'开启省电'按钮落实，onClick 原样使用 eventCandidates 中的 clickToIntent + SetSettingSwitch/battery_saving_mode；标题'低电模式'、状态'建议开启'、摘要'先关高耗电项'均通过 {{ ${/mode/...} }} 表达式绑定并真实呈现；assetCandidates 中的 icon_save_power.png 被用作左上角圆形图标素材；尺寸 2x2、catalogId/version/updateDataModel.path 等硬约束均满足。",
+    "aesthetic": "截图中卡片采用深灰渐变背景（#191a1c→#202224）配以明亮绿色 CTA 按钮，色感和对比度良好；白色标题加粗，灰白辅助文字层次清晰；胶囊式条目统一圆角和半透明白底，风格统一；只有一个最强字重（标题 700），其余为 500，符合字号阶梯；整体留白合理、不过密也不空洞，对齐整齐，仅整体略偏紧凑、底部到卡片底边空间略小，可视为良好观感。",
+    "layout": "截图中各元素纵向叠放：图标+标题行(32) + 摘要(14) + 三胶囊行(24) + CTA 按钮(32) + 间隔，约 138vp，恰好填入 140vp 高度，未见溢出卡片边界；三个胶囊在 116 宽度内用 spaceBetween 排开，'亮度/定位/蓝牙'均居中显示无截断；'开启省电'按钮文字完整呈现、底边距卡片底约 10vp，热区 32vp 满足 ≥24vp；标题'低电模式'与状态'建议开启'在 76 宽度内清晰可读，未被裁切；Stack/层叠遮挡问题在截图中未观察到。唯一可优化点是纵向略紧凑、底部留白偏小。",
+    "issues": [
+      "卡片纵向布局较紧凑，CTA 按钮底边到卡片底边仅约 10vp，紧贴边缘感略强",
+      "三胶囊条目热区 24vp 虽 ≥24vp 但相对偏小，可考虑 28-32vp 提升触感",
+      "icon_bg 圆角图标为浅灰底配深色线条 icon，与卡片深色背景对比适中但视觉权重略弱"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"summary_text\",\"item_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#ff25272a\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"icon_bg\",\"title_group\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"icon_bg\",\"component\":\"Row\",\"children\":[\"mode_icon\"],\"styles\":{\"width\":30,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#1affffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"mode_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/icon} }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":78,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/mode/title} }}\",\"styles\":{\"width\":78,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/mode/status} }}\",\"styles\":{\"width\":78,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/mode/summary} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"item_row\",\"component\":\"Row\",\"children\":[\"item_0\",\"item_1\",\"item_2\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"item_0\",\"component\":\"Text\",\"content\":\"{{ ${/items/0/label} }}\",\"styles\":{\"width\":34,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#1effffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"item_1\",\"component\":\"Text\",\"content\":\"{{ ${/items/1/label} }}\",\"styles\":{\"width\":34,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#1effffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":1,\"maxLines\":\"center\"}},{\"id\":\"item_2\",\"component\":\"Text\",\"content\":\"{{ ${/items/2/label} }}\",\"styles\":{\"width\":34,\"height\":26,\"borderRadius\":13,\"backgroundColor\":\"#1effffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/mode/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"mode\":{\"title\":\"低电模式\",\"status\":\"建议开启\",\"summary\":\"先关高耗电项\",\"actionLabel\":\"开启省电\"},\"items\":[{\"label\":\"亮度\"},{\"label\":\"定位\"},{\"label\":\"蓝牙\"}],\"asset\":{\"icon\":\"resources/base/media/icon_save_power.png\"}}}}"
+  ]
+}

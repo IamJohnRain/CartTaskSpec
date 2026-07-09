@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-014",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.9,
+  "reasons": {
+    "instruction": "用户明确要求'5%以下红色超限告警纯文字色块'，但截图中'4%'主数值渲染为深黑色而非告警红色，'低于5% 超限告警'也仅以白色文字呈现、没有可见的红色色块背景，进度条填充色是默认蓝色而非告警色（#ffdb6b42），关键告警语义几乎完全缺失。'上方大区域显示电量和倒计时'、'纵向日程每条勾选框'、'底部按钮跳省电设置'等主要诉求及事件/尺寸/catalogId/version 协议均落实。",
+    "aesthetic": "深紫到黑的夜晚渐变背景质感不错，圆角、留白和分区比例整体专业。但截图中：(1) 主数值4%理应是红色告警色却为深黑，缺乏视觉警示层级；(2) 告警徽章未呈现纯文字红色色块，仅剩白字飘在深色背景上；(3) 两条日程标题末字被截断，露出'客户同步'和'登机前确'，观感粗糙、不完整；(4) 蓝色小点进度条与告警语义冲突。整体观感因上述问题被拉低。",
+    "layout": "截图右侧日程面板可观察到明显文字截断：'14:00 客户同步'末字'会'被裁、'17:30 登机前确'末字'认'被裁，两条受保护的日程标题均不完整，原因在于 schedule_panel 仅 112px 宽、内层 event_text 仅 74px 宽，无法容纳 5 字中文+时间，maxLines:1 直接截断。左侧 hero_column 占用 154px（含 2px itemMargin × 4 + 多元素）却只用到约 100px 宽的内容，左右宽度分配严重失衡，腾出的空间未被用于文字承载。底部省电设置按钮到卡片底边留白约 8vp，符合 2x4 规范。"
+  },
+  "issues": [
+    "截图中'4%'主数值渲染为深黑色，未呈现用户要求的5%以下红色告警色",
+    "截图中'低于5% 超限告警'没有红色色块背景，仅为白字，不满足'纯文字色块'要求",
+    "进度条颜色渲染为默认蓝色，未按 dataModel 绑定为告警红 #ffdb6b42",
+    "右侧日程面板过窄，两条日程标题末字被截断：'客户同步会'→'客户同步'、'登机前确认'→'登机前确'",
+    "左/右两栏宽度分配不合理（hero 154 / schedule 112），内容宽窄倒置"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#634794\",0.58],[\"#ff000000\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"hero_column\",\"schedule_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"top\"}},{\"id\":\"hero_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"battery_text\",\"battery_progress\",\"countdown_text\",\"alert_badge\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/title} }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"battery_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/device/batteryText} }}\",\"styles\":{\"width\":120,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffdb6b42\",\"maxLines\":1}},{\"id\":\"battery_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/device/batteryPercent} }}\",\"total\":\"{{ ${/data/device/progressTotal} }}\",\"styles\":{\"width\":120,\"height\":8,\"type\":\"linear\",\"color\":\"#ffdb6b42\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/meeting/countdownText} }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/device/batteryStatusText} }}\",\"styles\":{\"width\":108,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":11,\"backgroundColor\":\"#ffdb6b42\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"schedule_title\",\"event_row_1\",\"event_row_2\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":146,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ ${/ui/scheduleTitle} }}\",\"styles\":{\"width\":130,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"event_row_1\",\"component\":\"Row\",\"children\":[\"event_check_1\",\"event_text_1\"],\"itemMargin\":4,\"styles\":{\"width\":130,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"event_check_1\",\"component\":\"Checkbox\",\"value\":\"event-001\",\"group\":\"today_schedule\",\"select\":\"{{ ${/data/calendar/items/0/checked} }}\",\"styles\":{\"width\":18,\"height\":18,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#66ffffff\",\"mark\":{\"strokeColor\":\"#ff000000\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"event_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"event_row_2\",\"component\":\"Row\",\"children\":[\"event_check_2\",\"event_text_2\"],\"itemMargin\":4,\"styles\":{\"width\":130,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"event_check_2\",\"component\":\"Checkbox\",\"value\":\"event-002\",\"group\":\"today_schedule\",\"select\":\"{{ ${/data/calendar/items/1/checked} }}\",\"styles\":{\"width\":18,\"height\":18,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#66ffffff\",\"mark\":{\"strokeColor\":\"#ff000000\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"event_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":130,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#33ffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"device\":{\"batteryPercent\":4,\"batteryText\":\"4%\",\"batteryStatusText\":\"低于5% 超限告警\",\"batteryStatusColor\":\"#ffdb6b42\",\"batteryAlertBgColor\":\"#ffdb6b42\",\"batteryProgressColor\":\"#ffdb6b42\",\"progressTotal\":100},\"meeting\":{\"countdownText\":\"距离下次会议还有3小时\"},\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"event-001\",\"title\":\"客户同步会\",\"dtStart\":\"14:00\",\"dtEnd\":\"15:00\",\"checked\":false},{\"entityName\":\"calendar\",\"entityId\":\"event-002\",\"title\":\"登机前确认\",\"dtStart\":\"17:30\",\"dtEnd\":\"17:50\",\"checked\":true}]}},\"ui\":{\"title\":\"低电管理\",\"scheduleTitle\":\"今日日程\",\"actionLabel\":\"省电设置\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-27-utility-bill-015",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图中可见横向三块（用电/燃气/用水）、冷暖渐变背景（左上浅蓝到右下暖橙）、外层标题'智能缴费助手'+状态'青浦区·多云26°C'、内层白色面板承载详细预测、中间列'加入缴费日程'蓝色按钮均落实，onClick 参数与 eventCandidates 原样一致，updateDataModel.path=/ 且 value 结构正确。但用户明确要求'纯文字图标'，截图中左上角使用了实拍天气图（cloudy_turning_sunny.png），属于图像图标而非纯文字符号，偏离指令；此外第三列用水仅展示'降雨概率20%'+'预计低峰用水'，未像前两列一样做出'用水增加/减少X%'的预测式表述，与用户给的'之类的'预测范式略弱。",
+    "aesthetic": "截图中卡片背景由浅蓝过渡到暖橙的渐变自然贴合'冷暖色调'诉求，与天气主题语义匹配；外层渐变 + 内层白底形成清晰层次，对比度好；标题'智能缴费助手'为最强字重（14号加粗黑色），其他正文依次退到10/12号，层级清晰；蓝色 CTA 与暖色背景形成色彩锚点，文字在白底上可读性佳。不足之处是右上角暖橙色与右下角相比略偏淡，过渡中段有轻微'土黄'感，且三列标签/数值/元数据三段文字过密，留白略紧。",
+    "layout": "截图显示三列在白底面板中清晰分布，左列76宽、中列100宽、右列76宽，对齐整齐；'明天预计用电增加15%'正常换行成两行未被截断；'冷空气将增加燃气用量'单行完整呈现；'加入缴费日程'按钮位于中列居中、未越界、未被遮挡；标题'智能缴费助手'与状态'青浦区·多云26°C'两行未被裁切；外层渐变背景完整铺满卡片无白边。底部蓝色按钮底边距卡片底边约12vp，在合规范围。整体无堆叠/截断/溢出，布局成立。"
+  },
+  "issues": [
+    "用户要求'纯文字图标'，但卡片左上角使用了 Image 组件加载 cloudy_turning_sunny.png 实拍天气图，偏离'纯文字'诉求",
+    "第三列用水未按用户给的'明天预计用电增加15%''冷空气将增加燃气用量'预测范式组织，仅展示'降雨概率20%'信息密度偏弱",
+    "渐变中段（中央偏上）出现轻微土黄过渡色，与冷暖主题的纯净感略有冲突",
+    "中列内'燃气'文字 + '冷空气将增加燃气用量'长文本 + 蓝色按钮三段叠放，垂直密度较高，留白偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"forecast_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#7ec4e8\",0],[\"#f6a85c\",1]]}}},{\"id\":\"header_row\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"智能缴费助手\",\"styles\":{\"width\":276,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' · ' + ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":276,\"height\":10,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"forecast_panel\",\"component\":\"Row\",\"children\":[\"electric_col\",\"gas_col\",\"water_col\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":82,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\",\"shadow\":{\"radius\":8,\"color\":\"#22000000\",\"offsetX\":0,\"offsetY\":2}}},{\"id\":\"electric_col\",\"component\":\"Column\",\"children\":[\"electric_label\",\"electric_value\",\"electric_meta\"],\"itemMargin\":4,\"styles\":{\"width\":76,\"height\":70,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"electric_label\",\"component\":\"Text\",\"content\":\"用电\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"electric_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/1/weekday} + '预计用电增加15%' }}\",\"styles\":{\"width\":76,\"height\":30,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2}},{\"id\":\"electric_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/1/condition} + ' ' + ${/data/weather/daily/1/temperatureRangeText} }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"gas_col\",\"component\":\"Column\",\"children\":[\"gas_label\",\"gas_value\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":70,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"gas_label\",\"component\":\"Text\",\"content\":\"燃气\",\"styles\":{\"width\":100,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"gas_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/1/coldLevel} + '将增加燃气用量' }}\",\"styles\":{\"width\":100,\"height\":22,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"加入缴费日程\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.calendar\",\"abilityName\":\"com.huawei.hmos.calendar.MainAbility\",\"uri\":\"calendar://addEvent?title=utility_bill_reminder\"}}],\"styles\":{\"width\":100,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}},{\"id\":\"water_col\",\"component\":\"Column\",\"children\":[\"water_label\",\"water_value\",\"water_meta\"],\"itemMargin\":4,\"styles\":{\"width\":76,\"height\":70,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"water_label\",\"component\":\"Text\",\"content\":\"用水\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"water_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/1/weekday} + '预计用水增加8%' }}\",\"styles\":{\"width\":76,\"height\":30,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2}},{\"id\":\"water_meta\",\"component\":\"Text\",\"content\":\"{{ '雨概率' + ${/data/weather/daily/1/rainProbabilityPercent} }}\",\"styles\":{\"width\":76,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦区\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"},\"daily\":[{\"weekday\":\"今天\",\"condition\":\"多云\",\"temperatureRangeText\":\"23° / 30°\",\"rainProbabilityPercent\":\"30%\",\"coldLevel\":\"舒适\"},{\"weekday\":\"明天\",\"condition\":\"晴热\",\"temperatureRangeText\":\"24° / 33°\",\"rainProbabilityPercent\":\"20%\",\"coldLevel\":\"冷空气\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

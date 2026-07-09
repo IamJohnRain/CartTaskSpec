@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-13-health-reminder-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图清晰呈现了用户要求的三要素：①'吃药喝水'主标题与'立即吃药 + 08:00 喝水'主信息；②'紧急'红色徽章 + 闹钟 SVG 图标 + 红色'进入日历'按钮营造了'很急的提醒'的视觉氛围；③'进入日历'按钮正确绑定了 clickToIntent→ViewCalendarEvent 事件，args 中的 entityId 由 dataModel 路径 {{ ${/data/calendar/items/0/entityId} }} 解析。尺寸为 2x2（140x140）、catalogId、version、updateDataModel.path=\"/\" 均满足协议硬约束。无明显扣分项。",
+    "aesthetic": "截图配色克制专业：浅灰底（#f1f3f5）+ 白色主面板 + 红色强调（#e84026）形成清晰层级；'立即吃药' 用 20pt 超粗体作为最强字重，'吃药喝水'标题与'进入日历'按钮同为 14pt 次级字重，时间副文 12pt 半透明灰，字重阶梯合理；红色徽章与红色按钮形成上下呼应，紧急感强。留白节奏舒适，对齐统一，弧度协调（root 18、panel 14、badge 9、button 16）。唯一可挑剔是标题'吃药喝水'字号偏小，与闹钟图标距离略近，但整体仍属良好观感。",
+    "layout": "截图无任何堆叠/截断/溢出：① 卡片根容器 Column 三段（header_row 24 + primary_panel 48 + action_button 32）加 padding 12 上下与 itemMargin 6×2 恰好填满 140 高度，无溢出风险；② header_row 横向三件（icon 22 + title 52 + badge 34 + 间距 4×2 = 122）落在 116 内容区宽度内，未见挤压；③ 主面板内的'立即吃药'（20pt×4 字 ≈ 80）落在 100 宽内、副文'08:00 喝水'未截断；④ 按钮底边到卡片底边的 padding 为 12vp，处于 2x2 规定的 8-12vp 区间；⑤ 按钮热区 116×32 远大于 24vp 下限。无元素被裁切、覆盖或溢出。"
+  },
+  "issues": [
+    "标题'吃药喝水'字号 12pt 偏小，作为卡片服务对象标题在视觉权重上略弱于次级 CTA 按钮（14pt），可考虑微调",
+    "header_row 中闹钟图标、标题、徽章三者之间间距 4vp 略紧，可视密度有提升空间",
+    "主面板内 '08:00 喝水' 文案直接将 dtStart 字段拼接'喝水'，弱化了喝水作为独立提醒事件的语义，可考虑将喝水也作为主指标（与'立即吃药'并列或交替显示）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"alarm_icon\",\"title_text\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alarm_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/alarm_fill_1.svg\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":50,\"height\":20,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/status/label} }}\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":10}},{\"id\":\"primary_panel\",\"component\":\"Column\",\"children\":[\"primary_value\",\"support_time\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":48,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":96,\"height\":26,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"support_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }} · 服药后请多喝水\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffe84026\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"吃药喝水\"},\"status\":{\"label\":\"紧急\"},\"action\":{\"label\":\"进入日历\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"medicine-water-001\",\"title\":\"立即吃药\",\"dtStart\":\"08:00\"}]}}}}}"
+  ]
+}

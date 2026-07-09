@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-anti-addiction-004",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "指令要求的5项内容在DSL层面均已配置：两个可勾选项、一行'今日已用200分钟'标题、'进设置'按钮（onClick call/args与eventCandidates完全一致）、天气信息、'快到了'提醒（warningText+Progress）。协议层面catalogId、version、width/height、borderRadius、clip、updateDataModel.path/格式均合规。但截图中两个勾选项的标签文字被截断为'...'（用户无法分辨'专注提醒'和'睡前停用'），同时天气区域丢失了'26°C'温度值（只剩'多云'和'当前位置'），核心信息可读性严重受损，扣分。",
+    "aesthetic": "截图中浅灰渐变背景、红橙进度条、灰色'进设置'胶囊按钮、绿色已选勾选框等配色基本和谐；标题黑、警告红、辅文灰的字号字重层级尚可。但两个'...'省略号明显是文字被截断的视觉残骸，非常不美观；计时图标仅12×12且几乎只剩一个小白点，识别度低；整体留白略不均（头部偏紧，底部留白较大），视觉品质受截断问题拖累明显。",
+    "layout": "截图中可见的关键排版问题：(1) 两个Checkbox的label文字'专注提醒'和'睡前停用'均被截断为'...'，是严重的文字截断/受保护文本不可见问题；(2) 天气区域'26°C'温度值整体缺失，只显示'多云'和'当前位置'，信息被裁掉；(3) 计时图标12×12过小，未达24vp最小可点击/可识别尺寸；(4) 整体无元素溢出卡片边界或堆叠重叠，主要问题集中在文本截断与字段缺失，需重扣分。"
+  },
+  "issues": [
+    "截图中第一个Checkbox的label'专注提醒'被截断显示为'...'",
+    "截图中第二个Checkbox的label'睡前停用'被截断显示为'...'",
+    "截图中天气区域缺失温度'26°C'，只显示'多云'和'当前位置'",
+    "header_row的timing_icon尺寸仅12×12，过小不易识别",
+    "Checklist标签宽度(56-16-4=36px)不足以容纳4个中文字符(fontSize 12下约48px)，是label被截断的根因",
+    "weather_text宽度48px放不下'多云 26°C'导致温度被裁掉"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"progress_bar\",\"check_row\",\"bottom_row\"],\"itemMargin\":5,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffe5e5ea\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"timing_icon\",\"usage_col\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"timing_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_timing.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"usage_col\",\"component\":\"Column\",\"children\":[\"usage_text\",\"warning_text\"],\"itemMargin\":1,\"styles\":{\"width\":98,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"usage_text\",\"component\":\"Text\",\"content\":\"{{ ${/appUsage/todayText} }}\",\"styles\":{\"width\":98,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/appUsage/warningText} }}\",\"styles\":{\"width\":98,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/appUsage/usedMinutes} }}\",\"total\":\"{{ ${/appUsage/limitMinutes} }}\",\"styles\":{\"width\":120,\"height\":6,\"type\":\"linear\",\"color\":\"#ffe84026\",\"backgroundColor\":\"#19000000\",\"borderRadius\":3}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"focus_group\",\"sleep_group\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"focus_group\",\"component\":\"Row\",\"children\":[\"focus_box\",\"focus_label\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"focus_box\",\"component\":\"Checkbox\",\"value\":\"focus\",\"group\":\"guard\",\"select\":\"{{ ${/checklist/focusDone} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":1.5}}},{\"id\":\"focus_label\",\"component\":\"Text\",\"content\":\"{{ ${/checklist/focusLabel} }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"sleep_group\",\"component\":\"Row\",\"children\":[\"sleep_box\",\"sleep_label\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"sleep_box\",\"component\":\"Checkbox\",\"value\":\"sleep\",\"group\":\"guard\",\"select\":\"{{ ${/checklist/sleepDone} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":1.5}}},{\"id\":\"sleep_label\",\"component\":\"Text\",\"content\":\"{{ ${/checklist/sleepLabel} }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_col\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"temp_text\",\"cond_text\"],\"itemMargin\":1,\"styles\":{\"width\":60,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"cond_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + '·' + ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":56,\"height\":32,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"appUsage\":{\"todayText\":\"今日已用200分钟\",\"usedMinutes\":200,\"limitMinutes\":240,\"warningText\":\"还剩40分钟\"},\"checklist\":{\"focusDone\":true,\"sleepDone\":false,\"focusLabel\":\"专注提醒\",\"sleepLabel\":\"睡前停用\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

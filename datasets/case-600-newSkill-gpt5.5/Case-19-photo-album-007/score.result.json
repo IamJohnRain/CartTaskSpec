@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-19-photo-album-007",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求'以图为主的卡'——左侧媒体面板 128x116 占比合理但未明显压过右侧信息面板，图主感一般。'数字会动'已用 {{ ${/data/calendar/eventCountText} }} 绑定到主数值 '2'，满足。'点一下能导航'已通过 '查看详情' 按钮的 onClick 落地 clickToIntent + ViewCalendarEvent + entityId='cal_evt_001'，与 eventCandidates 一致。'日历上的事能看到'——title '相册整理提醒'、时间 '09:15-10:00'、地点 '云相册' 三个字段都在截图中清晰呈现。'红色提醒我注意'——alert 文字 '重要提醒' 使用了 #ffed6f21（橙/警示色）而非纯红，色彩偏离用户原意。",
+    "aesthetic": "截图中配色干净：白底卡片 + 浅灰媒体面板 + 黑色日历图标与 '2' 主数值 + 橙色提醒文字 + 蓝色 CTA 按钮，层次清晰。字号阶梯合理（32 / 16 / 12 / 10），仅 '2' 字重最强。唯一不足：用户明确要求'红色'，但实际渲染为橙色 #ffed6f21，色相偏黄/警示而非红色，降低了语义传达力。",
+    "layout": "截图整体布局干净：左媒体面板与右信息面板左右分栏，无堆叠重叠；'相册整理提醒' 标题一行完整显示未被截断；'09:15-10:00 云相册' 元信息行未被裁切；'● 重要提醒' 警示行完整；'查看详情' 蓝色按钮完整在卡片内，热区充足。底部 CTA 距卡底约 12vp，锚定合规。内容区四周留白均衡，无溢出。唯一可议之处是左侧媒体面板与右侧信息面板宽度接近（128 vs 140），'以图为主'的视觉权重略有削弱。"
+  },
+  "issues": [
+    "用户要求'红色提醒'，但 alert 文字和圆点颜色为 #ffed6f21（警示橙），与'红'语义不符",
+    "卡片定位为'以图为主'，但左媒体面板 (128) 与右信息面板 (140) 宽度几乎相等，图主感不足",
+    "信息面板右侧 padding 看似 0（styles 中未设 padding），标题 '相册整理提醒' 紧贴面板右沿，可读性可优化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"media_panel\",\"info_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"media_panel\",\"component\":\"Column\",\"children\":[\"calendar_image\",\"primary_value\",\"primary_caption\"],\"itemMargin\":6,\"styles\":{\"width\":150,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#fffdecee\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"calendar_image\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":52,\"height\":52,\"objectFit\":\"contain\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/eventCountText} }}\",\"styles\":{\"width\":110,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"今日事件\",\"styles\":{\"width\":110,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"event_title\",\"event_meta\",\"alert_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":118,\"height\":116,\"padding\":{\"top\":2,\"right\":4,\"bottom\":2,\"left\":0},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":118,\"height\":34,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textAlign\":\"start\"}},{\"id\":\"event_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} + ' ' + ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":118,\"height\":16,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_dot\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":118,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_dot\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":6,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#ffd4151c\",\"fontSize\":10,\"fontColor\":\"#ffd4151c\",\"maxLines\":1}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/alertText} }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffd4151c\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":104,\"height\":30,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"eventCountText\":\"2\",\"alertText\":\"重要提醒\",\"items\":[{\"entityId\":\"cal_evt_001\",\"title\":\"相册整理提醒\",\"dtStart\":\"09:15\",\"dtEnd\":\"10:00\",\"eventLocation\":\"云相册\"}]}},\"ui\":{\"actionLabel\":\"查看详情\"},\"state\":{\"loading\":false,\"empty\":false}}}}"
+  ]
+}

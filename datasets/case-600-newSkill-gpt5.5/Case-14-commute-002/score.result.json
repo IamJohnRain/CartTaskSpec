@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-14-commute-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户要求'卡片+点一下跳到应用+红色危险提示'，截图中：1) 卡片为 2x2 形态正确呈现；2) onClick 的 clickToDeeplink 事件已在 action_pill 上配置，call/args 原样来自 eventCandidates；3) 红色危险提示落实到位——主标题'危险'为醒目红橙大字、context_card 左侧带红色 accent 竖线、底部按钮使用橙红渐变；4) assetCandidates 中的闹钟图标已用作 primary_icon；5) 协议硬约束 size/root/catalogId/version/updateDataModel 均合规。轻微扣分在于：用户说的是'红色那种危险提示'，但 primary_icon 使用的图标是黄色闹钟，与红色危险主题存在视觉不协调。",
+    "aesthetic": "截图中整体配色以浅灰底（#fff1f3f5）+红橙强调色为主，层次清晰：'危险' 32px/800 字重是全卡最强字重且唯一，符合字号阶梯规范。context_card 白色卡片+1px 浅灰描边+左侧 2px 红色 accent 竖线，结构有节奏。action_pill 橙红渐变与主色一致。留白舒适、对齐工整。扣分点：钟形图标本身为黄色（闹钟图标的固有色），与红色危险调性产生撞色，视觉上有些违和。",
+    "layout": "截图显示所有内容均完整呈现，无任何堆叠或裁切：1) hero_row 中图标与'危险/通勤提醒'并列排放，'危险'完整显示未被截断；2) context_card 中'红色预警'和'点按跳应用'两行均完整显示，左侧红色 accent 竖线未被遮挡；3) action_pill 底部按钮'打开应用'完整居中显示，未被卡片底边裁切；4) 底部按钮底边距卡片底边约 12vp，符合 2x2 的 8-12vp 区间；5) 整体 140×140 空间被 12+42+6+36+6+26+12=140 恰好填满，无溢出。布局干净工整。"
+  },
+  "issues": [
+    "primary_icon 钟形图标为黄色，与卡片整体的红色危险调性存在色彩冲突，视觉上不够协调",
+    "context_card 的右边线（borderColor #33000000 1px）几乎不可见，描边感偏弱，可考虑去掉或加重以匹配左边红色 accent 的视觉权重"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"context_card\",\"action_pill\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"visual_mark\",\"primary_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"visual_mark\",\"component\":\"Stack\",\"children\":[\"primary_icon\",\"danger_dot\"],\"styles\":{\"width\":42,\"height\":42,\"borderRadius\":14,\"backgroundColor\":\"#ffffe8e8\",\"alignContent\":\"center\",\"borderWidth\":1,\"borderColor\":\"#22ed6f21\"}},{\"id\":\"primary_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":26,\"height\":26,\"objectFit\":\"contain\"}},{\"id\":\"danger_dot\",\"component\":\"Stack\",\"children\":[\"danger_dot_inner\"],\"styles\":{\"width\":10,\"height\":10,\"borderRadius\":5,\"position\":\"topEnd\",\"offsetX\":-2,\"offsetY\":2,\"backgroundColor\":\"#ffe53935\",\"borderWidth\":1,\"borderColor\":\"#ffffffff\"}},{\"id\":\"danger_dot_inner\",\"component\":\"Text\",\"content\":\"!\",\"styles\":{\"width\":10,\"height\":10,\"fontSize\":9,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"lineHeight\":10}},{\"id\":\"primary_info\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":0,\"styles\":{\"width\":66,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/primary/value} }}\",\"styles\":{\"width\":66,\"height\":32,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/primary/caption} }}\",\"styles\":{\"width\":66,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"context_card\",\"component\":\"Row\",\"children\":[\"accent_line\",\"context_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"borderWidth\":1,\"borderColor\":\"#33e53935\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"accent_line\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":24,\"color\":\"#ffe53935\"}},{\"id\":\"context_info\",\"component\":\"Column\",\"children\":[\"context_title\",\"context_meta\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"context_title\",\"component\":\"Text\",\"content\":\"{{ ${/support/title} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"context_meta\",\"component\":\"Text\",\"content\":\"{{ ${/support/meta} }}\",\"styles\":{\"width\":88,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_pill\",\"component\":\"Row\",\"children\":[\"action_label\"],\"itemMargin\":0,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffe53935\",0],[\"#ffb71c1c\",1]]}}},{\"id\":\"action_label\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"primary\":{\"value\":\"危险\",\"caption\":\"通勤提醒\"},\"support\":{\"title\":\"红色预警\",\"meta\":\"点按跳应用\"},\"action\":{\"label\":\"打开应用\"}}}}"
+  ]
+}

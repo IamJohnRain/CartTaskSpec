@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-12-finance-019",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "用户主要诉求基本落实：浅色底、左右分区、左边'存款进度 78%'和'还信用卡 完成3/5'两组用分割线分开、右边'已达成'绿色正向状态、勿扰开关、日历同步按鈧均已在截图中可见。事件 clickToDeeplink（勿扰）和 clickToIntent（日历同步）的 call 与 args 也与 TaskSpec.eventCandidates 一致。轻微扣分：Checkbox 标签'勿扰'被压缩成'...'，未能以受保护文字完整呈现给用户，属于指令落实不完整。",
+    "aesthetic": "浅色底+白色卡片分层+绿色正向状态配色尚可，前景文字对比清晰。但右侧'勿扰'标签处出现三个点'...'，视觉上像加载占位/错误符号，明显是控件文字被裁切后的余影，严重影响观感；日历图标在狭窄容器中也偏小，整体右侧动作区显得局促、有点土气。",
+    "layout": "截图中最明显的问题是右侧 Checkbox 的 label '勿扰' 被压缩成'...'：复选框占用了 44x24 大部分宽度，标签没有空间渲染，受保护文字被省略。右侧动作区 width 仅 44，留给'已达成'、勿扰按钮、分割线、日历图标、'同步'按钮共 5 个子项纵向堆叠，子项间 4vp 间隙使整体偏紧。日历图标仅 16x16，视觉过小。左列与中间竖向分割线显示正常，左列内容（存款进度 78% + 进度条 + 分割线 + 还信用卡 完成3/5）布局完整可读。底部'同步'按钮热区与卡片底边距离约 8-10vp，符合规范。"
+  },
+  "issues": [
+    "右侧 Checkbox 标签'勿扰'被截断为'...'，未完整渲染",
+    "右侧动作区 width=44 偏窄，5 个子项纵向堆叠显得拥挤",
+    "日历图标 width=height=16 偏小，视觉权重不足",
+    "右侧 column backgroundColor #0c000000 与根背景 #fff1f3f5 区分度低，右侧面板几乎看不出独立分块",
+    "分割线 vertical=true 在 DSL 中对竖向 Divider 是否生效需复核（截图里竖线存在但很细）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_info\",\"split_divider\",\"right_actions\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"}},{\"id\":\"left_info\",\"component\":\"Column\",\"children\":[\"deposit_group\",\"info_divider\",\"credit_group\"],\"itemMargin\":4,\"styles\":{\"width\":66,\"height\":120,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"deposit_group\",\"component\":\"Column\",\"children\":[\"deposit_label\",\"deposit_value\",\"deposit_progress\"],\"itemMargin\":3,\"styles\":{\"width\":58,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"deposit_label\",\"component\":\"Text\",\"content\":\"存款进度\",\"styles\":{\"width\":58,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"deposit_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/deposit/progressText} }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"deposit_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/finance/deposit/progressValue} }}\",\"total\":\"{{ ${/finance/deposit/progressTotal} }}\",\"styles\":{\"width\":58,\"height\":6,\"type\":\"linear\",\"color\":\"#ff0a59f7\"}},{\"id\":\"info_divider\",\"component\":\"Divider\",\"styles\":{\"width\":58,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"credit_group\",\"component\":\"Column\",\"children\":[\"credit_label\",\"credit_value\"],\"itemMargin\":3,\"styles\":{\"width\":58,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"credit_label\",\"component\":\"Text\",\"content\":\"还信用卡\",\"styles\":{\"width\":58,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"credit_value\",\"component\":\"Text\",\"content\":\"{{ '完成' + ${/finance/creditCard/completedText} }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"split_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":112,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"right_actions\",\"component\":\"Column\",\"children\":[\"achieved_status\",\"dnd_button\",\"action_divider\",\"calendar_icon\",\"sync_button\"],\"itemMargin\":4,\"styles\":{\"width\":50,\"height\":120,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"achieved_status\",\"component\":\"Text\",\"content\":\"{{ ${/finance/status/achievementText} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"dnd_button\",\"component\":\"Button\",\"label\":\"{{ ${/settings/dndEnabled} ? '勿扰·开' : '勿扰·关' }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":50,\"height\":22,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#1a64bb5c\",\"borderRadius\":11}},{\"id\":\"action_divider\",\"component\":\"Divider\",\"styles\":{\"width\":30,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"sync_button\",\"component\":\"Button\",\"label\":\"同步\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":50,\"height\":22,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":11}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"finance\":{\"deposit\":{\"progressText\":\"78%\",\"progressValue\":78,\"progressTotal\":100},\"creditCard\":{\"completedText\":\"3/5\"},\"status\":{\"achievementText\":\"已达成\"}},\"settings\":{\"dndEnabled\":true},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-demo-001\",\"title\":\"账单同步\",\"dtStart\":\"09:00\",\"dtEnd\":\"09:15\"}]}}}}}"
+  ]
+}

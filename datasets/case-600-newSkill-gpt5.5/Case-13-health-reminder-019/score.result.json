@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-019",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.6,
+  "reasons": {
+    "instruction": "用户要求的'图叠字'效果已在截图中实现：左侧灰色圆角容器中水滴图标与'喝水'文字叠加呈现。右侧'吃药提醒'状态与红色倒计时文本正确显示。底下一排横排的'早餐/午餐/晚餐/睡前'提醒项也在截图中可见。点击空白跳转闹钟的 onClick 事件绑定在 root 上，call/args 原样来自 eventCandidates。数据模型字段全部正确绑定。未使用渐变，红色风险色已应用到倒计时。主要扣分：1) 截图中左侧'大图'实际尺寸仅 48x64，明显偏小，未达到'大图'的视觉诉求；2) 素材仅提供水滴 SVG 而非'玻璃杯'，与用户'玻璃杯大图'的语义描述有偏差；3) '图标用字符'要求未充分落实——主图标是 SVG 资源，4 个提醒项也无任何字符图标。",
+    "aesthetic": "配色简洁克制：白底+浅灰容器+深色文字+红色倒计时，层级尚可分辨。红色风险色突出，状态标签使用半透明黑灰色。但整体观感偏紧凑：左侧'喝水'文字与水滴图标在 Stack 中相互覆盖，'喝'字压在图标上略显拥挤；右侧倒计时文字被强行换行成 3 行后视觉零碎；底部 4 个提醒项宽度均匀分布但缺乏视觉锚点。整体可用但不够精致。",
+    "layout": "截图中可观察到的最严重排版问题是右侧倒计时文字被破坏性换行：'距离晚八点吃药还有 32 分钟' 被 wordBreak:breakAll 拆成 3 行显示为'距离晚八点 / 吃药还有 3 / 2 分钟'，数字'32'被强行拆开（'3'和'2'分别落在两行），导致受保护的主信息文本严重受损。左侧'大图'区域（48x64）相对 140x140 卡片明显偏小，未能撑起'大图'主视觉。'图叠字'中'喝水'文字与水滴图标在视觉上存在明显重叠/遮挡。底部提醒行 4 项均匀分布，无明显截断。卡片整体在渲染画布中仅占小部分区域，下方有大片留白。"
+  },
+  "issues": [
+    "右侧倒计时文本'距离晚八点吃药还有 32 分钟'被 wordBreak:breakAll 拆成 3 行，数字'32'被拆成'3'+'2'分落两行，受保护主信息严重受损",
+    "左侧'大图'实际尺寸仅 48x64，未达到用户'大图'的视觉要求",
+    "水滴 SVG 图标与用户'玻璃杯大图'的语义描述不匹配",
+    "'图标用字符'指令落实不足：主图标是 SVG 资源而非字符，4 个提醒项也无字符图标",
+    "'喝水'文字与水滴图标在 Stack 中存在视觉重叠，可读性受影响"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"reminder_row\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"visual_stack\",\"info_col\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":76,\"alignItems\":\"center\"}},{\"id\":\"visual_stack\",\"component\":\"Stack\",\"children\":[\"water_image\",\"title_text\"],\"styles\":{\"width\":56,\"height\":76,\"borderRadius\":14,\"backgroundColor\":\"#0c000000\",\"clip\":true,\"alignContent\":\"center\"}},{\"id\":\"water_image\",\"component\":\"Image\",\"src\":\"resources/base/media/drop_1.svg\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\",\"marginTop\":2}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/title} }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"marginTop\":56,\"backgroundColor\":\"#33000000\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"status_text\",\"countdown_text\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":76,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/status} }}\",\"styles\":{\"width\":58,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/countdownText} }}\",\"styles\":{\"width\":58,\"height\":56,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":4,\"wordBreak\":\"breakWord\"}},{\"id\":\"reminder_row\",\"component\":\"Row\",\"children\":[\"item_breakfast\",\"item_lunch\",\"item_dinner\",\"item_bedtime\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_breakfast\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/items/breakfast} }}\",\"styles\":{\"width\":26,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"item_lunch\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/items/lunch} }}\",\"styles\":{\"width\":26,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"item_dinner\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/items/dinner} }}\",\"styles\":{\"width\":26,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"item_bedtime\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/items/bedtime} }}\",\"styles\":{\"width\":26,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"reminder\":{\"title\":\"喝水\",\"status\":\"吃药提醒\",\"countdownText\":\"距离晚八点吃药还有 32 分钟\",\"items\":{\"breakfast\":\"早餐\",\"lunch\":\"午餐\",\"dinner\":\"晚餐\",\"bedtime\":\"睡前\"}}}}}"
+  ]
+}

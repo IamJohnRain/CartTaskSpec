@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-06-memory-clean-003",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "截图中可见卡片包含标题'手机内存'、状态文字'快满了'、用量信息'已用 92%，剩余 8GB'以及橙色'去清理'按钮，onClick 已正确绑定到 clickToDeeplink 的存储设置深链，事件与素材均按契约落实。但用户明确要求'红字'提醒，当前 statusText 使用的是 #ffed6f21 橙色，并非真正的红色，语义落实存在偏差，扣分。",
+    "aesthetic": "整体配色简洁、留白合理、字号层级清晰（14/20/12），主标题'快满了'作为最强字重突出。但截图左上角的 memory_icon 几乎呈幽灵状、几乎不可见（图标资产本身偏白，叠加在浅灰渐变上对比度极低），是一处明显的视觉瑕疵。状态文字和按钮同为橙色，与用户期望的'红字'告警语义不完全吻合。",
+    "layout": "截图显示 2x2 卡片内元素纵向排列整齐：header_row 顶部对齐、primary_group 居中、action_button 底部锚定；'快满了'、'已用 92%，剩余 8GB'、'去清理'三段文字均完整无截断；按钮底边到卡片底边约 12vp，符合 8-12vp 要求；未观察到堆叠/溢出/裁切问题，布局干净。"
+  },
+  "issues": [
+    "状态文字'快满了'使用 #ffed6f21 橙色，与用户明确要求的'红字'不符，应改为更纯正的红色（如 #ffe53935）",
+    "header_row 内的 memory_icon 在浅色渐变背景上几乎不可见，呈幽灵状，视觉上是一个明显的缺漏",
+    "按钮背景同为橙色，与红色告警语义不统一，可同步改为红色以强化警告氛围并提升色彩一致性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_group\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"memory_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"memory_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\",\"backgroundColor\":\"#fffde7e7\",\"borderRadius\":4}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/memory/title} }}\",\"styles\":{\"width\":90,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_group\",\"component\":\"Column\",\"children\":[\"primary_status\",\"usage_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_status\",\"component\":\"Text\",\"content\":\"{{ ${/memory/statusText} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"usage_text\",\"component\":\"Text\",\"content\":\"{{ ${/memory/usedText} + '，' + ${/memory/freeText} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffe53935\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"memory\":{\"title\":\"手机内存\",\"statusText\":\"快满了\",\"usedText\":\"已用 92%\",\"freeText\":\"剩余 8GB\"},\"action\":{\"label\":\"去清理\"}}}}"
+  ]
+}

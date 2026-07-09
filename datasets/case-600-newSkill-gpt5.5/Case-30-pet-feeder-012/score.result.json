@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-012",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "截图中可见：标题'宠物健康'清晰呈现；警示文字'△ 今日遛弯未完成'使用文字符号△完成提醒；三项'喂食/饮水/遛弯'横向排列，前两项checkbox为绿色已选状态、'遛弯'为灰色未选状态；底部绿色按钮'去健康'承载deeplink跳转。size=2x2、catalogId与version等硬约束均合规；onClick.call/args原样来自eventCandidates。轻微扣分在于checkbox与文字之间留白不足使视觉略显拥挤，但所有用户明确要求的信息均真实呈现。",
+    "aesthetic": "截图中可见深紫到暗紫的夜晚渐变氛围得当，绿色CTA按钮在深色背景上对比鲜明、可读性好；警示文字使用红橙色与渐变底色搭配自然。标题与正文存在明显字重与字号层级。扣分点：选项行中checkbox与文字间距过近，绿色checkbox几乎贴着中文文字首字，整体显得局促不够精致。",
+    "layout": "截图中未出现文字截断或组件溢出卡片边界的情况：标题、警示文字、按钮文字均完整显示。但三选项行存在视觉挤压：每个item内checkbox(12x12)与label(22宽)仅隔2px，截图里'喂食''饮水''遛弯'的汉字首字几乎紧贴checkbox右沿，缺乏呼吸感；items_row的itemMargin=4也偏紧。建议增加checkbox-label间距与item间留白以提升清爽度。"
+  },
+  "issues": [
+    "选项行checkbox与文字标签之间间距仅2px，截图中'喂食''饮水''遛弯'汉字首字几乎紧贴checkbox边缘，视觉拥挤",
+    "三个item之间的itemMargin=4偏小，横向排布略显局促",
+    "checkbox尺寸12x12相对于字号10的中文标签略偏大，导致视觉重心偏向checkbox"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"warning_text\",\"items_row\",\"action_button\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#634794\",1]]},\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/petHealth/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/petHealth/warningText} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"items_row\",\"component\":\"Row\",\"children\":[\"item_1_row\",\"item_2_row\",\"item_3_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"item_1_row\",\"component\":\"Row\",\"children\":[\"item_1_check\",\"item_1_label\"],\"itemMargin\":5,\"styles\":{\"width\":34,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_1_check\",\"component\":\"Checkbox\",\"value\":\"feed\",\"group\":\"pet_health\",\"select\":\"{{ ${/petHealth/items/0/checked} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":2}}},{\"id\":\"item_1_label\",\"component\":\"Text\",\"content\":\"{{ ${/petHealth/items/0/label} }}\",\"styles\":{\"width\":19,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"item_2_row\",\"component\":\"Row\",\"children\":[\"item_2_check\",\"item_2_label\"],\"itemMargin\":5,\"styles\":{\"width\":34,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_2_check\",\"component\":\"Checkbox\",\"value\":\"water\",\"group\":\"pet_health\",\"select\":\"{{ ${/petHealth/items/1/checked} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":2}}},{\"id\":\"item_2_label\",\"component\":\"Text\",\"content\":\"{{ ${/petHealth/items/1/label} }}\",\"styles\":{\"width\":19,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"item_3_row\",\"component\":\"Row\",\"children\":[\"item_3_check\",\"item_3_label\"],\"itemMargin\":5,\"styles\":{\"width\":34,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_3_check\",\"component\":\"Checkbox\",\"value\":\"walk\",\"group\":\"pet_health\",\"select\":\"{{ ${/petHealth/items/2/checked} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":2}}},{\"id\":\"item_3_label\",\"component\":\"Text\",\"content\":\"{{ ${/petHealth/items/2/label} }}\",\"styles\":{\"width\":19,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/petHealth/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"petHealth\":{\"title\":\"宠物健康\",\"warningText\":\"△ 今日遛弯未完成\",\"actionLabel\":\"去健康\",\"items\":[{\"label\":\"喂食\",\"checked\":true},{\"label\":\"饮水\",\"checked\":true},{\"label\":\"遛弯\",\"checked\":false}]}}}}"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-27-utility-bill-003",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户三条诉求基本落实：1) 点击进入缴费app → 蓝色「去缴费」Button，onClick 原样引用 clickToDeeplink/utilitybill://payment/home，事件完全合规；2) 日历看缴费日 → 截图中央面板内含 calendar_fill.svg 图标 + 大号「7月12日」文本，表达清晰；3) 红色提醒快欠费 → 截图右上出现「快欠费」胶囊标签，但实际渲染颜色为橙色（#ffed6f21），与用户明确要求的「红色」不符，扣 0.5；尺寸 2x2、根 shell、catalogId、version、updateDataModel.path/value 均合规；dataModel 字段被正确绑定并渲染。",
+    "aesthetic": "截图中卡片使用白到暖橙的 RightBottom 渐变背景，与「水电缴费」主题贴合，温度感好；标题「水电缴费」加粗深色、日期「7月12日」加大加粗形成清晰视觉层级；蓝色 CTA「去缴费」与暖色背景形成强对比，点击暗示明确；文字在渐变上均清晰可读。扣分点：右上「快欠费」标签本应为警示色却偏暖橙，与卡片右下渐变橙色融为一体，识别度偏弱；除此之外整体克制专业。",
+    "layout": "截图无堆叠/重叠/裁切：header_row 高度 22，children(icon16 + 4 + title58 + 4 + badge34=116)刚好等于 116 容器宽，未溢出；due_panel 宽 116 高 42 完整容纳「缴费日」+ 日期行；date_row 宽 104 内容(icon18 + 4 + text82=104)恰好填满，「7月12日」在 fontSize 20 下完整呈现无截断；Divider 与 Button(116x32) 在底端整齐对齐，底部按钮外框到卡片底边约 12vp，符合 2x2 ≤16vp 要求；卡片圆角 18 视觉柔和。受保护文本（标题、状态、CTA、日期）均完整可见，热区充足。"
+  },
+  "issues": [
+    "「快欠费」提醒徽章颜色为橙色 #ffed6f21，用户明确要求「红色提醒」，应改为警示红",
+    "橙色徽章在渐变背景右下橙色区域对比度偏弱，识别度不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"due_panel\",\"soft_divider\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#f9bc64\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"bill_icon\",\"title_text\",\"alert_badge\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"bill_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bolt_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Row\",\"children\":[\"alert_text\"],\"styles\":{\"width\":34,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#ffe5383c\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"due_panel\",\"component\":\"Column\",\"children\":[\"due_label\",\"date_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":42,\"borderRadius\":14,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"due_label\",\"component\":\"Text\",\"content\":\"缴费日\",\"styles\":{\"width\":104,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"date_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"due_date_text\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"due_date_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":82,\"height\":22,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"soft_divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去缴费\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"utilitybill://payment/home\"}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"utility-bill-due-001\",\"title\":\"水电缴费\",\"dtStart\":\"7月12日\",\"description\":\"快欠费\"}]}}}}}"
+  ]
+}

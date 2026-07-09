@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-015",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户的所有明确诉求均在截图中得到落实：顶部正中显示\"目标已达成\"、中间圆环显示86%完成度（含绿色ring和百分比文字）、下方说明\"今日完成度\"、右侧面板纵向排列步数12680步、卡路里520千卡、时长48分钟三个数据；整卡使用橙黄渐变作为氛围背景（ed6f21→f9a01e），纯色块无图片；root onClick配置了点击跳转到运动健康App的deeplink（call与args与eventCandidates完全一致）；dataModel数据使用静态示例（86/100、12680步等），符合TaskSpec。尺寸2x4、root shell参数、catalogId、version、updateDataModel.path与value均符合硬约束。",
+    "aesthetic": "截图整体观感良好：橙→黄的渐变过渡自然，运动风格氛围突出；白色主文字在橙底上清晰可读；绿色环(#64bb5c)与橙色背景形成高对比，视觉焦点明确；右侧半透明白底面板(#19ffffff+白边)营造出层次感。字号层级清晰（16标题、20主百分比、14数值、12标签、10说明），字重分布合理（标题/主数值700，标签500）。略可提升之处：右侧面板的边框/底色相对偏淡，在亮色区域层次稍弱；圆环颜色与背景对比强烈但缺少次要装饰元素，整体略显平直。",
+    "layout": "截图中各元素均正常呈现，无堆叠重叠、无文字截断、无溢出卡片边界。标题\"目标已达成\"完整居中显示在顶部；圆环与86%文字在左侧区域垂直居中，下方\"今日完成度\"完整可见；右侧面板内三行数据\"步数/12680步\"、\"卡路里/520千卡\"、\"时长/48分钟\"均完整呈现，左标签与右数值对齐整齐；卡片四周边距对称，底部无元素贴边或截断。唯一极轻微瑕疵：右侧面板高度86加上padding使得底部距卡片底边约18-20vp，略显宽松但未越界。"
+  },
+  "issues": [
+    "右侧metrics_panel背景色#19ffffff相对偏淡，在亮色渐变上层次感稍弱",
+    "圆环progress_ring宽度72，Stack容器132/72，水平留白偏大可考虑放大至80",
+    "面板borderColor#33ffffff在亮橙底上几乎不可见，可加强以提升分割感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"content_row\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/statusText} }}\",\"styles\":{\"width\":276,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"progress_area\",\"metrics_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":90,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"progress_area\",\"component\":\"Column\",\"children\":[\"progress_stack\",\"progress_caption\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":90,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"progress_stack\",\"component\":\"Stack\",\"children\":[\"progress_ring\",\"progress_percent\"],\"styles\":{\"width\":132,\"height\":74,\"alignContent\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/fitness/progress/value} }}\",\"total\":\"{{ ${/fitness/progress/total} }}\",\"styles\":{\"width\":74,\"height\":74,\"type\":\"ring\",\"color\":\"#64bb5c\"}},{\"id\":\"progress_percent\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/progress/percentText} }}\",\"styles\":{\"width\":74,\"height\":26,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"progress_caption\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/progress/caption} }}\",\"styles\":{\"width\":132,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metrics_panel\",\"component\":\"Column\",\"children\":[\"steps_row\",\"calories_row\",\"duration_row\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":90,\"padding\":10,\"borderRadius\":14,\"backgroundColor\":\"#26ffffff\",\"borderWidth\":1,\"borderColor\":\"#55ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"steps_row\",\"component\":\"Row\",\"children\":[\"steps_label\",\"steps_value\"],\"itemMargin\":4,\"styles\":{\"width\":110,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"steps_label\",\"component\":\"Text\",\"content\":\"步数\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"steps_value\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/metrics/steps/valueText} }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"calories_row\",\"component\":\"Row\",\"children\":[\"calories_label\",\"calories_value\"],\"itemMargin\":4,\"styles\":{\"width\":110,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"calories_label\",\"component\":\"Text\",\"content\":\"卡路里\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"calories_value\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/metrics/calories/valueText} }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"duration_row\",\"component\":\"Row\",\"children\":[\"duration_label\",\"duration_value\"],\"itemMargin\":4,\"styles\":{\"width\":110,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"duration_label\",\"component\":\"Text\",\"content\":\"时长\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"duration_value\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/metrics/duration/valueText} }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"fitness\":{\"statusText\":\"目标已达成\",\"progress\":{\"value\":86,\"total\":100,\"percentText\":\"86%\",\"caption\":\"今日完成度\"},\"metrics\":{\"steps\":{\"valueText\":\"12680步\"},\"calories\":{\"valueText\":\"520千卡\"},\"duration\":{\"valueText\":\"48分钟\"}}}}}}"
+  ]
+}

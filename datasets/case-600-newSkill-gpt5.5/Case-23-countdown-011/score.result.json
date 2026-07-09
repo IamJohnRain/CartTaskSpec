@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-23-countdown-011",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图中清晰呈现'在一起788天'标题、中心环形进度中显示'78%'、底部'完成进度'胶囊标签；深蓝到紫的渐变背景(从左上深藏青到右中紫罗兰)与用户描述的'深蓝到紫的夜晚倒计时渐变'吻合；onClick 事件使用 clickToDeeplink 并原样复用 weather 的 uri；dataModel.path 为 '/' 且 value 等于 TaskSpec.dataModel.value；catalogId/version 均为协议值。整体指令落实完整，无关键缺失。",
+    "aesthetic": "从截图看，深蓝到紫的对角渐变层次自然，白色标题与 78% 主数值在底色上对比清晰可读，留白舒适、对齐统一。但环形进度色采用亮绿色 (#64bb5c)，与夜晚冷色调(深蓝/紫)的整体氛围略有违和，绿色偏'交通灯'感，不够契合'夜晚倒计时完成状态'的情绪；底部'完成进度'胶囊的字体颜色 #99ffffff 透明度偏低，在渐变深色处稍显暗淡。",
+    "layout": "截图显示各元素均位于卡片内，未见文字截断或溢出：标题'在一起788天'完整显示在最上方，环形进度(68x68)居中放置且 78% 文字被绿色圆环环绕清晰呈现，底部'完成进度'胶囊居中且未触及卡片下边界。三段之间的纵向间距匀称(各 4vp 间隔)，Stack 层叠未遮盖主指标或 CTA，Button/可点击区域覆盖整卡满足热区要求。唯一可关注点：底部胶囊到卡片底边的距离略紧，但未超过 16vp 上限。整体排版干净无瑕疵。"
+  },
+  "issues": [
+    "环形进度色 #64bb5c 亮绿与深蓝紫夜晚渐变主题不协调，视觉上偏跳出",
+    "底部'完成进度'文字颜色 #99ffffff 透明度偏低，渐变较深处稍显暗淡",
+    "渐变起点 #ff202224 接近纯黑，与'深蓝'语义略有差距，可稍偏蓝"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_column\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff1a1a3a\",0],[\"#564af7\",0.58],[\"#7a4b9c\",1]]},\"alignContent\":\"center\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"meter_stack\",\"primary_caption\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"ring_progress\",\"percent_text\"],\"styles\":{\"width\":68,\"height\":68,\"alignContent\":\"center\"}},{\"id\":\"ring_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/calendar/items/0/description} }}\",\"total\":100,\"styles\":{\"width\":68,\"height\":68,\"type\":\"ring\",\"color\":\"#ff8fd6\"}},{\"id\":\"percent_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} + '%' }}\",\"styles\":{\"width\":52,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"完成进度\",\"styles\":{\"width\":88,\"height\":22,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":11,\"backgroundColor\":\"#26ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#d9ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"anniversary-001\",\"title\":\"在一起788天\",\"description\":\"78\",\"dtStart\":\"2024-05-12\",\"dtEnd\":\"今天\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

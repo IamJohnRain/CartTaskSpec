@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-011",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "截图中天气信息（南山区/多云/24°C/空气优/21:18）、磨砂玻璃面板里的'夜跑节奏'标题与'一键播放'按钮、夜色渐变背景均已呈现，事件绑定参数与 TaskSpec eventCandidates 一致，尺寸/协议/catalogId/version 均合规。但封面行 4 项中第 2、3 项（对应 coverTwo 跑步图标、coverThree 耳机图标）在截图中呈现为纯白色块，图标内容未能渲染，相当于用户要求'歌单封面横向铺开好几项'中有 2 项核心信息缺失，扣分。",
+    "aesthetic": "紫色到蓝色的 RightBottom 渐变符合'夜色'主题，整体配色和谐；磨砂玻璃面板通过半透明白色背景实现，层次感良好；字号层级基本清晰（标题 16/正文 12），主次分明。但封面行中 2 个空白色块在紫色渐变上显得突兀，破坏简洁感；按钮蓝色与渐变蓝调相近，对比度略弱。",
+    "layout": "截图中所有元素均位于 300x140 卡片边界内，无溢出；封面行 + 玻璃面板 + 天气行三段式布局整齐，间距一致；标题'夜跑节奏'、'南山区·多云'、按钮'一键播放'、'24°C 多云'、'空气优·21:18'文字均完整无截断；'跑步歌单'文字未被裁切。底部 weather_row 距离卡片底边约 12vp，符合规范。Stack 仅有 root 渐变背景，无遮挡问题。"
+  },
+  "issues": [
+    "封面行第 2 项（coverTwo 跑步图标）和第 3 项（coverThree 耳机图标）渲染为空白白色方块，图标内容不可见",
+    "封面槽位使用纯白背景 #ffffffff，若图标为浅色则与背景同色无法识别，缺少兜底视觉",
+    "Button 字体字重使用字符串 'medium'，建议改为数值 500 更安全",
+    "封面槽位在深色渐变上纯白显得过硬，与夜色主题柔和气质略冲突"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"cover_row\",\"glass_panel\",\"weather_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#ac49f5\",0.56],[\"#0a59f7\",1]]}}},{\"id\":\"cover_row\",\"component\":\"Row\",\"children\":[\"cover_slot_1\",\"cover_slot_2\",\"cover_slot_3\",\"cover_slot_4\",\"playlist_label\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":30,\"alignItems\":\"center\"}},{\"id\":\"cover_slot_1\",\"component\":\"Column\",\"children\":[\"cover_img_1\"],\"styles\":{\"width\":30,\"height\":30,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"cover_img_1\",\"component\":\"Image\",\"src\":\"{{ ${/assets/coverOne} }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"cover_slot_2\",\"component\":\"Column\",\"children\":[\"cover_img_2\"],\"styles\":{\"width\":30,\"height\":30,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"cover_img_2\",\"component\":\"Image\",\"src\":\"{{ ${/assets/coverTwo} }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"cover_slot_3\",\"component\":\"Column\",\"children\":[\"cover_img_3\"],\"styles\":{\"width\":30,\"height\":30,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"cover_img_3\",\"component\":\"Image\",\"src\":\"{{ ${/assets/coverThree} }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"cover_slot_4\",\"component\":\"Column\",\"children\":[\"cover_img_4\"],\"styles\":{\"width\":30,\"height\":30,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"cover_img_4\",\"component\":\"Image\",\"src\":\"{{ ${/assets/coverFour} }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"playlist_label\",\"component\":\"Text\",\"content\":\"跑步歌单\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"glass_panel\",\"component\":\"Row\",\"children\":[\"panel_text_col\",\"action_button\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":52,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#22ffffff\",\"alignItems\":\"center\"}},{\"id\":\"panel_text_col\",\"component\":\"Column\",\"children\":[\"panel_title\",\"panel_caption\"],\"itemMargin\":4,\"styles\":{\"width\":154,\"height\":36,\"justifyContent\":\"center\"}},{\"id\":\"panel_title\",\"component\":\"Text\",\"content\":\"夜跑节奏\",\"styles\":{\"width\":154,\"height\":18,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"panel_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' · ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":154,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"一键播放\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":92,\"height\":36,\"borderRadius\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text\",\"weather_meta\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":20,\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"{{ ${/assets/weatherIcon} }}\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"weather_meta\",\"component\":\"Text\",\"content\":\"{{ '空气' + ${/data/weather/current/airQuality} + ' · ' + ${/data/weather/updatedAt} }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山区\"},\"current\":{\"temperatureText\":\"24°C\",\"condition\":\"多云\",\"airQuality\":\"优\"},\"updatedAt\":\"21:18\"}},\"assets\":{\"coverOne\":\"resources/base/media/icon_music.png\",\"coverTwo\":\"resources/base/media/icon_run.png\",\"coverThree\":\"resources/base/media/icon_earphone.png\",\"coverFour\":\"resources/base/media/icon_like.png\",\"weatherIcon\":\"resources/base/media/cloudy.png\"}}}}"
+  ]
+}

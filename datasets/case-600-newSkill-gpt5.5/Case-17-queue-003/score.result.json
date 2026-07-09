@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-17-queue-003",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户原始诉求中明确点名要呈现'取号打勾'、'快到号喊我'、'人数会变'、'点一下能调提醒'四项。从截图看：标题'取号排队'、票号'A128'、'前方 6 人'、'快到号提醒'状态、bell图标均已正确显示；checkbox的onClick也按eventCandidates原样绑定到clickToIntent。但用户重点强调的'快到号喊我'在截图中被截断为'快到...'，没有完整呈现该字段，指令落实不完整；此外用户提到'几个选项'但截图只展示了一个checkbox（受限于dataModel仅一个optionLabel），存在轻微遗漏。size为2x2/140x140、catalogId/version/updateDataModel等硬约束符合协议。",
+    "aesthetic": "截图整体配色和谐：橙色渐变背景温暖醒目，白色半透明胶囊承载主指标A128信息层级清晰，铃铛图标加白底圆形形成通知徽标感，绿色selected checkbox在橙底上对比鲜明。字号阶梯合理：A128最大字重最重，状态文字次之，选项文字弱化。但底部橙色按钮中选项文字被截断为'快到...'，视觉上像未完成稿，拉低整体完成度。",
+    "layout": "从截图直接观察到最关键的排版问题：底部checkbox区域中标签文字'快到号喊我'被截断为'快到...'（即在Check与...之间裁断），是典型的受保护文本被截切/截断的D3严重问题。其余元素（顶部Row标题、A128+前方6人的胶囊、状态文字'快到号提醒'）均完整可见无重叠。底部按钮底边距卡片底边约8-10vp，符合2x2底部锚定区间。checkbox宽度116、padding 12+12+mark 12+gap，留给label的实际宽度不足以容纳fontSize 12-14下的5个汉字，导致文字被迫截断。"
+  },
+  "issues": [
+    "截图中checkbox标签'快到号喊我'被截断为'快到...'，是受保护文本截断（D3主要问题）",
+    "CheckBox的'group: queue_options'属性引用了未在白名单中的CheckboxGroup概念，可能为无效属性",
+    "用户提到'几个选项'但仅渲染了一个checkbox，受限于TaskSpec仅提供单个optionLabel字段",
+    "底部按钮背景色('#ffed6f21')与卡片主渐变色对比度偏弱，按钮边界不够清晰"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_panel\",\"support_row\",\"remind_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#f9a01e\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"remind_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"remind_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/remindIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":8}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/title} }}\",\"styles\":{\"width\":94,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"primary_panel\",\"component\":\"Column\",\"children\":[\"ticket_text\",\"waiting_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":38,\"padding\":{\"left\":10,\"right\":10,\"top\":2,\"bottom\":2},\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"ticket_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/ticketNo} }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"waiting_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/waitingText} }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"support_row\",\"component\":\"Text\",\"content\":\"{{ ${/queue/statusText} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"remind_row\",\"component\":\"Row\",\"children\":[\"remind_checkbox\",\"option_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":26,\"backgroundColor\":\"#ffed6f21\",\"borderRadius\":13,\"padding\":{\"left\":10,\"right\":10},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"remind_checkbox\",\"component\":\"Checkbox\",\"value\":\"queue_remind\",\"select\":\"{{ ${/queue/remindEnabled} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":18,\"height\":18,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#ffffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":1.5}}},{\"id\":\"option_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/optionLabel} }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"取号排队\",\"ticketNo\":\"A128\",\"waitingText\":\"前方 6 人\",\"statusText\":\"快到号提醒\",\"remindEnabled\":true,\"optionLabel\":\"快到号喊我\"},\"asset\":{\"remindIcon\":\"resources/base/media/bell_fill.svg\"}}}}"
+  ]
+}

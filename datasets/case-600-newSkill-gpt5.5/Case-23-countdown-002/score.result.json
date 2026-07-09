@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-23-countdown-002",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求'倒计时卡片、文字放在背景图上面、能从日历读日程'。截图中可见标题'结婚纪念日'、大数字'18'、单位'天'、目标日期'07月27日'及来源'来自日历日程'，日历数据完整呈现。但用户明确提到'文字放在背景图上面'，assetCandidates 提供了 icon_schedule2.png 作为背景水印素材，而截图中完全看不到该图标——被 backgroundColor 与不透明 linearGradient 完全遮盖，用户诉求中的'背景图'未真正落实，扣分。尺寸 2x2 协议、catalogId、version、updateDataModel.path/value、组件范围、表达式绑定均合规，eventCandidates 为空故无事件可挂。无多余或错误信息。",
+    "aesthetic": "截图整体观感良好：紫色渐变（#5550a6→#564af7→#8981f7）自然不刺眼，圆角 18 与卡片风格统一。底部半透明胶囊面板（#33ffffff 背景 + #66ffffff 描边）层次清晰，是亮点。文字层级为 12(标题)/40(主数值)/16(单位)/12(日期)/10(来源)，40px 主数值字重 800 形成唯一最强字重，无字重冲突。'#99ffffff' 半透明白在深紫底上仍清晰。配色和谐、留白舒适、对齐统一，整体克制专业。唯一遗憾是 12px 标题与 10px 来源在 2x2 缩略图下略显单薄，但不构成扣分项。",
+    "layout": "截图无任何堆叠、溢出或文字截断。Column 纵向核算：padding(12+12) + itemMargin(6×2=12) + title(18) + countdown_row(48) + support_panel(38) = 24+12+18+48+38=140，恰好填满内容区，无溢出。Row 横向：primary_value(68)+unit_text(24)+itemMargin(4)=96，居中在 116 宽内，留白合理。底部胶囊底边距卡片底边约 (140-12-38)=90，预留充足，未触及 16vp 上限。受保护文本（标题、18、天、目标日期、来源）均完整可见，无裁切。'天'字距 '18' 略有紧凑但不重叠。整体布局干净、可读性优秀。"
+  },
+  "issues": [
+    "backgroundImage 资源 icon_schedule2.png 在截图中完全不可见，被不透明 backgroundColor 与 linearGradient 覆盖，未满足用户'文字放在背景图上面'的明确诉求",
+    "title_text 与 caption_text 使用 #99ffffff 透明度略低，在深紫底上虽可读但对比度可进一步加强",
+    "countdown_row 中 primary_value(width=68) 与 unit_text(width=24) 间距偏紧，'天'字距 '18' 略近"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"topStart\",\"backgroundColor\":\"#564af7\",\"backgroundImage\":\"resources/base/media/icon_schedule2.png\",\"backgroundImageSizeWithStyle\":\"cover\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5550a6\",0],[\"#564af7\",0.58],[\"#8981f7\",1]]}}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"countdown_row\",\"support_panel\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"countdown_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"unit_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/view/countdownDays} }}\",\"styles\":{\"width\":64,\"height\":44,\"fontSize\":40,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"unit_text\",\"component\":\"Text\",\"content\":\"{{ ${/view/countdownUnit} }}\",\"styles\":{\"width\":32,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"support_panel\",\"component\":\"Column\",\"children\":[\"date_text\",\"caption_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":38,\"padding\":{\"top\":4,\"right\":10,\"bottom\":4,\"left\":10},\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"date_text\",\"component\":\"Text\",\"content\":\"{{ '目标 ' + ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"{{ ${/view/countdownCaption} }}\",\"styles\":{\"width\":96,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_event_anniversary_001\",\"title\":\"结婚纪念日\",\"dtStart\":\"07月27日\",\"dtEnd\":\"07月27日\",\"importantEventType\":2}]}},\"view\":{\"countdownDays\":\"18\",\"countdownUnit\":\"天\",\"countdownCaption\":\"来自日历日程\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

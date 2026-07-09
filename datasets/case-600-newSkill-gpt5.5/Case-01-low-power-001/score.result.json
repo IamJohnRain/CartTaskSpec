@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-low-power-001",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求'有点击按钮的卡片，点了跳到充电地图，顺便读一下今天的日程'。截图中可见：底部有清晰的'充电地图'胶囊按钮并正确绑定 clickToDeeplink 到 settings/battery；日程数据'产品评审'和'14:00-15:00'通过 DataModel 正确读取并居中显示；schedule 图标来自 assetCandidates。2x2 尺寸、catalogId、version、updateDataModel.path=/、value 与 TaskSpec 一致。轻微扣分点：charge 图标未被使用（虽然用户未强求，但作为'充电'入口的语义图标在按钮处未被呈现）。",
+    "aesthetic": "截图中暖色橙棕渐变（#9e644f→#ed955f）自然柔和，白色文字在渐变上对比清晰、阅读舒适；'产品评审'为唯一最强字重（800）形成清晰视觉焦点，'今日安排'和'14:00-15:00'用 #99ffffff 弱化层级合理；按钮使用 #33ffffff 半透明白色胶囊，与背景融合不抢戏但仍具可点击识别度。整体留白均衡、对齐统一。略减分：暖橙色调与'低电/省电'主题语义略偏（典型低电场景更常见绿/冷色），但作为日程+充电入口仍和谐可用。",
+    "layout": "截图显示所有内容均落在 140x140 卡片内：顶部 header_row 紧贴上边距，'产品评审'与时间居中排列无重叠，按钮底部距卡片底边约 14vp，处于 8-16vp 可接受范围。文字 '产品评审'（4 字×16px=64px）和 '14:00-15:00'（11 字符×0.6×12≈79px）均完整显示在 116px 宽内容区中，无截断、无 ellipsis。Column 纵向核算约 136px，剩余 4px 空间由 justifyContent:start 推至底部，布局无溢出。按钮高 34px，热区可接受。无 Stack 遮挡问题。"
+  },
+  "issues": [
+    "按钮未使用 assetCandidates 中的 icon_charge.png，'充电地图'的视觉语义可进一步强化",
+    "按钮高度 34px 略低于理想的 40vp 热区（虽然仍 ≥24vp 最低要求）",
+    "暖橙渐变与'低电/省电'主题语义弱关联，可考虑绿系或冷色渐变更贴合 case 命名"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"event_title\",\"time_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#3a6b4a\",0],[\"#4f9b6e\",0.55],[\"#7fc59a\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日安排\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"⚡ 充电地图\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":116,\"height\":36,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#3dffffff\",\"borderRadius\":18}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"产品评审\",\"dtStart\":\"14:00\",\"dtEnd\":\"15:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

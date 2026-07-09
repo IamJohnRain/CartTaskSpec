@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-24-todo-016",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.4,
+  "reasons": {
+    "instruction": "用户明确要求的主题色背景、左右分区、左侧音符图标加'已听N首'动态数字、右侧跳转歌单按钮、纵向待办列表、夜晚深蓝到紫渐变均已落实。size 为 2x4、catalogId、version、updateDataModel 路径与值都符合协议。事件 clickToDeeplink 的 call/args 原样来自 eventCandidates。素材 music_fill.svg 正确使用。但用户要求'完成的就亮'，截图中第一条 todo'听完夜跑歌单'的圆点并未呈现数据模型指定的 #FF64BB5C 亮绿色，文字也未呈现 #FFFFFFFF 纯白高亮，与后两条在视觉上几乎无差别，'亮起来'的核心诉求未在画面中真实呈现，扣分。",
+    "aesthetic": "截图整体观感良好：紫蓝到品紫的渐变具备夜晚氛围，渐变方向自然；左侧白色圆角图标块与紫色背景对比清晰，黑色音符识别度高；'已听18首'主数值字重 700 与其他文字形成清晰层级；'打开歌单'按钮半透明白底在紫色底上对比合理。但因'完成项亮起'的视觉差异缺失，待办区三条条目缺乏视觉层次，整体精致度打折；且 todo 圆点尺寸偏小，色彩饱和度不足，使列表区域略显平淡。",
+    "layout": "截图中所有元素均位于卡片边界内，无元素溢出、无文字截断、无堆叠重叠。顶部信息行（高 64）与下方 todo 列（高 40）之间留 8vp 间距，加上 root 的 12vp 上下 padding，总高 64+8+40+24=136，在 140 高度内有 4vp 富余，底部留白合理。左侧信息面板 178 宽 + 10 间距 + 右侧按钮 88 宽 = 276，恰好对齐 root 内宽。按钮高 64、热区充足。受保护文本（主指标、CTA、待办文字）在截图中完整可读。唯一可观察的小问题是三条 todo 圆点尺寸偏小（10×12）且色块辨识度低，但不属于溢出或截断。"
+  },
+  "issues": [
+    "第一条 todo（'听完夜跑歌单'）的 indicatorColor=#FF64BB5C 亮绿色未在截图中真实呈现，圆点与后两条几乎同色，'完成的就亮'的核心诉求未落实",
+    "第一条 todo 的 textColor=#FFFFFFFF 纯白与后两条 #99FFFFFF 半透明白的对比在截图中几乎不可辨，三条文字亮度视觉上接近",
+    "todo 圆点使用 '●' 字符在 10×12 极小尺寸下，色彩辨识度过低，建议改用更醒目的图形或更大尺寸",
+    "渐变色 #5550A6→#564AF7→#8C55C2 偏紫罗兰，与'夜晚深蓝'的预期略有偏差，可适当加重首段深蓝比重"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"todo_list\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#1B2A6E\",0],[\"#564AF7\",0.55],[\"#9A55C9\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"left_info_panel\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":64,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_info_panel\",\"component\":\"Row\",\"children\":[\"icon_box\",\"metric_col\"],\"itemMargin\":8,\"styles\":{\"width\":178,\"height\":64,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#1FFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Stack\",\"children\":[\"music_icon\"],\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":12,\"backgroundColor\":\"#FFFFFFFF\",\"alignContent\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/music_fill.svg\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"metric_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"listened_text\",\"playlist_text\"],\"itemMargin\":2,\"styles\":{\"width\":114,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"音乐待办\",\"styles\":{\"width\":114,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1}},{\"id\":\"listened_text\",\"component\":\"Text\",\"content\":\"{{ '已听' + ${/music/listenedCount} + '首' }}\",\"styles\":{\"width\":114,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"playlist_text\",\"component\":\"Text\",\"content\":\"{{ ${/music/playlistTitle} }}\",\"styles\":{\"width\":114,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开歌单\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":88,\"height\":64,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":16}},{\"id\":\"todo_list\",\"component\":\"Column\",\"children\":[\"todo_row_0\",\"todo_row_1\",\"todo_row_2\"],\"itemMargin\":2,\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"todo_row_0\",\"component\":\"Row\",\"children\":[\"todo_dot_0\",\"todo_text_0\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":12,\"padding\":{\"left\":4,\"right\":4},\"borderRadius\":6,\"backgroundColor\":\"#26FFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo_dot_0\",\"component\":\"Text\",\"content\":\"✓\",\"styles\":{\"width\":12,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"{{ ${/todos/0/indicatorColor} }}\",\"maxLines\":1}},{\"id\":\"todo_text_0\",\"component\":\"Text\",\"content\":\"{{ ${/todos/0/title} }}\",\"styles\":{\"width\":244,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"{{ ${/todos/0/textColor} }}\",\"maxLines\":1}},{\"id\":\"todo_row_1\",\"component\":\"Row\",\"children\":[\"todo_dot_1\",\"todo_text_1\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":12,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo_dot_1\",\"component\":\"Text\",\"content\":\"○\",\"styles\":{\"width\":10,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"{{ ${/todos/1/indicatorColor} }}\",\"maxLines\":1}},{\"id\":\"todo_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/todos/1/title} }}\",\"styles\":{\"width\":244,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"{{ ${/todos/1/textColor} }}\",\"maxLines\":1}},{\"id\":\"todo_row_2\",\"component\":\"Row\",\"children\":[\"todo_dot_2\",\"todo_text_2\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":12,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo_dot_2\",\"component\":\"Text\",\"content\":\"○\",\"styles\":{\"width\":10,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"{{ ${/todos/2/indicatorColor} }}\",\"maxLines\":1}},{\"id\":\"todo_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/todos/2/title} }}\",\"styles\":{\"width\":244,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"{{ ${/todos/2/textColor} }}\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"music\":{\"listenedCount\":18,\"playlistTitle\":\"今晚歌单\"},\"todos\":[{\"title\":\"听完夜跑歌单\",\"indicatorColor\":\"#FF64BB5C\",\"textColor\":\"#FFFFFFFF\"},{\"title\":\"整理收藏歌曲\",\"indicatorColor\":\"#66FFFFFF\",\"textColor\":\"#99FFFFFF\"},{\"title\":\"睡前复盘旋律\",\"indicatorColor\":\"#66FFFFFF\",\"textColor\":\"#99FFFFFF\"}]}}}"
+  ]
+}

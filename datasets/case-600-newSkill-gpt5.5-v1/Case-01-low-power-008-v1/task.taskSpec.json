@@ -1,0 +1,126 @@
+{
+  "userQuery": "给我弄个有比例的卡数字会变点地图找充电宝读日程红色警告",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "status": {
+      "title": {
+        "type": "string",
+        "description": "低电模式卡片标题",
+        "sampleValue": "低电模式"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "当前低电红色警告文案",
+        "sampleValue": "红色警告"
+      },
+      "powerHint": {
+        "type": "string",
+        "description": "低电时的行动提示",
+        "sampleValue": "附近充电宝"
+      }
+    },
+    "battery": {
+      "levelPercent": {
+        "type": "number",
+        "description": "当前电量百分比数值，用于数字和进度比例动态展示",
+        "sampleValue": 12
+      },
+      "levelText": {
+        "type": "string",
+        "description": "当前电量百分比展示文本",
+        "sampleValue": "12%"
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "电量进度总量",
+        "sampleValue": 100
+      },
+      "timeLeftText": {
+        "type": "string",
+        "description": "预估剩余使用时间",
+        "sampleValue": "约 38 分钟"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "当天日历事件列表",
+          "items": {
+            "type": "object",
+            "description": "日历事件",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于查看日程详情",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "下一条日程标题",
+                "sampleValue": "产品同步"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "下一条日程开始时间",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "下一条日程结束时间",
+                "sampleValue": "15:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "下一条日程地点",
+                "sampleValue": "会议室 A"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "产品同步",
+              "dtStart": "14:30",
+              "dtEnd": "15:00",
+              "eventLocation": "会议室 A"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于电量状态识别。"
+    },
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "充电闪电图标，适合用于寻找充电或补能入口。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于当前日程提醒。"
+    }
+  ]
+}

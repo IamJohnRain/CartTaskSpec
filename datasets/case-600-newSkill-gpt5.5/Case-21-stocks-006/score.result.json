@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户要求的股票信息：左侧有股票名'自选股票'、主价格'68.42'、涨跌幅'+1.86%'、趋势'今日上涨'、分组'自选组合'、账户提示'交易账户可用'；右侧'交易入口'区块有'去交易'按钮（带 clickToDeeplink 事件，参数原样来自 eventCandidates）和'登录态已确认'提示；顶部'已登录'状态徽章清晰可见。size=2x4、catalogId/version/updateDataModel 协议约束全部满足，9 个数据字段均无遗漏呈现。",
+    "aesthetic": "截图中绿色渐变背景统一和谐，前景白色文字在绿底上对比清晰可读；右侧半透明白色面板形成良好的视觉层次；'去交易'按钮白底绿字对比强烈。扣分点：①涨跌幅'+1.86%'采用纯白色，在金融语义上未对涨/跌做色彩区分，缺少红色/绿色差这一常见专业语义；②右侧'交易入口'+'去交易'+'登录态已确认'三段字号阶梯(12/14/12)层次略弱，与左侧'68.42'主指标的最强字重对比尚可但整体视觉张力可再加强。",
+    "layout": "截图显示无任何文字被裁切、无元素堆叠重叠、无组件溢出卡片边界：'自选股票'与'已登录'徽章在 header_row 中左右并排、间距舒适；'68.42'主价与'+1.86% / 今日上涨'在 price_row 中分列清楚；底部'自选组合/交易账户可用'面板被 groupName+hint 完全容纳，未被裁切；右侧面板标题、按钮、提示三段垂直堆叠、对齐居中，按钮热区充足。底部'登录态已确认'距卡片底边留白合理（未触及 16vp 上限）。"
+  },
+  "issues": [
+    "涨跌幅'+1.86%'使用纯白色，未利用颜色区分涨跌方向，弱化金融信息语义",
+    "右侧面板内'交易入口'(12px)与'登录态已确认'(12px)字号相同，字重层级偏平，缺少次级/辅助文字的对比",
+    "右侧面板 padding:8 + width:88 使三段文字宽度被压缩到 72，长文案易出现紧贴边框感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92c48d\",0],[\"#3f9a3a\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"left_col\",\"right_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"price_row\",\"support_panel\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_pill\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/stock/name} }}\",\"styles\":{\"width\":94,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"login_status\"],\"styles\":{\"width\":74,\"height\":22,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":11}},{\"id\":\"login_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/account/loginStatus} }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"price_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"change_col\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":36,\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/stock/priceText} }}\",\"styles\":{\"width\":100,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"change_col\",\"component\":\"Column\",\"children\":[\"change_text\",\"trend_text\"],\"itemMargin\":2,\"styles\":{\"width\":68,\"height\":36,\"justifyContent\":\"center\"}},{\"id\":\"change_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/stock/changeText} }}\",\"styles\":{\"width\":68,\"height\":17,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffe7a0\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"trend_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/stock/trendLabel} }}\",\"styles\":{\"width\":68,\"height\":15,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"support_panel\",\"component\":\"Column\",\"children\":[\"group_name\",\"account_hint\"],\"itemMargin\":2,\"styles\":{\"width\":176,\"height\":42,\"justifyContent\":\"center\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":14}},{\"id\":\"group_name\",\"component\":\"Text\",\"content\":\"{{ ${/data/stock/groupName} }}\",\"styles\":{\"width\":160,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"account_hint\",\"component\":\"Text\",\"content\":\"{{ ${/data/account/hint} }}\",\"styles\":{\"width\":160,\"height\":17,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"right_title\",\"action_button\",\"account_tip\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":116,\"padding\":6,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#26ffffff\",\"borderRadius\":18}},{\"id\":\"right_title\",\"component\":\"Text\",\"content\":\"交易入口\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/account/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.trade\",\"abilityName\":\"com.example.trade.MainAbility\",\"uri\":\"tradeapp://home\"}}],\"styles\":{\"width\":76,\"height\":36,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff3f9a3a\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":18}},{\"id\":\"account_tip\",\"component\":\"Text\",\"content\":\"{{ ${/data/account/tipText} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#aaffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"stock\":{\"name\":\"自选股票\",\"priceText\":\"68.42\",\"changeText\":\"+1.86%\",\"trendLabel\":\"今日上涨\",\"groupName\":\"自选组合\"},\"account\":{\"loginStatus\":\"已登录\",\"hint\":\"交易账户可用\",\"actionLabel\":\"去交易\",\"tipText\":\"登录态已确认\"}}}}}"
+  ]
+}

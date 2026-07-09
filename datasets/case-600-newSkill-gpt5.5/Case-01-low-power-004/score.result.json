@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-low-power-004",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户四项诉求基本全部落实：1）电量数字会变——18% 由 ${/data/battery/levelText} 绑定，进度条由 levelValue/total 驱动；2）按钮进系统设置——电池设置按钮 onClick 完整引用了 clickToDeeplink 与 battery uri；3）日历提醒快没电——同时呈现了日历时段 16:30-17:00、客户沟通标题，以及出门前建议充电的低电提醒文案；4）素材使用 icon_electricity/icon_schedule 均从 assetCandidates 引入。轻微扣分：截图中 calendar_panel 内的 schedule_icon 图标不可见/过弱，'读日历提醒'的视觉锚点缺失。",
+    "aesthetic": "截图中黄灰渐变背景与橙色进度条呼应低电主题，配色统一且克制；18% 巨型主数值与标题字重形成清晰层级，状态/提示文为浅灰次级文字；卡片整体留白舒适、左右两栏比例协调。轻微扣分：侧栏 '日程前检查电量' 文字与下方按钮距离略紧，且该文字与主区出门前建议充电语义略有重复。",
+    "layout": "截图中无文字被裁切、组件无溢出卡片边界，主指标 18%、标题 '低电模式'、按钮 '电池设置' 均完整呈现；按钮热区充足且左右布局平衡。扣分点：calendar_panel 内 schedule_icon 实际渲染几乎不可见（白底上图标被弱化或缺失），导致 '读日历' 的视觉入口缺失；calendar_col 高度 28 装下两行文字偏紧；侧栏顶部 '日程前检查电量' 紧贴按钮上沿，视觉节奏略急。"
+  },
+  "issues": [
+    "截图中 calendar_panel 内的 schedule_icon（20x20）几乎不可见，白色面板上仅显示时间与标题，缺少图标锚点",
+    "侧栏 '日程前检查电量' 与下方 '电池设置' 按钮间距偏紧，视觉节奏局促",
+    "calendar_col 高度 28 容纳两行 10+12 号字偏紧凑，若标题加长易产生行间距不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_col\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#f5dc62\",1]]},\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"top_row\",\"primary_row\",\"calendar_panel\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"battery_icon\",\"title_col\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":28,\"alignItems\":\"center\"}},{\"id\":\"battery_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_electricity.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":148,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"低电模式\",\"styles\":{\"width\":148,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/battery/statusText} }}\",\"styles\":{\"width\":148,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"level_text\",\"progress_col\"],\"itemMargin\":8,\"styles\":{\"width\":178,\"height\":36,\"alignItems\":\"center\"}},{\"id\":\"level_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/battery/levelText} }}\",\"styles\":{\"width\":74,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"progress_col\",\"component\":\"Column\",\"children\":[\"battery_progress\",\"remind_text\"],\"itemMargin\":4,\"styles\":{\"width\":96,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"battery_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/battery/levelValue} }}\",\"total\":\"{{ ${/data/battery/total} }}\",\"styles\":{\"type\":\"linear\",\"width\":96,\"height\":8,\"color\":\"#ed6f21\"}},{\"id\":\"remind_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/battery/remindText} }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"calendar_panel\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"calendar_col\"],\"itemMargin\":8,\"styles\":{\"width\":178,\"height\":44,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\",\"backgroundColor\":\"#fff3d6\",\"borderRadius\":11,\"padding\":2}},{\"id\":\"calendar_col\",\"component\":\"Column\",\"children\":[\"calendar_time\",\"calendar_title\"],\"itemMargin\":2,\"styles\":{\"width\":130,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"calendar_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":130,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"calendar_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":130,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"side_col\",\"component\":\"Column\",\"children\":[\"side_hint\",\"action_button\"],\"itemMargin\":12,\"styles\":{\"width\":88,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"side_hint\",\"component\":\"Text\",\"content\":\"日程前\\n检查电量\",\"styles\":{\"width\":88,\"height\":32,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textAlign\":\"center\",\"lineHeight\":16}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"电池设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":88,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#19000000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"battery\":{\"levelText\":\"18%\",\"levelValue\":18,\"total\":100,\"statusText\":\"电量偏低\",\"remindText\":\"出门前建议充电\"},\"calendar\":{\"items\":[{\"title\":\"客户沟通\",\"dtStart\":\"16:30\",\"dtEnd\":\"17:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

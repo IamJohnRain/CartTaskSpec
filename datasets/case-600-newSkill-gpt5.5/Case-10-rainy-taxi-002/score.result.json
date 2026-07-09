@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-10-rainy-taxi-002",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户三项诉求全部落实且能在截图中清楚看到：(1) 跳转能力——action_pill 上挂载了 clickToDeeplink，args 与 eventCandidates 完全一致；(2) 看天气——hero_row 显示了 29° 大字温度与\"暴雨\"状况，云雨图标 rain.png 来自 assetCandidates；(3) 红色危险天气提示——alert_panel 使用了醒目的橙红底色 (#ffed6f21) + 白色加粗\"红色预警\"标题，'降雨88%'作为副信息。尺寸 2x2、catalogId/version/updateDataModel.path 全部合规。轻微不足：districtName('本地')在 schema 中存在但未展示出来，属于次要信息缺失，不影响核心诉求。",
+    "aesthetic": "截图整体观感良好：蓝色渐变背景(深蓝→天蓝)与橙红警示条形成强对比，危险信号一眼可辨。白色文字在蓝底和橙底上都清晰可读，'29°' 大字与'暴雨'小字形成清晰字号层级。底部半透明白色药丸按钮'打开天气'视觉权重视为次级 CTA，与上方信息区分合理。留白密度适中、对齐统一。仅扣 1.5 分：渐变方向 RightBottom 使得左下偏淡、右上偏深，与白文字对比在右上略弱，渐变本身也稍显复杂，可考虑纯色或更克制的方向。",
+    "layout": "截图布局干净：(1) hero_row 高度 42 容纳 32pt 温度 + 10pt 状况，hero_row/alert_panel/action_pill 三段总高 42+6+36+6+26=116，加上 12×2 padding 恰好 140，无溢出；(2) 标题\"红色预警\"、副信息\"降雨88%\"、CTA\"打开天气\"、主温度\"29°\"全部完整显示，无截断/裁切；(3) alert_panel 内 Divider 在最左、文本右对齐起始，无层叠遮挡；(4) 底部 action_pill 距卡片底边约 12vp，处于 8-12vp 合理区间。唯一可优化点：hero_row 右栏宽度 72 容纳 32pt 字号的 '29°C' 偏紧，从截图看 '°' 紧贴 '29'、'C' 几乎贴边未留呼吸感，建议加宽或缩字号。"
+  },
+  "issues": [
+    "districtName('本地')字段已在 dataModel 中但未在卡片中呈现，浪费了 schema 提供的次要信息",
+    "主温度 '29°C' 在 32pt 字号 + 72 宽容器中略拥挤，'°' 与 'C' 紧贴数字边缘，缺呼吸感",
+    "背景渐变方向 RightBottom 让右上最深，与白文字对比略不均匀，可考虑 TopToBottom 更稳定"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"location_caption\",\"hero_row\",\"alert_panel\",\"action_pill\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"top\":10,\"left\":12,\"right\":12,\"bottom\":10},\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"TopToBottom\",\"colors\":[[\"#3d6f93\",0],[\"#4ea5d4\",1]]}}},{\"id\":\"location_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"weather_icon_box\",\"primary_info\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon_box\",\"component\":\"Stack\",\"children\":[\"weather_icon\"],\"styles\":{\"width\":34,\"height\":38,\"alignContent\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/rain.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"primary_info\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":0,\"styles\":{\"width\":76,\"height\":38,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":76,\"height\":28,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":76,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"alert_panel\",\"component\":\"Row\",\"children\":[\"alert_line\",\"alert_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":34,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#ffed6f21\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_line\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":22,\"color\":\"#ffffffff\"}},{\"id\":\"alert_info\",\"component\":\"Column\",\"children\":[\"alert_title\",\"alert_meta\"],\"itemMargin\":2,\"styles\":{\"width\":90,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":90,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_meta\",\"component\":\"Text\",\"content\":\"{{ '降雨' + ${/data/weather/daily/0/rainProbabilityPercent} }}\",\"styles\":{\"width\":90,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_pill\",\"component\":\"Row\",\"children\":[\"action_label\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"action_label\",\"component\":\"Text\",\"content\":\"打开天气\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"本地\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"暴雨\",\"alertLevel\":\"红色预警\"},\"daily\":[{\"rainProbabilityPercent\":\"88%\"}]}}}}}"
+  ]
+}

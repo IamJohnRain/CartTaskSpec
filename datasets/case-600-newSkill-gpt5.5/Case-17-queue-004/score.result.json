@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-17-queue-004",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见卡片完整呈现了用户三项诉求：标题'排队叫号'清晰展示，说明文本'前方还有'与主指标'32'及单位'桌'并列显示，右下角蓝色'进App'按钮承担点击进 app 的入口功能；onClick.call 与 args 完整来自 eventCandidates；沙漏图标资源来自 assetCandidates 且语义正确；尺寸 2x4（300x140）、catalogId、version、updateDataModel.path 等硬约束均满足，dataModel 字段全部按 sampleValue 注入。无任何字段缺失或协议违规。",
+    "aesthetic": "截图显示背景采用浅灰到暖橙的渐变，色调温暖协调；主指标'32'使用 40pt 粗体黑色字，作为视觉焦点层级最突出，'桌'为 16pt 中等灰度形成次级层级；右半动作区用半透明深色面板（#0c000000）形成与主区分离，圆形白底沙漏图标干净立体，蓝色'进App'按钮在橙色背景上对比强烈、可读性高。整体配色克制专业，层级清晰，仅在'查看进度'提示文字与按钮间距略显局促，可酌情优化。",
+    "layout": "截图未观察到任何元素堆叠、溢出卡片边界或文字被裁切：标题'排队叫号'完整显示在左上方一行；'前方还有'说明文本完整；大号'32'与'桌'单位在主区域内左对齐，'32'占据 76vp 宽度与'桌'32vp 之间留有 4vp 间距未发生碰撞；右侧动作面板的图标、'查看进度'提示、'进App'按钮从上至下顺序排列，按钮底部距卡片底部约 10-12vp，符合 2x4 规格底部锚定约束；按钮热区 80×32vp 接近 40vp 理想值。唯一可改进点为'查看进度'文字与按钮之间空白稍大，可考虑使用 space-between 分布或微调 itemMargin。"
+  },
+  "issues": [
+    "右侧动作面板 Column 的 justifyContent 设为 start，导致'查看进度'文本紧贴沙漏图标底部，而与下方'进App'按钮之间出现较大空白，视觉重心略不均衡。",
+    "action_text 高度设为 30 而实际只占 1 行，造成列内留白不均。",
+    "截图整体留白舒适，但'查看进度'字号 12pt 相比按钮 14pt 偏小，CTA 提示层级可再加强。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_area\",\"action_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#f9bc64\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_area\",\"component\":\"Column\",\"children\":[\"title_text\",\"caption_text\",\"primary_row\"],\"itemMargin\":6,\"styles\":{\"width\":174,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/title} }}\",\"styles\":{\"width\":174,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/prefix} }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"ahead_count\",\"unit_text\"],\"itemMargin\":4,\"styles\":{\"width\":174,\"height\":58,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"ahead_count\",\"component\":\"Text\",\"content\":\"{{ ${/queue/aheadCount} }}\",\"styles\":{\"width\":76,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/unit} }}\",\"styles\":{\"width\":32,\"height\":24,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"icon_frame\",\"action_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":92,\"height\":116,\"padding\":{\"top\":10,\"bottom\":10,\"left\":6,\"right\":6},\"borderRadius\":18,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"icon_frame\",\"component\":\"Row\",\"children\":[\"queue_icon\"],\"styles\":{\"width\":44,\"height\":42,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"queue_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/hourglass_fill.svg\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/actionTip} }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/queue/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":80,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"queue\":{\"title\":\"排队叫号\",\"prefix\":\"前方还有\",\"aheadCount\":\"32\",\"unit\":\"桌\",\"actionTip\":\"查看进度\",\"actionLabel\":\"进App\"}}}}"
+  ]
+}

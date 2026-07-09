@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-25-reading-019",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "截图中可见\"今日已读47分钟\"主标题、三行书架（长夜余火/冬牧场/三体）以及天气\"多云 24°C\"都已正确呈现，暖色渐变背景符合\"傍晚看书\"的诉求。但用户明确要求的\"勿扰模式开关\"文字标签被截断显示为\"...\"，语义被破坏；用户还明确要求\"图标用📖🎧⏱这种文字符号\"，但截图里完全没有出现这三类图标，核心诉求未落实（受协议禁止 emoji 限制，原 DSL 也不应使用这些符号）。事件 clickToDeeplink 按 eventCandidates 原样落实。",
+    "aesthetic": "从截图看，背景橙色到金黄的暖色渐变与\"傍晚看书\"的氛围契合，前景深色文字在亮底上对比清晰可读；标题\"今日已读47分钟\"字重 700 突出，主体层级清晰。但顶部\"勿扰\"被截为\"...\"直接破坏视觉完整性，让右上区域看起来像未完成态；缺少图标也使清单略显单调。整体观感尚可但有明显残缺感。",
+    "layout": "截图中最显著的问题是顶部 Row 右侧的 Checkbox 标签\"勿扰\"被截断显示为省略号\"...\"——这属于受保护文本被截切/裁断，需要重点扣分。Header Row 总宽 116，weather_text 占 66、dnd_switch 占 44，但 dnd_switch 内部 label + 复选框图形实际需要更宽空间，导致溢出后被省略号替代。其余区域（主标题 116x28、List 116x54）尺寸核算均落在 116 内容区内，标题与书单行未被裁切，文字完整可读。按钮（复选框）热区 22vp 偏低但勉强可用。无 Stack 遮挡关键信息。"
+  },
+  "issues": [
+    "顶部 Checkbox 标签\"勿扰\"被截断显示为\"...\"，关键交互语义丢失",
+    "用户要求的图标符号📖🎧⏱未在卡片中出现（受协议禁止 emoji 限制，需以其他视觉元素替代）",
+    "header_row 中 weather_text(66) + itemMargin(6) + dnd_switch(44) = 116 正好塞满，但 dnd_switch 内部 label 实际占用超过 44 导致截断",
+    "复选框热区高度 22vp 略低，理想应接近 40vp"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"book_list\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#f5dc62\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_text\",\"dnd_switch\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"dnd_switch\",\"component\":\"Checkbox\",\"label\":\"勿扰\",\"value\":\"dnd\",\"group\":\"reading_mode\",\"select\":\"{{ ${/settings/doNotDisturb} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":54,\"height\":22,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"fontSize\":11}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/reading/todayReadText} }}\",\"styles\":{\"width\":116,\"height\":26,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"book_list\",\"component\":\"List\",\"children\":[\"book_row_1\",\"book_row_2\",\"book_row_3\"],\"space\":2,\"styles\":{\"width\":116,\"height\":56,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"book_row_1\",\"component\":\"Text\",\"content\":\"{{ ${/reading/bookLine1} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"book_row_2\",\"component\":\"Text\",\"content\":\"{{ ${/reading/bookLine2} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"book_row_3\",\"component\":\"Text\",\"content\":\"{{ ${/reading/bookLine3} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"24°C\",\"condition\":\"多云\"}}},\"reading\":{\"todayReadText\":\"今日已读47分钟\",\"bookLine1\":\"长夜余火 | 62% | 在读\",\"bookLine2\":\"冬牧场 | 100% | 已读完✓\",\"bookLine3\":\"三体 | 18% | 在听\"},\"settings\":{\"doNotDisturb\":true}}}}"
+  ]
+}

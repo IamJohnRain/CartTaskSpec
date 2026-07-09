@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-05-agenda-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "截图完整呈现了用户要求的全部信息：会议标题'项目周会'、起止时间'09:30-10:00'、地点'18F 会议室 A'、迟到状态'快迟到了'、倒计时'还有 8 分钟'和'查看日程'按钮。橙色背景配文字的会议提醒样式到位，'从日历读取下一场会议'的数据源语义通过字段完整呈现。点击按钮的 onClick 正确绑定到 eventCandidates 中的 clickToIntent/ViewCalendarEvent 事件，参数 entityId 取自日历数据。尺寸 2x4（300x140）、catalogId、version、updateDataModel.path 与 value 均符合协议。唯一轻微不足是 size 200x200 的截图中卡片下方有大量留白（这是截图画布问题，非卡片本身问题）。",
+    "aesthetic": "从截图看，橙色 #FFED6F21 背景与白色文字对比度高、清晰可读，适合'快迟到'的紧迫感语义。右侧半透明白色面板形成良好的视觉分区。字号层级（20/18/16/14/12）清晰，最多只有一个最强字重（标题与时间均为 700）。但有两个美观扣分点：1）右侧'还有 8 分钟'倒计时被截断为'还有 8 分'/'钟'两行，'钟'字单独成行非常难看；2）水印图标（calendar 日历图）位置偏离左上角，出现在卡片中右部且与时间文字'10:00'、右侧动作面板有视觉重叠，降低了整体精致感。",
+    "layout": "截图存在两个明确的排版问题：1）右侧动作面板内的倒计时文字'还有 8 分钟'在宽度 80vp、fontSize 16 下被强制换行为两行（'还有 8 分'在第一行，'钟'单独落在第二行），这是受保护文本的截断问题，需要缩字号或扩宽度；2）root Stack 的 alignContent:'center' 导致水印 Image 并未按 margin{left:16,top:16} 落在左上角，而是被居中放置在卡片中部偏右，与时间行'09:30 - 10:00'、右侧 action_panel 产生明显视觉重叠，背景图层反而干扰了前景信息。底部按钮'查看日程'热区 80x32 满足 ≥24vp 要求，位置锚定良好，但因水印遮挡略显拥挤。"
+  },
+  "issues": [
+    "倒计时文字'还有 8 分钟'在 action_panel 宽度 80vp、fontSize 16 下被换行为两行，'钟'字单独成第二行，视觉上像被截断",
+    "root Stack 设置了 alignContent:'center'，导致 watermark Image 未按预期落在左上角，而是被居中到卡片中右部，与时间行和右侧动作面板重叠",
+    "水印图标与'10:00'文字、右侧半透明面板产生视觉干扰，背景层喧宾夺主",
+    "水印在原 DSL 中未设置 opacity，在浅色背景上的对比度偏高，不够克制"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"watermark_image\",\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFED6F21\"}},{\"id\":\"watermark_image\",\"component\":\"Image\",\"src\":\"{{ ${/asset/watermark} }}\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\",\"position\":\"absolute\",\"top\":6,\"right\":100,\"opacity\":0.28}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"main_panel\",\"action_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"status_row\",\"title_text\",\"time_row\",\"location_text\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":116,\"padding\":{\"left\":2,\"right\":4,\"top\":6,\"bottom\":6},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"meeting_icon\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"meeting_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/meetingIcon} }}\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/state/statusText} }}\",\"styles\":{\"width\":146,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":172,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"time_row\",\"component\":\"Row\",\"children\":[\"start_text\",\"dash_text\",\"end_text\"],\"itemMargin\":4,\"styles\":{\"width\":172,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"start_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":58,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"dash_text\",\"component\":\"Text\",\"content\":\"-\",\"styles\":{\"width\":10,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"end_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":58,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":172,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"countdown_text\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":116,\"padding\":{\"left\":4,\"right\":4,\"top\":14,\"bottom\":12},\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ ${/state/countdownText} }}\",\"styles\":{\"width\":80,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/state/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":80,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_event_demo_001\",\"title\":\"项目周会\",\"eventLocation\":\"18F 会议室 A\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"oneClickServiceType\":\"calendarDetail\"}]}},\"state\":{\"statusText\":\"快迟到了\",\"countdownText\":\"还有 8 分钟\",\"hintText\":\"从日历读取下一场会议\",\"actionLabel\":\"查看日程\",\"loading\":false,\"empty\":false},\"asset\":{\"watermark\":\"resources/base/media/icon_watermark.png\",\"meetingIcon\":\"resources/base/media/icon_meeting.png\"}}}}"
+  ]
+}

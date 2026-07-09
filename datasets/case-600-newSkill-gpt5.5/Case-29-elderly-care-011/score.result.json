@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-29-elderly-care-011",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "用户明确要求'最近3天吃药记录'，dataModel 提供了 3 条记录，但截图中只看到 7月7日、7月8日 两条，第 3 条'7月9日 20:58 待确认'因 List 高度 34vp 不够而完全被截掉、不可见，关键信息缺失。其余指令（顶部温湿度、分隔线、立即定位回家按钮含 onClick、底部红色告警、深灰带蓝底色、纯色无渐变）均按要求落实。",
+    "aesthetic": "深灰带蓝的底色（#191a1c）符合夜间氛围，蓝色按钮 #317af7 与橙色告警 #db6b42 形成清晰的色相焦点，白色文字在暗底上对比度足够、阅读舒适。整体层级：weather 14pt 600、med list 12pt、alert 12pt 600、button 14pt，权重层次合理。但'舞台感'在纯色块约束下受限，没有渐变或强光效点缀，氛围感一般。",
+    "layout": "截图中最显著的问题是中部 List 只渲染了 2 条记录，第 3 条'7月9日 20:58 待确认'被底部 divider_mid 截断、视觉上完全消失：med_list 高度 34vp、内 padding 4vp、space 2、3 行 × 14vp = 46vp，远超容器。其余元素（weather、3 条 divider、button 32vp、alert 17vp）合计与 root 高度 140vp 刚好相等，无溢出。布局上唯一的实际错误是 med_list 高度计算失误，导致 1/3 的用户关键数据被裁切。"
+  },
+  "issues": [
+    "截图中第 3 条吃药记录'7月9日 20:58 待确认'被 List 底部裁切、不可见",
+    "med_list 高度 34vp 不足以容纳 3 行（实际需要约 46vp），属布局溢出/裁切",
+    "List 内 space=2、padding.top+bottom=2、3 行 × 14vp = 46vp 超出 34vp 容器，第 3 行被 list clip:true 隐藏",
+    "root Column 子项 itemMargin=2、3 条 divider、各组件高度合计刚好等于 140vp，可压缩空间小，但缺少对 med_list 的预留"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather_text\",\"divider_top\",\"med_list\",\"divider_mid\",\"action_row\",\"divider_bottom\",\"alert_text\"],\"itemMargin\":1,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ '室内温度' + ${/data/weather/current/temperatureText} + ' 湿度' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":276,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\",\"vertical\":false}},{\"id\":\"med_list\",\"component\":\"List\",\"children\":[\"med_row_0\",\"med_row_1\",\"med_row_2\"],\"space\":1,\"styles\":{\"width\":276,\"height\":42,\"listDirection\":\"vertical\",\"scrollBar\":\"off\",\"backgroundColor\":\"#0cffffff\",\"borderRadius\":8,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"clip\":true}},{\"id\":\"med_row_0\",\"component\":\"Row\",\"children\":[\"med_text_0\"],\"styles\":{\"width\":260,\"height\":12,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"med_text_0\",\"component\":\"Text\",\"content\":\"{{ ${/ui/medicationRecords/0/recordText} }}\",\"styles\":{\"width\":260,\"height\":12,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"med_row_1\",\"component\":\"Row\",\"children\":[\"med_text_1\"],\"styles\":{\"width\":260,\"height\":12,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"med_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/ui/medicationRecords/1/recordText} }}\",\"styles\":{\"width\":260,\"height\":12,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"med_row_2\",\"component\":\"Row\",\"children\":[\"med_text_2\"],\"styles\":{\"width\":260,\"height\":12,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"med_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/ui/medicationRecords/2/recordText} }}\",\"styles\":{\"width\":260,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"divider_mid\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\",\"vertical\":false}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"action_button\"],\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"立即定位回家\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"31.2304\",\"longitude\":\"121.4737\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":120,\"height\":30,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff317af7\",\"borderRadius\":15}},{\"id\":\"divider_bottom\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\",\"vertical\":false}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/alertText} }}\",\"styles\":{\"width\":276,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffdb6b42\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"18°C\",\"humidityPercent\":42}}},\"ui\":{\"medicationRecords\":[{\"recordText\":\"7月7日 21:00 已服药\"},{\"recordText\":\"7月8日 21:05 已服药\"},{\"recordText\":\"7月9日 20:58 待确认\"}],\"alertText\":\"昨晚3:24检测到12分钟无活动,请关注\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

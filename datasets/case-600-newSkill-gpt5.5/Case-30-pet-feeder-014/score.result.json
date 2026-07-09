@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-30-pet-feeder-014",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户核心诉求基本落实：截图中可见标题'宠物喂食'、环形图中央显示'47%'、按钮'看猫步数'（带正确 onClick 跳转健康app）、右上面板显示'储粮桶异常'告警、中部'16:30 疫苗提醒'、纵向三排'08:00/13:00/19:00'餐时段。尺寸 2x4（300x140）、catalogId/version 协议合规。但有两处明显偏离指令：(1) 告警文字'储粮桶异常'使用 #FFED6F21 呈橙红色，截图中明显偏橙而非用户要求的纯红告警色；(2) 渐变 #564AF7→#AC49F5 渲染后整体偏紫罗兰/品紫，缺少用户要求的'睡眠蓝紫'中应有的蓝色基底，蓝紫层次不足。",
+    "aesthetic": "截图整体观感干净专业：蓝紫渐变背景与白色内嵌面板形成良好层次感，标题与按钮白色字体在紫底上对比清晰可读，三排餐时段使用 60% 黑色灰阶形成弱层级。配色整体和谐，但唯一强字重控制欠佳（标题 700 + 47% 700 + 告警 700 + 疫苗 500 + 餐时 400 共四个重量级），视觉重音略多。告警偏橙红色与'红'色提示的语义有轻微违和。",
+    "layout": "截图未观察到元素堆叠重叠、文字截断或组件溢出边界。环形图 Stack 居中良好，'47%'文字未受进度环遮挡；内嵌白色面板 padding 8 合理，三排餐时段与告警、疫苗提醒均在面板内清晰排列。左右两栏宽度 92+10+174=276，含 root padding 24 正好填满 300 宽，无溢出。底部'看猫步数'按钮热区 84x26 满足 ≥24vp 要求，但距卡片底边约 12-14vp，处于安全范围。餐时段 '08:00 早餐 35g' 等单行文本在 158 宽内完整显示无截断。唯一可优化点：左栏 116 高内塞入 18+60+26+itemMargin*2=112 后余量 4vp 偏紧，紧急情况下（标题换行或加图标）易溢出。"
+  },
+  "issues": [
+    "告警文字颜色 #FFED6F21 渲染后偏橙红，不符合用户明确要求的'红色告警'语义",
+    "渐变 #564AF7→#AC49F5 偏紫罗兰/品紫，缺少蓝色基底，未充分体现用户要求的'睡眠蓝紫渐变'",
+    "同一卡片出现 4 个不同字重（700/500/400），违反'同一卡片只保留一个最强字重'的层级原则",
+    "左栏 92x116 内容区在 18+60+26 布局后仅余 4vp 安全空间，弹性偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_col\",\"panel_col\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#2E5BFF\",0],[\"#7B4AF5\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"ring_stack\",\"health_button\"],\"itemMargin\":6,\"styles\":{\"width\":92,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/title} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"food_ring\",\"food_percent\"],\"styles\":{\"width\":56,\"height\":56,\"alignContent\":\"center\"}},{\"id\":\"food_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/feeder/foodPercent} }}\",\"total\":\"{{ ${/feeder/progressTotal} }}\",\"styles\":{\"width\":56,\"height\":56,\"type\":\"ring\",\"color\":\"#FFFFFFFF\"}},{\"id\":\"food_percent\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/foodPercentDisplay} }}\",\"styles\":{\"width\":48,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"health_button\",\"component\":\"Button\",\"label\":\"{{ ${/health/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":84,\"height\":28,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":14}},{\"id\":\"panel_col\",\"component\":\"Column\",\"children\":[\"alert_text\",\"vaccine_text\",\"meal_col\"],\"itemMargin\":4,\"styles\":{\"width\":174,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/statusText} }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFE53935\",\"maxLines\":1}},{\"id\":\"vaccine_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"meal_col\",\"component\":\"Column\",\"children\":[\"meal_1\",\"meal_2\",\"meal_3\"],\"itemMargin\":2,\"styles\":{\"width\":158,\"height\":54,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"meal_1\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/meals/0/time} + ' ' + ${/feeder/meals/0/amount} }}\",\"styles\":{\"width\":158,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"meal_2\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/meals/1/time} + ' ' + ${/feeder/meals/1/amount} }}\",\"styles\":{\"width\":158,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"meal_3\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/meals/2/time} + ' ' + ${/feeder/meals/2/amount} }}\",\"styles\":{\"width\":158,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"宠物喂食\",\"foodPercent\":47,\"foodPercentDisplay\":\"47%\",\"progressTotal\":100,\"statusText\":\"储粮桶异常\",\"meals\":[{\"time\":\"08:00\",\"amount\":\"早餐 35g\"},{\"time\":\"13:00\",\"amount\":\"午餐 30g\"},{\"time\":\"19:00\",\"amount\":\"晚餐 40g\"}]},\"health\":{\"actionLabel\":\"看猫步数\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-vaccine-1\",\"title\":\"疫苗提醒\",\"dtStart\":\"16:30\",\"dtEnd\":\"16:45\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

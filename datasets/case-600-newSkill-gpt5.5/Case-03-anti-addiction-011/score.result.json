@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-anti-addiction-011",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "截图中防沉迷卡片的整体结构基本到位：左侧有环形仪表盘并显示'今日已用42分'与'剩余3分'，中间是白色任务面板包含'完成作业才能玩'（已勾选）和'休息眼睛10分钟'（未勾选）两项可勾选任务，右上角有太阳云朵天气图标和'设置'按钮。但用户明确要求'时间快到了要让仪表盘变黄提示注意'，而截图中的环形仪表盘却渲染成了粉红/品红色（明显非 #f7ce00 黄色），与 dataModel 中 meterColor='#f7ce00' 不符，黄色警告的核心诉求未落实。dataModel 中提供的 statusText='时间快到了' 字段在 DSL 中根本没有被任何组件引用，截图中也看不到任何黄色状态提示文字，警告信息缺失。设置按钮的 onClick 事件和 deeplink 参数正确，素材使用正确。",
+    "aesthetic": "从截图看，背景 #fff1f3f5 浅灰底色与白色任务面板的搭配本身是干净克制的，'设置'按钮的胶囊形态和任务面板的圆角处理也算专业。但最显眼的左侧仪表盘渲染成了亮粉/品红色（明显是 Progress 组件 color 动态绑定未生效、回退到默认强调色的表现），与用户要求的'变黄提示注意'语义完全相悖，视觉上非常突兀，像系统强调色而不是温和的黄色警告。任务面板内的勾选框绿色 (#ff64bb5c) 与粉红仪表盘在色彩心理上互相打架，整体配色因为这个错误色而显得不专业。字体层级（14/13/12/11）尚可区分，但缺少一个真正突出警告状态的主视觉色。",
+    "layout": "从截图观察，卡片整体没有出现文字截断、元素溢出卡片边界或 Stack 堆叠遮挡关键内容的问题。左侧仪表盘顶部虽紧贴卡片上沿（因 meter_column 内 justifyContent:center 把 70px 环推到了顶端偏上位置），但环本身完整可见、未被裁切。右侧天气组、设置按钮、任务面板的纵向排布整齐，任务面板两个复选框的文字均完整显示无省略。底部动作区到卡片底边留白合理。唯一可挑剔的是环形仪表盘占用了 70×70 较大空间、整体偏高偏大，让左侧与右侧内容在视觉重量上略不平衡，但这属于设计偏好，不构成布局错误。",
+    "issues": [
+      "环形仪表盘在截图中渲染为粉红/品红色，未按 dataModel.meterColor='#f7ce00' 显示为用户要求的黄色警告色",
+      "dataModel.screenTime.statusText='时间快到了' 在 DSL 中无任何组件引用，截图中也未显示该黄色状态提示文字",
+      "Progress 组件的 color 使用了动态绑定 '{{ ${/data/screenTime/meterColor} }}' 但渲染引擎未正确解析，回退到了默认强调色",
+      "环形仪表盘 70×70 偏大且被 justifyContent:center 推到列顶端，视觉上偏高，与右侧内容平衡感略弱"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"meter_column\",\"content_column\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"}},{\"id\":\"meter_column\",\"component\":\"Column\",\"children\":[\"meter_ring\",\"meter_value\",\"status_text\",\"remaining_text\"],\"itemMargin\":3,\"styles\":{\"width\":88,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/screenTime/usedMinutes} }}\",\"total\":\"{{ ${/data/screenTime/limitMinutes} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#f7ce00\",\"width\":60,\"height\":60}},{\"id\":\"meter_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/screenTime/usedText} }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/screenTime/statusText} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#d4a000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"remaining_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/screenTime/remainingText} }}\",\"styles\":{\"width\":72,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"header_row\",\"task_panel\"],\"itemMargin\":8,\"styles\":{\"width\":180,\"height\":116,\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_group\",\"settings_button\"],\"itemMargin\":8,\"styles\":{\"width\":180,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"weather_group\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text\"],\"itemMargin\":4,\"styles\":{\"width\":110,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"{{ ${/assets/weatherIcon} }}\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"settings_button\",\"component\":\"Button\",\"label\":\"设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":62,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":16}},{\"id\":\"task_panel\",\"component\":\"Column\",\"children\":[\"task_title\",\"task_row_0\",\"task_row_1\"],\"itemMargin\":4,\"styles\":{\"width\":180,\"height\":76,\"padding\":{\"top\":8,\"right\":10,\"bottom\":8,\"left\":10},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\"}},{\"id\":\"task_title\",\"component\":\"Text\",\"content\":\"任务完成后再玩\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"task_row_0\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/tasks/0/title} }}\",\"select\":\"{{ ${/data/tasks/0/checked} }}\",\"value\":\"task_0\",\"group\":\"anti_addiction_tasks\",\"styles\":{\"width\":160,\"height\":18,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"task_row_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/tasks/1/title} }}\",\"select\":\"{{ ${/data/tasks/1/checked} }}\",\"value\":\"task_1\",\"group\":\"anti_addiction_tasks\",\"styles\":{\"width\":160,\"height\":18,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"condition\":\"多云\"}},\"screenTime\":{\"usedMinutes\":42,\"limitMinutes\":45,\"usedText\":\"今日已用42分\",\"remainingText\":\"剩余3分\",\"statusText\":\"时间快到了\",\"meterColor\":\"#f7ce00\"},\"tasks\":[{\"title\":\"完成作业才能玩\",\"checked\":true},{\"title\":\"休息眼睛10分钟\",\"checked\":false}]},\"assets\":{\"weatherIcon\":\"resources/base/media/cloudy_turning_sunny.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

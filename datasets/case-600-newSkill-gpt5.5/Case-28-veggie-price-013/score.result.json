@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-28-veggie-price-013",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户要求'顶部大购物车图标'但截图实际渲染的是资源库中的导航方向箭头（location_north_up_right_fill.svg），并非购物车；用户还要求'菜和车图标,竖向重复'，截图中三个菜场行除了勾选框外没有任何蔬菜或购物车装饰图标。主要诉求中：橙红渐变（偏橙）、三个菜场竖排、勾选框、勾选后跳转导航事件都按契约落实了，DataModel 绑定和 onClick 参数也与 eventCandidates 一致，但顶部图标类型和重复图标两项关键视觉诉求未满足。",
+    "aesthetic": "截图中橙黄渐变（#ed6f21→#f9bc64）整体偏暖，色彩尚可和谐但缺少'红'调，不算典型的'橙红'。标题与副标题所在胶囊区域用 #33ffffff 半透明白底，浮在橙色渐变上略显浑浊，白字在白底胶囊上对比度尚可但视觉上有点脏。勾选框和价格文字白色在橙色背景上可读性 OK，间距与对齐较统一。整体简洁但缺少修饰与层次感，购物车/蔬菜主题几乎没有视觉表达。",
+    "layout": "截图中三个菜场名'东门菜场'、'南新菜场'、'河畔菜场'被严重截断为'东...'、'南...'、'河...'，每个名称只保留 1 个汉字+省略号，关键菜场信息大量丢失，属于明显的文字截断问题。勾选框宽度（DSL 中为 72）远不足以容纳 4 个汉字的 label，导致 maxLines:1 + 宽度不足触发省略。其余元素无溢出卡片边界、无堆叠重叠、底部有合理留白，热区也满足要求，但菜场名截断是核心布局缺陷。"
+  },
+  "issues": [
+    "三个菜场名'东门菜场/南新菜场/河畔菜场'在截图中被截断为'东.../南.../河...'，核心信息丢失",
+    "用户要求'顶部大购物车图标'，实际渲染为导航方向箭头，与购物车语义不符",
+    "用户要求'菜和车图标,竖向重复'，截图中未出现任何蔬菜或购物车装饰图标",
+    "渐变色 #ed6f21→#f9bc64 偏橙黄，缺少'红'调，与'橙红渐变'略有偏差",
+    "标题区半透明白色胶囊底使白字视觉对比度降低，胶囊略显浑浊"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"market_list\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#e63a1c\",0],[\"#f39a3a\",1]]}}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"nav_icon\",\"hero_text_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":38,\"padding\":4,\"borderRadius\":16,\"backgroundColor\":\"#26ffffff\",\"alignItems\":\"center\"}},{\"id\":\"nav_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/location_north_up_right_fill.svg\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\",\"padding\":6,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"hero_text_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":2,\"styles\":{\"width\":70,\"height\":30,\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/title} }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ ${/subtitle} }}\",\"styles\":{\"width\":70,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1}},{\"id\":\"market_list\",\"component\":\"Column\",\"children\":[\"market_row_0\",\"market_row_1\",\"market_row_2\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":72}},{\"id\":\"market_row_0\",\"component\":\"Row\",\"children\":[\"market_check_0\",\"market_price_0\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"market_check_0\",\"component\":\"Checkbox\",\"label\":\"{{ ${/markets/0/name} }}\",\"value\":\"{{ ${/markets/0/value} }}\",\"group\":\"marketNav\",\"select\":\"{{ ${/markets/0/selected} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/markets/0/latitude} }}\",\"longitude\":\"{{ ${/markets/0/longitude} }}\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":86,\"height\":22,\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#e63a1c\",\"size\":11,\"strokeWidth\":2}}},{\"id\":\"market_price_0\",\"component\":\"Text\",\"content\":\"{{ ${/markets/0/price} }}\",\"styles\":{\"width\":30,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"market_row_1\",\"component\":\"Row\",\"children\":[\"market_check_1\",\"market_price_1\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"market_check_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/markets/1/name} }}\",\"value\":\"{{ ${/markets/1/value} }}\",\"group\":\"marketNav\",\"select\":\"{{ ${/markets/1/selected} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/markets/1/latitude} }}\",\"longitude\":\"{{ ${/markets/1/longitude} }}\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":86,\"height\":22,\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#e63a1c\",\"size\":11,\"strokeWidth\":2}}},{\"id\":\"market_price_1\",\"component\":\"Text\",\"content\":\"{{ ${/markets/1/price} }}\",\"styles\":{\"width\":30,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"market_row_2\",\"component\":\"Row\",\"children\":[\"market_check_2\",\"market_price_2\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"market_check_2\",\"component\":\"Checkbox\",\"label\":\"{{ ${/markets/2/name} }}\",\"value\":\"{{ ${/markets/2/value} }}\",\"group\":\"marketNav\",\"select\":\"{{ ${/markets/2/selected} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/markets/2/latitude} }}\",\"longitude\":\"{{ ${/markets/2/longitude} }}\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":86,\"height\":22,\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#88ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#e63a1c\",\"size\":11,\"strokeWidth\":2}}},{\"id\":\"market_price_2\",\"component\":\"Text\",\"content\":\"{{ ${/markets/2/price} }}\",\"styles\":{\"width\":30,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"title\":\"菜价比价\",\"subtitle\":\"勾选导航\",\"markets\":[{\"name\":\"东门菜场\",\"price\":\"2.8元\",\"selected\":true,\"value\":\"dongmen\",\"latitude\":\"22.5431\",\"longitude\":\"114.0579\"},{\"name\":\"南新菜场\",\"price\":\"3.1元\",\"selected\":false,\"value\":\"nanxin\",\"latitude\":\"22.5368\",\"longitude\":\"114.0496\"},{\"name\":\"河畔菜场\",\"price\":\"2.6元\",\"selected\":false,\"value\":\"hepan\",\"latitude\":\"22.5524\",\"longitude\":\"114.0642\"}]}}}"
+  ]
+}

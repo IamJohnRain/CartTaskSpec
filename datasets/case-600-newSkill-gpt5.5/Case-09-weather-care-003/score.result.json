@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-weather-care-003",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "用户要求的感冒勾选卡主体要素基本齐全：'感冒关怀'标题、'已连接'绿色徽章、天气信息（18°C 多云、感冒指数 低）、两个已勾选 Checkbox、'打开'跳转按钮。但两个 Checkbox 的标签（'喝温水'、'添衣'）在截图中均被截断为 '...'，导致用户无法识别勾选项的具体内容，与'几项打勾'的核心意图严重不符。onClick 事件、deeplink 参数、assetCandidates 图标、DataModel 绑定均正确落实。",
+    "aesthetic": "截图整体配色和谐，蓝白渐变背景与黑色前景对比清晰。标题字重（700）突出，'已连接'徽章使用绿色文字+浅灰胶囊底，视觉精致。但两个 Checkbox 后面紧跟 '...' 省略号，使中下部视觉出现明显断裂感，破坏了卡片的专业感。冷级别文字'感冒指数 低'颜色为半透明黑（#99000000），在浅蓝底色上对比稍弱但仍可读。",
+    "layout": "截图中关键问题：1）两个 Checkbox 的标签文字被截断为 '...'，原因是 Checkbox 组件 width=54 内部空间被勾选方块与内边距占据，留给 label 的空间不足以容纳 2-3 个中文字符；2）原布局垂直高度已超 116 内容区（padding 12+itemMargin 4*3+子项高度 100=136），存在 20vp 溢出风险；3）Button 底部距卡片底边约 11vp，符合规范；4）'感冒关怀'标题与'已连接'徽章左右共享边距合理；5）Weather 图标与文字列对齐良好。"
+  },
+  "issues": [
+    "两个 Checkbox 的 label 文字（'喝温水'、'添衣'）在截图中被截断为 '...'，用户无法识别勾选项",
+    "原布局垂直方向计算占用 136vp 超出 116vp 内容区约 20vp，存在潜在溢出风险",
+    "Checklist label 嵌入 Checkbox 组件时宽度受限，应拆分为 Checkbox + Text 同行布局以保证标签完整可读"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"weather_row\",\"check1_row\",\"check2_row\",\"action_button\"],\"itemMargin\":1,\"styles\":{\"width\":140,\"height\":140,\"padding\":6,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#ffffffff\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"connection_badge\"],\"itemMargin\":4,\"styles\":{\"width\":128,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"感冒关怀\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"connection_badge\",\"component\":\"Text\",\"content\":\"{{ ${/state/connectionText} }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#19000000\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text_col\"],\"itemMargin\":4,\"styles\":{\"width\":128,\"height\":20,\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"weather_text_col\",\"component\":\"Column\",\"children\":[\"weather_primary\",\"cold_level_text\"],\"itemMargin\":0,\"styles\":{\"width\":104,\"height\":20,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_primary\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":104,\"height\":12,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"cold_level_text\",\"component\":\"Text\",\"content\":\"{{ '感冒指数 ' + ${/data/weather/current/coldLevel} }}\",\"styles\":{\"width\":104,\"height\":8,\"fontSize\":8,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"check1_row\",\"component\":\"Row\",\"children\":[\"check_warm_water\",\"check1_label\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"check_warm_water\",\"component\":\"Checkbox\",\"value\":\"warmWater\",\"group\":\"coldCare\",\"select\":\"{{ ${/care/checks/0/select} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":1.5}}},{\"id\":\"check1_label\",\"component\":\"Text\",\"content\":\"{{ ${/care/checks/0/label} }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"check2_row\",\"component\":\"Row\",\"children\":[\"check_clothes\",\"check2_label\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"check_clothes\",\"component\":\"Checkbox\",\"value\":\"clothes\",\"group\":\"coldCare\",\"select\":\"{{ ${/care/checks/1/select} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":1.5}}},{\"id\":\"check2_label\",\"component\":\"Text\",\"content\":\"{{ ${/care/checks/1/label} }}\",\"styles\":{\"width\":106,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":128,\"height\":22,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":11}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"18°C\",\"condition\":\"多云\",\"coldLevel\":\"低\"}}},\"state\":{\"connectionText\":\"已连接\",\"loading\":false},\"care\":{\"checks\":[{\"label\":\"喝温水\",\"select\":true},{\"label\":\"添衣\",\"select\":true}]}}}}"
+  ]
+}

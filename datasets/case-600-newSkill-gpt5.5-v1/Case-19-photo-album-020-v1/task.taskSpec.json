@@ -1,0 +1,130 @@
+{
+  "userQuery": "做一张'边听歌边整理旅行照片'的卡,左右分区,带点磨砂感。我特别享受晚上整理照片听歌的时光。左边信息区上方显示动态数值'已备份 1,247/5,000 张',下面 3 个可勾选项是今天日历日程里的事件'下午 3 点出发机场'、'晚上 7 点聚餐'、'晚 10 点休息'。右边动作区是音乐歌单入口,点一下能跳到音乐应用。状态用红色告警'备份任务已取消,请重试'。整体用点夜晚深蓝渐变,纯文字色块,不加图。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "album": {
+        "backupText": {
+          "type": "string",
+          "description": "相册备份进度的展示文本",
+          "sampleValue": "已备份 1,247/5,000 张"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天日历里的旅行相关日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-trip-airport",
+              "title": "出发机场",
+              "dtStart": "下午 3 点",
+              "dtEnd": "下午 4 点"
+            },
+            {
+              "entityId": "calendar-trip-dinner",
+              "title": "聚餐",
+              "dtStart": "晚上 7 点",
+              "dtEnd": "晚上 9 点"
+            },
+            {
+              "entityId": "calendar-trip-rest",
+              "title": "休息",
+              "dtStart": "晚 10 点",
+              "dtEnd": "晚 10 点半"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识",
+                "sampleValue": "calendar-trip-airport"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "出发机场"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间展示文本",
+                "sampleValue": "下午 3 点"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间展示文本",
+                "sampleValue": "下午 4 点"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "checks": {
+        "type": "array",
+        "description": "三条日程整理勾选状态",
+        "sampleValue": [
+          {
+            "selected": false
+          },
+          {
+            "selected": false
+          },
+          {
+            "selected": true
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条勾选状态",
+          "properties": {
+            "selected": {
+              "type": "boolean",
+              "description": "该日程是否已勾选",
+              "sampleValue": false
+            }
+          }
+        }
+      }
+    },
+    "music": {
+      "title": {
+        "type": "string",
+        "description": "音乐歌单入口标题",
+        "sampleValue": "音乐歌单"
+      },
+      "subtitle": {
+        "type": "string",
+        "description": "整理照片时听歌的入口说明",
+        "sampleValue": "边听边整理"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "跳转音乐应用的动作文案",
+        "sampleValue": "打开歌单"
+      }
+    },
+    "status": {
+      "message": {
+        "type": "string",
+        "description": "相册备份任务取消后的红色告警文案",
+        "sampleValue": "备份任务已取消，请重试"
+      }
+    }
+  },
+  "assetCandidates": []
+}

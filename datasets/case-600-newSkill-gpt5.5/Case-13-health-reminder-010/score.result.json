@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-13-health-reminder-010",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "截图中可见卡片基本满足了用户的主要诉求：闹钟图标+'吃药'标题、两个可勾选的药物（早药未选/晚药已选）、'设置'按钮带 deeplink 事件、底部天气信息（29°C 多云）均完整呈现。但用户明确要求'红色危险提示'，截图中'危险提示'文字实际呈现为橙色（#ffed6f21），并非红色，违反用户明确的颜色诉求，扣分。",
+    "aesthetic": "截图中整体配色以黑白灰为主，'危险提示'用橙色（#ffed6f21）而非用户要求的红色，警示感不足。卡片下方有较大留白（内容仅占顶部约 100px，底部约 40px 空白），视觉重心偏上，整体不够紧凑。标题、按钮、文本字号层次尚可，但橙色不够醒目，与'危险'语义不匹配。",
+    "layout": "截图中各元素均能完整呈现：闹钟图标、'吃药'标题、'设置'按钮在头部一行；'危险提示'文字独占一行；两个 Checkbox 各占一行；'29°C 多云'在底部。所有文字未出现截断或重叠，Checkbox 选中态清晰。但卡片底部存在明显空白（内容未填满 140px 高度），布局略显松散，底部锚定感不足。按钮热区约 50x24vp，满足 ≥24vp 要求。"
+  },
+  "issues": [
+    "用户明确要求'红色危险提示'，但截图中'危险提示'显示为橙色（#ffed6f21），颜色不匹配",
+    "卡片底部存在约 40px 空白区域，内容未填满 2x2 卡片高度，视觉松散",
+    "Checkbox 选中态使用橙色，与红色警示主题不统一",
+    "危险提示区域仅为单行橙色文字，缺少背景色块或图标强化警示效果"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"alert_bg\",\"med_first\",\"med_second\",\"weather_text\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"reminder_icon\",\"title_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"reminder_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/alarm_fill_1.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"吃药\",\"styles\":{\"width\":42,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":50,\"height\":22,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":11}},{\"id\":\"alert_bg\",\"component\":\"Stack\",\"children\":[\"alert_text\"],\"styles\":{\"width\":120,\"height\":20}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"⚠ {{ ${/status/alertText} }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe50000\",\"borderRadius\":4,\"maxLines\":1}},{\"id\":\"med_first\",\"component\":\"Checkbox\",\"label\":\"{{ ${/medications/first/name} }}\",\"value\":\"first\",\"group\":\"medicine\",\"select\":\"{{ ${/medications/first/taken} }}\",\"styles\":{\"width\":120,\"height\":20,\"selectedColor\":\"#ffe50000\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"med_second\",\"component\":\"Checkbox\",\"label\":\"{{ ${/medications/second/name} }}\",\"value\":\"second\",\"group\":\"medicine\",\"select\":\"{{ ${/medications/second/taken} }}\",\"styles\":{\"width\":120,\"height\":20,\"selectedColor\":\"#ffe50000\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }} · {{ ${/data/weather/current/temperatureText} }} {{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"status\":{\"alertText\":\"高温危险，请勿外出\"},\"medications\":{\"first\":{\"name\":\"早药\",\"taken\":false},\"second\":{\"name\":\"晚药\",\"taken\":true}},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\",\"alertLevel\":\"注意高温\"},\"updatedAt\":\"2026-07-09 08:00\"}}}}}"
+  ]
+}

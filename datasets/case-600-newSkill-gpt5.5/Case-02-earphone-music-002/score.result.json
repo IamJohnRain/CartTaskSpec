@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-002",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "截图中可见标题'耳机音乐'、主指标'30首'、副标题'每日推荐'、状态胶囊'耳机已连接'四项信息均完整呈现；数据绑定表达式与dataModel对应路径一致；onClick事件call/args与eventCandidates完全一致，deeplink正确。尺寸2x4(300x140)、catalogId、version、updateDataModel.path均符合硬约束。唯一轻微不足是'图为主'诉求虽满足(116x116封面占位较大)，但由于封面内两张图(耳机+音乐)重叠遮挡，实际视觉上耳机作为'主视觉'的清晰度被削弱。",
+    "aesthetic": "紫蓝渐变(#564af7→#c386f0)整体协调，标题/数字/副标题/状态四层字重与字号梯度清晰(16/32/12/12)，主指标'30首'使用32pt粗体作为最强字重唯一性成立，文字在紫色背景上对比度尚可。但封面面板内耳机图标与背后的音乐小图标(42x42)发生明显重叠，叠在半透明白色圆角面板上导致主视觉发糊、像'两层水印'叠加，封面区观感偏土。状态胶囊内部padding、圆角、图标+文字组合干净，弥补了部分封面问题。",
+    "layout": "右侧信息栏Column纵向占用核算：padding 2+2 + title(18) + itemMargin 4 + count(34) + 4 + subtitle(16) + 4 + status(24) = 108，落在父高116内，无截断无溢出，状态胶囊底边距卡片底边约 140-12-116-? ≈ 合理锚定。横向Row: cover_panel(116) + itemMargin 12 + info_panel(148) = 276 = 父内容宽，无溢出。'30首'、'耳机音乐'、'每日推荐'、'耳机已连接'在截图中均完整可读，未见文字截断。最大问题在封面Stack：cover_back(42x42音乐图标)与cover_image(88x88耳机)未做定位区分，二者在截图中央区域出现明显的两层重叠/虚化，视觉上像是'图标半透叠加'，既不是干净的封面也不是合理的装饰。状态胶囊热区约 116x24 ≥ 24vp，达标。"
+  },
+  "issues": [
+    "封面Stack中cover_back(音乐小图标42x42)与cover_image(耳机88x88)无定位属性直接叠加，截图中可见两层图标在中下部发生明显重叠/虚化，导致耳机主视觉不清晰",
+    "封面面板使用#33ffffff半透明白底，叠在紫色渐变上让耳机图标整体发灰发糊，色彩饱和度被压低",
+    "耳机图标在封面内占比(88/116 ≈ 76%)尚可，但因背景面板留白少+图标半透，实际视觉冲击力不足，与'图为主'诉求有轻微差距"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"cover_panel\",\"info_panel\"],\"itemMargin\":12,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#c386f0\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"cover_panel\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":116,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#55ffffff\",\"objectFit\":\"contain\",\"padding\":16}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"count_text\",\"subtitle_text\",\"status_pill\"],\"itemMargin\":4,\"styles\":{\"width\":148,\"height\":116,\"padding\":{\"left\":0,\"right\":0,\"top\":2,\"bottom\":2},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/music/title} }}\",\"styles\":{\"width\":148,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ ${/music/countText} }}\",\"styles\":{\"width\":148,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ ${/music/subtitle} }}\",\"styles\":{\"width\":148,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_icon\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/music/statusText} }}\",\"styles\":{\"width\":78,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"music\":{\"title\":\"耳机音乐\",\"subtitle\":\"每日推荐\",\"countText\":\"30首\",\"statusText\":\"耳机已连接\"}}}}"
+  ]
+}

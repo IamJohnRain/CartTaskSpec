@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-27-utility-bill-001",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户明确要求'用个柱状图看用电量'，但截图中 main_row 左侧本应展示 5 根柱子的位置完全空白，柱状图元素未在画面中渲染出来，该核心诉求缺失。其余诉求基本满足：'32度'以 32pt 大字清晰展示在右侧；'拨客服'绿色 CTA 按钮带 clickToCallPhone 事件；'多云 26°C' 天气展示在右上；'快欠费'白底红字胶囊提示在左下。事件与素材使用也正确（bolt_fill.svg 闪电图标）。因柱状图这一关键诉求未真正呈现，指令遵从分大幅扣减。",
+    "aesthetic": "截图整体观感良好：浅蓝到白的对角渐变背景柔和；闪电图标加粗体'电量'形成清晰的品牌头；'32度'作为最强字重字号，与'剩余'二级文字形成明确的层级；'快欠费'白底红字胶囊与绿色'拨客服'按钮配色和谐、对比清晰；留白与对齐统一。但因柱状图区域整片空白，原本可以起到视觉点缀作用的彩色柱子未出现，画面左侧略显空洞，扣少量分。",
+    "layout": "截图显示 main_row 左侧 chart_box 区域（36×62）完全空白，5 根本应可见的柱子（高 18/26/34/28/44，蓝色 4 根、红色 1 根）均未渲染——这是因为 bar_1~bar_5 使用了空字符串 content 的 Text 元素，部分渲染器对空内容 Text 会忽略 backgroundColor 并把盒模型压成 0，从而不显示柱子。其余布局正常：header_row 内的图标+标题和天气文本宽度 116 装下；'32度'32pt 字号在 76 宽列中未截断；footer_row 的 52+4+60=116 横向装下'快欠费'胶囊和'拨客服'按钮，底部按钮到卡片底边约 8vp 在允许范围；无元素堆叠、无文字被裁切。核心问题就是柱状图柱体整片消失。",
+    "issues": [
+      "柱状图 5 根柱（bar_1~bar_5）因 content 为空字符串在渲染时未显示，main_row 左侧区域完全空白，用户'用个柱状图看用电量'的核心诉求未呈现",
+      "value_col 宽 76 但 '32度' 32pt 中文文本自然宽度约 96，存在轻微被容器压缩的风险，截图暂未截断但应预留更宽空间",
+      "chart_box 高度 62、chart_row 高度 48，chart_row 居中后上下各有 7vp 空白，可考虑让柱子与 '32度' 主数值垂直居中对齐以提升视觉协调"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"footer_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#ffffffff\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"header_left\",\"weather_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_left\",\"component\":\"Row\",\"children\":[\"electric_icon\",\"title_text\"],\"itemMargin\":4,\"styles\":{\"width\":46,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"electric_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bolt_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"电量\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":66,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"chart_box\",\"value_col\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":62,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"chart_box\",\"component\":\"Column\",\"children\":[\"chart_row\"],\"styles\":{\"width\":36,\"height\":62,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"chart_row\",\"component\":\"Row\",\"children\":[\"bar_1\",\"bar_2\",\"bar_3\",\"bar_4\",\"bar_5\"],\"itemMargin\":4,\"styles\":{\"width\":36,\"height\":48,\"alignItems\":\"bottom\",\"justifyContent\":\"center\"}},{\"id\":\"bar_1\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":4,\"height\":\"{{ ${/bill/usageBars/day1Height} }}\",\"backgroundColor\":\"#46b1e3\",\"borderRadius\":2,\"fontSize\":1,\"fontColor\":\"#46b1e3\"}},{\"id\":\"bar_2\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":4,\"height\":\"{{ ${/bill/usageBars/day2Height} }}\",\"backgroundColor\":\"#46b1e3\",\"borderRadius\":2,\"fontSize\":1,\"fontColor\":\"#46b1e3\"}},{\"id\":\"bar_3\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":4,\"height\":\"{{ ${/bill/usageBars/day3Height} }}\",\"backgroundColor\":\"#46b1e3\",\"borderRadius\":2,\"fontSize\":1,\"fontColor\":\"#46b1e3\"}},{\"id\":\"bar_4\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":4,\"height\":\"{{ ${/bill/usageBars/day4Height} }}\",\"backgroundColor\":\"#46b1e3\",\"borderRadius\":2,\"fontSize\":1,\"fontColor\":\"#46b1e3\"}},{\"id\":\"bar_5\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":4,\"height\":\"{{ ${/bill/usageBars/day5Height} }}\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":2,\"fontSize\":1,\"fontColor\":\"#ffe84026\"}},{\"id\":\"value_col\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"primary_value\"],\"itemMargin\":2,\"styles\":{\"width\":76,\"height\":62,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/bill/remainingCaption} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/bill/remainingKwhText} }}\",\"styles\":{\"width\":76,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"footer_row\",\"component\":\"Row\",\"children\":[\"warning_pill\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"warning_pill\",\"component\":\"Text\",\"content\":\"{{ ${/bill/warningText} }}\",\"styles\":{\"width\":52,\"height\":28,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"拨客服\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"95598\"}}],\"styles\":{\"width\":60,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"bill\":{\"remainingCaption\":\"剩余\",\"remainingKwhText\":\"32度\",\"warningText\":\"快欠费\",\"usageBars\":{\"day1Height\":18,\"day2Height\":26,\"day3Height\":34,\"day4Height\":28,\"day5Height\":44}},\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}}}}}"
+  ]
+}

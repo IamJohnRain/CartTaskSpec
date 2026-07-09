@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-25-reading-013",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图中可见深色背景配暖色棕橙渐变，符合'晚上通勤不刺眼+暖色调'诉求；左侧主视觉'书'字符号、'听书'、'夜读'均完整呈现；右侧三条日程'7:30 晨读/已完成''12:00 听书/还剩 210 分钟''21:30 睡前/还剩 780 分钟'全部出现，'✓'正向状态以绿色显示在已完成项上，动态剩余时间清晰可读；三条事件均带 onClick 事件，call/args 原样来自 eventCandidates。但用户原文写'右边横向排几个日程事件'，2x2 卡片可用宽度仅 74vp，受限于尺寸实际渲染为垂直堆叠而非真正的横向排列，对'横向'二字的字面落实存在轻微折扣。",
+    "aesthetic": "截图整体观感较好：深色底配 RightBottom 方向的暖色渐变营造了夜间氛围；左面板'书'字 32pt 加粗作为主视觉突出；右侧已完成项用绿色'✓'+'已完成'，未完成项用橙黄色'还剩 X 分钟'，颜色层级清晰且与暖色背景协调；前景文字在深色背景上对比度足够，可读性良好；字体层级（大字主视觉 32 / 副标题 14 / 标签 10 / 事件 10）符合阶梯原则，最强字重集中在'书'字一处；圆角 18 与子项圆角 8 统一协调；无明显土气或杂乱。",
+    "layout": "截图未观察到元素堆叠、重叠或文字截断：左侧书面板宽 34vp 居中布局，'书''听书''夜读'三行文字垂直对齐良好；右侧事件列表宽 74vp，三条 34vp 高的卡片以 4vp 间距纵向堆放，整体高度约 110vp，未超出 116vp 内容区；第三条'还剩 780 分钟'虽贴近卡片底部圆角边缘但未被裁切；三条事件卡背景半透明白色圆角，文字左对齐，整齐统一；按钮热区高度 34vp 满足 ≥24vp 要求；左面板与事件列表之间 8vp 间距适中。唯一可议之处是左面板 34vp 偏窄，主视觉'书'字虽大但呼吸空间略紧。"
+  },
+  "issues": [
+    "用户明确要求'右边横向排几个日程事件'，但受 2x2 尺寸限制，实际渲染为垂直堆叠，未能字面落实'横向'诉求",
+    "左面板宽度 34vp 偏窄，主视觉'书'字两侧留白略显局促",
+    "事件项使用的是 shortTitle（晨读/听书/睡前）而非完整 title，信息密度可进一步提升"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"book_panel\",\"event_list\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#9e7349\",0.62],[\"#ff2e3033\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"book_panel\",\"component\":\"Column\",\"children\":[\"book_glyph\",\"book_title\",\"book_mode\"],\"itemMargin\":3,\"styles\":{\"width\":42,\"height\":120,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"book_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/currentBook/glyph} }}\",\"styles\":{\"width\":42,\"height\":44,\"fontSize\":34,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"book_title\",\"component\":\"Text\",\"content\":\"{{ ${/currentBook/title} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"book_mode\",\"component\":\"Text\",\"content\":\"{{ ${/currentBook/mode} }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"event_list\",\"component\":\"Column\",\"children\":[\"event_row_0\",\"event_row_1\",\"event_row_2\"],\"itemMargin\":4,\"styles\":{\"width\":72,\"height\":120}},{\"id\":\"event_row_0\",\"component\":\"Column\",\"children\":[\"event_title_0\",\"event_remain_0\"],\"itemMargin\":1,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":72,\"height\":36,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"event_title_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/statusMark} + ' ' + ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/shortTitle} }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff5ba854\",\"maxLines\":1}},{\"id\":\"event_remain_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remainingText} }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"event_row_1\",\"component\":\"Column\",\"children\":[\"event_title_1\",\"event_remain_1\"],\"itemMargin\":1,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/1/entityId} }}\"}}}],\"styles\":{\"width\":72,\"height\":36,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"event_title_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/shortTitle} }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"event_remain_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/remainingText} }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#e08c3a\",\"maxLines\":1}},{\"id\":\"event_row_2\",\"component\":\"Column\",\"children\":[\"event_title_2\",\"event_remain_2\"],\"itemMargin\":1,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/2/entityId} }}\"}}}],\"styles\":{\"width\":72,\"height\":36,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"event_title_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/dtStart} + ' ' + ${/data/calendar/items/2/shortTitle} }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"event_remain_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/remainingText} }}\",\"styles\":{\"width\":66,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#e08c3a\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"currentBook\":{\"glyph\":\"书\",\"title\":\"听书\",\"mode\":\"夜读\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"reading-morning\",\"dtStart\":\"7:30\",\"title\":\"晨间读书\",\"shortTitle\":\"晨读\",\"remainingText\":\"已完成\",\"statusMark\":\"✓\"},{\"entityId\":\"reading-noon\",\"dtStart\":\"12:00\",\"title\":\"午间听书\",\"shortTitle\":\"听书\",\"remainingText\":\"还剩 210 分钟\",\"statusMark\":\"\"},{\"entityId\":\"reading-night\",\"dtStart\":\"21:30\",\"title\":\"睡前阅读\",\"shortTitle\":\"睡前\",\"remainingText\":\"还剩 780 分钟\",\"statusMark\":\"\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

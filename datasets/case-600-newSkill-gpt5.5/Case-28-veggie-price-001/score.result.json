@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-001",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "截图中可见'菜价'标题、日历图标、'已连接'状态徽标、'青菜3.8'主数值、'比昨日低0.4'说明、'08:30'时间、'进日程'绿色按钮，完全覆盖用户诉求。动态数据通过 {{ }} 表达式绑定 title/description/dtStart/entityId，onClick 使用 TaskSpec 中原样的 clickToIntent/ViewCalendarEvent 事件，asset 引用了 calendar_fill.svg。2x2 尺寸、catalogId、version、updateDataModel.path='/' 全部符合协议。轻微扣分：header 中的'菜价'是写死字面量，未从 DataModel 读取，语义上稍欠动态化。",
+    "aesthetic": "截图中绿色渐变（#bddb69 → #92c48d）清新自然，契合菜价主题。文字层级清晰：'青菜3.8' 20px 粗体最强、'菜价' 14px 粗体次之、说明 12px、时间 12px 浅灰、按钮白字。'已连接'徽标用半透明白底圆角胶囊，视觉克制。按钮配色（#64bb5c）与背景渐变同色系，对比稍弱但仍可读。留白舒适、对齐统一。整体偏稳重专业，扣 0.5 分因按钮与背景色相过于接近，按下反馈可读性可再加强。",
+    "layout": "从截图看，140x140 卡片内所有元素均完整呈现，无文字截断、无堆叠遮挡、无溢出边界。root Column 三段（header_row 18 + price_block 48 + bottom_row 30 + 2*8 itemMargin = 112）落在 116 内容区内，安全余量 4vp。header_row 内图标(16)+标题(54)+徽标(38)+2*4=116 正好填满。bottom_row 时间(48)+按钮(60)+8=116 也贴合。底部按钮底边到卡片底边约 8vp，处于 8-12vp 建议区间，按钮高度 30vp 热区充足。Stack 未被滥用，无遮盖问题。整体排版干净。"
+  },
+  "issues": [
+    "header 标题'菜价'为写死字面量，未通过 {{ }} 从 DataModel 读取，数字变化诉求下语义上应保持可配置",
+    "按钮背景色 #64bb5c 与卡片底部渐变色相过于接近，强光环境下对比度偏弱，可读性可再提升",
+    "主数值'青菜3.8'直接展示完整标题，把商品名与价格混排，若未来菜品名变长容易超宽，建议拆为两行"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"price_block\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#bddb69\",0],[\"#92c48d\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"title_text\",\"status_pill\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":40,\"height\":18,\"padding\":[0,5,0,5],\"borderRadius\":9,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"已连接\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"price_block\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":52,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进日程\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":60,\"height\":32,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff3a8a3f\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-price-001\",\"title\":\"青菜3.8\",\"description\":\"比昨日低0.4\",\"dtStart\":\"08:30\",\"dtEnd\":\"09:00\",\"isServiceValid\":2}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

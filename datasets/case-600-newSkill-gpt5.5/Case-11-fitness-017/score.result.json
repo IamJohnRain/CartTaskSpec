@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-11-fitness-017",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户主要诉求基本全部落实：截图可见 2x2 卡片、左半大圆环中心叠 72% 数字、右上固定文案「早起5公里」、右侧毛玻璃色块展示天气「多云 24°C」、圆环为绿色（完成态）、整体为橙黄运动感渐变、未使用 Image/List/onClick 跳闹钟 App 的 eventCandidates 原样（clickToDeeplink + clock 包名）。尺寸 140x140、catalogId/version/updateDataModel 全部合规。轻微扣分点：左侧「完成」caption 与底部安全距离略紧，整体未做无障碍/动效装饰。",
+    "aesthetic": "截图观感良好：橙黄渐变自然、有运动感；绿色圆环与橙色背景形成高对比互补；白色主文字清晰可读；天气面板使用半透明白色底（#19ffffff）形成柔磨砂质感，与指令一致。字重层级合理：72% 用 fontWeight 700、其余为 500-700；圆环内数字 20pt 突出。无明显留白空洞或过密。扣分点：「完成」caption 颜色 #99ffffff 在橙色背景上对比度偏弱，显得略灰；右侧面板与左圆环在垂直中心轴上未严格对齐（圆环偏左、文案偏右），整体对称感可再优化。",
+    "layout": "截图整体无堆叠/截断/溢出：主行 main_row 高度 96 居中于 116 内容区，剩余上下各 10vp 间距；左列 ring_stack 68 + itemMargin 6 + caption 18 = 92 适配 96 容器；右侧「早起5公里」两行 + 天气面板 48 高度合计 88 适配 96 容器，截图中均完整显示。圆环与 72% 数字在 Stack 中正确叠放且居中。轻微瑕疵：左列「完成」caption 底边距卡片底边约 10-12vp，处于临界值；右列天气面板底边距卡片底边约 10vp，视觉上略紧但未溢出。无 Stack 遮挡、CTA 被压、受保护文字被裁切等严重问题。"
+  },
+  "issues": [
+    "左列「完成」caption 颜色 #99ffffff 在橙色渐变背景上对比度偏低，略显灰白",
+    "左圆环主视觉与右列文字/天气面板在水平中线上未完全对齐（圆环整体偏上，天气面板与 caption 形成轻微错位）",
+    "左列「完成」与卡片底边的安全距离约 10-12vp，处于推荐范围下限，可适当扩大",
+    "右侧 target_text 宽度 44 略窄，「早起」与「5公里」之间为换行符分隔，可视化无 ellipsis 但密度偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"main_row\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]},\"alignContent\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":96,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"ring_stack\",\"ring_caption\"],\"itemMargin\":4,\"styles\":{\"width\":64,\"height\":96,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"completion_ring\",\"completion_value\"],\"styles\":{\"width\":64,\"height\":64,\"alignContent\":\"center\"}},{\"id\":\"completion_ring\",\"component\":\"Progress\",\"value\":72,\"total\":100,\"styles\":{\"width\":60,\"height\":60,\"type\":\"ring\",\"color\":\"#64bb5c\"}},{\"id\":\"completion_value\",\"component\":\"Text\",\"content\":\"72%\",\"styles\":{\"width\":48,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"ring_caption\",\"component\":\"Text\",\"content\":\"完成\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"target_text\",\"weather_panel\"],\"itemMargin\":4,\"styles\":{\"width\":46,\"height\":96,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"target_text\",\"component\":\"Text\",\"content\":\"早起\\n5公里\",\"styles\":{\"width\":46,\"height\":40,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"weather_panel\",\"component\":\"Column\",\"children\":[\"weather_condition\",\"weather_temp\"],\"itemMargin\":2,\"styles\":{\"width\":46,\"height\":50,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#22ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":34,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"condition\":\"多云\",\"temperatureText\":\"24°C\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

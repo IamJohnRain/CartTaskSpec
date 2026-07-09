@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-14-commute-001",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户原始指令明确要求'能打电话、看天气、红色危险提示'。截图中打电话功能已落实（绿色'打电话'按钮触发 clickToCallPhone 事件，参数 10086 正确）；天气信息（位置'当前位置'、温度'29°C'、天气'雷阵雨'、空气'良'、风力'4级'）齐全；危险提示文案'危险提示 暴雨黄色预警'也已呈现。但用户明确要求'红色'危险提示，截图中危险提示面板背景为橙色（#ed6f21），并非红色，与'红色'诉求不符，扣分明显。此外电话图标使用了 .svg 资源，协议硬约束禁止 SVG 格式（虽然来自 assetCandidates，但约束是绝对的），存在协议违规。",
+    "aesthetic": "整体配色以浅灰白渐变为主，搭配深色主指标'29°C'和橙（实为橙）色提示条，视觉层次尚可；标题文字深色与浅色背景对比清晰，字号阶梯（32/12）合理；右侧绿色 CTA 按钮与橙色提示条形成色彩呼应（如果改为红色会形成更强的'红绿对比'警示效果）。但提示条颜色为橙色而非用户要求的红色，导致与用户心智预期不符，美感上不够准确。无其他土气或不统一问题。",
+    "layout": "截图中各元素布局清晰，无堆叠重叠：左侧天气区域的天气温大字、空气/风力副文、危险提示面板纵向排列有序；右侧电话图标、按钮、一键联系说明垂直对齐良好；中间分割线清晰划分两个区域。所有受保护文本（位置、温度、天气、CTA'打电话'、危险提示、'一键联系'）均完整显示，无截断、无溢出卡片边界。底部'一键联系'到卡片底边距离适中，按钮热区充足。整体布局干净。"
+  },
+  "issues": [
+    "危险提示面板背景为橙色 #ffed6f21，与用户明确要求的'红色危险提示'不符",
+    "电话图标资源为 .svg 格式，违反协议'禁止 SVG'的硬约束",
+    "危险提示条使用橙色时，右侧'打电话'绿色按钮在色彩警示语义上未形成强对比，红绿对比更能体现危险+行动的双重语义"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_col\",\"split_divider\",\"right_col\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_row\",\"alert_panel\"],\"itemMargin\":8,\"styles\":{\"width\":183,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"location_text\",\"condition_text\"],\"itemMargin\":6,\"styles\":{\"width\":183,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/thunderstorm.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":65,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"weather_meta_col\"],\"itemMargin\":8,\"styles\":{\"width\":183,\"height\":42,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":80,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_meta_col\",\"component\":\"Column\",\"children\":[\"air_text\",\"wind_text\"],\"itemMargin\":4,\"styles\":{\"width\":95,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"air_text\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":95,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"wind_text\",\"component\":\"Text\",\"content\":\"{{ '风力 ' + ${/data/weather/current/windLevel} + '级' }}\",\"styles\":{\"width\":95,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"alert_panel\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"alert_text\"],\"itemMargin\":6,\"styles\":{\"width\":183,\"height\":34,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":14,\"backgroundColor\":\"#ffe53935\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Text\",\"content\":\"⚠\",\"styles\":{\"width\":16,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ '危险提示 ' + ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":147,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"split_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":116,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"phone_icon_box\",\"action_button\",\"action_caption\"],\"itemMargin\":8,\"styles\":{\"width\":76,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"phone_icon_box\",\"component\":\"Row\",\"children\":[\"phone_icon\"],\"styles\":{\"width\":76,\"height\":44,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"phone_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/phone_fill.svg\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"10086\"}}],\"styles\":{\"width\":76,\"height\":36,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":18}},{\"id\":\"action_caption\",\"component\":\"Text\",\"content\":\"一键联系\",\"styles\":{\"width\":76,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"雷阵雨\",\"airQuality\":\"良\",\"windLevel\":4,\"alertLevel\":\"暴雨黄色预警\"}}}}}}"
+  ]
+}

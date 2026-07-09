@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-22-express-006",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户明确要求'红字标着快超时'，但截图中第一行状态文字'快超时'与第二行'运输中'在视觉上呈现为相近的深色，并未形成用户期待的红色警示效果，dataModel中statusColor为8位ARGB格式'#ffe84026'，渲染时未被正确解析为红色；多包裹列表、点击事件跳转deeplink、快递箱图标资源均已落实，size=2x2/catalogId/version/updateDataModel等硬约束满足。",
+    "aesthetic": "橙黄渐变背景温暖但与'快超时'警示语意不够贴切，白色圆角卡片行与橙色背景对比清晰，标题/承运方加粗、时间灰字形成较好层级；缺少红色警示色使整体紧迫感不足，'快超时'与'运输中'视觉权重几乎一致，削弱了用户的核心诉求传达。",
+    "layout": "截图未见堆叠/溢出/截断：标题'包裹'与右侧'2件'在header_row(116x24)内对齐良好，box_icon(22x22)+title_text(58x18)+count_text(24x16)横向排布不超116vp；两个包裹行高34vp、间距4vp装入116x72列表区，状态文字42vp宽右对齐无裁切；底部留白约12vp，元素全部落在140x140卡片内。",
+    "issues": [
+      "截图中'快超时'文字未呈现明显红色（应满足用户'红字'诉求），dataModel中statusColor='#ffe84026'为8位ARGB格式，可能未正确解析",
+      "status_text_1的fontColor使用动态绑定'{{...}}'在截图中未生效为红色，建议改用6位标准hex硬编码确保红字渲染",
+      "橙色渐变背景与'快超时'警示语意不匹配，可考虑用更克制的浅色背景+红字形成对比"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"package_list\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#f5dc62\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"box_icon\",\"title_text\",\"count_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"box_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/courier_box.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/title} }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packageCountLabel} }}\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"package_list\",\"component\":\"List\",\"children\":[\"package_row_1\",\"package_row_2\"],\"space\":4,\"styles\":{\"width\":116,\"height\":72,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"package_row_1\",\"component\":\"Row\",\"children\":[\"package_info_1\",\"status_text_1\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":34,\"padding\":{\"top\":4,\"right\":8,\"bottom\":4,\"left\":8},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"package_info_1\",\"component\":\"Column\",\"children\":[\"carrier_text_1\",\"time_text_1\"],\"itemMargin\":0,\"styles\":{\"width\":54,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"carrier_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packages/0/carrier} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"time_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packages/0/timeLabel} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"status_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packages/0/statusLabel} }}\",\"styles\":{\"width\":42,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E84026\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"package_row_2\",\"component\":\"Row\",\"children\":[\"package_info_2\",\"status_text_2\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":34,\"padding\":{\"top\":4,\"right\":8,\"bottom\":4,\"left\":8},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"package_info_2\",\"component\":\"Column\",\"children\":[\"carrier_text_2\",\"time_text_2\"],\"itemMargin\":0,\"styles\":{\"width\":54,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"carrier_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packages/1/carrier} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"time_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packages/1/timeLabel} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"status_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/express/packages/1/statusLabel} }}\",\"styles\":{\"width\":42,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"express\":{\"title\":\"包裹\",\"packageCountLabel\":\"2件\",\"packages\":[{\"carrier\":\"顺丰箱\",\"timeLabel\":\"还剩2小时\",\"statusLabel\":\"快超时\",\"statusColor\":\"#E84026\"},{\"carrier\":\"京东件\",\"timeLabel\":\"今日派送\",\"statusLabel\":\"运输中\",\"statusColor\":\"#99000000\"}]}}}}}"
+  ]
+}

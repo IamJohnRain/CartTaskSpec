@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-22-express-009",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.4,
+  "reasons": {
+    "instruction": "用户明确要求展示距离8公里、能打电话、读天气、显示已签收。截图中可见：左上'快递物流'标题、'已签收'绿色徽章、'多云 26°C'天气信息、左下'距离'+橙色'8公里'主数值+'包裹已签收'说明、右下白色面板含'联系快递员'与绿色'打电话'按钮。四个用户诉求均完整呈现。事件 clickToCallPhone 电话 95338 原样落实；快递箱 icon 使用了 assetCandidates 中的 courier_box.png；尺寸 2x4（300x140）、catalogId、version、updateDataModel.path 全部合规。",
+    "aesthetic": "配色克制专业：浅灰底（#f1f3f5）配绿色（#64bb5c）作状态/CTA 主色、橙色（#ed6f21）突出 8公里主指标，色相和谐。文字层级清晰：14 号粗体标题、32 号橙色主数值、12 号灰色说明，仅 8公里 一处最强字重。留白舒适，对齐统一，徽章和按钮圆角与卡片一致，无空旷或拥挤感。",
+    "layout": "截图无任何元素堆叠或重叠。header_row 四个子项（icon+title+badge+weather）水平排布整齐，右侧'多云 26°C'右对齐贴边；body_row 左侧 primary_col（距离/8公里/包裹已签收）与右侧 action_panel 并列，中间 12vp 间隔合适。'8公里'主数值字号 32、宽 164，三字未截断。'打电话'按钮宽 84 高 34，热区充分；action_panel 底边到卡片底约 12vp，在 10-14vp 合理区间。文字均完整可读，无裁切溢出。"
+  },
+  "issues": [
+    "天气信息仅一行小字呈现，与'8公里'主指标视觉权重差距略大，'读天气'诉求的显著性可再提升（轻微，不影响功能）",
+    "action_panel 内底部留白稍多，'打电话'按钮到面板底边 8vp，按钮视觉略偏上（属微调级）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"parcel_icon\",\"title_text\",\"status_badge\",\"weather_summary\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"parcel_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/courier_box.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"快递物流\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/logistics/statusText} }}\",\"styles\":{\"width\":70,\"height\":24,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#19000000\",\"borderRadius\":12,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"weather_summary\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#de000000\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"primary_col\",\"action_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":84,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"primary_col\",\"component\":\"Column\",\"children\":[\"distance_caption\",\"primary_value\",\"status_detail\"],\"itemMargin\":4,\"styles\":{\"width\":164,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"distance_caption\",\"component\":\"Text\",\"content\":\"距离\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/logistics/distanceText} }}\",\"styles\":{\"width\":164,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"maxLines\":1}},{\"id\":\"status_detail\",\"component\":\"Text\",\"content\":\"{{ ${/data/logistics/statusDetail} }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"phone_caption\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":84,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"phone_caption\",\"component\":\"Text\",\"content\":\"联系快递员\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"95338\"}}],\"styles\":{\"width\":84,\"height\":36,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":18}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"logistics\":{\"distanceText\":\"8公里\",\"statusText\":\"已签收\",\"statusDetail\":\"包裹已签收\"},\"weather\":{\"current\":{\"condition\":\"多云\",\"temperatureText\":\"26°C\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-14-commute-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中可见全部数据字段：标题'通勤提醒'、主状态'快出发'、出门时间'08:10 前出门'、通勤方式'地铁优先'、耗时'34 分钟'、剩余时间'还剩 8 分钟'（红色突出紧迫感），均通过数据绑定正确呈现。底部'打开App'按钮带 onClick 事件，call/args 原样来自 eventCandidates 的 clickToDeeplink，uri 正确。size 为 2x4，root shell 300x140、borderRadius 22、clip true，catalogId 与 version 正确。素材 location_north_up_right_fill.svg 正确作为导航图标使用。无明显遗漏或多余信息。",
+    "aesthetic": "截图整体观感良好：橙黄到浅蓝的对角线渐变自然柔和，前景文字在渐变上清晰可读。左侧大字号'快出发'作为主视觉极强，标题'通勤提醒'用品牌橙色与渐变呼应。右侧白色圆角卡片在渐变上层次分明，红色'还剩 8 分钟'强调紧迫感，蓝色按钮形成高对比点击区。字号阶梯（14/32/12/12/12/14）与字重层级（600/700/500/600/600/500）清晰。最强字重只有快出发的 700，符合单一最强字重原则。轻微扣分：右侧白色状态卡片内部 3 行文字排得较紧，留白略显局促。",
+    "layout": "截图未见任何堆叠、重叠或文字截断。左侧三行（header/主值/副标题）纵向排布清爽，主值'快出发'完整居中显示无省略。中央竖向 divider 将卡片自然分为两区。右侧白色状态面板与蓝色按钮纵向无溢出，'打开App'文字完整未截切。按钮热区高度 32 满足 ≥24vp 要求，底部到底边约 12vp 处于合理区间。左右两区宽度（左 174 + 间距 10 + divider 1 + 右 81 + 12+12 padding = 300）刚好填满。整体对齐与留白舒适，无溢出风险。"
+  },
+  "issues": [
+    "右侧白色状态卡片内三行文字（地铁优先/34 分钟/还剩 8 分钟）行距为 2、padding 为 8，整体排布偏紧，留白略显不足",
+    "右侧区域宽度 81 较窄，白色卡片圆角 16 与按钮圆角 16 视觉上偏大，使内部文字相对紧凑"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"center_divider\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#86c5e3\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"primary_caption\"],\"itemMargin\":6,\"styles\":{\"width\":174,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"nav_icon_box\",\"title_text\"],\"itemMargin\":8,\"styles\":{\"width\":174,\"height\":28,\"alignItems\":\"center\"}},{\"id\":\"nav_icon_box\",\"component\":\"Stack\",\"children\":[\"nav_icon\"],\"styles\":{\"width\":28,\"height\":28,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"nav_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/location_north_up_right_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/title} }}\",\"styles\":{\"width\":136,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/commute/primaryStatus} }}\",\"styles\":{\"width\":174,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/commute/leaveByText} }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"center_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":92,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_panel\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":81,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"mode_text\",\"duration_text\",\"time_left_text\"],\"itemMargin\":4,\"styles\":{\"width\":81,\"height\":64,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/routeMode} }}\",\"styles\":{\"width\":69,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/durationText} }}\",\"styles\":{\"width\":69,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_left_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/timeLeftText} }}\",\"styles\":{\"width\":69,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/commute/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":81,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"commute\":{\"title\":\"通勤提醒\",\"primaryStatus\":\"快出发\",\"leaveByText\":\"08:10 前出门\",\"routeMode\":\"地铁优先\",\"durationText\":\"34 分钟\",\"timeLeftText\":\"还剩 8 分钟\",\"actionLabel\":\"打开App\"}}}}"
+  ]
+}

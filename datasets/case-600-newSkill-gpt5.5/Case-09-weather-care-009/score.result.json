@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-weather-care-009",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "截图中可见 29° 大字主数值（满足'数字会跳'的动态温度主指标）、多云状态、深圳地区名，root 上挂的 onClick 正确调用 clickToDeeplink 且 args 与 TaskSpec.eventCandidates 完全一致（满足'点一下跳进应用'）；右下角圆形按钮使用 actionIcon（icon_weather1.png）作为播报/打开入口，左下角红框卡片显示'提醒 高温'（满足'不行了提醒'）。两张图片均来自 assetCandidates 路径，数据绑定使用完整 {{ }} 表达式读取 temperatureText/condition/alertLevel/districtName。size 2x2、root 140x140、borderRadius 18、catalogId/version 全部符合协议。轻微不足：右下角播报按钮的图标与左上角主天气图标视觉上几乎一致，用户难以从外观区分'播报'与'状态展示'两个语义。",
+    "aesthetic": "蓝色线性渐变（左上深蓝→右下浅蓝）整体协调，白色主数值在渐变上对比度足够、清晰可读；'多云'和'深圳'使用 99ffffff 弱化层级合理；卡片圆角统一、留白节奏规整。但截图中左下角'提醒'卡片采用 #ffe84026 纯红描边，在冷蓝色调中略显突兀、略破坏整体冷色氛围；播报按钮的白色圆形背景与蓝色渐变对比强烈，视觉权重略高，存在一定抢戏感。",
+    "layout": "截图中 2x2 卡片布局完整：顶部行（温度+条件 | 图标+城市）与底部行（提醒卡 | 播报按钮）上下对齐良好。29°/多云/深圳/提醒/高温 全部完整可读，无任何文字截断或 ellipsis；底部两个子块高度 55 各占 116 宽，加 12 上下 padding 与 6 itemMargin 刚好填满 140 高度，底部动作区底边距卡片底边约 12vp，符合'8-12vp'规范。Stack 叠层（action_bg 白色圆 + action_icon）无遮挡，圆形背景完全包裹图标。无元素堆叠重叠或越界问题。"
+  },
+  "issues": [
+    "左下角'提醒'卡片使用 #ffe84026 纯红描边，与整体冷蓝渐变色调不够协调，建议改为偏橙的警告色（如 #80ff9800）以降低视觉冲突",
+    "右下角播报按钮的图标与左上角主天气图标视觉上几乎一致（都是多云图标），用户难以直观区分'播报/打开'与'天气状态展示'两个语义层级",
+    "action_circle 内部使用 Text+空格作为圆形背景的实现方式稍显 hack，可考虑用更规范的 Stack 子组件或纯样式方式实现"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"bottom_row\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#467794\",0],[\"#46b1e3\",0.58],[\"#86c5e3\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"primary_block\",\"status_block\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":55,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"primary_block\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":2,\"styles\":{\"width\":55,\"height\":55,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":55,\"height\":38,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":55,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_block\",\"component\":\"Column\",\"children\":[\"status_icon\",\"object_text\"],\"itemMargin\":2,\"styles\":{\"width\":55,\"height\":55,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"object_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":55,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"support_card\",\"action_circle\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":55,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"support_card\",\"component\":\"Column\",\"children\":[\"support_label\",\"support_value\"],\"itemMargin\":2,\"styles\":{\"width\":55,\"height\":55,\"padding\":{\"left\":4,\"right\":4},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#80ff9800\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"support_label\",\"component\":\"Text\",\"content\":\"提醒\",\"styles\":{\"width\":47,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"support_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":47,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_circle\",\"component\":\"Stack\",\"children\":[\"action_bg\",\"action_icon\"],\"styles\":{\"width\":55,\"height\":55,\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"alignContent\":\"center\"}},{\"id\":\"action_bg\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":36,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"action_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"深圳\"},\"current\":{\"temperatureText\":\"29°\",\"condition\":\"多云\",\"alertLevel\":\"高温\"},\"daily\":[],\"updatedAt\":\"\"}},\"asset\":{\"primaryIcon\":\"resources/base/media/partly_cloudy.png\",\"actionIcon\":\"resources/base/media/icon_weather1.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

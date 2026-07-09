@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-22-express-012",
+  "scores": {
+    "instruction": {
+      "score": 9.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户所有明确诉求在截图中均已完整呈现：顶部'全部包裹'大字加'已签收 ✓'完成态、横向两枚状态卡'包裹1 已签收'与'包裹2 派送中'、紫色到橙色的晚霞渐变背景、最底部'查看天气'按钮及对应的 clickToDeeplink 事件参数、☀/⛅天气符号也正确显示。size=2x2、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 均合规，组件类型全部在白名单内，事件 call/args 与 eventCandidates 完全一致。无多余元素。仅在'查看天气'按钮的视觉对比度上有轻微可优化点，扣 0.8 分。",
+    "aesthetic": "截图整体观感良好：紫到橙的斜向渐变还原了晚霞氛围，标题'全部包裹'白色加粗与下方'已签收 ✓'白字形成清晰层级。两枚包裹卡采用 #19ffffff 半透明白底，在渐变上漂浮感不错。问题在于：(1) 最底部'查看天气'按钮的 #19ffffff 背景在橙色渐变下半部分对比度偏弱，白色文字稍显黯淡；(2) 包裹卡内的 emoji 符号在浅色半透明背景上略微褪色，层次感稍弱；(3) 整体字重中 700(标题)、700(状态)、600(符号)出现两处同等强度字重，未严格做到'一个最强字重'。综合 7.8 分。",
+    "layout": "截图显示所有元素均落在 140x140 卡片边界内，未见裁切或溢出。标题与状态文字在 116 宽容器内单行完整显示，无截断。两枚 54 宽的包裹卡用 8vp 间距横向排布，符号+名称+状态三行文字均清晰可见。'查看天气'按钮位于底部，底边到卡片底边的间距目测在 8-12vp 区间，符合规范，按钮热区 32vp 接近 40vp 理想值。唯一轻微不足是包裹卡内部 textAlign='start' 与卡片内边距 padding:4 配合下，emoji 符号距左边缘非常贴近(因符号容器 width:12 而 emoji 居中)，视觉上略有左贴感，但不构成溢出/截断。综合 8.5 分。"
+  },
+  "issues": [
+    "查看天气按钮 #19ffffff 背景在橙色渐变区对比度偏弱，CTA 视觉权重不足",
+    "卡片内同时出现 fontWeight 700 标题与 fontWeight 700 状态，违反'同一卡片只保留一个最强字重'",
+    "包裹卡内 emoji 符号与文字 left padding 仅 4vp，符号视觉上偏贴左边缘",
+    "包裹卡 54x42 尺寸下文字密度较高，可考虑适当放大行高或字号提升可读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_group\",\"package_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#8c55c2\",0],[\"#db6b42\",0.58],[\"#9e7349\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/title} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/statusLine} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"package_row\",\"component\":\"Row\",\"children\":[\"package_card_1\",\"package_card_2\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"package_card_1\",\"component\":\"Column\",\"children\":[\"package_1_top\",\"package_1_status\"],\"itemMargin\":4,\"styles\":{\"width\":54,\"height\":44,\"padding\":5,\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"package_1_top\",\"component\":\"Row\",\"children\":[\"package_1_symbol\",\"package_1_name\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":44,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"package_1_symbol\",\"component\":\"Text\",\"content\":\"{{ ${/packages/first/symbol} }}\",\"styles\":{\"width\":14,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"package_1_name\",\"component\":\"Text\",\"content\":\"{{ ${/packages/first/name} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"package_1_status\",\"component\":\"Text\",\"content\":\"{{ ${/packages/first/status} }}\",\"styles\":{\"width\":44,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"package_card_2\",\"component\":\"Column\",\"children\":[\"package_2_top\",\"package_2_status\"],\"itemMargin\":4,\"styles\":{\"width\":54,\"height\":44,\"padding\":5,\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"package_2_top\",\"component\":\"Row\",\"children\":[\"package_2_symbol\",\"package_2_name\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":44,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"package_2_symbol\",\"component\":\"Text\",\"content\":\"{{ ${/packages/second/symbol} }}\",\"styles\":{\"width\":14,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"package_2_name\",\"component\":\"Text\",\"content\":\"{{ ${/packages/second/name} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"package_2_status\",\"component\":\"Text\",\"content\":\"{{ ${/packages/second/status} }}\",\"styles\":{\"width\":44,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":28,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"全部包裹\",\"statusLine\":\"已签收 ✓\"},\"packages\":{\"first\":{\"symbol\":\"☀\",\"name\":\"包裹1\",\"status\":\"已签收\"},\"second\":{\"symbol\":\"⛅\",\"name\":\"包裹2\",\"status\":\"派送中\"}},\"action\":{\"label\":\"查看天气\"}}}}"
+  ]
+}

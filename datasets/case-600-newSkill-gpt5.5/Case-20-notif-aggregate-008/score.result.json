@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-20-notif-aggregate-008",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户明确要求'紧急的要标红色'，但截图中'紧急'和'2条'文字使用的是橙色（#ffed6f21），而非红色，与用户核心诉求不符，扣分明显。点击进入钉钉的 clickToDeeplink 事件正确实现，args 原样来自 eventCandidates。所有数据字段（appName、appSubtitle、unreadSummary、latestTitle、urgentLabel、urgentCountText、statusHint）均完整呈现，铃铛 SVG 图标按 assetCandidates 正确使用，size/catalogId/version/path 等协议约束均满足。",
+    "aesthetic": "截图整体观感较好：蓝紫渐变背景清爽，右侧白色卡片与背景对比度足够，字体层级清晰（32pt 主数值 > 16pt 标题 > 14pt 紧急 > 12pt 副信息），左中右三栏对齐整齐，留白密度合理。但紧急色用橙色而非红色，与用户'红色'预期有出入，也削弱了警示感的传达。",
+    "layout": "截图未观察到堆叠、重叠或文字截断：'钉钉消息'标题完整显示，'7条未读'大字未越界，'最新 项目群审批待看'胶囊内容完整呈现，'查看消息'按钮居中且热区充足（约 36vp 高），右侧紧急面板三行文字（紧急/2条/需尽快看）均在白色卡片内，未溢出。底部动作区到卡片底边距离合理。布局干净，无明显问题。"
+  },
+  "issues": [
+    "紧急文字颜色为橙色 #ffed6f21，未满足用户'标红色'的明确诉求",
+    "right_col 宽度 83px 较窄，'查看消息'按钮在右侧白色面板中略显局促，但未溢出"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_col\",\"mid_divider\",\"right_col\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff0a59f7\",0],[\"#46b1e3\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"latest_panel\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_badge\",\"title_group\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":36,\"alignItems\":\"center\"}},{\"id\":\"icon_badge\",\"component\":\"Stack\",\"children\":[\"notify_icon\"],\"styles\":{\"width\":36,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"notify_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_fill.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_group\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\"],\"itemMargin\":2,\"styles\":{\"width\":132,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/appName} }}\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/appSubtitle} }}\",\"styles\":{\"width\":132,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/unreadSummary} }}\",\"styles\":{\"width\":176,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"latest_panel\",\"component\":\"Row\",\"children\":[\"latest_label\",\"latest_title\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":28,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\"}},{\"id\":\"latest_label\",\"component\":\"Text\",\"content\":\"最新\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"latest_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/latestTitle} }}\",\"styles\":{\"width\":126,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"mid_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":96,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"urgent_panel\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":83,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"urgent_panel\",\"component\":\"Column\",\"children\":[\"urgent_label\",\"urgent_count\",\"status_hint\"],\"itemMargin\":2,\"styles\":{\"width\":83,\"height\":70,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"urgent_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/urgentLabel} }}\",\"styles\":{\"width\":67,\"height\":17,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"urgent_count\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/urgentCountText} }}\",\"styles\":{\"width\":67,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"status_hint\",\"component\":\"Text\",\"content\":\"{{ ${/data/notifications/statusHint} }}\",\"styles\":{\"width\":67,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"查看消息\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.alibaba.dingtalk\",\"abilityName\":\"\",\"uri\":\"dingtalk://dingtalkclient/page/message\"}}],\"styles\":{\"width\":83,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"notifications\":{\"appName\":\"钉钉消息\",\"appSubtitle\":\"聚合通知\",\"unreadSummary\":\"7条未读\",\"latestTitle\":\"项目群审批待看\",\"urgentLabel\":\"紧急\",\"urgentCountText\":\"2条\",\"statusHint\":\"需尽快看\"}}}}}"
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "userQuery": "公司开会经常一开就2小时手机没地方充，做个深色风格低电卡片，背景叠一层大环形图中心写电量数字的叠加效果，电量低于10%用红色告警，里面嵌个小面板显示今天剩余日程，底部多个竖向排列的开关项可以一键开省电、关蓝牙、关定位。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "bluetooth",
+          "switchFlag": 1
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "location_service",
+          "switchFlag": 1
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "device": {
+      "batteryPercent": {
+        "type": "number",
+        "description": "当前手机电量百分比数值，用于环形进度。",
+        "sampleValue": 8
+      },
+      "batteryText": {
+        "type": "string",
+        "description": "当前手机电量展示文本。",
+        "sampleValue": "8%"
+      },
+      "batteryStatus": {
+        "type": "string",
+        "description": "低电状态提示文本，低于10%时显示红色告警语义。",
+        "sampleValue": "低于10%"
+      },
+      "statusColor": {
+        "type": "string",
+        "description": "电量状态色，低于10%时为红色告警色。",
+        "sampleValue": "#FFD94838"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天剩余日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-001",
+              "title": "产品评审会",
+              "dtStart": "15:00",
+              "dtEnd": "17:00"
+            }
+          ],
+          "items": {
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识符。",
+              "sampleValue": "calendar-demo-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "产品评审会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间，当天日程通常为HH:MM格式。",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间，当天日程通常为HH:MM格式。",
+              "sampleValue": "17:00"
+            }
+          }
+        },
+        "remainingText": {
+          "type": "string",
+          "description": "今天剩余日程数量摘要。",
+          "sampleValue": "剩余1场"
+        }
+      }
+    },
+    "switches": {
+      "powerSavingOn": {
+        "type": "boolean",
+        "description": "省电模式是否已开启。",
+        "sampleValue": false
+      },
+      "bluetoothOn": {
+        "type": "boolean",
+        "description": "蓝牙是否仍处于开启状态。",
+        "sampleValue": true
+      },
+      "locationOn": {
+        "type": "boolean",
+        "description": "定位服务是否仍处于开启状态。",
+        "sampleValue": true
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于电量状态和低电卡片的主视觉识别。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于今日剩余日程小面板标题。"
+    }
+  ]
+}

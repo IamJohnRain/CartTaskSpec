@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-27-utility-bill-008",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户明确要求「余额低的时候红色提醒我」，但截图中右侧「余额偏低」文案使用橙色 #ed6f21，而非用户要求的红色，属于对显式颜色指令的直接未落实，扣分较重。其余诉求均已落实：剩余电量 36.8 kWh 使用 {{}} 表达式绑定数据模型（可变化）、「去缴费」按钮 onClick 正确调起 clickToDeeplink 跳转 alipays URI、assetCandidates 中的电池图标已使用、size 2x4、catalogId/version/updateDataModel 路径与值均符合契约。",
+    "aesthetic": "从截图看整体配色协调：白底卡片 + 灰色主面板 + 浅灰侧栏 + 橙色进度条 + 蓝色 CTA，层级清晰，字号梯度合理（32 主数值 / 14 标题与提醒 / 12 辅文）。但「余额偏低」使用橙色与进度条同色，缺乏警示语义；红色背景或文字能更明显地传达低额警示感，当前观感偏温和、警示性不足。",
+    "layout": "截图显示主面板（标题 + 36.8 kWh + 进度条 + 更新时间）与侧栏（提醒 + 余额 + 按钮）均完整呈现于 300x140 卡片内，无元素被裁切、堆叠或溢出。受保护文本（标题「本月电费」、主数值「36.8 kWh」、余额文字、CTA「去缴费」）在截图中均清晰可读。进度条高度 8vp 偏细但完整可见；按钮高度 34vp 热区充足；左右两栏间距 10vp 留白舒适。整体布局干净无明显问题。"
+  },
+  "issues": [
+    "「余额偏低」提醒文案使用橙色 #ed6f21，与用户明确要求的「红色提醒」不符",
+    "提醒色与进度条同色，警示性弱，与用户「红色提醒我」的语气预期不一致",
+    "侧栏中 alert_badge 缺少背景胶囊，红色文字在浅灰底上仍不够突出（可优化项）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"meter_progress\",\"updated_text\"],\"itemMargin\":6,\"styles\":{\"width\":174,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"electric_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":158,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"electric_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_electricity.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/electricity/title} }}\",\"styles\":{\"width\":130,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/electricity/remainingKwhText} }}\",\"styles\":{\"width\":158,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"meter_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/electricity/remainingKwh} }}\",\"total\":\"{{ ${/data/electricity/totalKwh} }}\",\"styles\":{\"type\":\"linear\",\"width\":158,\"height\":8,\"color\":\"#ed6f21\"}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/electricity/updatedText} }}\",\"styles\":{\"width\":158,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"balance_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":92,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/electricity/alertText} }}\",\"styles\":{\"width\":76,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffd32f2f\",\"backgroundColor\":\"#ffffebee\",\"borderRadius\":11,\"padding\":{\"left\":6,\"right\":6},\"maxLines\":1}},{\"id\":\"balance_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/electricity/balanceText} }}\",\"styles\":{\"width\":76,\"height\":28,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去缴费\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"alipays://platformapi/startapp?appId=20000056\"}}],\"styles\":{\"width\":76,\"height\":34,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"electricity\":{\"title\":\"本月电费\",\"remainingKwhText\":\"36.8 kWh\",\"remainingKwh\":36.8,\"totalKwh\":100,\"balanceText\":\"余额 18.20 元\",\"alertText\":\"余额偏低\",\"updatedText\":\"10:30 更新\"}}}}}"
+  ]
+}

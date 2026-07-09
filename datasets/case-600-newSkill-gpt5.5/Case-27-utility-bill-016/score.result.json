@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-27-utility-bill-016",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户要求:燃气费卡、左侧火焰字符主图标、右侧三组数据(用气量/金额/截止天数)、竖线分隔、橘色背景、临近截止用红色告警、纯文字与色块。截图显示卡片整体结构基本符合:左侧'火'字在浅橙色圆角块内作为火焰符号,右侧半透明白色面板内三组数字'32.6/¥126.8/3天'横向排列,中间两道白色竖线分隔,整张卡橘色背景,临近天数与状态用红色加粗呈现,纯文字无图片资源,符合'用纯文字和色块'要求。扣分点:icon_panel 中的'deadline_caption'内容'截止 7月12日'因容器宽度70不足被裁切,截图中仅可见'截止 7月12',用户无法看到完整日期,影响信息完整性。",
+    "aesthetic": "截图整体观感良好:橘色背景(#F9A01E)温暖统一,与火焰主题契合;火焰字符'火'使用更浅的橙色圆角块包裹,形成层次;主数值(32.6/¥126.8/3天)用大号粗体白字,辅助标签用半透明白字,字重层级清晰(3天用最重的800配合红色,形成最强字重);半透明白色 metrics_panel 与橘色背景的对比适中,留白均匀;对齐统一,标题/数值/标签均居中。轻微扣分:红色文字'截止 7月12'在橘色背景上的对比度尚可但可读性受截断影响。",
+    "layout": "从截图观察主要问题:icon_panel 内 deadline_caption 文本'截止 7月12日'被容器右边界裁切,实际只显示到'截止 7月12','日'字缺失,属于明显的受保护文本截断(用户明确要求展示的日期信息)。其余布局:火焰圆角块居中、'燃气费'标题居中、三组指标在 metrics_panel 内被两道竖线均匀分隔、'3天'红色加粗与下方'临近截止'红色状态形成告警层级,均未观察到堆叠或溢出。两栏比例(icon_panel 70 vs metrics_panel 194)与间距合理,卡片底部、左右边界均与卡片边距合适。",
+    "issues": [
+      "icon_panel 中 deadline_caption 文本'截止 7月12日'(6字)在70宽度容器内溢出,'日'字被裁切不可见",
+      "icon_panel 宽度70偏窄,导致 deadline_caption 字号12无法容纳完整日期",
+      "metrics_panel 内的竖线分隔线偏细(#66FFFFFF 1px),在白底上对比度较弱但仍可辨"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"icon_panel\",\"metrics_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#F9A01E\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"flame_mark\",\"bill_title\",\"deadline_caption\"],\"itemMargin\":6,\"styles\":{\"width\":80,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"flame_mark\",\"component\":\"Text\",\"content\":\"火\",\"styles\":{\"width\":48,\"height\":48,\"borderRadius\":16,\"backgroundColor\":\"#F9BC64\",\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#FFED6F21\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"bill_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/bill/title} }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"deadline_caption\",\"component\":\"Text\",\"content\":\"{{ '截止 ' + ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":80,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"metrics_panel\",\"component\":\"Row\",\"children\":[\"usage_metric\",\"divider_one\",\"amount_metric\",\"divider_two\",\"days_metric\"],\"itemMargin\":4,\"styles\":{\"width\":184,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"usage_metric\",\"component\":\"Column\",\"children\":[\"usage_value\",\"usage_label\"],\"itemMargin\":4,\"styles\":{\"width\":46,\"height\":76,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"usage_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/bill/monthUsageText} }}\",\"styles\":{\"width\":46,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"usage_label\",\"component\":\"Text\",\"content\":\"本月用气\",\"styles\":{\"width\":46,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"divider_one\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":52,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#88FFFFFF\"}},{\"id\":\"amount_metric\",\"component\":\"Column\",\"children\":[\"amount_value\",\"amount_label\"],\"itemMargin\":4,\"styles\":{\"width\":60,\"height\":76,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"amount_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/bill/amountText} }}\",\"styles\":{\"width\":60,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"amount_label\",\"component\":\"Text\",\"content\":\"气费金额\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"divider_two\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":52,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#88FFFFFF\"}},{\"id\":\"days_metric\",\"component\":\"Column\",\"children\":[\"days_value\",\"days_label\",\"alert_status\"],\"itemMargin\":2,\"styles\":{\"width\":44,\"height\":76,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"days_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/bill/daysUntilDueText} }}\",\"styles\":{\"width\":44,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"days_label\",\"component\":\"Text\",\"content\":\"截止天数\",\"styles\":{\"width\":44,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"alert_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/bill/deadlineStatusText} }}\",\"styles\":{\"width\":44,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"textAlign\":\"center\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"bill\":{\"title\":\"燃气费\",\"monthUsageText\":\"32.6\",\"amountText\":\"¥126.8\",\"daysUntilDueText\":\"3天\",\"deadlineStatusText\":\"临近截止\"},\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"gas-bill-due-20260712\",\"title\":\"燃气费缴费截止\",\"dtStart\":\"7月12日\",\"dtEnd\":\"23:59\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

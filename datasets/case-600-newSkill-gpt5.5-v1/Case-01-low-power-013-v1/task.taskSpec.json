@@ -1,0 +1,91 @@
+{
+  "userQuery": "晚上手机经常掉到30%以下,想要一张暗色低电卡片,几个小面板横向排开:环形电池图标叠百分比数字、省电模式开关、勿扰开关,都能勾选一键切换,用夜晚深色渐变,提醒我该开启省电了。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "percent": {
+        "type": "number",
+        "description": "当前手机电量百分比数值，用于环形进度。",
+        "sampleValue": 30
+      },
+      "percentText": {
+        "type": "string",
+        "description": "当前手机电量百分比展示文本。",
+        "sampleValue": "30%"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "低电状态短标签。",
+        "sampleValue": "低电"
+      }
+    },
+    "settings": {
+      "powerSaving": {
+        "enabled": {
+          "type": "boolean",
+          "description": "省电模式当前是否已开启。",
+          "sampleValue": false
+        },
+        "label": {
+          "type": "string",
+          "description": "省电模式开关短标签。",
+          "sampleValue": "省电"
+        },
+        "stateText": {
+          "type": "string",
+          "description": "省电模式当前状态短文本。",
+          "sampleValue": "未开"
+        }
+      },
+      "dnd": {
+        "enabled": {
+          "type": "boolean",
+          "description": "勿扰模式当前是否已开启。",
+          "sampleValue": false
+        },
+        "label": {
+          "type": "string",
+          "description": "勿扰模式开关短标签。",
+          "sampleValue": "勿扰"
+        },
+        "stateText": {
+          "type": "string",
+          "description": "勿扰模式当前状态短文本。",
+          "sampleValue": "未开"
+        }
+      }
+    },
+    "reminder": {
+      "type": "string",
+      "description": "低电场景下的开启省电提醒文案。",
+      "sampleValue": "该开启省电了"
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于电量状态主视觉。"
+    }
+  ]
+}

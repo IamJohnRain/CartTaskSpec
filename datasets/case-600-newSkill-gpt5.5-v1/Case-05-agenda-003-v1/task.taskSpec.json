@@ -1,0 +1,112 @@
+{
+  "userQuery": "弄个议程提醒,倒计时数字会变,点一下进系统,日程从日历读,快开始提醒我",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的近期日程列表，卡片展示第一条即将开始的日程。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-1001",
+              "title": "产品评审",
+              "dtStart": "14:30",
+              "dtEnd": "15:00",
+              "eventLocation": "3号会议室",
+              "remindTime": [
+                "提前10分钟"
+              ],
+              "countdownText": "12",
+              "countdownUnit": "分钟",
+              "statusText": "快开始"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项。",
+            "sampleValue": {
+              "entityId": "calendar-event-1001",
+              "title": "产品评审",
+              "dtStart": "14:30",
+              "dtEnd": "15:00",
+              "eventLocation": "3号会议室",
+              "remindTime": [
+                "提前10分钟"
+              ],
+              "countdownText": "12",
+              "countdownUnit": "分钟",
+              "statusText": "快开始"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于点击后打开系统日历详情。",
+                "sampleValue": "calendar-event-1001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "产品评审"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程通常为 HH:MM 格式。",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程通常为 HH:MM 格式。",
+                "sampleValue": "15:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生地点。",
+                "sampleValue": "3号会议室"
+              },
+              "remindTime": {
+                "type": "array",
+                "description": "日程提醒时间文本列表。",
+                "sampleValue": [
+                  "提前10分钟"
+                ],
+                "items": {
+                  "type": "string",
+                  "description": "单个提醒时间文本。",
+                  "sampleValue": "提前10分钟"
+                }
+              },
+              "countdownText": {
+                "type": "string",
+                "description": "距离日程开始的倒计时数字文本，由日历服务或运行时刷新。",
+                "sampleValue": "12"
+              },
+              "countdownUnit": {
+                "type": "string",
+                "description": "倒计时单位。",
+                "sampleValue": "分钟"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "临近日程开始时的提醒状态文本。",
+                "sampleValue": "快开始"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

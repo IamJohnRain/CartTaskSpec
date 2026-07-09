@@ -1,0 +1,129 @@
+{
+  "userQuery": "横向并排的日程卡,暗色面板风,左右两块分别显示时间和天气,重要日程标橙色提示,固定文字为主,可以横向滑看多组,语义图标",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_event_001",
+              "title": "评审",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "importantEventType": 1
+            },
+            {
+              "entityId": "calendar_event_002",
+              "title": "同步",
+              "dtStart": "14:00",
+              "dtEnd": "14:30",
+              "importantEventType": 0
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar_event_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程短标题。",
+                "sampleValue": "评审"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今日日程使用 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今日日程使用 HH:MM。",
+                "sampleValue": "10:00"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日程类型，0 表示普通，1 或 2 表示重要。",
+                "sampleValue": 1
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "28°"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "天气预报列表。",
+          "sampleValue": [
+            {
+              "condition": "转晴",
+              "temperatureRangeText": "25°/31°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日预报。",
+            "properties": {
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "转晴"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "25°/31°"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合用于日程开始时间和待办时间块的语义识别。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于日程或待办事项分组识别。"
+    },
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色多云天气图标，适合用于当前天气状态展示。"
+    },
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "彩色晴间多云天气图标，适合用于未来天气或天气摘要展示。"
+    }
+  ]
+}

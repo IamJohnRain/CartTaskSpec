@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-21-stocks-004",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "用户明确要求'跌太多红字提醒'，截图中标题区'-3.28%'为黑色而非红/橙色，主面板'-128.60'为黑色，底部进度条为蓝色（默认色）而非状态色，底部提醒'跌幅偏大'为黑色而非红/橙色。dataModel 中 statusColor='#ffed6f21' 的绑定表达式在 fontColor / Progress.color 上未生效，导致最关键的'红字提醒'诉求在视觉上完全未呈现。基金涨跌图、标题、今日盈亏文字、铃铛图标、点击进 app 的 deeplink 事件与 URI 均完整正确，资产 bell_fill.svg 也被使用。",
+    "aesthetic": "截图整体布局干净、白色主面板与浅灰卡片底对比清晰，标题/主数值/副标题字号字重阶梯合理。但本卡最关键的语义配色缺失：负值盈亏、跌幅百分比、进度条、风险提醒全部呈现为中性黑/蓝色，未能传达'下跌/风险'的情绪信号，色彩传达力被严重削弱，视觉风格退化为中性信息卡。",
+    "layout": "截图中 140x140 卡片内三段（header_row 20 / main_panel 54 / alert_row 26 加 itemMargin 8x2）纵向合计 116，加 padding 后正好 140，无溢出、无文字截断。'基金涨跌'与'-3.28%'在 header_row 中左右对齐不重叠，'今日盈亏'与'-128.60'在白底面板内左对齐，底部铃铛+文字在一行内紧凑留白合理。整体布局工整，无堆叠或裁切问题。"
+  },
+  "issues": [
+    "fontColor='{{ ${/fund/statusColor} }}' 未生效：'-3.28%'、'-128.60'、'跌幅偏大' 全部渲染为黑色，应为红/橙色",
+    "Progress.color='{{ ${/fund/statusColor} }}' 未生效：进度条渲染为蓝色，应为状态色",
+    "未在 dataModel 中提供 percentage 专用色字段（可考虑区分涨跌与提醒色），当前所有红色元素共用 statusColor 不够灵活",
+    "用户明确要求'红字提醒'，但截图整体无红色信号，是关键指令缺失"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_panel\",\"alert_row\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"trend_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/fund/title} }}\",\"styles\":{\"width\":64,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"trend_badge\",\"component\":\"Text\",\"content\":\"{{ ${/fund/changePercent} }}\",\"styles\":{\"width\":46,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ ${/fund/statusColor} }}\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"primary_value\",\"trend_bar\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":54,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"今日盈亏\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/fund/profitText} }}\",\"styles\":{\"width\":100,\"height\":22,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"{{ ${/fund/statusColor} }}\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"trend_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/fund/dropScore} }}\",\"total\":\"{{ ${/fund/dropTotal} }}\",\"styles\":{\"width\":100,\"height\":6,\"type\":\"linear\",\"color\":\"{{ ${/fund/statusColor} }}\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#0cffed6f21\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\",\"tintColor\":\"#ffed6f21\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/fund/alertText} }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ ${/fund/statusColor} }}\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"fund\":{\"title\":\"基金涨跌\",\"changePercent\":\"-3.28%\",\"profitText\":\"-128.60\",\"statusColor\":\"#ffed6f21\",\"dropScore\":78,\"dropTotal\":100,\"alertText\":\"跌幅偏大\"}}}}"
+  ]
+}

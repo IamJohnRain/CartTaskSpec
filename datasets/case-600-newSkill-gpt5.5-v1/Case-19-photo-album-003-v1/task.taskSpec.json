@@ -1,0 +1,170 @@
+{
+  "userQuery": "弄几个能打勾的重复照片，数字会变，点进日历看行程，红字提示快不行",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "album": {
+      "type": "object",
+      "description": "相册重复照片清理摘要",
+      "sampleValue": {
+        "duplicateCountText": "3张",
+        "duplicates": [
+          {
+            "label": "旅行2张",
+            "selected": true,
+            "countText": "2张"
+          },
+          {
+            "label": "连拍1张",
+            "selected": false,
+            "countText": "1张"
+          }
+        ],
+        "alertText": "快不行",
+        "actionLabel": "日程"
+      },
+      "properties": {
+        "duplicateCountText": {
+          "type": "string",
+          "description": "重复照片总数展示文本",
+          "sampleValue": "3张"
+        },
+        "duplicates": {
+          "type": "array",
+          "description": "可勾选的重复照片分组",
+          "sampleValue": [
+            {
+              "label": "旅行2张",
+              "selected": true,
+              "countText": "2张"
+            },
+            {
+              "label": "连拍1张",
+              "selected": false,
+              "countText": "1张"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "重复照片分组项",
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "重复照片分组的可勾选标签",
+                "sampleValue": "旅行2张"
+              },
+              "selected": {
+                "type": "boolean",
+                "description": "该重复照片分组是否已勾选",
+                "sampleValue": true
+              },
+              "countText": {
+                "type": "string",
+                "description": "该分组的重复照片数量展示文本",
+                "sampleValue": "2张"
+              }
+            }
+          }
+        },
+        "alertText": {
+          "type": "string",
+          "description": "相册空间风险告警文案",
+          "sampleValue": "快不行"
+        },
+        "actionLabel": {
+          "type": "string",
+          "description": "进入日程详情的短动作标签",
+          "sampleValue": "日程"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧数据能力写入根节点",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "cal_evt_001",
+              "title": "整理相册",
+              "dtStart": "18:30",
+              "dtEnd": "19:00"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "calendar": {
+          "type": "object",
+          "description": "本地日历事件查询结果",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "cal_evt_001",
+                "title": "整理相册",
+                "dtStart": "18:30",
+                "dtEnd": "19:00"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "日历事件列表",
+              "sampleValue": [
+                {
+                  "entityId": "cal_evt_001",
+                  "title": "整理相册",
+                  "dtStart": "18:30",
+                  "dtEnd": "19:00"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "日历事件项",
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日历事件唯一标识",
+                    "sampleValue": "cal_evt_001"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "日历事件标题",
+                    "sampleValue": "整理相册"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "日历事件开始时间",
+                    "sampleValue": "18:30"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "日历事件结束时间",
+                    "sampleValue": "19:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于日程管理、日历事件查看和当日安排入口。"
+    }
+  ]
+}

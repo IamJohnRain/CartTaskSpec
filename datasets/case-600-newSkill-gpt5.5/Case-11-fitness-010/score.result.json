@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-11-fitness-010",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户四项核心诉求均有对应设计：'一行带数字的字'对应主指标 28°C，'点开能跳app'对应去锻炼 Button 的 onClick 事件（call/args 原样取自 eventCandidates），'能读天气'对应温度/天气现象/空气质量和位置四要素，'完成要标记'对应 Checkbox 绑定 status.completed/label。事件与素材均符合契约。但渲染截图中主指标 '28°C 运动' 被截断为 '28°C 运'（丢失'动'字），Checkbox 标签 '已完成' 被截断为 '已...'（丢失'完成'二字），导致用户明确点名要读的两类信息（运动主值、完成标记）均被截断，严重削弱指令传达效果。",
+    "aesthetic": "截图中可见整体配色和谐：青绿渐变背景清爽，绿色 Checkbox 与按钮 '#ff64bb5c' 统一呼应；字重层级清晰（主指标 700、标题 500、正文 400），留白尚可。但右侧状态面板内部因为内容被裁切，出现 '已...' 这种省略号，视觉上显得不完整、不专业；主指标被截字也削弱了视觉冲击。",
+    "layout": "截图中可观察到两处严重文字截断：1) 左侧 primary_value 容器宽 128px 无法容纳 '28°C 运动'（32px 字约需 147px），导致 '动' 字被裁掉，截图显示为 '28°C 运'；2) 右侧 Checkbox 标签 '已完成' 被截断为 '已...'，完成状态文字几乎不可读。这两处均属'受保护文本被截断'的硬伤，直接违反布局原则。按公式交叉验证：'28°C 运动'@32px≈147px > 128px，溢出 19px；'已完成'+图标宽度 > 74px，溢出明显。其他方面（卡片尺寸 300x140、root 内边距 12、组件在卡片边界内、按钮底边距底约 10vp）均符合规范，但上述两处截断足以使排版维度判为低分。"
+  },
+  "issues": [
+    "主指标 '28°C 运动' 被截断为 '28°C 运'，丢失'动'字（primary_value 宽 128px 不足）",
+    "Checkbox 标签 '已完成' 被截断为 '已...'，完成标记文字不可读（status_check 宽 74px 不足）",
+    "主指标文本同时承载'数字'和'运动'语义，与标题'运动天气'重复，可考虑精简以容纳更大字号",
+    "status_panel 内容宽度偏小（90-16=74px），未给 Checkbox 标签留出足够空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_column\",\"status_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92d6cc\",0],[\"#ffffffff\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_row\",\"support_text\",\"location_text\"],\"itemMargin\":8,\"styles\":{\"width\":166,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"运动天气\",\"styles\":{\"width\":166,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"weather_icon\"],\"itemMargin\":8,\"styles\":{\"width\":166,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":118,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · 空气' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":166,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' · 已同步天气' }}\",\"styles\":{\"width\":166,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_label\",\"status_check\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":100,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"status_label\",\"component\":\"Text\",\"content\":\"完成标记\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_check\",\"component\":\"Checkbox\",\"label\":\"{{ ${/status/label} }}\",\"select\":\"{{ ${/status/completed} }}\",\"styles\":{\"width\":84,\"height\":24,\"fontSize\":12,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去锻炼\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":84,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"多云\",\"airQuality\":\"良\"}}},\"status\":{\"completed\":true,\"label\":\"已完成\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

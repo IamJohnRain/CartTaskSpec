@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-001",
+  "scores": {
+    "instruction": {
+      "score": 9.3,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户四项诉求在截图中均能清晰看到：'42g'大数字呈现本次出粮；'粮少提醒'红色徽标与'余粮 12%'红色文字共同承担粮少提醒；'18:30 加粮'+日历图标呈现日历安排；'去宠物店'蓝色按钮承载导航 onClick，call/args 与 eventCandidates 结构一致（intentName=StartNavigate、trafficpe=Walk、dstLocation 存在）。尺寸 2x4、catalogId/version/updateDataModel.path=/ 等硬约束均满足，assetCandidates 的 bell/calendar 图标按语义使用。仅 onClick.args 内 lat/long 采用数据绑定而非 eventCandidates 静态值，属于轻微协议解读偏差，扣 0.7 分。",
+    "aesthetic": "截图整体观感干净专业：浅灰→白渐变底+左侧浅灰面板+右侧白色浮层形成层次，红色提醒与蓝色 CTA 形成对比且都在可控饱和度内，前景文字在背景上对比清晰。'42g'32 号字作为最强主指标，'宠物喂食'标题 16 号 700 与 '42g' 32 号 700 形成双 700 强势字重，违反'同一卡片只保留一个最强字重'，但 42g 体积大很多，层级仍可读。右侧浮层轻微阴影提升质感；间距密度合适。",
+    "layout": "截图未见任何元素堆叠、重叠或被卡片边界裁切：根容器 300x140 内 padding=12 后内容区 276x116，header_row 高 24 + itemMargin 8 + body_row 高 84 = 116，刚好填满；左侧 feed_panel（156x84）+itemMargin 8+右侧 detail_panel（112x84）= 276 横向精准对齐。'42g'、'本次出粮'、'余粮 12%'、'18:30 加粮'、'附近宠物店'、'去宠物店' 全部完整显示无截断；'去宠物店'按钮 100x32 热区充足，底边距卡片底约 12vp，符合 2x4 底部 10-14vp 区间；铃铛/日历图标均正确显示。唯一微瑕是 warning_badge 内 '粮少提醒' 文字基本贴边，但未发生裁切。"
+  },
+  "issues": [
+    "标题 '宠物喂食' 与主指标 '42g' 同时使用 fontWeight:700，违反'同一卡片只保留一个最强字重'原则",
+    "onClick.args 中 lat/long 使用 {{ ${/feeder/destination/latitude} }} 数据绑定，与 eventCandidates 静态值不完全一致，协议上属于轻微偏差",
+    "warning_badge 宽度 92 留给 4 个 12px 汉字的余量偏紧（4*12+padding=56 仍 OK，但视觉上文字几乎贴边）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffffffff\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"warning_badge\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/title} }}\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/status/grainWarningText} }}\",\"styles\":{\"width\":88,\"height\":22,\"padding\":4,\"borderRadius\":11,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"feed_panel\",\"detail_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"feed_panel\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"metric_column\"],\"itemMargin\":8,\"styles\":{\"width\":156,\"height\":84,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"alignItems\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_fill.svg\",\"styles\":{\"width\":44,\"height\":44,\"objectFit\":\"contain\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":12,\"padding\":8}},{\"id\":\"metric_column\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\",\"grain_level_text\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":66,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/current/feedAmountText} }}\",\"styles\":{\"width\":88,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/current/feedCaption} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"grain_level_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/status/grainLevelText} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"detail_panel\",\"component\":\"Column\",\"children\":[\"schedule_row\",\"store_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":112,\"height\":84,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\",\"shadow\":{\"radius\":8,\"color\":\"#22000000\",\"offsetX\":0,\"offsetY\":2}}},{\"id\":\"schedule_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"schedule_text\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":80,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"store_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/destination/petStoreName} }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去宠物店\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":100,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"宠物喂食\",\"current\":{\"feedAmountText\":\"42g\",\"feedCaption\":\"本次出粮\"},\"status\":{\"grainWarningText\":\"粮少提醒\",\"grainLevelText\":\"余粮 12%\"},\"destination\":{\"petStoreName\":\"附近宠物店\",\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"}},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"pet-feed-001\",\"title\":\"加粮\",\"dtStart\":\"18:30\",\"dtEnd\":\"18:45\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

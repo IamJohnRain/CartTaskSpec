@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-04-focus-006",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "用户明确要求'看到已完成'、'点一下跳到应用里'、'背景图上叠字'。从截图看：标题'专注模式'清晰可读，主状态'已完成'中'已'和'成'可见但'完'被月亮图标严重遮挡（用户核心需求'看到已完成'受损）；'今日专注'摘要中'专注'二字也被月亮覆盖；'轻点进入'CTA 按钮完整可见；onClick 已正确绑定 clickToDeeplink，参数与 eventCandidates 一致；尺寸 2x2、catalogId、version、updateDataModel.path/value 均符合协议；assetCandidates 中 icon_focus.png 被引用为背景图。综合：主要诉求大体落地但核心状态文本被遮挡是关键失分。",
+    "aesthetic": "渐变紫底色 (#564AF7 → #AC49F5) 协调好看，前景白字对比清晰；按钮的圆角半透明白色 chip 设计精致。但截图中央那颗白色月亮图标作为装饰图过亮、过大、占据视觉焦点，把整体视觉权重从'已完成'抢走，破坏了用户原意中'叠字为主'的层级感；同时月亮和文字位置重叠也让画面显得凌乱，颜值明显被这一处拖累。",
+    "layout": "截图最严重的问题：背景月亮图标（background_glyph，88x88）实际渲染在内容列（content_col）之上，导致 Stack 期望的'背景在底、信息在上'层级被反转；其结果是 (1) '已完成'中'完'字被月亮主体盖住约一半，状态文本残缺；(2) '今日专注'摘要中'专注'两字被月亮右下弧遮挡；(3) 标题'专注模式'未被遮挡但与月亮距离过近显得拥挤；(4) '轻点进入'按钮位于底部，视觉上未受波及但与摘要间留白被月亮挤压。受保护文本（主状态、摘要）被叠层图形覆盖是排版层面的硬伤，需扣重分。"
+  },
+  "issues": [
+    "Stack 子节点 background_glyph（白色月亮）实际渲染在 content_col 之上，与 Stack 层级语义相反",
+    "主状态'已完成'的'完'字被月亮图标主体遮挡，核心信息不完整",
+    "摘要'今日专注'的'专注'被月亮右下弧覆盖，文字残缺",
+    "月亮图标 88x88 在 116x116 内容区中占比过大，挤占文字空间",
+    "月亮为纯白实心，没有半透明处理，视觉权重盖过文字",
+    "标题与月亮距离过近且字号 16 偏大，与 32 的主状态字号反差生硬"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"background_glyph\",\"content_col\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564AF7\",0],[\"#AC49F5\",1]]}}},{\"id\":\"background_glyph\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":44,\"height\":44,\"objectFit\":\"contain\",\"opacity\":0.28,\"margin\":{\"top\":2,\"right\":2}}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"status_group\",\"entry_hint\"],\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#E6FFFFFF\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"status_group\",\"component\":\"Column\",\"children\":[\"status_text\",\"summary_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/statusText} }}\",\"styles\":{\"width\":116,\"height\":38,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/summary} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#B3FFFFFF\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"entry_hint\",\"component\":\"Text\",\"content\":\"{{ ${/focus/entryHint} }}\",\"styles\":{\"width\":68,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":11,\"backgroundColor\":\"#33FFFFFF\",\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"focus\":{\"title\":\"专注模式\",\"statusText\":\"已完成\",\"summary\":\"今日专注\",\"entryHint\":\"轻点进入\"}}}}"
+  ]
+}

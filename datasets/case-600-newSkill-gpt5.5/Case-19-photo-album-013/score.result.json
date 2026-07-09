@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-013",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "截图中可见：顶部天气小条（云图标+多云 29°C+当前位置）正确呈现；四个色块缩略图横向并排（蓝/橙/紫/青）落实了'别用真照片'的要求；'待清理 32 张'主指标清晰可读；底部'打电话给老婆让她挑'绿色按钮存在且 onClick.call/args 与 eventCandidates 完全一致；背景纯色无渐变。但用户明确要求'提示黄色注意状态'，截图中的'注意'徽章呈明显的红橙色（#ffe84026 是不透明的红），并非黄色，是显著的指令遵从缺失；'氛围从照片延伸出来'也未做明显表达（例如缺少与照片语义相关的装饰或色调延伸）。尺寸 2x2 / root 140x140 / borderRadius 18 / clip / padding 12 / catalogId / version / updateDataModel.path='/value 等硬约束均合规。",
+    "aesthetic": "整体观感简洁克制：浅灰底（#fff1f3f5）干净不刺眼；四个色块大小一致、配色活泼有记忆点；字号层级清晰（主指标 14 号粗黑、徽章 10 号、天气文字 10 号、按钮文字 10 号白色），仅主指标为最强字重，层级合理。但红橙色的'注意'徽章与用户期望的黄色注意语义不符，且与浅灰底+绿色按钮的冷暖色平衡偏突兀，按钮文字字号 10 在白底绿底上偏小、略嫌单薄。",
+    "layout": "截图整体布局干净，无堆叠、无溢出、无文字裁切：天气小条紧凑居中且完全可见；四个 26x26 缩略图等距横向并排于 116 宽度内（26*4+4*3=116，刚好填满），全部清晰可辨；'待清理 32 张'与红色'注意'徽章在同一行内未被截断；绿色按钮 116x28 完整呈现，文字'打电话给老婆让她挑'完整居中可见，未触底、未越界。底部按钮到卡片底边约 12vp，符合 2x2 的 8-12vp 区间。左右边距对称对齐良好。唯一可微调点是徽章颜色语义错误，但布局维度本身无问题。"
+  },
+  "issues": [
+    "用户要求'黄色注意状态'，截图中徽章为红橙色（#ffe84026），颜色语义错误",
+    "'氛围从照片延伸出来'的诉求未在截图中得到明显体现（缺少与照片语义相关的视觉延伸元素）",
+    "按钮文字字号 10 偏小，白色文字在绿色按钮上虽可读但略显单薄，可考虑 11-12",
+    "天气小条背景色 #0c000000（极淡黑）在浅灰卡片上对比偏弱，可适当加深或换浅色"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"weather_strip\",\"thumb_row\",\"status_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_strip\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text\",\"weather_location\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#1f000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\",\"margin\":{\"left\":4}}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_location\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"thumb_row\",\"component\":\"Row\",\"children\":[\"thumb_1\",\"thumb_2\",\"thumb_3\",\"thumb_4\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":26,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"thumb_1\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":6,\"backgroundColor\":\"#86c5e3\",\"maxLines\":1}},{\"id\":\"thumb_2\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":6,\"backgroundColor\":\"#f9bc64\",\"maxLines\":1}},{\"id\":\"thumb_3\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":6,\"backgroundColor\":\"#c386f0\",\"maxLines\":1}},{\"id\":\"thumb_4\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":26,\"height\":26,\"borderRadius\":6,\"backgroundColor\":\"#92d6cc\",\"maxLines\":1}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"warning_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/album/cleanupLabel} + ' ' + ${/album/duplicateCountText} }}\",\"styles\":{\"width\":82,\"height\":20,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/album/warningLabel} }}\",\"styles\":{\"width\":28,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ffffd54f\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#b2610c00\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打电话给老婆让她挑\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"13800000000\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"condition\":\"多云\",\"temperatureText\":\"29°C\"}}},\"album\":{\"cleanupLabel\":\"待清理\",\"duplicateCountText\":\"32 张\",\"warningLabel\":\"注意\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

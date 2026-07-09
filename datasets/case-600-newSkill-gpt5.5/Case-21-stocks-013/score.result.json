@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-21-stocks-013",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户要求的全部要素均在截图中可见：顶部大号'总盈亏 +1.26万'主指标、两条横线把卡片分为三段、横向并列三只基金名称与净值、底部日历图标+'15:00 基金路演'提醒、'新能源跌停'橙色徽章做红色告警、底部'湾区营业部'Button 带 onClick clickToIntent 跳地图；整体白色无渐变，符合实盘软件风格；尺寸 300x140、catalogId/version/path 均合规。轻微扣分：'跌停'用橙色而非纯红，且地址按钮文字被裁切导致点击目标的可读性下降。",
+    "aesthetic": "整体配色克制：白底 + 黑色主文字 + 橙色告警徽章，层次清晰；字体粗细层级（主值 700 / 净值 600 / 名称与时间 500）合理；分割线柔和。但'湾区营业部'按钮内文字顶部被裁切，使得按钮看起来像被水平切掉一段，视觉上显得粗糙、不可点，降低整体观感。",
+    "layout": "截图中最明显的布局缺陷是底部'湾区营业部'Button 内的文字顶部被裁切，只能看到字符的下半部分——Button 高 24vp、fontSize 12，但行高 25vp 几乎贴边，导致文本垂直居中失败、上方被裁。其次，'总盈亏'小标题底缘与上方 divider 几乎相切，'亏'字底部有被压边的视觉感。卡片总高 140vp，五段内容合计占用 112vp+间距 16vp=128vp，余量仅 12vp，挤在顶部 140vp 内。整体未出现元素堆叠或越出卡片边界，但 Button 文字裁切是明确的受保护文本丢失，必须扣重分。"
+  },
+  "issues": [
+    "截图中底部'湾区营业部'Button 文字顶部被裁切，字符上半部不可见，影响可读性与可点击识别",
+    "'总盈亏'小标题底缘与上方视觉边界过近，'亏'字底部有被压边的观感",
+    "告警徽章使用橙色 (#ed6f21) 而非用户要求的'红色'告警，语义偏差",
+    "卡片整体内容集中在顶部 140vp，下方留白极大（属 2x4 正常表现但视觉上显得头重脚轻）",
+    "bottom_row 高度 25vp 几乎贴齐 24vp 的 Button 高度，无文本安全间距"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"divider_top\",\"fund_row\",\"divider_bottom\",\"bottom_row\"],\"itemMargin\":3,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"primary_value\",\"alert_badge\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/title} }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/totalPnlText} }}\",\"styles\":{\"width\":132,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/alert/text} }}\",\"styles\":{\"width\":84,\"height\":24,\"padding\":[4,8,4,8],\"borderRadius\":12,\"backgroundColor\":\"#ffe53935\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"fund_row\",\"component\":\"Row\",\"children\":[\"fund_0\",\"fund_1\",\"fund_2\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"fund_0\",\"component\":\"Column\",\"children\":[\"fund_0_name\",\"fund_0_nav\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":34,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"fund_0_name\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/0/name} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"fund_0_nav\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/0/netValue} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"fund_1\",\"component\":\"Column\",\"children\":[\"fund_1_name\",\"fund_1_nav\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":34,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"fund_1_name\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/1/name} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"fund_1_nav\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/1/netValue} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"fund_2\",\"component\":\"Column\",\"children\":[\"fund_2_name\",\"fund_2_nav\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":34,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"fund_2_name\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/2/name} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"fund_2_nav\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/2/netValue} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffe53935\",\"maxLines\":1}},{\"id\":\"divider_bottom\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"event_text\",\"address_button\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"event_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":134,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"address_button\",\"component\":\"Button\",\"label\":\"{{ ${/portfolio/broker/shortName} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/portfolio/broker/latitude} }}\",\"longitude\":\"{{ ${/portfolio/broker/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":88,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#19000000\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"portfolio\":{\"title\":\"总盈亏\",\"totalPnlText\":\"+1.26万\",\"alert\":{\"text\":\"新能源跌停\"},\"funds\":[{\"name\":\"沪深300\",\"netValue\":\"1.2386\"},{\"name\":\"半导体\",\"netValue\":\"0.8742\"},{\"name\":\"新能源\",\"netValue\":\"0.6920\"}],\"broker\":{\"shortName\":\"湾区营业部\",\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"}},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"roadshow-20260709-1500\",\"title\":\"基金路演\",\"dtStart\":\"15:00\",\"dtEnd\":\"16:00\",\"eventLocation\":\"线上会议室\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

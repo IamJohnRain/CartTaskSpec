@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-008",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "用户要求：清理空间卡片、可勾选项、带数字的一行、点击进入系统操作、红色危险提示。截图中可见：标题'清理空间'、红色'危险'徽标、两个红色勾选框、右侧数字 2.8GB/0.8GB、底部白色胶囊按钮里'可清理 3.6GB'，且 onClick 正确绑定到 clickToDeeplink。但截图里两个勾选项的标签（'缓存'、'安装包'）均被截断显示为 '...'，导致用户无法识别可清理项的名称，这是用户'几项可以打勾选'诉求的关键信息缺失，扣分明显。",
+    "aesthetic": "整体配色克制：浅灰渐变底 + 红色点缀（徽标、勾选、主数值），层次清晰，标题字重最强，数字字重次之，留白与对齐基本合理。但勾选项标签位置出现 '...' 占位符，严重影响视觉完整性与可读性，让原本简洁的卡片显得未完成，是主要的扣分点。",
+    "layout": "从截图看，root 140x140 内：header_row + checklist_col + action_row 纵向相加约 104vp，加 itemMargin 与 padding 共 140vp，水平上 header_row/checkbox_row/action_row 各项宽度合计均 ≤ 116vp，未见明显溢出或堆叠。但勾选框内标签被截断为 '...'，是典型的'受保护文本被隐藏'问题——Checklist 是核心交互区，标签被压成省略号等同于内容不可见。底部动作区外框底边距卡片底边约 12vp，符合规范。问题主要集中在标签宽度不足或 Checkbox 组件 label 字段未被渲染。",
+    "issues": [
+      "勾选框标签'缓存'、'安装包'在截图中显示为 '...'，用户无法识别可清理项名称",
+      "Checkbox 组件的 'label' 字段可能是 A2UI 协议不支持的属性，导致未被渲染",
+      "勾选框内可用宽度（64vp）减去 mark 12vp 后约 52vp，但实际渲染时标签被截断，说明 label 字段无效或宽度计算有误",
+      "虽然 Checkbox 复选框可见、勾选状态正确（红色填充 + 白色对勾），但缺了语义标签会丢失信息"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"checklist_col\",\"action_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffffffff\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"clear_icon\",\"title_text\",\"danger_badge\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"clear_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"danger_badge\",\"component\":\"Text\",\"content\":\"{{ ${/card/alertText} }}\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":10}},{\"id\":\"checklist_col\",\"component\":\"Column\",\"children\":[\"checkbox_row_cache\",\"checkbox_row_packages\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"checkbox_row_cache\",\"component\":\"Row\",\"children\":[\"cache_checkbox\",\"cache_label\",\"cache_size\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":23,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"cache_checkbox\",\"component\":\"Checkbox\",\"value\":\"cache\",\"group\":\"cleanup\",\"select\":\"{{ ${/items/cache/selected} }}\",\"styles\":{\"width\":22,\"height\":22,\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"cache_label\",\"component\":\"Text\",\"content\":\"{{ ${/items/cache/label} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"cache_size\",\"component\":\"Text\",\"content\":\"{{ ${/items/cache/sizeText} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"checkbox_row_packages\",\"component\":\"Row\",\"children\":[\"packages_checkbox\",\"packages_label\",\"packages_size\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":23,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"packages_checkbox\",\"component\":\"Checkbox\",\"value\":\"packages\",\"group\":\"cleanup\",\"select\":\"{{ ${/items/packages/selected} }}\",\"styles\":{\"width\":22,\"height\":22,\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"packages_label\",\"component\":\"Text\",\"content\":\"{{ ${/items/packages/label} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"packages_size\",\"component\":\"Text\",\"content\":\"{{ ${/items/packages/sizeText} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"action_text\",\"action_value\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":116,\"height\":32,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/actionText} }}\",\"styles\":{\"width\":36,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"action_value\",\"component\":\"Text\",\"content\":\"{{ ${/summary/reclaimText} }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"清理空间\",\"alertText\":\"危险\"},\"items\":{\"cache\":{\"label\":\"缓存\",\"sizeText\":\"2.8GB\",\"selected\":true},\"packages\":{\"label\":\"安装包\",\"sizeText\":\"0.8GB\",\"selected\":true}},\"summary\":{\"actionText\":\"可清理\",\"reclaimText\":\"3.6GB\"}}}}"
+  ]
+}

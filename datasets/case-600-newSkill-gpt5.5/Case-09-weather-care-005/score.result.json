@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-09-weather-care-005",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.2,
+  "reasons": {
+    "instruction": "用户要求：有按钮的天气卡、数字会跳、能打电话、念出来、已连接。截图中可见'天气关怀'标题、'已连接'绿色徽章、'26°'主温度、湿度进度环、'青浦天气'位置、'湿度62%  空气良'元信息条、右侧'多云 良'概要、'朗读：注意补水'播报提示，以及'打电话'绿色按钮，且按钮通过 onClick 绑定 clickToCallPhone + phoneNumber=10086，事件与参数均来自 eventCandidates。尺寸 2x4 (300x140)、catalogId/version/updateDataModel 路径均合规。轻微扣分点：condition='多云' 在中央 caption 与右侧'多云 良'重复展示，属于信息冗余。",
+    "aesthetic": "截图整体配色和谐：右上到左下浅蓝渐变背景与绿色状态徽章/按钮形成清爽的'天气+关怀'语义，标题与主温 26° 字重层级清晰、对比度足够。但中央区域因 '多云' 小字与进度环的蓝色弧线视觉相邻略拥挤，破坏了该区域的精致感；底部 '湿度62%  空气良' 与卡片底边留白偏薄。整体属'良好'但有可见瑕疵。",
+    "layout": "截图中可观察到关键排版问题：1) 进度环 humidity_ring(54x54) 占据 meter_row 全部高度，'26°' 下方的 primary_caption '多云' (高 12) 位于 y≈102-114，与进度环的右下弧线在视觉上紧贴/轻微叠压，'多'字顶部被环的弧形遮住，'云'字几乎与环底端重合；2) meta_text '湿度62%  空气良' 紧贴进度环底端且距卡片下边仅约 2vp 视觉余量，局促感明显；3) content_row 子项 164+10+102=276 横向恰好等于可用宽度，没有出现整体溢出，但中央区的微观重叠已构成可见缺陷。按钮热区 32vp 满足 ≥24vp 的硬约束。"
+  },
+  "issues": [
+    "截图中 '多云' caption 与 humidity_ring 进度环右下弧线视觉叠压，'多' 字顶部被环遮住",
+    "meta_text '湿度62%  空气良' 距进度环底端和卡片底边过近，底部留白不足",
+    "condition='多云' 在中央 caption 与右侧 action_panel '多云 良' 中重复显示，信息冗余",
+    "meter_row 中进度环 54x54 占据全部高度，与 caption 的 12px 高度共享同一垂直区间，无法避免贴边"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"content_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#86c5e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"天气关怀\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/care/connectionStatus} }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":10,\"maxLines\":1}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"primary_column\",\"action_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":88,\"alignItems\":\"center\"}},{\"id\":\"primary_column\",\"component\":\"Column\",\"children\":[\"location_text\",\"meter_row\",\"meta_text\"],\"itemMargin\":2,\"styles\":{\"width\":164,\"height\":88,\"justifyContent\":\"center\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + '天气' }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"humidity_ring\",\"temp_value\"],\"itemMargin\":10,\"styles\":{\"width\":164,\"height\":48,\"alignItems\":\"center\"}},{\"id\":\"humidity_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/weather/current/humidityPercent} }}\",\"total\":100,\"styles\":{\"width\":48,\"height\":48,\"type\":\"ring\",\"color\":\"#46b1e3\"}},{\"id\":\"temp_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":106,\"height\":48,\"fontSize\":36,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"left\"}},{\"id\":\"meta_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + '  湿度' + ${/data/weather/current/humidityPercent} + '%  空气' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"condition_text\",\"readout_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":102,\"height\":88,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"readout_text\",\"component\":\"Text\",\"content\":\"{{ '朗读：' + ${/care/speechText} }}\",\"styles\":{\"width\":86,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/care/phoneNumber} }}\"}}],\"styles\":{\"width\":86,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦\"},\"current\":{\"temperatureText\":\"26°\",\"condition\":\"多云\",\"humidityPercent\":62,\"airQuality\":\"良\"},\"daily\":[],\"updatedAt\":\"\"}},\"care\":{\"connectionStatus\":\"已连接\",\"speechText\":\"注意补水\",\"contactName\":\"家人\",\"phoneNumber\":\"10086\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

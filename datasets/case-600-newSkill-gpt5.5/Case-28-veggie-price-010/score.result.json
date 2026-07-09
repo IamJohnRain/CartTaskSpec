@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-010",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求做一个均价卡片、点击跳app、显示已比价完成。截图中可以看到：标题'今日菜价均价'、主数值'¥3.98/斤'、caption'市场均价参考'、detail'6个菜场均价'与'较昨日低0.20元'、右侧'比价状态/已比价完成/今日有效'，以及绿色CTA按钮'去查看'，均完整呈现。Button 的 onClick.call='clickToDeeplink'、args 与 eventCandidates 完全一致（bundleName/abilityName/uri 原样）。size=2x4、width:300、height:140、borderRadius:22、clip:true、catalogId/version、updateDataModel.path='/' 等硬约束均满足。轻微瑕疵：用户原文是口语'点一下跳app显示已比价完成就行'，UI 已把'已比价完成'做成主状态绿色高亮，符合语义。",
+    "aesthetic": "截图中渐变从深黑(左上)到紫色(右下)过渡自然，前景白色主数值在深色背景上对比度高、清晰可读。字号层级合理：主数值32pt最强字重，标题/状态14pt次之，caption/time 等12pt较弱，整体只有一个最强字重，留白密度舒适。绿色'已比价完成'与绿色'去查看'按钮颜色一致(都是 #5ba854)，形成正反馈视觉链，但两处同色稍显竞争，状态文字与按钮之间缺少微差。中间竖向 Divider 颜色 #33ffffff 较淡，分割得体。整体观感专业克制，可读性良好。",
+    "layout": "从截图实际观察：左主列(标题/主数值/caption/detail_row)与右动作列(状态/时间/按钮)由竖直 Divider 清晰分隔，无元素堆叠重叠；'¥3.98/斤'完整显示未被裁切，'已比价完成'、'6个菜场均价'、'较昨日低0.20元'、'今日有效'、'去查看'均完整呈现；所有元素均在卡片边界内。底边到卡片底的距离约为 12vp(在 10-14vp 安全区间内)，按钮热区约 34vp 高(>24vp 合格)，左右两列未出现挤压。Layout 干净，唯一的极轻微问题是右列宽度 77 偏紧，若有更长 actionText 可能溢出，但当前数据安全。"
+  },
+  "issues": [
+    "右列'已比价完成'(绿色)与按钮'去查看'(同色绿)颜色完全相同，视觉上同色元素竞争，缺少主次层次",
+    "右列宽度 77 较窄，若 actionText 长度增加(如'前往查看详情')可能溢出",
+    "detail_row 中 scope_text(#e5ffffff) 与 trend_text(#99ffffff) 颜色差异较小，对比度偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#634794\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"main_column\",\"middle_divider\",\"action_column\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"primary_caption\",\"detail_row\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/price/title} }}\",\"styles\":{\"width\":178,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/price/avgPriceText} }}\",\"styles\":{\"width\":178,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/price/caption} }}\",\"styles\":{\"width\":178,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_row\",\"component\":\"Row\",\"children\":[\"scope_text\",\"trend_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":178,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"scope_text\",\"component\":\"Text\",\"content\":\"{{ ${/price/scopeText} }}\",\"styles\":{\"width\":78,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"trend_text\",\"component\":\"Text\",\"content\":\"{{ ${/price/trendText} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#aaff8898\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"middle_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":92,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33ffffff\"}},{\"id\":\"action_column\",\"component\":\"Column\",\"children\":[\"status_label\",\"status_text\",\"time_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":77,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"status_label\",\"component\":\"Text\",\"content\":\"{{ ${/price/statusLabel} }}\",\"styles\":{\"width\":77,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#88ffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/price/statusText} }}\",\"styles\":{\"width\":77,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff5ba854\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/price/timeText} }}\",\"styles\":{\"width\":77,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/price/actionText} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":76,\"height\":34,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff5ba854\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"price\":{\"title\":\"今日菜价均价\",\"avgPriceText\":\"¥3.98/斤\",\"caption\":\"市场均价参考\",\"scopeText\":\"6个菜场均价\",\"trendText\":\"较昨日低0.20元\",\"statusLabel\":\"比价状态\",\"statusText\":\"已比价完成\",\"timeText\":\"今日有效\",\"actionText\":\"去查看\"}}}}"
+  ]
+}

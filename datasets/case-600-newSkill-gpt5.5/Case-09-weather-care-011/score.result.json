@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-09-weather-care-011",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图中可以看到'防台风'标题、风险临近状态、tornado气象图标、'风力12级/东北风'和'暴雨预警/暴雨'两个模块、以及'去避难所'一键导航按钮均正确呈现，数据绑定表达式生效；onClick 的 call/args 与 eventCandidates 完全一致，素材使用 assetCandidates 里的 tornado.png，根壳 140x140/borderRadius 18/clip true、catalogId 与 version、updateDataModel.path='/' 与值结构均满足协议硬约束。唯一轻微不足是底部按钮使用蓝色（#0a59f7），与台风应急避难所的紧迫主题略不匹配，缺少紧急感。",
+    "aesthetic": "截图整体配色为深色背景配浅灰模块，对比清晰，前景白字在深底上可读性良好；标题/状态/模块数值/按钮文字之间字号字重层级清楚（14/10/10/14 阶梯且只有一个 700 强字重）；左右两个浅色模块形成视觉平衡，留白合理。但渐变仅两个非常接近的暗色（#191a1c→#202224），实际渲染几乎看不出过渡，未能传达'乌云密布'的层次感，背景偏平；按钮的亮蓝色在应急场景下稍显跳脱，整体调性偏冷、缺少灾害预警的紧迫氛围。",
+    "layout": "截图显示所有元素均位于卡片内：标题'防台风'完整可读，'风险临近'完整且右对齐；两个模块并排显示'风力12级/东北风'与'暴雨预警/暴雨'，未被裁切；'去避难所'按钮完整显示、底边距卡片下沿约 8-10vp、热区充足。未见元素堆叠或遮挡。但按公式核算：根 padding 12 + 头部 22 + itemMargin 8 + 模块 38 + itemMargin 8 + 按钮 32 + 底部 padding 12 = 132，超过了 116 的内容区，存在 16vp 潜在溢出风险，目前依赖渲染器压缩/裁剪才没出大问题，是一处需要收口的安全隐患。"
+  },
+  "issues": [
+    "根 Column 实际占用 132vp 超过 116vp 内容区，存在潜在溢出风险，依赖渲染器兜底",
+    "linearGradient 仅两个几乎同色的暗色，截图上几乎看不出过渡，'乌云密布'层次感不足",
+    "底部按钮使用通用蓝 #0a59f7，与防台风应急避难所的紧迫主题不符，建议改为警示红/橙",
+    "按钮底边到卡片底边的留白偏紧（公式下仅 4vp），存在不同字号/翻译下被裁切的可能",
+    "模块 tile 的 padding=4 加 width=55 较为局促，长文本（如更长的预警名）易撑破"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"module_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"TopBottom\",\"colors\":[[\"#ff16181d\",0],[\"#ff2a2e36\",0.55],[\"#ff111317\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"title_text\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/tornado.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"防台风\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/riskStatus} }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"module_row\",\"component\":\"Row\",\"children\":[\"wind_tile\",\"rain_tile\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":38,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"wind_tile\",\"component\":\"Column\",\"children\":[\"wind_value\",\"wind_caption\"],\"itemMargin\":2,\"styles\":{\"width\":57,\"height\":38,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#ffe5e5ea\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"wind_value\",\"component\":\"Text\",\"content\":\"{{ '风力' + ${/data/weather/current/windLevel} + '级' }}\",\"styles\":{\"width\":49,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"wind_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/windDirection} }}\",\"styles\":{\"width\":49,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"rain_tile\",\"component\":\"Column\",\"children\":[\"rain_value\",\"rain_caption\"],\"itemMargin\":2,\"styles\":{\"width\":57,\"height\":38,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#ffe5e5ea\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"rain_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":49,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"rain_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":49,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去避难所\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.54310\",\"longitude\":\"114.05790\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":120,\"height\":30,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffd93030\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山区\",\"prefectureName\":\"深圳市\"},\"current\":{\"condition\":\"暴雨\",\"windDirection\":\"东北风\",\"windLevel\":12,\"alertLevel\":\"暴雨预警\"},\"daily\":[],\"updatedAt\":\"\"}},\"ui\":{\"riskStatus\":\"风险临近\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

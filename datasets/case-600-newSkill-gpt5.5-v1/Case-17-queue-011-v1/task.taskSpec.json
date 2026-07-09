@@ -1,0 +1,89 @@
+{
+  "userQuery": "医院叫号卡片,左侧主视觉,上面叠个环形进度中间显示号数,比如\"当前叫号:0327\"。底下纵向排几项,显示前面还有多少人、预计等待多久、当前叫到几号。磨砂玻璃感,别用渐变,图标用文字字符就行。手机电量只剩12%了要在卡片上提醒,点一下能跳到电池设置里省电;还有下午3点的复诊要能从日历读到。最好有个红色提示\"已过号\"或\"即将过号\"这种告警状态,挺急的。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "queue": {
+      "progressValue": {
+        "type": "number",
+        "description": "排队进度环当前值，用于表达接近叫号的程度。",
+        "sampleValue": 82
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "排队进度环总值。",
+        "sampleValue": 100
+      },
+      "currentNumber": {
+        "type": "string",
+        "description": "用户当前排队号数。",
+        "sampleValue": "0327"
+      },
+      "peopleAheadText": {
+        "type": "string",
+        "description": "用户前方仍在等待的人数展示文本。",
+        "sampleValue": "前方还有6人"
+      },
+      "estimatedWaitText": {
+        "type": "string",
+        "description": "预计等待时长展示文本。",
+        "sampleValue": "预计18分钟"
+      },
+      "calledNumberText": {
+        "type": "string",
+        "description": "当前已叫到的号码展示文本。",
+        "sampleValue": "已叫到0320"
+      },
+      "alertStatus": {
+        "type": "string",
+        "description": "叫号风险告警状态，例如已过号或即将过号。",
+        "sampleValue": "即将过号"
+      }
+    },
+    "battery": {
+      "levelText": {
+        "type": "string",
+        "description": "手机当前低电量提醒展示文本。",
+        "sampleValue": "电量12%"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历复诊日程的索引项唯一标识符。",
+              "sampleValue": "calendar-review-1500"
+            },
+            "title": {
+              "type": "string",
+              "description": "日历复诊日程标题。",
+              "sampleValue": "复诊"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "复诊日程当天开始时间。",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "复诊日程当天结束时间。",
+              "sampleValue": "15:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

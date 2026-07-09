@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-16-travel-ticket-004",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户要求展示'整个行程详情'，但截图中只呈现了航班号(CA1234)、出发时间(16:45)和状态(延误15分)三个字段，缺少eventLocation(T3登机口)和dtEnd(18:55)这两个行程关键信息，'整个行程详情'诉求有缺漏。中间放置了飞机SVG图标满足'中间放个图'。所有展示值使用{{...}}数据绑定满足'数字会变'。底部'详情'Button通过onClick调用clickToIntent并以entityId为参数，满足'点一下能操作'和'读日历'，且call/args严格来自eventCandidates。延误文案使用#ffed6f21告警色(偏橙)，用户字面要求'标红'，用#ffe53935纯红色更贴切。尺寸/catalogId/version/updateDataModel等硬约束均满足。",
+    "aesthetic": "蓝色线性渐变背景(右上深至左下浅)与航空旅行主题契合，色调清新不刺眼。'CA1234'标题加粗居中、'16:45'加粗强调、延误文案橙红色突出、详情按钮蓝底白字，四档对比形成清晰字重层级。面板与按钮均为圆角，视觉统一。飞机SVG图标造型极简(纯线条勾勒)，视觉锚点和精致感稍弱。整体留白均衡、对齐规整、可读性良好。",
+    "layout": "截图实际显示：标题完整居中无截断，飞机图标在Stack面板中居中、面板内边距适中，时间/状态文字未被遮挡，'详情'按钮热区约56x32充足。底部Row距卡片底边约14vp，处于合规区间。各子项在Column内自上而下堆叠，节奏稳定，无元素溢出卡片边界，无文字裁切，无Stack遮盖受保护内容。唯一小瑕疵是'延误15分'与'16:45'两行间距偏紧(2vp)。"
+  },
+  "issues": [
+    "eventLocation(T3登机口)和dtEnd(18:55)字段未在截图中显示，对'整个行程详情'诉求有缺失",
+    "延误告警色#ffed6f21偏橙，用户字面要求'标红'，与红色#ffe53935有偏差",
+    "飞机SVG图标造型极简(纯线条绘制)，视觉锚点不够精致",
+    "底部'延误15分'与'16:45'两行垂直间距仅2vp，略显拥挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"visual_panel\",\"meta_text\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#46b1e3\",1]]}}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"visual_panel\",\"component\":\"Stack\",\"children\":[\"trip_image\"],\"styles\":{\"width\":116,\"height\":44,\"alignContent\":\"center\",\"backgroundColor\":\"#0c000000\",\"borderRadius\":12}},{\"id\":\"trip_image\",\"component\":\"Image\",\"src\":\"resources/base/media/airplane_departure.svg\",\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"meta_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }} · {{ ${/data/calendar/items/0/dtStart} }}-{{ ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"{{ ${/data/calendar/items/0/description} == '准点' ? '#99000000' : '#ffe53935' }}\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"详情\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":56,\"height\":26,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"travel-ticket-001\",\"title\":\"CA1234\",\"dtStart\":\"16:45\",\"dtEnd\":\"18:55\",\"eventLocation\":\"T3登机口\",\"description\":\"延误15分\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

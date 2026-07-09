@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-14-commute-009",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户明确诉求已逐项落实：截图中可见'12分钟出发'承担了'一行带数字的话'的主指标；'快迟到'顶部标签落实了'快迟到要提醒'的状态；'08:45 早会'对应日历读入；'去导航'白色按钮绑定 clickToIntent/StartNavigate 事件，args 内 dstLocation 经纬度与 trafficpe 均来自 eventCandidates 原样引用，未自行编造；dataModel.value 完整写入 calendar.items、state.warningLabel、state.navigation，路径与 TaskSpec.dataModelSchema 一致；catalogId=ohos.a2ui.extended.catalog、size=2x2、root 140x140、padding 12、borderRadius 18 等硬约束全部满足。扣 1 分：'eventLocation/深圳湾科技园'虽在数据中可用但未呈现，对导航目的地的语义信息略有缺失。",
+    "aesthetic": "截图整体观感良好：橙黄渐变（#ed6f21→#f9a01e）由左上偏冷橙过渡到右下偏暖黄，传递出'赶时间'的紧迫情绪，与'快迟到'语义契合；白色字色在橙色背景上对比清晰、可读性强；字号阶梯 14/20/12/14 区分合理，'12分钟出发'作为主指标 20pt 粗体居视觉中心；白色圆角按钮与橙色背景形成强对比，按钮上黑色文字亦可读。仅扣 1.5 分：渐变方向略平淡、缺少更明确的方向感或装饰性细节；按钮底色为纯白无描边/阴影，视觉略单薄；'快迟到'小标签缺少强化（例如徽章底色或左侧色条），与下方主指标的紧迫感关联略弱。",
+    "layout": "截图布局干净：140x140 卡片内 12px 内边距下，四个子项（title 16 + primary 28 + meta 16 + button 32 + 3×4 间距=12）总高 104px，未越出 116px 内容区。文字方面，'快迟到'3 字、'12分钟出发'5 字、'08:45 早会'5 字在各自宽度（116px）内均无截断/换行/省略号；按钮'去导航'三字水平居中、未超出白色圆角；Stack 叠层无遮挡关键文本/CTA；按钮底边到卡片底边约 24vp 留白，在 2x2 推荐 8-16vp 范围之上、留白偏多但可接受；左右两侧橙底边到文字均有内边距，未见贴边。整体无堆叠/截断/溢出，仅底部留白略多扣 1 分。"
+  },
+  "issues": [
+    "目的地文本 'eventLocation=深圳湾科技园' 在 DataModel 中可用但未在卡片呈现，丢失导航语义信息",
+    "'快迟到' 状态标签缺少视觉强调（徽章底色/色条/小图标），与主指标的紧迫感关联偏弱",
+    "按钮底边到卡片底边留白约 24vp，在 2x2 上略偏大，可适度下移以让 CTA 视觉锚定更稳",
+    "渐变方向感不够强（RightBottom 在小尺寸下效果较弱），可改用更明确的 Top→Bottom 或加入少量对比色"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"warning_pill\",\"primary_value\",\"meta_text\",\"location_text\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"TopToBottom\",\"colors\":[[\"#ee6a1a\",0],[\"#f9a526\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"warning_pill\",\"component\":\"Row\",\"children\":[\"warning_dot\",\"warning_label\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"paddingLeft\":6,\"paddingRight\":8,\"borderRadius\":9,\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"warning_dot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":10,\"height\":16,\"fontSize\":10,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"}},{\"id\":\"warning_label\",\"component\":\"Text\",\"content\":\"{{ ${/state/warningLabel} }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":116,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"meta_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }} · {{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去导航\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/state/navigation/dstLocation/latitude} }}\",\"longitude\":\"{{ ${/state/navigation/dstLocation/longitude} }}\"},\"trafficpe\":\"{{ ${/state/navigation/trafficpe} }}\"}}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"早会\",\"eventLocation\":\"深圳湾科技园\",\"dtStart\":\"08:45\",\"remindTime\":[\"12分钟出发\"]}]}},\"state\":{\"loading\":false,\"warningLabel\":\"快迟到\",\"navigation\":{\"dstLocation\":{\"latitude\":\"22.5431\",\"longitude\":\"114.0579\"},\"trafficpe\":\"Drive\"}}}}}"
+  ]
+}

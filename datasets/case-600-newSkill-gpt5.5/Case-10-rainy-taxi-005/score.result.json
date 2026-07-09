@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-10-rainy-taxi-005",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户四点诉求：①按钮 → 截图中有蓝色「导航前往」按钮，已落实；②点击导航 → onClick 使用 clickToIntent/StartNavigate 并带正确参数，args 与 eventCandidates 完全一致；③看日历安排 → 截图中可见「10:30 客户会议 / 科技园 B 座」日程面板已渲染；④红色危险提示 → 整体为红橙渐变背景，顶部「危险」白字加粗醒目，主题成立。扣分点：icon_car.png 资源在截图中未能渲染，左上角只剩下一个空的白色圆角方块，等于『主视觉图标』缺失，taskSpec 给出的 assetCandidates 没被用户实际看到。",
+    "aesthetic": "整体配色为红橙渐变配合蓝色 CTA 按钮，对比明确，文字白色叠在红色背景上可读性良好，层级（24号危险 / 12号雨天打车 / 12号日程 / 10号地点 / 14号按钮）清晰。扣分：左上角空白的白色 38×38 圆角方块在红橙底色上极为突兀，像未加载的占位框；白色方块边缘紧贴圆角卡片左上边界，视觉重量集中在左上一角，与右侧「危险」大字形成不平衡构图；底色渐变从橙到红再到橙稍微偏躁，红橙在 116 宽内容区内仅靠右上文字做层次略显单薄。",
+    "layout": "截图三段自上而下排布：①顶部 38 高 hero_row（含图标 38 + 文字 38）→ ②中间 34 高 schedule_panel → ③底部 32 高 action_button。纵向合计 38+6+34+6+32+24(padding) = 140，正好撑满卡片，无溢出、无截断、无堆叠。CTA「导航前往」底边距卡片底约 12vp，符合 2x2 规范。schedule_panel 内的「10:30 客户会议」和「科技园 B 座」两行均完整显示。问题点：①hero_row 内 primary_info 设了 width:70、textAlign:end，文字右对齐正常，但与左侧 38 图标 + 8 间距组合后贴右很紧，留白不舒服；②左上角空白图标方块虽未溢出，但作为视觉元素显得『悬空』，占用空间却没有传达信息——这是布局上的浪费而非堆叠，仍按观感扣分。"
+  },
+  "issues": [
+    "icon_car.png 资源未在截图中渲染，左上角留下 38×38 空白白色圆角方块，assetCandidates 等同未生效",
+    "hero_row 中图标与文字间距偏紧，文字右对齐到卡片右内边沿处，整体留白不均",
+    "白色图标方块紧贴卡片左上圆角，与红色渐变形成硬切边，缺少过渡",
+    "红橙渐变在 116 宽的小内容区里层级略单调，缺少次级色块支撑"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_block\",\"schedule_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffb21f1a\",0],[\"#e63a4a\",0.55],[\"#ed7a3f\",1]]}}},{\"id\":\"hero_block\",\"component\":\"Stack\",\"children\":[\"hero_bg\",\"hero_text_layer\"],\"styles\":{\"width\":116,\"height\":42}},{\"id\":\"hero_bg\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":116,\"height\":42,\"objectFit\":\"cover\",\"opacity\":0.18}},{\"id\":\"hero_text_layer\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":2,\"styles\":{\"width\":110,\"height\":42,\"padding\":{\"left\":8,\"right\":8},\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/alert/statusText} }}\",\"styles\":{\"width\":110,\"height\":24,\"fontSize\":22,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/ui/alert/caption} }}\",\"styles\":{\"width\":110,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"schedule_panel\",\"component\":\"Row\",\"children\":[\"accent_line\",\"schedule_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":32,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"accent_line\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":20,\"color\":\"#ffffffff\"}},{\"id\":\"schedule_info\",\"component\":\"Column\",\"children\":[\"schedule_title\",\"schedule_meta\"],\"itemMargin\":1,\"styles\":{\"width\":80,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":80,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"schedule_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":80,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/alert/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.536214\",\"longitude\":\"113.945421\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"ui\":{\"alert\":{\"statusText\":\"危险\",\"caption\":\"雨天打车\",\"actionLabel\":\"导航前往\"}},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_event_001\",\"title\":\"客户会议\",\"dtStart\":\"10:30\",\"eventLocation\":\"科技园 B 座\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

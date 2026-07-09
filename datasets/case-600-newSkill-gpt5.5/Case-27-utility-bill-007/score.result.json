@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-27-utility-bill-007",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户三项核心诉求基本落实：'余额数字会变' 通过 balanceText 数据绑定实现，'能直接进入缴费' 通过 Button 的 onClick 绑定到 clickToDeeplink(uri=utility://electricity/pay) 实现，'欠费就红色提示' 通过 statusColor 绑定实现，截图中 '欠费提醒' 文字呈现偏红棕色可被识别为警示色。协议硬约束（size=2x2、catalogId、version=v0.9、updateDataModel.path=/）全部满足。扣分点：截图中状态行 '欠费提醒 · 7月12日前缴费' 被截断为 '欠费提醒 · 7月12日'，丢失了'前缴费'这一关键提示信息。",
+    "aesthetic": "深紫渐变背景与白色主数值对比度好，配色和谐，CTA 蓝色按钮突出，标题/主数值/状态/CTA 字号层级清晰（32/14/12/13）。扣分点：截图中左上角的 icon_charge.png 渲染为一个灰色椭圆/团块，看不出闪电/充电的语义，与文案'电费'关联弱，视觉识别度差；状态文字色 #ffdb6b42 偏棕红而非鲜红，警示强度略弱。",
+    "layout": "截图中各元素纵向排布，无堆叠重叠，CTA 按钮位于卡片下半部，底部有少量留白，padding 合理。核心问题：状态文本 component 宽度 116、fontSize 12、maxLines 1，拼接表达式 '欠费提醒 · 7月12日前缴费' 实际渲染宽度约 130px，溢出后尾部 '前缴费' 被裁切（截图中清晰显示为 '欠费提醒 · 7月12日'），属于受保护提示信息被截断，损失语义。Button 热区 32vp 满足 ≥24vp 要求。"
+  },
+  "issues": [
+    "状态文本拼接 '欠费提醒 · 7月12日前缴费' 在 116 宽度、fontSize 12 下被截断为 '欠费提醒 · 7月12日'，丢失'前缴费'信息",
+    "icon_charge.png 在截图中渲染为不具语义识别度的灰色椭圆/团块，未呈现闪电或充电符号",
+    "状态颜色 #ffdb6b42 偏棕红，欠费警示的'红色'语义不够强烈",
+    "主数值 28.60 缺少单位（'元'），纯数字在电费场景下信息可读性可提升"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"status_text\",\"due_text\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#634794\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"bill_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"bill_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_charge.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/utilityBill/accountName} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/utilityBill/balanceText} }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/utilityBill/statusText} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"{{ ${/data/utilityBill/statusColor} }}\",\"maxLines\":1}},{\"id\":\"due_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/utilityBill/dueText} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#aaffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去缴费\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"utility://electricity/pay\"}}],\"styles\":{\"width\":116,\"height\":28,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff317af7\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"utilityBill\":{\"accountName\":\"电费余额\",\"balanceText\":\"28.60\",\"dueText\":\"7月12日前缴费\",\"statusText\":\"欠费提醒\",\"statusColor\":\"#ffdb6b42\"}}}}}"
+  ]
+}

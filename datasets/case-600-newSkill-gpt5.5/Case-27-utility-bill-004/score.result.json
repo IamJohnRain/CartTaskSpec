@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-27-utility-bill-004",
+  "scores": {
+    "instruction": {
+      "score": 7.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了电费余额、20元主数值、欠费提醒状态、电费还剩20元提醒语和请及时缴费建议，数据字段全部落实；尺寸2x4(300x140)与root shell(borderRadius:22、clip:true、padding:12)均符合协议。但用户明确要求'整个红色'欠费提醒，实际渲染为偏粉的珊瑚红渐变(#e64566→#e67c92)，整体观感是粉/品红而非警示性的红，'欠费'的语义紧迫感不足，扣分。无onClick事件(原候选为空)符合契约。",
+    "aesthetic": "基于截图：左右分栏结构清晰，主数值'20元'用40pt粗体白字形成最强视觉锚点，右侧'欠费提醒'用粗体白字配合半透明白底面板形成次级层次，字号阶梯(40/16/14/12)合理。配色方面粉红渐变自身并不突兀且文字可读，但作为'欠费'警示场景偏柔弱、缺乏警示色应有的张力；右侧inset面板的内阴影/半透叠层给整体增加了一点精致感，留白密度合适。",
+    "layout": "基于截图：卡片内部无元素堆叠重叠，所有文字完整显示未被裁切——'电费余额'、'20元'、'余额仅剩'在左列完整呈现，'欠费提醒'、'电费还剩20元'、'请及时缴费'在右侧面板内单/两行内清晰排布，未触发maxLines截断；垂直分割线height:88居中且不与左右内容碰撞；左右两列宽度(150+1+108+间距)未溢出300宽度；底部锚定到卡片底边约8vp，在2x4的8-12vp舒适区间内。"
+  },
+  "issues": [
+    "用户要求'整个红色'欠费提醒，但实际渐变色(#e64566→#e67c92)偏粉/品红，警示性红度不足",
+    "右侧'欠费提醒'面板采用#33ffffff半透白底，在粉红底上对比稍弱，可考虑更明显内嵌或描边",
+    "底部到卡片底边约8vp，处于2x4下界临界，建议略增padding以更稳"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_column\",\"vertical_divider\",\"right_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#c8131c\",0],[\"#e8454d\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"primary_caption\"],\"itemMargin\":6,\"styles\":{\"width\":150,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/type} + '余额' }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/bill/balanceText} }}\",\"styles\":{\"width\":150,\"height\":46,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/bill/captionText} }}\",\"styles\":{\"width\":150,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"vertical_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":88,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#66ffffff\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"panel_divider\",\"reminder_text\",\"advice_text\"],\"itemMargin\":8,\"styles\":{\"width\":108,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#22ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/statusText} }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panel_divider\",\"component\":\"Divider\",\"styles\":{\"width\":88,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#66ffffff\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/type} + '还剩' + ${/bill/balanceText} }}\",\"styles\":{\"width\":88,\"height\":34,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/adviceText} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"bill\":{\"type\":\"电费\",\"balanceText\":\"20元\",\"statusText\":\"欠费提醒\",\"captionText\":\"余额仅剩\",\"adviceText\":\"请及时缴费\"}}}}"
+  ]
+}
