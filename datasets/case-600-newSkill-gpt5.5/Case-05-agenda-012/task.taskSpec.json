@@ -1,0 +1,233 @@
+{
+  "userQuery": "我想弄个纯白色的会议日程卡片，左边排今天的会议列表，右边放个详情按钮能点进去看。今天外面下雨读一下天气数据放标题旁边，下面排了横向滚动的待办列表，有个会马上迟到了用橙红色渐变警示一下，图标别用画的直接用感叹号字符。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "动态数据能力输出根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "cal-20260709-0930",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "8F 会议室"
+            },
+            {
+              "entityId": "cal-20260709-1430",
+              "title": "项目同步会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00",
+              "eventLocation": "线上会议"
+            }
+          ]
+        },
+        "weather": {
+          "current": {
+            "condition": "小雨",
+            "temperatureText": "23°C"
+          },
+          "location": {
+            "districtName": "当前位置"
+          }
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "今天的日历日程查询结果。",
+        "sampleValue": {
+          "items": [
+            {
+              "entityId": "cal-20260709-0930",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "8F 会议室"
+            },
+            {
+              "entityId": "cal-20260709-1430",
+              "title": "项目同步会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00",
+              "eventLocation": "线上会议"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "今天按开始时间排序的会议列表。",
+          "sampleValue": [
+            {
+              "entityId": "cal-20260709-0930",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "8F 会议室"
+            },
+            {
+              "entityId": "cal-20260709-1430",
+              "title": "项目同步会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00",
+              "eventLocation": "线上会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条会议日程。",
+            "sampleValue": {
+              "entityId": "cal-20260709-0930",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "8F 会议室"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识，用于打开日程详情。",
+              "sampleValue": "cal-20260709-0930"
+            },
+            "title": {
+              "type": "string",
+              "description": "会议标题。",
+              "sampleValue": "产品评审会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "会议当天开始时间，HH:MM 格式。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "会议当天结束时间，HH:MM 格式。",
+              "sampleValue": "10:00"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "会议地点或线上会议说明。",
+              "sampleValue": "8F 会议室"
+            }
+          }
+        }
+      },
+      "weather": {
+        "type": "object",
+        "description": "当前位置天气概要。",
+        "sampleValue": {
+          "current": {
+            "condition": "小雨",
+            "temperatureText": "23°C"
+          },
+          "location": {
+            "districtName": "当前位置"
+          }
+        },
+        "current": {
+          "type": "object",
+          "description": "当前天气实况。",
+          "sampleValue": {
+            "condition": "小雨",
+            "temperatureText": "23°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雨"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "23°C"
+          }
+        },
+        "location": {
+          "type": "object",
+          "description": "天气查询位置。",
+          "sampleValue": {
+            "districtName": "当前位置"
+          },
+          "districtName": {
+            "type": "string",
+            "description": "区县或当前位置名称。",
+            "sampleValue": "当前位置"
+          }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "卡片受控静态辅助展示数据。",
+      "sampleValue": {
+        "todos": [
+          {
+            "title": "09:30 快迟到",
+            "level": "warning"
+          },
+          {
+            "title": "带伞出门",
+            "level": "normal"
+          },
+          {
+            "title": "发会议纪要",
+            "level": "normal"
+          }
+        ]
+      },
+      "todos": {
+        "type": "array",
+        "description": "底部横向待办摘要。",
+        "sampleValue": [
+          {
+            "title": "09:30 快迟到",
+            "level": "warning"
+          },
+          {
+            "title": "带伞出门",
+            "level": "normal"
+          },
+          {
+            "title": "发会议纪要",
+            "level": "normal"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条待办摘要。",
+          "sampleValue": {
+            "title": "09:30 快迟到",
+            "level": "warning"
+          },
+          "title": {
+            "type": "string",
+            "description": "待办短标题。",
+            "sampleValue": "09:30 快迟到"
+          },
+          "level": {
+            "type": "string",
+            "description": "待办状态级别。",
+            "sampleValue": "warning"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合在标题旁表达雨天天气状态。"
+    }
+  ]
+}

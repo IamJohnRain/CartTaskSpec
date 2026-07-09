@@ -1,0 +1,108 @@
+{
+  "userQuery": "余额会动 点了跳到记账app 日历看还款日 红色提示要爆预算",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.example.accounting",
+        "abilityName": "MainAbility",
+        "uri": "ledger://home/add"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "asset": {
+      "primaryIcon": {
+        "type": "string",
+        "description": "预算预警卡片使用的日历 glyph 素材路径。",
+        "sampleValue": "resources/base/media/calendar_fill.svg"
+      }
+    },
+    "data": {
+      "finance": {
+        "budgetStatus": {
+          "type": "string",
+          "description": "当前预算风险状态短文案，用于红色提示。",
+          "sampleValue": "快爆预算"
+        },
+        "balanceText": {
+          "type": "string",
+          "description": "账户余额的动态展示文本。",
+          "sampleValue": "1280元"
+        },
+        "budgetUsed": {
+          "type": "number",
+          "description": "预算进度条当前值，超过阈值时按上限内可视值展示。",
+          "sampleValue": 96
+        },
+        "budgetLimit": {
+          "type": "number",
+          "description": "预算进度条总量基准。",
+          "sampleValue": 100
+        },
+        "progressColor": {
+          "type": "string",
+          "description": "预算接近爆表时的进度条告警色。",
+          "sampleValue": "#ffed6f21"
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "还款日历事件的唯一标识符。",
+              "sampleValue": "repay-event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "还款日历事件标题。",
+              "sampleValue": "信用卡还款"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下一次还款日期展示文本。",
+              "sampleValue": "07/18"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "还款日历事件结束日期展示文本。",
+              "sampleValue": "07/18"
+            }
+          }
+        ]
+      }
+    },
+    "metric": {
+      "left": {
+        "label": {
+          "type": "string",
+          "description": "左侧指标标签。",
+          "sampleValue": "余额"
+        }
+      },
+      "right": {
+        "label": {
+          "type": "string",
+          "description": "右侧指标标签。",
+          "sampleValue": "还款"
+        }
+      }
+    },
+    "action": {
+      "label": {
+        "type": "string",
+        "description": "跳转记账 App 的短动作文案。",
+        "sampleValue": "去记账"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心 glyph，适合表示还款日、账单日或日历提醒；在深色背景上需要浅色底板保证可读。",
+      "bindTo": "/asset/primaryIcon"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "userQuery": "给我做个防沉迷卡片，背景素净点别太乱。左边放个环形仪表盘显示\"今日已用42分\"，中间塞几个可勾选的任务选项比如\"完成作业才能玩\"。如果时间快到了要让仪表盘变黄提示注意。顶部用太阳和云朵的天气图标，右上角点一下能跳系统设置改时长限制。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于顶部天气识别。",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "screenTime": {
+        "usedMinutes": {
+          "type": "number",
+          "description": "今日已使用的娱乐或应用时长，单位为分钟。",
+          "sampleValue": 42
+        },
+        "limitMinutes": {
+          "type": "number",
+          "description": "今日允许使用的总时长上限，单位为分钟。",
+          "sampleValue": 45
+        },
+        "usedText": {
+          "type": "string",
+          "description": "今日已用时长的短文本。",
+          "sampleValue": "今日已用42分"
+        },
+        "remainingText": {
+          "type": "string",
+          "description": "剩余可用时间提示。",
+          "sampleValue": "剩余3分"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "防沉迷时长状态提示。",
+          "sampleValue": "时间快到了"
+        },
+        "meterColor": {
+          "type": "string",
+          "description": "仪表盘状态色，接近时长上限时为黄色提醒。",
+          "sampleValue": "#f7ce00"
+        }
+      },
+      "tasks": [
+        {
+          "title": {
+            "type": "string",
+            "description": "防沉迷前置任务名称。",
+            "sampleValue": "完成作业才能玩"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "该任务是否已完成。",
+            "sampleValue": true
+          }
+        },
+        {
+          "title": {
+            "type": "string",
+            "description": "防沉迷前置任务名称。",
+            "sampleValue": "休息眼睛10分钟"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "该任务是否已完成。",
+            "sampleValue": false
+          }
+        }
+      ]
+    },
+    "assets": {
+      "weatherIcon": {
+        "type": "string",
+        "description": "顶部太阳和云朵天气图标资源路径。",
+        "sampleValue": "resources/base/media/cloudy_turning_sunny.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy_turning_sunny.png",
+      "description": "小云朵和太阳组合的彩色天气图标，适合顶部表达晴转多云天气状态。",
+      "bindTo": "/assets/weatherIcon"
+    }
+  ]
+}

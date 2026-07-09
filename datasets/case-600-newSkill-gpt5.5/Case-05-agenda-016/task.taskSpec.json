@@ -1,0 +1,89 @@
+{
+  "userQuery": "帮我做个客户联络提醒卡片，用磨砂柔和材质做成内嵌的小面板块。把今天要联系的几个重要客户横向并排排列，上方纵向堆叠显示客户名字和固定文案“建议立即拨打”，点一下就能一键拨打电话给对方，背景用点深蓝色的夜晚倒计时渐变，不要放任何图片用纯文字块就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "{{ ${/data/calendar/items/0/phoneNumber} }}"
+      }
+    },
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "{{ ${/data/calendar/items/1/phoneNumber} }}"
+      }
+    },
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "{{ ${/data/calendar/items/2/phoneNumber} }}"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天需要联系的重要客户提醒列表。",
+          "sampleValue": [
+            {
+              "entityId": "contact-001",
+              "title": "林先生",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "phoneNumber": "13800001001"
+            },
+            {
+              "entityId": "contact-002",
+              "title": "陈经理",
+              "dtStart": "11:00",
+              "dtEnd": "11:30",
+              "phoneNumber": "13800001002"
+            },
+            {
+              "entityId": "contact-003",
+              "title": "周总",
+              "dtStart": "15:00",
+              "dtEnd": "15:30",
+              "phoneNumber": "13800001003"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个客户联络提醒日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "客户联络提醒项唯一标识。",
+                "sampleValue": "contact-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "客户姓名或称呼。",
+                "sampleValue": "林先生"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "建议联系开始时间。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "建议联系结束时间。",
+                "sampleValue": "10:00"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "用于一键拨号的客户电话号码。",
+                "sampleValue": "13800001001"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,7 @@
+已完成生成：
+
+- `task.taskSpec.json`
+- `card.dsl.jsonl`
+- `card.cardspec.json`
+
+两个校验都已通过：`valid: true`，`status: polished`，`qualityScore: 100`，无 error/warning。

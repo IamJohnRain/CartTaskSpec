@@ -1,0 +1,84 @@
+{
+  "userQuery": "帮我做个带点紧迫感渐变的防沉迷卡片，上面放个大大的时钟图标作为主视觉。下面竖向排列好几个管控App，每项都显示“距离锁屏还有15分钟”这种字样，根据日历的作息安排来自动限制。时间快到了就变成黄色风险提示，点击还能直接跳到闹钟应用去设定时。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "根据日历作息安排生成的管控 App 限制项列表",
+          "sampleValue": [
+            {
+              "title": "短视频",
+              "description": "距离锁屏还有15分钟",
+              "dtStart": "21:00",
+              "dtEnd": "21:15",
+              "entityId": "calendar-limit-video"
+            },
+            {
+              "title": "游戏",
+              "description": "距离锁屏还有15分钟",
+              "dtStart": "21:15",
+              "dtEnd": "21:30",
+              "entityId": "calendar-limit-game"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个管控 App 的日历限制项",
+            "sampleValue": {
+              "title": "短视频",
+              "description": "距离锁屏还有15分钟",
+              "dtStart": "21:00",
+              "dtEnd": "21:15",
+              "entityId": "calendar-limit-video"
+            },
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "日程标题，用作管控 App 名称",
+                "sampleValue": "短视频"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程描述，用作距离锁屏剩余时间提示",
+                "sampleValue": "距离锁屏还有15分钟"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "限制开始时间",
+                "sampleValue": "21:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "限制结束时间",
+                "sampleValue": "21:15"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历限制项唯一标识",
+                "sampleValue": "calendar-limit-video"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/clock_fill.svg",
+      "description": "时钟实心图标，适合作为倒计时、时间限制和闹钟设置的主视觉。"
+    }
+  ]
+}

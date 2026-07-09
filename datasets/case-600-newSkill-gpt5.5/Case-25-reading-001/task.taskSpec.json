@@ -1,0 +1,209 @@
+{
+  "userQuery": "列一串同类的，显示数字，点一下能进系统操作，读天气，已连接",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "weather-calendar-entry"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "端侧能力返回的数据根节点。",
+      "sampleValue": {
+        "weather": {
+          "location": {
+            "districtName": "当前位置"
+          },
+          "current": {
+            "temperatureText": "28°C",
+            "condition": "多云",
+            "humidityPercent": 68,
+            "windLevel": 3,
+            "airQuality": "良"
+          },
+          "daily": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "24°/31°",
+              "rainProbabilityPercent": "20%"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨",
+              "temperatureRangeText": "23°/29°",
+              "rainProbabilityPercent": "65%"
+            },
+            {
+              "weekday": "周六",
+              "condition": "阴",
+              "temperatureRangeText": "22°/28°",
+              "rainProbabilityPercent": "40%"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "weather": {
+          "type": "object",
+          "description": "天气能力返回的标准化天气概要。",
+          "sampleValue": {
+            "location": {
+              "districtName": "当前位置"
+            },
+            "current": {
+              "temperatureText": "28°C",
+              "condition": "多云",
+              "humidityPercent": 68,
+              "windLevel": 3,
+              "airQuality": "良"
+            },
+            "daily": [
+              {
+                "weekday": "今天",
+                "condition": "多云",
+                "temperatureRangeText": "24°/31°",
+                "rainProbabilityPercent": "20%"
+              },
+              {
+                "weekday": "明天",
+                "condition": "小雨",
+                "temperatureRangeText": "23°/29°",
+                "rainProbabilityPercent": "65%"
+              },
+              {
+                "weekday": "周六",
+                "condition": "阴",
+                "temperatureRangeText": "22°/28°",
+                "rainProbabilityPercent": "40%"
+              }
+            ]
+          },
+          "properties": {
+            "location": {
+              "type": "object",
+              "description": "实际查询成功的地区。",
+              "sampleValue": {
+                "districtName": "当前位置"
+              },
+              "properties": {
+                "districtName": {
+                  "type": "string",
+                  "description": "区县名或当前位置展示文本。",
+                  "sampleValue": "当前位置"
+                }
+              }
+            },
+            "current": {
+              "type": "object",
+              "description": "当日天气实况。",
+              "sampleValue": {
+                "temperatureText": "28°C",
+                "condition": "多云",
+                "humidityPercent": 68,
+                "windLevel": 3,
+                "airQuality": "良"
+              },
+              "properties": {
+                "temperatureText": {
+                  "type": "string",
+                  "description": "适合直接显示的当前温度文本。",
+                  "sampleValue": "28°C"
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "当前天气现象。",
+                  "sampleValue": "多云"
+                },
+                "humidityPercent": {
+                  "type": "number",
+                  "description": "当前相对湿度百分比数字。",
+                  "sampleValue": 68
+                },
+                "windLevel": {
+                  "type": "integer",
+                  "description": "当前风力等级数字。",
+                  "sampleValue": 3
+                },
+                "airQuality": {
+                  "type": "string",
+                  "description": "当前空气质量等级。",
+                  "sampleValue": "良"
+                }
+              }
+            },
+            "daily": {
+              "type": "array",
+              "description": "从今天开始按日期升序排列的每日预报。",
+              "sampleValue": [
+                {
+                  "weekday": "今天",
+                  "condition": "多云",
+                  "temperatureRangeText": "24°/31°",
+                  "rainProbabilityPercent": "20%"
+                },
+                {
+                  "weekday": "明天",
+                  "condition": "小雨",
+                  "temperatureRangeText": "23°/29°",
+                  "rainProbabilityPercent": "65%"
+                },
+                {
+                  "weekday": "周六",
+                  "condition": "阴",
+                  "temperatureRangeText": "22°/28°",
+                  "rainProbabilityPercent": "40%"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单日天气预报摘要。",
+                "sampleValue": {
+                  "weekday": "今天",
+                  "condition": "多云",
+                  "temperatureRangeText": "24°/31°",
+                  "rainProbabilityPercent": "20%"
+                },
+                "properties": {
+                  "weekday": {
+                    "type": "string",
+                    "description": "星期或相对日期展示文本。",
+                    "sampleValue": "今天"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "白天天气现象。",
+                    "sampleValue": "多云"
+                  },
+                  "temperatureRangeText": {
+                    "type": "string",
+                    "description": "适合直接显示的温度范围。",
+                    "sampleValue": "24°/31°"
+                  },
+                  "rainProbabilityPercent": {
+                    "type": "string",
+                    "description": "白天降雨概率百分比。",
+                    "sampleValue": "20%"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "云朵在前、太阳在后的彩色天气图标，适合用于多云或天气播报卡片的主状态识别。"
+    }
+  ]
+}

@@ -7,7 +7,7 @@
       "args": {
         "intentName": "ViewCalendarEvent",
         "params": {
-          "entityId": "cal-001"
+          "entityId": "event-001"
         }
       }
     },
@@ -16,122 +16,112 @@
       "args": {
         "intentName": "ViewCalendarEvent",
         "params": {
-          "entityId": "cal-002"
+          "entityId": "event-002"
         }
       }
     }
   ],
   "dataModelSchema": {
     "data": {
-      "device": {
-        "battery": {
-          "percentText": {
-            "type": "string",
-            "description": "手机当前剩余电量展示文本。",
-            "sampleValue": "18%"
-          },
-          "level": {
-            "type": "number",
-            "description": "手机当前剩余电量百分比数值，用于判断低电状态。",
-            "sampleValue": 18
-          },
-          "icon": {
-            "type": "string",
-            "description": "低电模式电池主视觉图标路径，来自素材候选。",
-            "sampleValue": "resources/base/media/icon_electricity.png"
-          }
-        }
-      },
       "weather": {
         "current": {
-          "condition": {
-            "type": "string",
-            "description": "今天当前天气现象。",
-            "sampleValue": "多云"
-          },
           "temperatureText": {
             "type": "string",
-            "description": "今天当前温度展示文本。",
-            "sampleValue": "26°C"
+            "description": "当前温度展示文本",
+            "sampleValue": "18°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "今日天气现象",
+            "sampleValue": "多云"
           }
-        },
-        "daily": [
-          {
-            "condition": {
-              "type": "string",
-              "description": "今天白天天气现象。",
-              "sampleValue": "多云"
-            },
-            "temperatureRangeText": {
-              "type": "string",
-              "description": "今天温度范围展示文本。",
-              "sampleValue": "24°/31°"
-            }
-          }
-        ]
+        }
       },
       "calendar": {
         "items": [
           {
             "entityId": {
               "type": "string",
-              "description": "第一条日程详情页索引项唯一标识符。",
-              "sampleValue": "cal-001"
+              "description": "第一条日程的唯一标识符",
+              "sampleValue": "event-001"
             },
             "title": {
               "type": "string",
-              "description": "第一条待办日程标题。",
-              "sampleValue": "带伞"
+              "description": "第一条今日待办日程标题",
+              "sampleValue": "晨会"
             },
             "dtStart": {
               "type": "string",
-              "description": "第一条日程开始时间。",
-              "sampleValue": "08:30"
+              "description": "第一条日程开始时间",
+              "sampleValue": "09:30"
             },
-            "checked": {
-              "type": "boolean",
-              "description": "第一条待办日程是否已勾选。",
-              "sampleValue": false
+            "dtEnd": {
+              "type": "string",
+              "description": "第一条日程结束时间",
+              "sampleValue": "10:00"
             }
           },
           {
             "entityId": {
               "type": "string",
-              "description": "第二条日程详情页索引项唯一标识符。",
-              "sampleValue": "cal-002"
+              "description": "第二条日程的唯一标识符",
+              "sampleValue": "event-002"
             },
             "title": {
               "type": "string",
-              "description": "第二条待办日程标题。",
-              "sampleValue": "取文件"
+              "description": "第二条今日待办日程标题",
+              "sampleValue": "取快递"
             },
             "dtStart": {
               "type": "string",
-              "description": "第二条日程开始时间。",
-              "sampleValue": "09:30"
+              "description": "第二条日程开始时间",
+              "sampleValue": "18:00"
             },
-            "checked": {
-              "type": "boolean",
-              "description": "第二条待办日程是否已勾选。",
-              "sampleValue": false
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条日程结束时间",
+              "sampleValue": "18:30"
             }
           }
         ]
       }
     },
     "state": {
-      "loading": {
-        "type": "boolean",
-        "description": "数据是否仍在加载。",
-        "sampleValue": false
-      }
+      "battery": {
+        "levelPercent": {
+          "type": "number",
+          "description": "手机当前电量百分比数值",
+          "sampleValue": 18
+        },
+        "levelText": {
+          "type": "string",
+          "description": "手机当前电量展示文本",
+          "sampleValue": "18%"
+        },
+        "isLowBattery": {
+          "type": "boolean",
+          "description": "电量是否低于20%",
+          "sampleValue": true
+        }
+      },
+      "todoChecks": [
+        {
+          "type": "boolean",
+          "description": "第一条待办日程是否已勾选",
+          "sampleValue": false
+        },
+        {
+          "type": "boolean",
+          "description": "第二条待办日程是否已勾选",
+          "sampleValue": true
+        }
+      ]
     }
   },
   "assetCandidates": [
     {
       "src": "resources/base/media/icon_electricity.png",
-      "description": "低电模式电池图标，适合作为手机剩余电量和低电提醒的主视觉。",
-      "bindTo": "/data/device/battery/icon"
+      "description": "低电模式电池图标素材，适合作为手机电量和低电提醒的主视觉。"
     }
   ]
 }

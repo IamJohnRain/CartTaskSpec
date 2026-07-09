@@ -1,0 +1,144 @@
+{
+  "userQuery": "每天通勤经常忘了下午的外出日程，帮我做个浅色调卡片，左边放个大大的云朵图标和当前实时的PM2.5数值，右边把日历里今天所有外出日程横向排开，加上定位图标，点一下能查看或进入具体的日程事件详情，结合天气数据提醒我带伞。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询对应的区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量或PM2.5展示摘要。",
+            "sampleValue": "36"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "rainProbabilityPercent": "70%"
+            }
+          ],
+          "items": {
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "当天白天降雨概率百分比。",
+              "sampleValue": "70%"
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天外出日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "event-1001",
+              "title": "拜访",
+              "eventLocation": "陆家嘴",
+              "dtStart": "14:30",
+              "dtEnd": "15:30"
+            },
+            {
+              "entityId": "event-1002",
+              "title": "沟通",
+              "eventLocation": "虹桥",
+              "dtStart": "16:10",
+              "dtEnd": "17:00"
+            },
+            {
+              "entityId": "event-1003",
+              "title": "递送",
+              "eventLocation": "徐汇",
+              "dtStart": "18:00",
+              "dtEnd": "18:30"
+            }
+          ],
+          "items": {
+            "entityId": {
+              "type": "string",
+              "description": "日程详情跳转所需的唯一标识符。",
+              "sampleValue": "event-1001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "拜访"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程发生的位置。",
+              "sampleValue": "陆家嘴"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程当天开始时间，HH:MM格式。",
+              "sampleValue": "14:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程当天结束时间，HH:MM格式。",
+              "sampleValue": "15:30"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵组合图标，适合天气、空气质量和出行提醒的主视觉。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "黑色日历实心图标，适合日程管理和日历事件查看。"
+    },
+    {
+      "src": "resources/base/media/local_fill.svg",
+      "description": "黑色定位实心图标，适合当前位置标注和外出日程地点展示。"
+    }
+  ]
+}

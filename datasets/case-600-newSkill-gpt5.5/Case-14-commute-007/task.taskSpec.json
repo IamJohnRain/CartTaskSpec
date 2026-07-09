@@ -1,0 +1,141 @@
+{
+  "userQuery": "搞个通勤的卡片,有行带数字的话,点一下跳到地图,从日历读日程,快迟到了提醒下",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "{{ ${/data/calendar/items/0/oneClickServiceLink} }}"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天从本地日历读取的通勤相关日程列表，按开始时间升序。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-commute-001",
+              "title": "到公司晨会",
+              "eventLocation": "华为园区 A 座",
+              "dtStart": "08:45",
+              "dtEnd": "09:30",
+              "remindTime": [
+                "08:15"
+              ],
+              "oneClickServiceLink": "mapapp://navigate?destination=office",
+              "isServiceValid": 2
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项。",
+            "sampleValue": {
+              "entityId": "calendar-commute-001",
+              "title": "到公司晨会",
+              "eventLocation": "华为园区 A 座",
+              "dtStart": "08:45",
+              "dtEnd": "09:30",
+              "remindTime": [
+                "08:15"
+              ],
+              "oneClickServiceLink": "mapapp://navigate?destination=office",
+              "isServiceValid": 2
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程项唯一标识符。",
+                "sampleValue": "calendar-commute-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "到公司晨会"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生的位置或通勤目的地。",
+                "sampleValue": "华为园区 A 座"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "08:45"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "remindTime": {
+                "type": "array",
+                "description": "日程提醒时间列表。",
+                "sampleValue": [
+                  "08:15"
+                ],
+                "items": {
+                  "type": "string",
+                  "description": "单个提醒时间。",
+                  "sampleValue": "08:15"
+                }
+              },
+              "oneClickServiceLink": {
+                "type": "string",
+                "description": "日程提供的一键服务链接，用于跳转地图或相关服务。",
+                "sampleValue": "mapapp://navigate?destination=office"
+              },
+              "isServiceValid": {
+                "type": "integer",
+                "description": "一键服务链接校验状态，2 表示可用。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "objectLabel": {
+        "type": "string",
+        "description": "卡片对象短标题。",
+        "sampleValue": "通勤日程"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "迟到风险提示文案。",
+        "sampleValue": "快迟到了"
+      },
+      "routeMinutesText": {
+        "type": "string",
+        "description": "通勤预计耗时展示文本。",
+        "sampleValue": "12分钟"
+      },
+      "routeHint": {
+        "type": "string",
+        "description": "通勤行程建议短文案。",
+        "sampleValue": "建议现在出发"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "地图跳转动作短文案。",
+        "sampleValue": "去地图"
+      },
+      "reminderPrefix": {
+        "type": "string",
+        "description": "提醒时间前缀。",
+        "sampleValue": "提醒 "
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于通勤日历卡片的对象识别，PNG 彩色素材。"
+    }
+  ]
+}

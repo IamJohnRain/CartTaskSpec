@@ -1,0 +1,140 @@
+{
+  "userQuery": "快递取号提醒卡,主信息就是文字,左上角一个仪表盘小环显示当天取件量,点地址能跳地图导航到驿站,读一下日历看今天还有什么安排,底色用浅米色调,适合环境氛围那种渐变,底部横向并排几个驿站标签。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.543096",
+            "longitude": "114.057865"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "pickup": {
+      "message": {
+        "type": "string",
+        "description": "快递取号主信息短文本。",
+        "sampleValue": "取件 A27"
+      },
+      "primaryText": {
+        "type": "string",
+        "description": "快递当前取件提醒状态。",
+        "sampleValue": "包裹已到站待取"
+      },
+      "todayCount": {
+        "type": "integer",
+        "description": "当天取件数量，用于仪表盘进度值。",
+        "sampleValue": 12
+      },
+      "totalExpected": {
+        "type": "integer",
+        "description": "当天预计取件总量，用于仪表盘总量。",
+        "sampleValue": 20
+      },
+      "countLabel": {
+        "type": "string",
+        "description": "当天取件数量的短展示文本。",
+        "sampleValue": "12"
+      }
+    },
+    "station": {
+      "addressLabel": {
+        "type": "string",
+        "description": "可点击导航到驿站的地址短文本。",
+        "sampleValue": "星河驿站东门"
+      },
+      "latitude": {
+        "type": "string",
+        "description": "驿站导航目标纬度。",
+        "sampleValue": "22.543096"
+      },
+      "longitude": {
+        "type": "string",
+        "description": "驿站导航目标经度。",
+        "sampleValue": "114.057865"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历日程列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-001",
+              "title": "例会",
+              "dtStart": "16:30",
+              "dtEnd": "17:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "16:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "17:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "first": {
+        "type": "string",
+        "description": "底部第一个驿站标签。",
+        "sampleValue": "常去"
+      },
+      "second": {
+        "type": "string",
+        "description": "底部第二个驿站标签。",
+        "sampleValue": "近地铁"
+      },
+      "third": {
+        "type": "string",
+        "description": "底部第三个驿站标签。",
+        "sampleValue": "可代收"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合用于地图导航入口或地址行的方向提示。"
+    },
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "快递箱子彩色图标，适合用于物流信息和取件提醒场景。"
+    }
+  ]
+}

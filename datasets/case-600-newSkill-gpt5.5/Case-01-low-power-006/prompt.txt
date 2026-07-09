@@ -1,0 +1,77 @@
+你是一个独立的 Codex CLI 子任务进程，只负责当前目录中的这一个 HarmonyOS A2UI Form 服务卡片 case。
+
+当前 case JSON：
+```json
+{
+  "scenario": "01-low-power",
+  "scenario_name": "低电模式",
+  "query": "列一排能关的东西，按一下能开省电模式",
+  "axes": {
+    "size": "2x2",
+    "component": "List",
+    "binding": "literal",
+    "click": "intent_setting_switch",
+    "data": "static",
+    "surface": "dark-stage",
+    "composition": "hero-left",
+    "status": "none",
+    "gradient": "action-fill",
+    "asset": "icon",
+    "template": "row"
+  }
+}
+```
+
+当前目录已经包含：
+- `query.txt`：原始用户需求，必须保持语义不变。
+- `TaskSpec.md`：TaskSpec 协议说明，生成 `task.taskSpec.json` 时必须遵守。
+
+你的目标是在当前目录生成并保存：
+- `task.taskSpec.json`
+- `card.dsl.jsonl`
+- `card.cardspec.json`
+
+边界要求：
+- 只读取和修改当前执行目录中的文件。
+- 不要修改 skill、脚本、仓库源码、父目录或其他 case 目录。
+- 所有文件读写都使用 UTF-8。
+- 不要批量处理其他 case，不要创建子任务，不要解释批处理流程。
+
+生成要求：
+- 使用 `$harmony-card-generation-datamodel-first` 的规则和当前仓库中的 skill 参考，生成同一张卡片对应的 DSL 与 CardSpec。
+- 根据 `TaskSpec.md` 生成 `task.taskSpec.json`，必须使用 `dataModelSchema`，不要使用旧的 `dataModel.value`。
+- `dataModelSchema` 中被 DSL 动态绑定使用的字段节点必须包含 `type`、`description`、`sampleValue`。
+- `eventCandidates` 只描述候选事件能力，不能写成 DSL `onClick`、按钮文案、入口文案或布局指令。
+- `assetCandidates` 只描述素材候选白名单，必须包含 `src` 和非空 `description`；如包含 `bindTo`，必须能从 `dataModelSchema` 推导到同一个 `src`。
+- DSL 中实际使用的 `onClick` 只能来自 `task.taskSpec.json` 的 `eventCandidates`。
+- DSL 中实际使用的 `Image.src` 和 `styles.backgroundImage` 只能来自 `task.taskSpec.json` 的 `assetCandidates`，或用户明确提供的本地资源路径。
+- 如果使用 Image 或 backgroundImage，优先使用 skill 中 `reference/design/asset-library.md` 声明的 allowlist 素材，不要为了通过引用校验而虚构资源路径。
+
+DSL 要求：
+- `card.dsl.jsonl` 必须恰好 3 行非空 JSONL：`createSurface`、`updateComponents`、`updateDataModel`。
+- 所有动态绑定必须使用完整 `{{ ... }}` 表达式读取 DataModel；不要使用 `{"path":"/..."}` 或 `formatString` 作为值绑定。
+- DSL 中所有动态绑定路径必须能从 `task.taskSpec.json` 的 `dataModelSchema`、最终 CardSpec、能力 `outputSchema` 或微服务允许的展示字段中推导。
+- 第三行 `updateDataModel.value` 只能包含 DSL 所需的受控静态辅助字段、加载态或空态字段；不要在动态数据能力输出路径下新增未授权字段。
+- 将 `dataModelSchema.sampleValue` 填入最终 `updateDataModel`，作为可直接渲染的样例数据。
+- 暂时禁止使用模板循环 children 对象，也就是不要写 `children: {{"componentId":"...","path":"/..."}}`；数组内容必须改用显式固定组件和显式索引路径绑定。
+- 如需展示会议、日程、天气、待办等少量重复内容，使用固定 Text/Row 组件并绑定显式索引路径；空间不足时只展示第一条或摘要，不使用 List/Row/Column 模板循环。
+- 避免组件重叠、文字被按钮或容器裁切、受保护文本显示不全、无意义空白过大。特别检查按钮文字高度和宽度，按钮文案估算宽度必须至少保留 16vp 水平内边距余量。
+- 手算 Row/Column 宽高预算：子项宽高 + margin + padding + itemMargin 不得超过父容器。
+
+CardSpec 要求：
+- `card.cardspec.json` 必须包含 skill 校验器要求的 `title`、`description` 等必要字段，不要只输出 `suggestSize`。
+- 动态卡片的 `dataBindings` 必须来自已声明的数据能力，并与 DSL 实际绑定路径、TaskSpec 数据契约保持一致。
+
+完成前必须运行以下两个校验命令，命令从当前 case 目录执行：
+
+```powershell
+python "D:\A2UI\CartTaskSpec\scripts\validate_taskspec_dsl_refs.py" --taskspec "task.taskSpec.json" --dsl "card.dsl.jsonl" --format json
+python "D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py" --dsl "card.dsl.jsonl" --cardspec "card.cardspec.json" --format json
+```
+
+通过标准：
+- 第一个校验器必须返回 `valid: true`。
+- 第二个校验器必须返回 `status: polished`、`errorCount: 0`、`warningCount: 0`，且 `qualityScore >= 70`。
+- 如果任一命令失败、返回 invalid、出现 error/warning，或 `qualityScore < 70`，必须修复 `task.taskSpec.json`、`card.dsl.jsonl` 或 `card.cardspec.json` 后重新运行两个命令，直到通过。
+
+最终回复只需简短说明完成情况，不要输出长篇解释或中间过程。

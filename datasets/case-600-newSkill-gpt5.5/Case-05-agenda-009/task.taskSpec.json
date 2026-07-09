@@ -1,0 +1,93 @@
+{
+  "userQuery": "整个议程清单 列一排下午的会 上面带倒计时数字 点了进日历 还要提醒我快不行了",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "summaryTitle": {
+          "type": "string",
+          "description": "下午议程清单的短标题",
+          "sampleValue": "下午议程"
+        },
+        "countdownText": {
+          "type": "string",
+          "description": "距离下一场下午会议开始的倒计时数字文本",
+          "sampleValue": "18"
+        },
+        "countdownUnit": {
+          "type": "string",
+          "description": "倒计时数字的单位",
+          "sampleValue": "分钟"
+        },
+        "warningText": {
+          "type": "string",
+          "description": "会议临近时的紧急提醒短句",
+          "sampleValue": "快来不及了"
+        },
+        "items": {
+          "type": "array",
+          "description": "下午会议日程列表，按开始时间排序",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "项目评审会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "同步例会",
+              "dtStart": "16:00",
+              "dtEnd": "16:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条下午会议日程",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情页使用的事件唯一标识",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "会议标题",
+                "sampleValue": "项目评审会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，当天会议使用 HH:MM 格式",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，当天会议使用 HH:MM 格式",
+                "sampleValue": "15:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据是否仍在加载",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

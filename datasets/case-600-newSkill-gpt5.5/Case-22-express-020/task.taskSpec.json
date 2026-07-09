@@ -1,0 +1,108 @@
+{
+  "userQuery": "做一张图片风格的快递卡,上面放一张大号快递车的图当主视觉(用图延伸出整体色调),图下面横着并排几个包裹小卡片,每张写'预计今天18:30送达'这种固定文字+具体时间。再嵌一个'明天有2个待取'的提醒,跟我的日程挂钩能点进去看详情。顺便读天气显示'气温12°C注意保暖'。不要渐变,干净点,图标用文字字符,横向并排多个。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-pickup-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "view": {
+      "heroStatus": {
+        "type": "string",
+        "description": "快递卡主视觉状态短文案。",
+        "sampleValue": "今日派送"
+      },
+      "heroSubStatus": {
+        "type": "string",
+        "description": "快递主视觉辅助说明。",
+        "sampleValue": "包裹已上车"
+      },
+      "packages": [
+        {
+          "label": {
+            "type": "string",
+            "description": "第一个包裹预计送达日期提示。",
+            "sampleValue": "预计今天"
+          },
+          "timeText": {
+            "type": "string",
+            "description": "第一个包裹预计送达具体时间。",
+            "sampleValue": "18:30送达"
+          }
+        },
+        {
+          "label": {
+            "type": "string",
+            "description": "第二个包裹预计送达日期提示。",
+            "sampleValue": "预计今天"
+          },
+          "timeText": {
+            "type": "string",
+            "description": "第二个包裹预计送达具体时间。",
+            "sampleValue": "20:15送达"
+          }
+        }
+      ],
+      "pickupReminder": {
+        "type": "string",
+        "description": "明日待取快递数量提醒。",
+        "sampleValue": "明天有2个待取"
+      },
+      "weatherTip": {
+        "type": "string",
+        "description": "低温天气附加保暖提示。",
+        "sampleValue": "注意保暖"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "12°C"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "可打开日程详情的日程唯一标识。",
+              "sampleValue": "calendar-pickup-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "与待取快递提醒关联的日程标题。",
+              "sampleValue": "快递待取提醒"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "关联日程开始时间。",
+              "sampleValue": "09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "关联日程结束时间。",
+              "sampleValue": "09:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱素材，适合物流信息、派送状态和取件提醒场景，可作为快递卡主视觉并延展暖橙色调。"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "userQuery": "浅色底,左右分区,左边信息区分组用线分开写\"存款进度 78%\"、\"还信用卡完成 3/5\"这种固定文字+动态数值,右边动作区放勿扰开关和日历同步,出现\"已达成\"绿色正向状态,纵向重复排,文字图标不渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "finance": {
+      "deposit": {
+        "progressText": {
+          "type": "string",
+          "description": "存款进度百分比展示文本。",
+          "sampleValue": "78%"
+        },
+        "progressValue": {
+          "type": "number",
+          "description": "存款进度数值，用于进度条。",
+          "sampleValue": 78
+        },
+        "progressTotal": {
+          "type": "number",
+          "description": "存款进度总量基准。",
+          "sampleValue": 100
+        }
+      },
+      "creditCard": {
+        "completedText": {
+          "type": "string",
+          "description": "信用卡还款完成数量展示文本。",
+          "sampleValue": "3/5"
+        }
+      },
+      "status": {
+        "achievementText": {
+          "type": "string",
+          "description": "当前理财任务的正向完成状态文本。",
+          "sampleValue": "已达成"
+        }
+      }
+    },
+    "settings": {
+      "dndEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式开关当前是否开启。",
+        "sampleValue": true
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历同步相关的日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-001",
+              "title": "账单同步",
+              "dtStart": "09:00",
+              "dtEnd": "09:15"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日程项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程索引项唯一标识符。",
+                "sampleValue": "calendar-demo-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "账单同步"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "09:15"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，黑色日历本造型，可用于日历同步或日程入口。"
+    },
+    {
+      "src": "resources/base/media/bell_slash_fill.svg",
+      "description": "铃铛加斜杠实心图标，黑白双色，可用于勿扰或静音设置语义。"
+    }
+  ]
+}

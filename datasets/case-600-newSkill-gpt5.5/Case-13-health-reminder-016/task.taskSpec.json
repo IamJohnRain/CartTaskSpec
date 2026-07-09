@@ -1,0 +1,100 @@
+{
+  "userQuery": "想做一个喝水记录卡,左侧放一张大图做主视觉,右边纵向排开几个时段水杯勾选项,每杯旁边显示毫升数比如\"300ml\"。点水杯图标能跳到闹钟应用。卡片走图片延伸的视觉风格,有运动感渐变,完成态要有\"今天喝够了达成\"的感觉。纵向重复排列多项,可用语义图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "water": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题，说明这是今日喝水记录。",
+        "sampleValue": "喝水记录"
+      },
+      "statusLine1": {
+        "type": "string",
+        "description": "完成态第一行短文案，表达今天饮水目标已喝够。",
+        "sampleValue": "已达成"
+      },
+      "totalText": {
+        "type": "string",
+        "description": "今日累计饮水量展示文本。",
+        "sampleValue": "900ml"
+      },
+      "completionText": {
+        "type": "string",
+        "description": "完成态短提示，用于表达达成感。",
+        "sampleValue": "喝够了达成"
+      },
+      "cups": {
+        "type": "array",
+        "description": "今日按时段排列的水杯勾选项列表。",
+        "sampleValue": [
+          {
+            "time": "08",
+            "amountText": "300ml",
+            "done": true,
+            "value": "morning"
+          },
+          {
+            "time": "12",
+            "amountText": "300ml",
+            "done": true,
+            "value": "noon"
+          },
+          {
+            "time": "20",
+            "amountText": "300ml",
+            "done": true,
+            "value": "night"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个时段水杯勾选项。",
+          "sampleValue": {
+            "time": "08",
+            "amountText": "300ml",
+            "done": true,
+            "value": "morning"
+          },
+          "properties": {
+            "time": {
+              "type": "string",
+              "description": "喝水时段的短时间标签。",
+              "sampleValue": "08"
+            },
+            "amountText": {
+              "type": "string",
+              "description": "该水杯对应的毫升数展示文本。",
+              "sampleValue": "300ml"
+            },
+            "done": {
+              "type": "boolean",
+              "description": "该时段水杯是否已完成勾选。",
+              "sampleValue": true
+            },
+            "value": {
+              "type": "string",
+              "description": "该时段水杯勾选项的稳定值。",
+              "sampleValue": "morning"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标素材，可作为喝水记录卡的左侧主视觉和饮水语义锚点。"
+    }
+  ]
+}

@@ -3,17 +3,6 @@
   "size": "2x2",
   "eventCandidates": [
     {
-      "call": "clickToIntent",
-      "args": {
-        "intentName": "SetSettingSwitch",
-        "params": {
-          "appBundleName": "com.huawei.hmos.settings",
-          "itemName": "battery_saving_mode",
-          "switchFlag": 0
-        }
-      }
-    },
-    {
       "call": "clickToDeeplink",
       "args": {
         "bundleName": "com.huawei.hmos.settings",
@@ -23,59 +12,85 @@
     }
   ],
   "dataModelSchema": {
-    "battery": {
-      "levelText": {
+    "power": {
+      "batteryPercent": {
+        "type": "integer",
+        "description": "当前电量百分比数值，用于进度环动态变化",
+        "sampleValue": 18
+      },
+      "batteryTotal": {
+        "type": "integer",
+        "description": "电量百分比总量基准",
+        "sampleValue": 100
+      },
+      "batteryPercentText": {
         "type": "string",
-        "description": "当前电量百分比展示文本，用于低电量主数字。",
+        "description": "当前电量百分比展示文本",
         "sampleValue": "18%"
       },
-      "isLowPowerOn": {
+      "savingEnabled": {
         "type": "boolean",
-        "description": "省电模式是否已经开启，用于打勾状态。",
+        "description": "省电模式是否已启用，用于复选框选中态",
         "sampleValue": true
+      },
+      "modeText": {
+        "type": "string",
+        "description": "省电模式短标签",
+        "sampleValue": "省电"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "低电量红色提醒短文本",
+        "sampleValue": "低电"
       }
     },
     "data": {
       "calendar": {
-        "items": [
-          {
-            "entityId": {
-              "type": "string",
-              "description": "日程索引项唯一标识符。",
-              "sampleValue": "sample-event-001"
-            },
-            "title": {
-              "type": "string",
-              "description": "下一条日程标题。",
-              "sampleValue": "14:30 评审"
-            },
-            "dtStart": {
-              "type": "string",
-              "description": "下一条日程开始时间。",
-              "sampleValue": "14:30"
-            },
-            "dtEnd": {
-              "type": "string",
-              "description": "下一条日程结束时间。",
-              "sampleValue": "15:00"
+        "items": {
+          "type": "array",
+          "description": "今天的日历事件列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-sample-001",
+              "title": "晚间会议",
+              "dtStart": "18:30",
+              "dtEnd": "19:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar-sample-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "晚间会议"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间展示文本",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间展示文本",
+                "sampleValue": "19:00"
+              }
             }
           }
-        ]
-      }
-    },
-    "asset": {
-      "powerIcon": {
-        "type": "string",
-        "description": "低电模式省电图标路径。",
-        "sampleValue": "resources/base/media/icon_save_power.png"
+        }
       }
     }
   },
   "assetCandidates": [
     {
       "src": "resources/base/media/icon_save_power.png",
-      "description": "省电图标，适合低电模式卡片中表达已开启省电与绿色用电状态。",
-      "bindTo": "/asset/powerIcon"
+      "description": "省电模式图标，适合用于低电模式卡片的状态识别。"
     }
   ]
 }

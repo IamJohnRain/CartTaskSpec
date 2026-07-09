@@ -12,103 +12,82 @@
     }
   ],
   "dataModelSchema": {
-    "power": {
-      "title": {
-        "type": "string",
-        "description": "低电模式卡片标题",
-        "sampleValue": "低电模式"
+    "battery": {
+      "current": {
+        "levelPercent": {
+          "type": "number",
+          "description": "当前手机电量百分比数值，用于主环进度。",
+          "sampleValue": 12
+        },
+        "levelText": {
+          "type": "string",
+          "description": "当前手机电量展示文本。",
+          "sampleValue": "12%"
+        },
+        "ringColor": {
+          "type": "string",
+          "description": "当前电量环颜色，电量低于15%时为告警红色，否则为安全绿色。",
+          "sampleValue": "#ffed6f21"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "电量状态提示文本。",
+          "sampleValue": "低电告警"
+        }
       },
-      "batteryPercent": {
-        "type": "number",
-        "description": "当前手机电量百分比",
-        "sampleValue": 12
+      "todayUsage": {
+        "valueText": {
+          "type": "string",
+          "description": "今日累计用电展示文本。",
+          "sampleValue": "1.8度"
+        },
+        "ringPercent": {
+          "type": "number",
+          "description": "今日累计用电在小环中的归一化进度百分比。",
+          "sampleValue": 45
+        }
       },
-      "batteryText": {
-        "type": "string",
-        "description": "当前手机电量展示文本",
-        "sampleValue": "12%"
-      },
-      "todayUsagePercent": {
-        "type": "number",
-        "description": "今日总用电占满电容量的百分比",
-        "sampleValue": 68
-      },
-      "todayUsageText": {
-        "type": "string",
-        "description": "今日总用电展示文本",
-        "sampleValue": "68%"
-      },
-      "remainingPercent": {
-        "type": "number",
-        "description": "预估剩余可用时长折算进度百分比",
-        "sampleValue": 30
-      },
-      "remainingText": {
-        "type": "string",
-        "description": "预估剩余时长展示文本",
-        "sampleValue": "1.5h"
-      },
-      "ringColor": {
-        "type": "string",
-        "description": "当前电量环颜色，低于15%时为告警色，否则为电池场景强调色",
-        "sampleValue": "#ffed6f21"
-      },
-      "supportColor": {
-        "type": "string",
-        "description": "两侧辅助数据环颜色",
-        "sampleValue": "#61cfbe"
+      "remaining": {
+        "timeText": {
+          "type": "string",
+          "description": "基于当前电量估算的剩余可用时长展示文本。",
+          "sampleValue": "2.4h"
+        },
+        "ringPercent": {
+          "type": "number",
+          "description": "预估剩余时长在小环中的归一化进度百分比。",
+          "sampleValue": 24
+        }
       }
     },
     "data": {
       "weather": {
-        "location": {
-          "cityCode": {
-            "type": "string",
-            "description": "天气应用城市代码，可用于天气页定位",
-            "sampleValue": ""
-          },
-          "districtName": {
-            "type": "string",
-            "description": "天气查询区县名",
-            "sampleValue": "当前位置"
-          }
-        },
-        "current": {
-          "condition": {
-            "type": "string",
-            "description": "当前天气现象",
-            "sampleValue": "多云"
-          }
-        },
-        "daily": [
-          {
-            "rainProbabilityPercent": {
-              "type": "string",
-              "description": "今日降雨概率百分比",
-              "sampleValue": "30%"
-            },
-            "condition": {
-              "type": "string",
-              "description": "今日白天天气现象",
-              "sampleValue": "多云"
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日天气预报。",
+          "sampleValue": [
+            {
+              "rainProbabilityPercent": "60%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比。",
+                "sampleValue": "60%"
+              }
             }
           }
-        ]
-      }
-    },
-    "asset": {
-      "weatherIcon": {
-        "type": "string",
-        "description": "天气入口图标资源路径",
-        "sampleValue": "resources/base/media/partly_cloudy.png"
+        }
       }
     }
   },
   "assetCandidates": [
     {
-      "src": "resources/base/media/partly_cloudy.png",
-      "description": "云朵在前、太阳在后的彩色天气图标，适合表达天气入口和出行前查看是否下雨。",
-      "bindTo": "/asset/weatherIcon"
+      "src": "resources/base/media/icon_weathe2.png",
+      "description": "天气图标，适用于天气应用入口和雨天出行提示，彩色 PNG。"
     }
   ]
 }

@@ -1,0 +1,157 @@
+你是一个独立的 Codex 子任务执行进程。你只负责当前目录中的一个 case。
+
+目标：
+1. 阅读当前目录的 `case.json`、`query.txt`、`TaskSpec.md`。
+2. 根据用户 query 生成 HarmonyOS A2UI Form 服务卡片产物。
+3. 在当前目录写入以下文件：
+   - `query.txt`：保留原始 query，不要改写语义。
+   - `task.taskSpec.json`：符合 `TaskSpec.md` 协议的 TaskSpec。
+   - `card.dsl.jsonl`：三行 genui JSONL。
+   - `card.cardspec.json`：CardSpec JSON。
+
+必须遵守：
+- 只允许读取和修改当前执行目录中的文件。
+- 禁止修改当前目录之外的任何文件或目录。
+- 禁止修改 skill、脚本、仓库源码或其他 case 目录。
+- 读取和写入文件都使用 UTF-8。
+- 严格遵守下方“全局任务要求”。其中关于 DSL、TaskSpec、CardSpec、素材、事件、校验和禁止模板循环的要求优先级高于任何旧经验。
+- 特别注意：暂时禁止使用 `children: {"componentId":"...","path":"/..."}` 模板循环对象；数组内容必须改用显式索引路径绑定到固定组件。
+
+全局任务要求（来自 D:\A2UI\CartTaskSpec\prompts.txt）：
+$harmony-card-generation-datamodel-first datasets\case-600-newSkill-mmx3\600Cases.tagged.jsonl 文件包含 30 个场景，每一行是一个设计好的 Case，该文件 UTF-8编码，读取要注意编码格式。
+每个 case 必须由一个独立 subAgent 调用并使用该 skill 完成对应卡片 DSL，同时参考 TaskSpec.md 生成 TaskSpec 协议内容。最多同时启动 10 个 subAgents。
+
+## 目标范围
+
+1. 只需要完成前 100 个 Case。
+2. 主 Agent 只负责读取输入、拆分任务、调度 subAgent、收集结果和运行校验。
+3. 禁止主 Agent 或本地脚本批量生成 DSL、CardSpec、TaskSpec 或 mock 数据。
+4. 本地命令只允许用于读取输入、统计、检查和校验。
+
+## 保存目录
+
+生成的文件保存到 datasets/case-600-newSkill-gpt5.5 目录下的单独子目录中，目录名必须包含该 case 的 scenario 字段。
+
+例如第一个场景的第一个 case：
+
+datasets/case-600-newSkill-gpt5.5/Case-01-low-power-001
+
+每个 case 目录下必须包含以下文件：
+
+1. 原始 query 文件：query.txt
+2. 生成的 CardSpec 文件：card.cardspec.json
+3. DSL 文件：card.dsl.jsonl
+4. TaskSpec 文件：task.taskSpec.json
+
+## TaskSpec 要求
+
+1. TaskSpec 必须按 TaskSpec.md 的新协议生成，使用 dataModelSchema，不使用旧 dataModel.value。
+2. dataModelSchema 中用于 DSL 动态绑定的字段节点必须包含 type、description、sampleValue。
+3. eventCandidates 只提供候选事件能力，不能写成 DSL onClick、按钮描述、入口文案或布局指令。
+4. assetCandidates 只提供素材候选白名单，必须包含 src 和非空 description；如包含 bindTo，必须能从 dataModelSchema 推导到同一个 src。
+5. DSL 中实际使用的 onClick 只能来自 TaskSpec.eventCandidates。
+6. DSL 中实际使用的 Image.src 和 styles.backgroundImage 只能来自 TaskSpec.assetCandidates，或用户明确提供的本地/资源路径。
+7. 如果使用 Image.src 或 styles.backgroundImage，优先使用 skill 中 reference/design/asset-library.md 声明的 allowlist 素材；不得为了通过 TaskSpec 引用校验而随意虚构资源路径。
+
+## DSL 要求
+
+1. 读取文件按照 UTF-8 解码。
+2. DSL 必须恰好 3 行 JSONL：createSurface、updateComponents、updateDataModel。
+3. DSL 中所有动态绑定路径必须能从 TaskSpec.dataModelSchema、最终 CardSpec、能力 outputSchema 或微服务允许的展示字段中推导。
+4. DSL 第三行 updateDataModel.value 只允许包含 DSL 所需的受控静态辅助字段、加载态或空态字段；不得在动态数据能力输出路径下新增未授权字段。
+5. 生成的 DSL 要重点参考 skill 中的参考样式，尽量保证风格一致。
+6. 避免组件重叠、文字被按钮或容器裁切、受保护文本显示不全、无意义空白过大等问题，特别关注按钮内的文字高度和宽度，计算按钮高度减去上下内边距后是否大于文字高度，避免文字被遮挡
+7. 生成的DSL要将TaskSpec中 dataModelSchema.sampleValue 作为默认值填入最后的updateDataModel中，作为样例数据保证直接渲染结果的美观
+8. 暂时禁止使用模板循环 children 对象特性，即不要写 `"children":{"componentId":"...","path":"/..."}`。当前渲染链路对该特性支持不稳定，容易出现校验通过但实际列表项不显示。日程、会议、天气预报、待办等少量重复内容必须改用显式组件和显式索引绑定，例如 `{{ ${/data/calendar/items/0/dtStart} }}`、`{{ ${/data/calendar/items/0/title} }}`；空间不足时只展示第一条或摘要，不使用 List/Row/Column 模板循环。
+9. DSL 与 CardSpec 必须能通过 skill 自带校验器的 hard、semantic、quality 阶段；尤其不能留下 LAYOUT_ROW_OVERFLOW、LAYOUT_COLUMN_OVERFLOW、LAYOUT_BUTTON_TOO_SMALL、受保护文本依赖 ellipsis/clip/marquee、静态按钮/文本估算放不下等布局与文本风险。
+10. CardSpec 除 suggestSize 和必要 dataBindings 外，还必须补齐 skill 校验器要求的 title、description 等必填字段，不得只输出最小 suggestSize。
+
+## SubAgent 工作流
+
+每个 subAgent 处理单个 case 时必须执行以下流程：
+
+1. 读取该 case 的原始 query 和必要字段，写入 query.txt。
+2. 使用 $harmony-card-generation-datamodel-first 生成 card.dsl.jsonl 与 card.cardspec.json。
+3. 按 TaskSpec.md 生成 task.taskSpec.json，且必须使用 dataModelSchema 格式。
+4. 重新审视 task.taskSpec.json 中的候选素材和候选事件是否准确。
+5. 检查 DSL 中引用的素材路径、事件函数名和事件参数名是否都来自 TaskSpec 候选，并与 skill 中声明的素材和事件能力保持一致。
+6. 运行专项引用校验器：
+
+```powershell
+python scripts\validate_taskspec_dsl_refs.py --taskspec <case目录>\task.taskSpec.json --dsl <case目录>\card.dsl.jsonl --format json
+```
+
+7. 运行 skill 自带卡片校验器：
+
+```powershell
+python .agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py --dsl <case目录>\card.dsl.jsonl --cardspec <case目录>\card.cardspec.json --format json
+```
+
+8. 如果专项引用校验失败，subAgent 必须修复 task.taskSpec.json 或 card.dsl.jsonl 后重新运行该校验器，直到通过。
+9. 如果 skill 自带卡片校验器返回 invalid，或出现布局、文本、按钮、素材、CardSpec、绑定、事件相关 error，subAgent 必须修复 card.dsl.jsonl 或 card.cardspec.json 后重新运行该校验器，直到无 error。
+10. 如果 skill 自带卡片校验器返回 warning，subAgent 必须逐条判断；凡是涉及文字估算放不下、按钮文字可能截断、布局预算接近或超过、受保护文本、素材风险、qualityScore 低于 70 的 warning，都必须修复后重跑。只有与当前 case 明确无关且不会影响渲染、引用、布局、文字完整性的 warning，才可在最终回复中说明保留原因。
+11. 完成前再做一次自检：TaskSpec 协议、DSL 三行 JSONL、CardSpec 尺寸、素材引用、事件引用、数据绑定路径和视觉布局都不能留下明显问题。特别要确认没有使用 `children.componentId + children.path` 模板循环；如需展示数组中的会议/日程/列表项，必须使用显式索引路径绑定到固定 Text/Row 组件。还要手算 Row/Column 的宽高预算：子项宽高 + margin + padding + itemMargin 不得超过父容器；Button 文案估算宽度必须加上至少 16vp 内边距余量。
+
+## 主 Agent 校验流
+
+主 Agent 收集 subAgent 结果后，至少对每个 case 运行以下检查：
+
+```powershell
+python scripts\validate_taskspec_dsl_refs.py --taskspec <case目录>\task.taskSpec.json --dsl <case目录>\card.dsl.jsonl --format json
+```
+
+并且必须运行 skill 自带卡片校验器：
+
+```powershell
+python .agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py --dsl <case目录>\card.dsl.jsonl --cardspec <case目录>\card.cardspec.json --format json
+```
+
+如发现任一校验失败，必须把失败 case 连同校验器输出交回对应 subAgent 修复，不得由主 Agent 批量改写 DSL、CardSpec、TaskSpec 或 mock 数据。
+
+主 Agent 判定规则：
+
+1. `validate_taskspec_dsl_refs.py` 返回 `valid: false` 必须返修。
+2. `validate_card.py` 返回 `status: invalid` 必须返修。
+3. `validate_card.py` 返回 `valid_with_quality_risks`、qualityScore 低于 70，或 diagnostics 中存在布局、按钮、文本、素材、CardSpec、绑定、事件相关 warning，原则上返修；只有 warning 与渲染和协议无关且 subAgent 给出合理说明时才可接受。
+4. 主 Agent 不得只凭专项引用校验通过就认为 case 完成；必须同时查看 skill 自带校验器的 hard、semantic、quality 结果。
+
+## 重要限制
+
+1. 不要修改任何非 datasets 目录下内容，不要修改 skill；产物只能写入 datasets 目录和其子目录。
+2. 必须是“每个 case 一个独立 subAgent”生成结果。
+3. SubAgent 不得引用不存在的素材文件，不得使用 TaskSpec.eventCandidates 外的事件。
+4. SubAgent 不得把 assetCandidates.description 当作必须显示在 UI 上的文案，也不得把 eventCandidates 当作按钮布局说明。
+
+Dispatcher validation requirements:
+After writing card.dsl.jsonl, card.cardspec.json, and task.taskSpec.json, run both validation commands from the current case directory:
+
+```powershell
+python "D:\A2UI\CartTaskSpec\scripts\validate_taskspec_dsl_refs.py" --taskspec "task.taskSpec.json" --dsl "card.dsl.jsonl" --format json
+python "D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py" --dsl "card.dsl.jsonl" --cardspec "card.cardspec.json" --format json
+```
+
+If either command fails, returns valid=false, returns status=invalid, reports any error or warning, or reports qualityScore < 70, fix task.taskSpec.json, card.dsl.jsonl, or card.cardspec.json and rerun both commands until they pass. Do not finish while either validator is still failing or risky.
+
+当前 case：
+```json
+{
+  "scenario": "01-low-power",
+  "scenario_name": "低电模式",
+  "query": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
+  "axes": {
+    "size": "2x2",
+    "component": "Column",
+    "binding": "expression",
+    "click": "intent_setting_switch",
+    "data": "static",
+    "surface": "dark-stage",
+    "composition": "ambient-root",
+    "status": "alert",
+    "gradient": "action-fill",
+    "asset": "icon",
+    "template": "row"
+  }
+}
+```
+
+请直接生成并保存文件。最终回复只需简短说明完成情况。

@@ -1,0 +1,2713 @@
+2026-07-08T15:40:38.421711Z  WARN codex_core_plugins::remote::remote_installed_plugin_sync: remote installed plugin bundle sync failed error=chatgpt authentication required for remote plugin catalog; api key auth is not supported
+2026-07-08T15:40:38.441577Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell
+OpenAI Codex v0.142.5
+--------
+workdir: D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+model: gpt-5.5
+provider: custom
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019f4263-669e-78b2-a30d-6510203fcb4a
+--------
+user
+你是一个独立的 Codex 子任务执行进程。你只负责当前目录中的一个 case。
+
+目标：
+1. 阅读当前目录的 `case.json`、`query.txt`、`TaskSpec.md`。
+2. 根据用户 query 生成 HarmonyOS A2UI Form 服务卡片产物。
+3. 在当前目录写入以下文件：
+   - `query.txt`：保留原始 query，不要改写语义。
+   - `task.taskSpec.json`：符合 `TaskSpec.md` 协议的 TaskSpec。
+   - `card.dsl.jsonl`：三行 genui JSONL。
+   - `card.cardspec.json`：CardSpec JSON。
+
+必须遵守：
+- 只允许读取和修改当前执行目录中的文件。
+- 禁止修改当前目录之外的任何文件或目录。
+- 禁止修改 skill、脚本、仓库源码或其他 case 目录。
+- 读取和写入文件都使用 UTF-8。
+- 严格遵守下方“全局任务要求”。其中关于 DSL、TaskSpec、CardSpec、素材、事件、校验和禁止模板循环的要求优先级高于任何旧经验。
+- 特别注意：暂时禁止使用 `children: {"componentId":"...","path":"/..."}` 模板循环对象；数组内容必须改用显式索引路径绑定到固定组件。
+
+全局任务要求（来自 D:\A2UI\CartTaskSpec\prompts.txt）：
+$harmony-card-generation-datamodel-first datasets\case-600-newSkill-mmx3\600Cases.tagged.jsonl 文件包含 30 个场景，每一行是一个设计好的 Case，该文件 UTF-8编码，读取要注意编码格式。
+每个 case 必须由一个独立 subAgent 调用并使用该 skill 完成对应卡片 DSL，同时参考 TaskSpec.md 生成 TaskSpec 协议内容。最多同时启动 10 个 subAgents。
+
+## 目标范围
+
+1. 只需要完成前 100 个 Case。
+2. 主 Agent 只负责读取输入、拆分任务、调度 subAgent、收集结果和运行校验。
+3. 禁止主 Agent 或本地脚本批量生成 DSL、CardSpec、TaskSpec 或 mock 数据。
+4. 本地命令只允许用于读取输入、统计、检查和校验。
+
+## 保存目录
+
+生成的文件保存到 datasets/case-600-newSkill-gpt5.5 目录下的单独子目录中，目录名必须包含该 case 的 scenario 字段。
+
+例如第一个场景的第一个 case：
+
+datasets/case-600-newSkill-gpt5.5/Case-01-low-power-001
+
+每个 case 目录下必须包含以下文件：
+
+1. 原始 query 文件：query.txt
+2. 生成的 CardSpec 文件：card.cardspec.json
+3. DSL 文件：card.dsl.jsonl
+4. TaskSpec 文件：task.taskSpec.json
+
+## TaskSpec 要求
+
+1. TaskSpec 必须按 TaskSpec.md 的新协议生成，使用 dataModelSchema，不使用旧 dataModel.value。
+2. dataModelSchema 中用于 DSL 动态绑定的字段节点必须包含 type、description、sampleValue。
+3. eventCandidates 只提供候选事件能力，不能写成 DSL onClick、按钮描述、入口文案或布局指令。
+4. assetCandidates 只提供素材候选白名单，必须包含 src 和非空 description；如包含 bindTo，必须能从 dataModelSchema 推导到同一个 src。
+5. DSL 中实际使用的 onClick 只能来自 TaskSpec.eventCandidates。
+6. DSL 中实际使用的 Image.src 和 styles.backgroundImage 只能来自 TaskSpec.assetCandidates，或用户明确提供的本地/资源路径。
+7. 如果使用 Image.src 或 styles.backgroundImage，优先使用 skill 中 reference/design/asset-library.md 声明的 allowlist 素材；不得为了通过 TaskSpec 引用校验而随意虚构资源路径。
+
+## DSL 要求
+
+1. 读取文件按照 UTF-8 解码。
+2. DSL 必须恰好 3 行 JSONL：createSurface、updateComponents、updateDataModel。
+3. DSL 中所有动态绑定路径必须能从 TaskSpec.dataModelSchema、最终 CardSpec、能力 outputSchema 或微服务允许的展示字段中推导。
+4. DSL 第三行 updateDataModel.value 只允许包含 DSL 所需的受控静态辅助字段、加载态或空态字段；不得在动态数据能力输出路径下新增未授权字段。
+5. 生成的 DSL 要重点参考 skill 中的参考样式，尽量保证风格一致。
+6. 避免组件重叠、文字被按钮或容器裁切、受保护文本显示不全、无意义空白过大等问题，特别关注按钮内的文字高度和宽度，计算按钮高度减去上下内边距后是否大于文字高度，避免文字被遮挡
+7. 生成的DSL要将TaskSpec中 dataModelSchema.sampleValue 作为默认值填入最后的updateDataModel中，作为样例数据保证直接渲染结果的美观
+8. 暂时禁止使用模板循环 children 对象特性，即不要写 `"children":{"componentId":"...","path":"/..."}`。当前渲染链路对该特性支持不稳定，容易出现校验通过但实际列表项不显示。日程、会议、天气预报、待办等少量重复内容必须改用显式组件和显式索引绑定，例如 `{{ ${/data/calendar/items/0/dtStart} }}`、`{{ ${/data/calendar/items/0/title} }}`；空间不足时只展示第一条或摘要，不使用 List/Row/Column 模板循环。
+9. DSL 与 CardSpec 必须能通过 skill 自带校验器的 hard、semantic、quality 阶段；尤其不能留下 LAYOUT_ROW_OVERFLOW、LAYOUT_COLUMN_OVERFLOW、LAYOUT_BUTTON_TOO_SMALL、受保护文本依赖 ellipsis/clip/marquee、静态按钮/文本估算放不下等布局与文本风险。
+10. CardSpec 除 suggestSize 和必要 dataBindings 外，还必须补齐 skill 校验器要求的 title、description 等必填字段，不得只输出最小 suggestSize。
+
+## SubAgent 工作流
+
+每个 subAgent 处理单个 case 时必须执行以下流程：
+
+1. 读取该 case 的原始 query 和必要字段，写入 query.txt。
+2. 使用 $harmony-card-generation-datamodel-first 生成 card.dsl.jsonl 与 card.cardspec.json。
+3. 按 TaskSpec.md 生成 task.taskSpec.json，且必须使用 dataModelSchema 格式。
+4. 重新审视 task.taskSpec.json 中的候选素材和候选事件是否准确。
+5. 检查 DSL 中引用的素材路径、事件函数名和事件参数名是否都来自 TaskSpec 候选，并与 skill 中声明的素材和事件能力保持一致。
+6. 运行专项引用校验器：
+
+```powershell
+python scripts\validate_taskspec_dsl_refs.py --taskspec <case目录>\task.taskSpec.json --dsl <case目录>\card.dsl.jsonl --format json
+```
+
+7. 运行 skill 自带卡片校验器：
+
+```powershell
+python .agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py --dsl <case目录>\card.dsl.jsonl --cardspec <case目录>\card.cardspec.json --format json
+```
+
+8. 如果专项引用校验失败，subAgent 必须修复 task.taskSpec.json 或 card.dsl.jsonl 后重新运行该校验器，直到通过。
+9. 如果 skill 自带卡片校验器返回 invalid，或出现布局、文本、按钮、素材、CardSpec、绑定、事件相关 error，subAgent 必须修复 card.dsl.jsonl 或 card.cardspec.json 后重新运行该校验器，直到无 error。
+10. 如果 skill 自带卡片校验器返回 warning，subAgent 必须逐条判断；凡是涉及文字估算放不下、按钮文字可能截断、布局预算接近或超过、受保护文本、素材风险、qualityScore 低于 70 的 warning，都必须修复后重跑。只有与当前 case 明确无关且不会影响渲染、引用、布局、文字完整性的 warning，才可在最终回复中说明保留原因。
+11. 完成前再做一次自检：TaskSpec 协议、DSL 三行 JSONL、CardSpec 尺寸、素材引用、事件引用、数据绑定路径和视觉布局都不能留下明显问题。特别要确认没有使用 `children.componentId + children.path` 模板循环；如需展示数组中的会议/日程/列表项，必须使用显式索引路径绑定到固定 Text/Row 组件。还要手算 Row/Column 的宽高预算：子项宽高 + margin + padding + itemMargin 不得超过父容器；Button 文案估算宽度必须加上至少 16vp 内边距余量。
+
+## 主 Agent 校验流
+
+主 Agent 收集 subAgent 结果后，至少对每个 case 运行以下检查：
+
+```powershell
+python scripts\validate_taskspec_dsl_refs.py --taskspec <case目录>\task.taskSpec.json --dsl <case目录>\card.dsl.jsonl --format json
+```
+
+并且必须运行 skill 自带卡片校验器：
+
+```powershell
+python .agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py --dsl <case目录>\card.dsl.jsonl --cardspec <case目录>\card.cardspec.json --format json
+```
+
+如发现任一校验失败，必须把失败 case 连同校验器输出交回对应 subAgent 修复，不得由主 Agent 批量改写 DSL、CardSpec、TaskSpec 或 mock 数据。
+
+主 Agent 判定规则：
+
+1. `validate_taskspec_dsl_refs.py` 返回 `valid: false` 必须返修。
+2. `validate_card.py` 返回 `status: invalid` 必须返修。
+3. `validate_card.py` 返回 `valid_with_quality_risks`、qualityScore 低于 70，或 diagnostics 中存在布局、按钮、文本、素材、CardSpec、绑定、事件相关 warning，原则上返修；只有 warning 与渲染和协议无关且 subAgent 给出合理说明时才可接受。
+4. 主 Agent 不得只凭专项引用校验通过就认为 case 完成；必须同时查看 skill 自带校验器的 hard、semantic、quality 结果。
+
+## 重要限制
+
+1. 不要修改任何非 datasets 目录下内容，不要修改 skill；产物只能写入 datasets 目录和其子目录。
+2. 必须是“每个 case 一个独立 subAgent”生成结果。
+3. SubAgent 不得引用不存在的素材文件，不得使用 TaskSpec.eventCandidates 外的事件。
+4. SubAgent 不得把 assetCandidates.description 当作必须显示在 UI 上的文案，也不得把 eventCandidates 当作按钮布局说明。
+
+Dispatcher validation requirements:
+After writing card.dsl.jsonl, card.cardspec.json, and task.taskSpec.json, run both validation commands from the current case directory:
+
+```powershell
+python "D:\A2UI\CartTaskSpec\scripts\validate_taskspec_dsl_refs.py" --taskspec "task.taskSpec.json" --dsl "card.dsl.jsonl" --format json
+python "D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\scripts\validate_card.py" --dsl "card.dsl.jsonl" --cardspec "card.cardspec.json" --format json
+```
+
+If either command fails, returns valid=false, returns status=invalid, reports any error or warning, or reports qualityScore < 70, fix task.taskSpec.json, card.dsl.jsonl, or card.cardspec.json and rerun both commands until they pass. Do not finish while either validator is still failing or risky.
+
+当前 case：
+```json
+{
+  "scenario": "01-low-power",
+  "scenario_name": "低电模式",
+  "query": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
+  "axes": {
+    "size": "2x2",
+    "component": "Column",
+    "binding": "expression",
+    "click": "intent_setting_switch",
+    "data": "static",
+    "surface": "dark-stage",
+    "composition": "ambient-root",
+    "status": "alert",
+    "gradient": "action-fill",
+    "asset": "icon",
+    "template": "row"
+  }
+}
+```
+
+请直接生成并保存文件。最终回复只需简短说明完成情况。
+
+2026-07-08T15:40:40.580080Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote featured plugin request to https://chatgpt.com/backend-api/plugins/featured failed with status 401 Unauthorized: {"detail":"Unauthorized"}
+2026-07-08T15:40:45.972701Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=C:\Users\iamjo\.codex\.tmp\plugins\plugins\ngs-analysis\.codex-plugin/plugin.json
+2026-07-08T15:40:45.975820Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=C:\Users\iamjo\.codex\.tmp\plugins\plugins\ngs-analysis\.codex-plugin/plugin.json
+codex
+我会按 `harmony-card-generation-datamodel-first` 这套规则生成当前 case 的四个产物，并只在当前 case 目录写文件。先读取本目录输入和 skill 必要规则，再写入并跑两类校验。
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw -Encoding UTF8 "case.json"' in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw -Encoding UTF8 "query.txt"' in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\SKILL.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw -Encoding UTF8 "TaskSpec.md"' in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 211ms:
+---
+name: harmony-card-generation-datamodel-first
+description: "生成、修复、评审或解释 HarmonyOS A2UI Form 服务卡片的表达式版本。用于需要同时产出三行 genui JSONL 与 cardspec JSON，并只按完整 {{ ... }} 表达式读取 DataModel、支持列表循环项表达式、2x2/2x4 尺寸、Form 组件字段、事件能力和 CardSpec 数据契约校验同一张卡片的任务。"
+---
+
+# Harmony 卡片生成（表达式版）
+
+产出同一张 Form 卡片：三行 `genui` JSONL 加一个 `cardspec` JSON。输出前按 `core-rules.md` 检查协议、绑定、布局、内容、颜色、事件和 CardSpec。
+
+## 执行顺序
+
+1. 先读 `reference/core-rules.md`，把 P0/L0/L1/L2 当硬门槛。
+2. 只进入一个模式：新卡片、修复/评审、能力边界。新卡片再读 `reference/generation-workflow.md`；修复/评审按 `reference/core-rules.md` 的人工阻断补充复核。
+3. 新卡片先收敛到一个服务对象或主问题，再按角色槽位分配内容：`object`、`primary`、`support`、`metric/tile/status/badge`、`action`、`asset`。不要把所有事实硬压成固定支撑条数。
+4. 未指定尺寸先尝试 `2x2`；只有受保护文本、热区、并列关系、关键媒体或布局预算具体失败时才升级 `2x4`。
+5. 从零生成完成内容分级后，只要候选尺寸可能由模板承载，且入选内容能收敛为一个服务对象/主问题与 `object`、`primary`、`support`、`metric/tile/status/badge`、`action`、`asset` 角色槽位，先读 `reference/template-routing.md` 和 `assets/templates/index.json` 做候选判断；最多选一个模板。模板只提供骨架和预算，内容、DataModel、素材、颜色、事件必须重做。
+6. 需要专项，或对组件字段、绑定、布局、颜色、事件不确定时，按 `reference.md` 定向补读最小必要文件；没有读到权威文件前不要凭样例或记忆补字段。先解决协议、绑定、尺寸和布局，再处理事件、CardSpec、颜色、素材、主显示组突出度、支撑组归拢和表面层级。
+7. 写 DSL 前先算 surface/root、内容区、padding/margin/itemMargin、热区、受保护文本、并排宽高和颜色来源。
+8. 输出前确认协议、绑定、布局、颜色、事件、尺寸、模板槽位、信息职责、事实等价类和 CardSpec 对齐；若确认项依赖未读专项，先补读再输出。只有用户要求校验既有文件或调试脚本时才运行 `scripts/validate_card.py`。
+
+模式 1/2 的最终回答只给最终 DSL/CardSpec，不输出解释、校验日志、命令、比较过程或中间文件。
+
+## 输出形态
+
+只输出两个代码块，顺序固定：
+
+```genui
+{"version":"v0.9","createSurface":{...}}
+{"version":"v0.9","updateComponents":{"surfaceId":"...","root":"...","components":[...]}}
+{"version":"v0.9","updateDataModel":{...}}
+```
+
+```cardspec
+{
+  "suggestSize": "2x2"
+}
+```
+
+静态卡片也输出 `cardspec`，但不要虚构 `dataBindings`。动态卡片的 `cardspec.dataBindings` 必须来自已声明 data capability，且 UI 路径能由 `writeResultTo + outputSchema` 推导。
+
+## 一致性约定
+
+- 新卡片必须明确指定卡片比例虚拟像素：`2x2 = 140vp x 140vp`、`2x4 = 300vp x 140vp`。`createSurface.width/height` 与 root `styles.width/height` 都写对应数值，用作逻辑画布、布局预算和校验基准，不写 `"matchParent"`。
+- root 仍承载 `padding: 12`、`borderRadius`、`clip` 和背景：`2x2` 使用 `width: 140`、`height: 140`、`borderRadius: 18`、`clip: true`；`2x4` 使用 `width: 300`、`height: 140`、`borderRadius: 22`、`clip: true`。内部 Row/Column/Text/Image/Button/Progress 等组件继续使用数值宽高，不能使用 `"matchParent"`。
+- 新卡片默认省略 `createSurface.styles`；表面背景、内容布局、安全区和 root 形状都写在 `root.styles` 或 root 下的真实背景组件。只有宿主明确要求外层形状/裁切时，`createSurface.styles` 才可出现且仅限 `borderRadius`、`clip`。
+- 绑定方式固定为：静态值或完整 `{{ ... }}` 表达式。动态展示值、样式动态值和事件参数都用表达式读取 DataModel；不使用 `{"path":"/..."}` 或 `formatString` 作为值绑定。`updateDataModel.path`、CardSpec `writeResultTo`、模板 `children.path` 是协议结构 JSON Pointer，不属于值绑定；列表模板项内用表达式读取当前项字段。
+- 非模板生成时使用稳定语义 ID：`surface_card`、`root`、`header_row`、`title_text`、`primary_value`、`primary_caption`、`support_row`、`action_button` 等；模板生成时保留模板 ID 体系，但删除不用的可选槽位并同步清理引用。
+- 不使用网络图、内联/base64 SVG、emoji、占位媒体、未声明资源路径、未声明 SVG、未声明事件能力、`Button.action`、非 `onClick` 事件或 Form 子集外组件；允许 `reference/design/asset-library.md` 声明的本地 SVG。
+- 可点击 UI 必须有真实 `onClick` EventHandler；如果动作能力不明，删除点击行为，把动作区降级为非误导支撑信息。
+- 颜色规则读 `reference/design/color-token-system.md`；需要具体 hex 时再读 `reference/design/color-token-values.md`。DSL 输出 hex，不输出 token 名。
+- 布局失败时按固定顺序降级：缩短弱文本 -> 删除可选角色槽位或 `shouldKeep` 字段 -> 降低到批准字号阶梯 -> 拆行/改 Column -> 放弃模板 -> 升级 `2x4` -> 能力边界说明。
+
+## 专项参考
+
+默认只读 `reference/core-rules.md`；新卡片再读 `reference/generation-workflow.md`。路由不清楚、修复已有 DSL、需要模板、动态数据、事件、颜色、素材，或主显示组不突出、支撑组散落、表面层级缺失时，再按 `reference.md` 读取对应专项文件；进入专项文件后先看顶部决策、阻断或使用规则，不一次性泛读无关参考。
+
+新卡片中只要入选内容存在可由素材承担的识别、状态、动作、主媒体或视觉锚点职责，先读 `reference/design/asset-library.md` 再决定是否使用 `Image`；用户未提供素材不等于素材不可用。决定省略素材前，必须确认素材库无明确匹配、加入素材会破坏 L1 布局预算，或用户明确要求不用图片/图标。
+
+运行本 skill 时不读取本 skill 包外的 UX 文档、旧样例、截图、网页或链接；需要的生成流程、布局字号、配色和验收规则已经折叠进 `reference/` 内部文件。
+
+## 降级原则
+
+当需求信息不足、组件字段不确定、布局预算复杂、动作/素材/颜色来源不完整，或出现渲染失败迹象时，优先降低自由度：标准短需求先用 `reference/template-routing.md` 的模板 manifest 槽位模式；若不用模板，则少组件、少层级、少颜色、少动态路径、少 Stack。若协议或布局预算无法证明成立，删除可选槽位、改用 `2x4`，或进入能力边界说明。
+
+
+ succeeded in 222ms:
+{
+  "scenario": "01-low-power",
+  "scenario_name": "低电模式",
+  "query": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
+  "axes": {
+    "size": "2x2",
+    "component": "Column",
+    "binding": "expression",
+    "click": "intent_setting_switch",
+    "data": "static",
+    "surface": "dark-stage",
+    "composition": "ambient-root",
+    "status": "alert",
+    "gradient": "action-fill",
+    "asset": "icon",
+    "template": "row"
+  }
+}
+
+
+ succeeded in 229ms:
+整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示
+
+
+ succeeded in 253ms:
+# TaskSpec 协议规范
+
+> 结构依据：`taskspec.schema.json`  
+> DSL 规则来源：`taskspec_to_chat_completions.py` 的 system prompt  
+> skill 依据：`skills/harmony-card-generation-NewSkill` 与云侧方案设计
+
+TaskSpec 是云侧微服务与 A2UI 模型之间的轻量桥接契约。主 Agent 不替 A2UI 模型设计卡片，也不生成最终 CardSpec；它只根据用户需求和能力 `outputSchema` 筛选候选展示字段路径。微服务完成能力裁决后，基于最终 CardSpec、能力注册表和主 Agent 候选字段投影构造 TaskSpec。A2UI 模型根据 system prompt 中的规则、用户原始需求、目标尺寸、`dataModelSchema`、动作候选和素材候选生成最终 `genui` DSL。
+
+## 1. 设计原则
+
+- TaskSpec 只提供 DSL 生成所需输入。
+- 不出现 `component`、`position`、`fontSize`、区域划分、组件嵌套或布局树。
+- 不提供 `displayCandidates` 或 `role`；展示内容由 A2UI 模型从 `userQuery` 和 `dataModelSchema` 中判断。
+- `size` 记录目标尺寸。
+- `eventCandidates` 是候选事件能力，不是 DSL `onClick`，也不是按钮或入口描述。
+- `assetCandidates` 是素材约束，不是 DSL 组件候选。
+- DSL 硬规则统一写入转换脚本的 system prompt。
+- 交付物是 `genui` DSL。
+
+## 2. 顶层结构
+
+```json
+{
+  "userQuery": "...",
+  "size": "2x4",
+  "eventCandidates": [],
+  "dataModelSchema": {},
+  "assetCandidates": []
+}
+```
+
+顶层只允许以上字段。
+
+## 3. 字段说明
+
+### `size`
+
+`size` 描述目标卡片尺寸。
+
+```json
+"2x4"
+```
+
+必须，取值为 `2x2` 或 `2x4`。
+
+### `eventCandidates`
+
+候选事件能力。它不规定最终是 Button、可点击容器还是图文入口，也不直接表达 DSL `onClick`。
+
+```json
+[
+  {
+    "call": "clickToDeeplink",
+    "args": {
+      "bundleName": "",
+      "abilityName": "",
+      "uri": "..."
+    }
+  }
+]
+```
+
+字段说明：
+
+- `call`: 必须，事件能力名，例如 `clickToCallPhone`、`clickToDeeplink`。
+- `args`: 可选，事件参数对象。参数必须符合对应事件能力。
+
+A2UI 模型应从 `userQuery` 判断哪些事件需要变成可点击入口。最终 DSL 中如果使用事件，才把候选事件转换为组件的 `onClick` 数组项。
+
+### `dataModelSchema`
+
+`dataModelSchema` 是微服务传给 A2UI 模型的参考数据结构，也是 DSL 动态绑定路径的验证来源之一。它不是真实运行时数据，也不要求覆盖能力 `outputSchema` 的全部字段。
+
+`dataModelSchema` 来源：
+
+- 主 Agent 在 `candidateDataBindings[].candidateOutputFields` 中只传候选展示字段路径。
+- 微服务校验这些字段路径必须存在于对应能力 `outputSchema`。
+- 微服务基于能力注册表还原字段 `type`、`description`，并维护 `sampleValue`。
+- 不通过校验的候选字段不得进入 `dataModelSchema`。
+
+字段节点示例：
+
+```json
+{
+  "type": "string",
+  "description": "当前温度展示文本",
+  "sampleValue": "26℃"
+}
+```
+
+字段说明：
+
+- `type`: 必须，A2UI 模型可用于判断展示形式的字段类型。
+- `description`: 必须，字段语义说明。
+- `sampleValue`: 必须，给 A2UI 模型理解展示形态的实例值，优先使用接近 UI 展示的字符串，例如 `"26℃"`、`"多云"`、`"09:30 产品评审"`。
+
+约束：
+
+- `sampleValue` 由微服务内部维护或生成，不由主 Agent 传入。
+- `sampleValue` 不代表用户真实运行时数据，不改变最终 CardSpec 的动态数据契约。
+- 对敏感或私密字段，`sampleValue` 必须使用脱敏样例或占位样例。
+- DSL 绑定路径必须来自最终 CardSpec、能力 `outputSchema` 或 `dataModelSchema` 可推导的动态路径，不能因为 `sampleValue` 存在而改写为静态文案。
+
+示例：
+
+```json
+{
+  "data": {
+    "weather": {
+      "location": {
+        "name": {
+          "type": "string",
+          "description": "城市或区县名称",
+          "sampleValue": "上海"
+        }
+      },
+      "current": {
+        "temperatureText": {
+          "type": "string",
+          "description": "当前温度展示文本",
+          "sampleValue": "26℃"
+        },
+        "weatherText": {
+          "type": "string",
+          "description": "当前天气现象",
+          "sampleValue": "多云"
+        }
+      }
+    }
+  }
+}
+```
+
+对应的DataModel：
+
+```json
+{
+  "data": {
+    "weather": {
+      "location": {
+        "name": "上海"
+      },
+      "current": {
+        "temperatureText": "26℃",
+        "weatherText": "多云"
+      }
+    }
+  }
+}
+```
+生成的DSL要将sampleValue作为默认值填入最后的updateDataModel中，作为样例数据保证直接渲染结果的美观
+
+### `assetCandidates`
+
+素材候选白名单。它不规定素材最终做背景、图标、插图还是封面。
+
+```json
+[
+  {
+    "src": "assets/freeclip2-earbuds.png",
+    "description": "Free Clip 2 耳机图形素材，适合用于设备识别或轻量装饰。",
+  },
+  {
+    "src": "/music/cover.png",
+    "description": "音乐封面图，可用于表达当前播放内容。",
+  }
+]
+```
+
+字段说明：
+- `src`: 必须，素材路径。
+- `description`: 必须，说明素材内容、视觉语义、适用场景以及主配色。svg后续可以支持自定义颜色，png颜色固定。A2UI 模型依据该字段判断是否使用素材。
+
+## 4. System Prompt
+
+转换脚本生成 chat-completions request body 时，会把 DSL 规则和 skill 摘要放入 `system` 消息。TaskSpec 不重复携带这些规则。
+
+当前 system prompt 主要包含：
+
+- **角色定义**：A2UI 模型，负责生成 HarmonyOS A2UI Form 卡片 DSL。
+- **输入边界**：TaskSpec 不是布局蓝图，也不提供展示内容清单。
+- **输出契约**：输出一个 `genui` 代码块，恰好 3 行 JSONL。
+- **尺寸规则**：`size=2x2` 对应 140x140，`2x4` 对应 300x140。
+- **组件范围**：只允许 Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
+- **Schema-first 绑定**：展示值优先使用完整表达式绑定动态数据路径，路径必须可从 `dataModelSchema`、最终 CardSpec 或能力 `outputSchema` 推导。
+- **动作与素材**：最终 DSL 的 onClick 只能由 `eventCandidates` 转换而来；图片和背景只能来自 `assetCandidates` 或用户明确提供的本地/资源路径。
+- **取舍规则**：先从 `userQuery` 和 `dataModelSchema` 确定主答案，控制支撑事实和动作区数量，避免信息重复。
+
+## 5. 校验规则
+
+发送给 A2UI 模型前：
+
+- JSON 结构必须符合 `taskspec.schema.json`。
+- 不允许出现 `displayCandidates`、`role`、`cardSpec`、`rules`、`dataModel` 等非当前协议字段。
+- `dataModelSchema` 字段必须来自微服务校验后的能力输出字段投影。
+- `dataModelSchema` 中字段节点必须包含 `type`、`description`、`sampleValue`。
+- `sampleValue` 不得使用未脱敏的真实用户隐私数据。
+- `eventCandidates[].call/args` 必须符合已支持事件能力。
+- `eventCandidates[]` 不允许出现 `id`、`label`、`description`、`required` 或 `onClick`。
+- `assetCandidates[].description` 必须非空。
+- `assetCandidates[].bindTo` 必须能从最终 CardSpec、能力 `outputSchema` 或 `dataModelSchema` 推导。
+- `.agents/skills/` 必须无改动。
+
+A2UI 模型输出后：
+
+- 包含一个 `genui` 代码块。
+- `genui` 恰好 3 行 JSONL。
+- 第 1 行包含 `createSurface`，第 2 行包含 `updateComponents`，第 3 行包含 `updateDataModel`。
+- `updateDataModel.value` 不要求等于 `TaskSpec.dataModelSchema`；它只能包含模型生成 DSL 所需的受控静态辅助字段、加载态或空态字段，不得在动态数据能力输出路径下新增未授权字段。
+- DSL 绑定路径必须能从 `TaskSpec.dataModelSchema`、最终 CardSpec、能力 `outputSchema` 或微服务允许的展示字段中推导。
+- `updateComponents.components` 必须是扁平组件数组，所有引用可解析。
+- root 尺寸必须与新 skill 一致：`2x2 = 140x140`，`2x4 = 300x140`。
+
+codex
+输入已经确认：这是 2x2 低电量卡片，核心是可变电量数字、红色危险态和点击进入省电设置。我接下来补读 skill 的核心规则、模板/素材/事件相关参考，避免事件名和素材路径凭空写。
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\core-rules.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\generation-workflow.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\assets\\templates\\index.json\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\template-routing.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 242ms:
+# 核心规则
+
+本文是默认必读的单页质量门。先看 P0 阻断项，再按 L0 协议、L1 数值布局、L2 内容视觉展开检查。
+
+## 单文件兜底
+
+- `manifest`：指选中模板目录内的 `manifest.json`；未使用模板时忽略所有 manifest 约束。
+- `support.*` 是支撑组；`metric/tile/status/badge` 是模板声明的并列小事实槽位，不按支撑条数折算。
+- `受保护文本`：标题、时间、日期、状态、CTA、主指标、倒计时、价格/数量和入选用户字段，必须完整显示。
+
+## P0 先决阻断
+
+以下任一组失败都不要输出：
+
+- 输出契约：必须是两个代码块，`genui` 为三行 JSONL，`cardspec` 为 JSON；`version`、`catalogId`、CardSpec 尺寸、surface/root 卡片比例虚拟像素和 root 圆角一致。`createSurface.width/height` 与 root `styles.width/height` 必须写 CardSpec 对应数值，不写 `"matchParent"`。
+- Surface/root：`createSurface` 只声明 surface、catalog 和外围尺寸，默认不写 `styles`；只有宿主明确要求外层形状/裁切时才写 `createSurface.styles`，且仅限 `borderRadius`、`clip`；`updateComponents.root` 引用已存在组件；root 承载 `width`、`height`、`padding`、`borderRadius`、`clip` 和至少一种明确的表面背景（优先 `backgroundColor` 或 `linearGradient`，也可由 root 下的真实背景组件承载），否则可能渲染默认白底。
+- 消息闭环：三行 JSONL 的 `surfaceId` 必须一致；新卡片默认 `updateDataModel.path: "/"`，`value` 初始化所有 UI 表达式引用的根结构和加载态。
+- 协议范围：只使用 Form 允许组件；`children` 只引用组件 id；模板循环只用 `{ "componentId": "...", "path": "..." }`；不用禁用组件、网络图、内联/base64 SVG、emoji、未声明 SVG 或未声明事件能力。
+- 绑定/DataModel：动态展示值、样式动态值和事件参数只用完整 `{{ ... }}` 表达式；所有可见表达式引用都能在 `updateDataModel.value`、`writeResultTo + outputSchema` 或模板当前项中推导；数据能力运行时字段至少初始化到可推导根结构。`updateDataModel.path`、`writeResultTo`、模板 `children.path` 仍是协议结构 JSON Pointer。
+- 布局可渲染：Row/Column 宽高预算成立且包含子项 `margin`；关键父容器和关键子项不依赖默认伸缩；Row 内 `Text + Button` 并排时，父 Row、Text、Button 都有明确宽高预算。
+
+## L0 协议
+
+- `genui` 必须是三行 JSONL：`createSurface`、`updateComponents`、`updateDataModel`。
+- 使用 `version: "v0.9"` 和 `catalogId: "ohos.a2ui.extended.catalog"`。
+- 尺寸只允许 `2x2` 或 `2x4`，且 CardSpec 与 DSL 一致。卡片比例虚拟像素、逻辑画布和校验预算固定为：
+  - `2x2`: `createSurface.width: 140`、`createSurface.height: 140`、root `width: 140`、root `height: 140`、`borderRadius: 18`、`clip: true`。
+  - `2x4`: `createSurface.width: 300`、`createSurface.height: 140`、root `width: 300`、root `height: 140`、`borderRadius: 22`、`clip: true`。
+- `updateComponents.root` 必须引用一个已存在组件；root 组件是卡片 shell 和组件树入口。
+- root 组件必须写 `width`、`height`、`padding`、`borderRadius`、`clip` 和表面样式；root `width/height` 必须按 `2x2`/`2x4` 写数值 vp，与 `createSurface.width/height` 和 CardSpec 尺寸一致。新卡片不要为了同步 root 圆角而写 `createSurface.styles`，它只在宿主明确要求外层形状/裁切时作为可选辅助；`backgroundColor`、`linearGradient`、`backgroundImage` 等背景字段必须写在 `root.styles` 或 root 下的真实背景组件，不写进 `createSurface.styles`，因为 root 默认不透明白底会遮挡 surface 层背景。
+- 只使用 `Text`、`Image`、`Divider`、`Progress`、`Button`、`Checkbox`、`Row`、`Column`、`List`、`Stack`。
+- 禁用 `TextInput`、`Toggle`、`Radio`、`CheckboxGroup`、`Select`、`NavContainer`、`Tabs`、`TabContent`、`Web`、`Grid`、`If`、`theme`、`Button.action`、非 `onClick` 事件、预定义扩展函数、`$__widthBreakpoint`、`$__colorMode`。
+- `children` 只能是组件 ID 数组；模板循环只允许 `{ "componentId": "...", "path": "..." }`。
+- 动态值只用完整 `{{ ... }}` 表达式；单值、拼接、条件、数值和列表项字段都走表达式。不要用 `{"path":"/..."}` 或 `formatString` 做组件值绑定；复杂格式化可先写入 `updateDataModel` 预计算字段，再用表达式读取。
+- 点击只写 DSL `onClick`，且 `call` 必须来自已声明 event capability；CardSpec 不写点击行为。
+- `Image.src` / `backgroundImage` 只使用用户提供或素材库声明的本地/资源路径；禁用网络 URL、内联/base64 SVG、emoji、占位图和未声明 SVG。
+
+## L1 数值布局
+
+- 默认安全区为 root `padding: 12`：`2x2` 内容区 `116 x 116`，`2x4` 内容区 `276 x 116`。
+- 本 skill 生成的 Form 卡片不使用 `"matchParent"`；`createSurface.width/height`、root `styles.width/height` 和内部组件宽高都必须使用数值宽高或可静态推导的约束。
+- 未指定尺寸时先尝试 `2x2`；只有受保护文本、热区、并列关系、关键媒体或布局预算具体失败时才升级 `2x4`。
+- `2x2` 非模板默认最多 3 个主区域和 1 个显式动作；模板按选中 manifest 的 `lockedStructure.sections`、`slots` 和 `deleteRules` 执行，但不得新增未声明主区域或第二动作。`2x4` 最多 4 个主区域和 2 个动作区。
+- 间距只用 `2/4/6/8/10/12/14/16`；优先 `4/8/12/16`。组间距必须大于组内距。
+- 字号只用 `10/12/14/16/18/20/32/40`；`10fp` 只给弱提示，`40fp` 只给单一主数值，CTA 用 `14fp Medium`。
+- 文本估算：中文约 `fontSize`，英文/数字约 `0.6 * fontSize`，垂直高度按 `fontSize + 2-4` 预留。
+- 受保护文本必须完整显示：标题、时间、日期、状态、CTA、主指标、倒计时、价格/数量和入选用户字段。不要用 `ellipsis`、`clip`、`marquee` 解决。
+- 每个 Row/Column 必须预算成立：子项宽高 + 子项 margin + 父容器 padding + itemMargin 不得超过父容器。
+- Row/Column 不得依赖默认伸缩完成关键布局；父容器、按钮、图标、进度图形和受保护文本必须能推导出明确宽高。
+- Row 内 `Text + Button` 并排时，父 Row 必须有明确 `width`/`height`，Button 必须显式 `width`/`height`，Text 必须显式 `width` 或有明确剩余宽度。
+- 并排布局自检公式：`sum(子项 width + 子项左右 margin) + itemMargin * 间隔数 + 父容器左右 padding <= 父容器 width`；纵向同理检查 `height + 上下 margin + 上下 padding`。
+- 可点击视觉元素不小于 `24vp`；CTA 宽度要包含文字估算和按钮内边距。主 CTA 的真实渲染安全阈值高于最小热区：`14fp` 及以上 Button 高度默认不低于 `32vp`，按钮宽度按文案估算宽度再加至少 `24vp` 水平余量；不要用 `26vp` 高度承载 `14fp` 主 CTA，也不要让 CTA 依赖省略或裁切。
+- 底部支撑/动作区必须贴近安全区底部：`2x2` 底边距通常 `8-12vp`、最大 `16vp`；`2x4` 通常 `10-14vp`、最大 `16vp`。
+- 紧凑 Row 中 `Button` 与小号文本并排时，不要只依赖 `alignItems: "center"`；优先用按钮槽位、明确高度或非对称 padding 校正。若 Button 高度已等于父 Row 高度，不要再加 `margin.top/bottom`。
+- Stack 只用于背景、进度或明确叠加；不得覆盖受保护文本、CTA 或主数值。
+
+## L2 内容与视觉
+
+- 先确定一个服务对象或主问题；非模板 `2x2` 默认展示不超过 4 个可见字段，模板按 manifest 的 `object`、`primary`、`support`、`metric/tile/status/badge`、`action`、`asset` 槽位取舍。`metric/tile/status/badge` 是结构化并列槽位，不按 `support.*` 条数折算；未入选字段留给详情页。
+- 可见组件的信息职责必须互斥：对象、状态、设定值、实际值、差值、比例/进度、趋势、时间点/段、位置、金额、数量、动作入口等，每个事实只由一个组件主承载。
+- 写前把文案和数值归入“事实等价类”：单位换算、别名/简称、同义标签、短标签扩写、父子包含、聚合/拆分、差值/比例/状态等，只要回答同一事实或判断，就算重复。
+- 派生事实只有承担新判断时才展示；进度条只作可视化承载，旁边文案不要复述两端值，除非该值是唯一主事实。
+- 信息不足时调整比例、层级和留白，不加空标签、同义指标或装饰填空。
+- 颜色优先回溯到 HarmonyOS 语义 token、`ohos_id_color_*`、`multi_color_*` 或 `multi_color_aux_*`；场景拓展色必须说明场景锚点、来源色族、用途角色和克制边界。
+- 渐变只用线性渐变，stop 来自官方色板或合规场景拓展色板；禁用无依据手调色、插值色、无来源 alpha、径向装饰、orb 或 bokeh。
+- 同一卡片只用一个主场景色族；`confirm` / `warning` / `alert` 只服务真实状态。氛围渐变只在不挤压受保护文本和动作区时使用。
+
+## 人工阻断补充
+
+以下项通常需要输出前复核；任一失败都先收敛内容、删除弱信息或回退非模板流程，不交付：
+
+- 模板生成照搬示例文案、示例 DataModel、示例素材组合，或读取 skill 包外历史样例；模板只能提供骨架、槽位、预算和协议写法。
+- 用同义标签、单位换算、父子包含、派生比例/差值填充空间，导致多个组件重复回答同一事实。
+- 没有单一服务对象或主问题，出现多个互相竞争的主显示组、多个主色族、多个主动作，或动作抢走主信息焦点。
+- 动作能力不明却保留可点击视觉；应删除 `onClick` 并把动作区降级为非误导支撑信息。
+- 颜色无法说明 token、已声明素材语义或合规场景拓展来源，或 DSL 直接输出 token/拓展色名而不是 hex。
+- 状态色服务装饰而非真实状态；渐变 stop 含无场景依据的手调色、机械插值色或无来源 alpha。
+- 黑色或黑白实心 SVG 直接放在深色 root、暗色渐变、暗色背板或高饱和色面上，导致真实渲染中图标不可读；应加不透明浅色图标底板、改用可读 PNG/浅色素材，或删除弱图标。
+- 连续无意义空白超过 `18vp`，且不服务主视觉、媒体、进度或底部动作锚定。
+- 文本、按钮、背板虽然通过宽高估算，但视觉上贴顶、悬浮、基线不齐或靠近圆角裁剪风险区。
+- 修复已有 DSL 时仍保留 `{"path":...}` 或 `formatString` 值绑定，或没有把它改写为完整表达式。
+
+## 生成后校验
+
+先做输出前自检，不要为了校验新建、输出或保留草稿文件。先查协议、绑定、布局、颜色、事件和尺寸，再查信息职责、事实等价类、派生判断和模板槽位删除后的引用完整性。仅在用户要求校验既有文件、修复本地草稿或调试脚本时运行 `scripts/validate_card.py`。
+
+
+ succeeded in 225ms:
+# 生成流程
+
+新卡片生成、尺寸偏好冲突、内容取舍不明确，或需要从自然语言需求推导卡片概念时读取本文。本文只做 UX 与信息架构规划，不替代 `core-rules.md` 的协议门禁、`layout-system.md` 的尺寸预算或 `color-token-system.md` 的色值校验。
+
+## 闭环边界
+
+- 本 skill 运行时只依赖 `SKILL.md`、`reference/`、`assets/templates/` 和用户当前输入；不要读取 skill 包外 UX 文档、旧样例、截图或网页作为生成依据。
+- 本文吸收了生成顺序、尺寸适配、场景向量、布局原型和色彩前置决策；落地 DSL 时仍以本 skill 内部协议、模板、事件、CardSpec 和校验文件为准。
+- 所有流程对象只在内部推理使用，不输出给用户。模式 1/2 的最终回答仍只给 `genui` 与 `cardspec` 两个代码块。
+
+## 术语最小定义
+
+这些术语只用于内部推理。任一参考文件单独读取时，也按本节含义理解。
+
+- `evidence`：用户明确给出的事实、字段、动作、尺寸或素材。
+- `inferred`：为补足卡片而做的保守默认；不能改变主对象、主动作或用户给出的事实。
+- `intent vector`：意图字段组，记录服务对象、主对象、主问题、动作必要性、时间焦点、尺寸偏好和可用内容。
+- `scene vector`：场景字段组，记录目的、表达调性、内容密度、主信息类型、层级数、时间性、交互方式和内容数量。
+- `mustKeep`：没有它卡片无法回答需求；必须完整显示。
+- `shouldKeep`：空间允许才保留；不得挤占 `mustKeep`、受保护文本或动作热区。
+- `dropOrMoveToDetail`：不进卡片；只在详情页、宿主页面或说明中承载。
+- `best-fit`：按内容数量、受保护文本、热区、媒体和并列关系推导出的最小可承载尺寸。
+
+`compositionPattern` 是构图枚举，每张卡只选 1 个：
+
+- `plain-card`：中性工具卡；主信息靠字号、位置和留白建立层级。
+- `single-panel`：中性 root + 1 个内容背板；用于把同一组事实归拢。
+- `ambient-root`：root 承载天气、睡眠、音乐或环境场景色；文本仍在安全区内。
+- `dark-focus`：暗色表面本身有场景语义，例如夜间、演出、睡眠或专注。
+- `meter-dashboard`：单一仪表、进度或比例是主焦点；不是多仪表盘。
+- `split-action`：主内容区和动作/状态区横向分区；动作能力必须已声明。
+- `media-card`：真实图片、票券、产品或媒体是主对象；文本放遮罩或独立背板。
+
+`surfaceStrategy` 是表面策略枚举，每张卡最多选 1 个主策略：
+
+- `plain`：中性 root，无额外场景表面。
+- `tinted-surface`：中性 root + 1 个同族低强度支撑背板。
+- `colored-root`：root 使用场景色或渐变，前景用 on-color 或中性前景。
+- `split-surface`：主区和支撑区使用两个明确表面，但仍共享一个主色族。
+- `image-derived`：真实图片主导，文本区域使用遮罩或中性背板。
+- `dark-stage`：暗色 root 或重点面表达夜间、睡眠、舞台或专注。
+- `soft-material`：`comp_background_secondary/tertiary` 材质层或 2-stop 合规线性渐变。
+
+## 总流程
+
+1. 拆事实：区分用户明确给出的 `evidence` 和为补足卡片所作的 `inferred`。如果低置信缺口会改变主对象或主动作，先问一个简短问题；否则用保守默认值继续。
+2. 建 `intent vector`：明确服务对象、用户 1-2 秒内要知道/完成什么、动作是否必需、时间焦点、尺寸偏好和可用内容。
+3. 做内容分级：先列 `mustKeep`、`shouldKeep`、`dropOrMoveToDetail`，再写布局。不要先写组件结构再把内容硬塞进槽位。
+4. 定尺寸与适配方向：未指定先算 `best-fit`；用户指定 `2x2` 或 `2x4` 时优先尊重，并通过删减或扩展保留意图。
+5. 建 `scene vector`：用场景目的、密度、主信息类型、层级、时间性和交互方式推导布局原型与配色范围。
+6. 选布局原型和比例带：用固定比例、区域宽高和角色槽位承载主角色组、并列事实组、动作区或媒体区。
+7. 选 palette 方向：用具体物理/文化锚点选择一个主色族、表面策略、状态色策略和按钮材质默认值。
+8. 写 DSL 前进入专项文件：布局预算读 `design/layout-system.md`，颜色读 `design/color-token-system.md`，事件读 event capability，CardSpec 读 `capability/cardspec.md`。
+9. 输出前回到 `core-rules.md` 做 P0/L0/L1/L2 与人工阻断门禁。
+
+## Intent Vector
+
+内部记录这些字段：
+
+```txt
+intent = {
+  service,
+  primaryObject,
+  primaryNeed,
+  primaryQuestion,
+  actionImportance: required | optional | absent,
+  timeFocus: now | today | date | countdown | schedule | none,
+  requestedSize: none | 2x2 | 2x4 | both | unsupported,
+  availableContent: measured fields/items/actions/media
+}
+```
+
+字段说明：
+
+- `service`：卡片所属服务、应用或能力域，例如天气、会议、设备清理、睡眠监督；不要写成具体数值或动作。
+- `primaryObject`：卡片当前展示的对象，例如深圳、项目阶段性汇报、Free Clip 2、手机内存；没有明确对象时用服务对象，不另造对象。
+- `primaryNeed`：用户打开卡片想知道或完成的目标，例如看状态、看下一项、看剩余量、入会、拨打、开始清理。
+- `primaryQuestion`：卡片 1-2 秒内必须回答的问题；必须能写成一句话，并由 `primary` 主显示组直接回答。
+- `actionImportance`：`required` 表示没有动作就不能完成用户目标；`optional` 表示动作只是入口或补充；`absent` 表示不展示显式动作。
+- `timeFocus`：只记录主信息的时间焦点；`now` 是当前状态，`today` 是今天摘要，`date` 是具体日期，`countdown` 是距离某时点，`schedule` 是日程/下一项，`none` 是无时间焦点。
+- `requestedSize`：只记录用户或上游明确指定的尺寸；未指定为 `none`，同时要两套为 `both`，非 `2x2/2x4` 为 `unsupported`。
+- `availableContent`：当前可用内容清单和数量，按 `fields/items/actions/media` 计数；只记录已有证据或保守默认，不把推测内容当成已给字段。
+
+规则：
+
+- `primaryQuestion` 必须能用一句话回答，例如“下一场会议何时开始”“今天温度和天气如何”“这个包裹当前到哪一步”。
+- 动作不能单独成为卡片目的；卡片必须先呈现服务状态或内容，再提供动作。
+- 长描述、规则解释、第三层元信息、营销入口、长列表和表格默认移出卡片。
+
+## 内容分级
+
+`mustKeep`：没有它卡片就无法回答需求。
+
+- 主对象或主标签，例如城市、会议、设备、联系人、票券、包裹。
+- 主状态/数值/时间，例如温度、倒计时、下一场时间、进度阶段、取件码。
+- 主动作，仅当动作是用户目标的一部分，例如拨打、入会、开始、确认。
+- 媒体主对象，仅当卡片以照片、票券、内容预览为核心。
+
+`shouldKeep`：空间允许才保留。
+
+- 一个短地点、短状态、趋势、更新时间、辅助图标或一条支撑信息。
+- 非模板 `2x2` 默认最多保留一个支撑组；非模板 `2x4` 最多保留两个支撑组。选用模板时以 manifest 的 `slots` 为上限：`support.*` 归入支撑组，`metric.*`、`tile.*`、`status.*`、`badge.*` 是结构化并列槽位，只有能提供独立判断且不重复 `primary` 时才保留。
+
+`dropOrMoveToDetail`：不要塞进卡片。
+
+- 重复服务名、装饰标签、长说明、完整规则、额外动作、第三层 metadata、密集列表、表格、广告和运营活动。
+
+## 尺寸适配
+
+先判断 `best-fit`：
+
+- `2x2`：一个服务对象或主问题；非模板默认是 1 个主视觉/主数值、1 个支撑组和可选 1 个动作。模板按选中 manifest 的 `slots` / `sections` 上限执行，例如两个小指标、两个状态 tile、2-3 个小状态环、一个短徽标或一个图标动作都可以成立，但不能新增第二个服务对象或第二个主任务。
+- `2x4`：一个主信息组需要一个支撑组；短时间线最多 3 项；周/小矩阵/媒体预览/显式动作需要横向空间；最多 2 个热区，且每个热区有明确 `onClick`、标签和不小于 `24vp` 的点击视觉尺寸。
+- 超过 `2x4`：摘要、截断、显示 `+N` 或进入详情，不生成 `4x4`、长列表或密集仪表盘。
+
+用户指定尺寸时：
+
+- `native`：requested 与 best-fit 相同，正常生成。
+- `contract`：best-fit 为 `2x4` 但用户要 `2x2`，保留一个主对象和必要动作，删掉 `shouldKeep` 支撑和第二热区。
+- `expand`：best-fit 为 `2x2` 但用户要 `2x4`，增加相关支撑信息、可读宽度或动作标签/热区，不拉伸原布局、不加无关模块。
+- `both`：分别生成两套内容计划，不能裁剪或拉伸同一个布局。
+- `unsupported`：不输出未支持尺寸，改给最接近的 `2x2` 或 `2x4`。
+
+## Scene Vector
+
+内部记录这些字段：
+
+```txt
+scene = {
+  purpose: status | metric | timeline | matrix | calendar | media | action | text,
+  register: functional | editorial | playful | ambient,
+  density: hero | sparse | normal | dense,
+  keyInfo: number | text | matrix | timeline | media | status | action,
+  hierarchy: 1 | 2 | 3,
+  temporality: none | now | today | week | countdown | timeOfDay | seasonal | event | night,
+  interaction: wholeCard | oneAction | twoZones,
+  contentAmount: measured counts/lengths
+}
+```
+
+字段说明：
+
+- `purpose`：卡片主要用途；`status` 看状态，`metric` 看数值/额度，`timeline` 看进程或下一项，`matrix/calendar` 看小矩阵/日历，`media` 看图片或内容预览，`action` 强动作辅助，`text` 短文本提示。
+- `register`：视觉表达方式；只影响表面、颜色和氛围选择，不改变内容取舍。
+- `density`：由入选内容数量决定；`hero` 只有一个强主值，`sparse` 内容少但仍需填满主区域，`normal` 为常规信息卡，`dense` 为字段多但仍不能突破字号和区域预算。
+- `keyInfo`：主显示组的信息类型；用于决定数字、文本、矩阵、时间线、媒体、状态或动作哪一种最先被看见。
+- `hierarchy`：可见信息层级数，最多 3；超过 3 时先删 `shouldKeep` 或回退详情。
+- `temporality`：场景时间性；只在主信息确实与当前、今天、本周、倒计时、日夜、季节或事件相关时填写对应值。
+- `interaction`：交互结构；`wholeCard` 整卡入口，`oneAction` 一个显式动作，`twoZones` 两个可点击热区且每个都有明确事件能力。
+- `contentAmount`：入选后的数量统计，例如文本行数、并列指标数、动作数、媒体数和受保护文本长度。
+
+取值指导：
+
+- `density` 来自真实内容数量，不靠视觉猜测。`dense` 不等于可以降低字号到阶梯之外。
+- `hierarchy` 最多 3 层；如果每层都很重要，说明内容过载。
+- `interaction` 默认 `wholeCard`；显式动作只在动作有已声明事件能力、标签和热区时保留。
+- `register` 只影响是否使用场景色、渐变、暗色表面或中性表面，不覆盖安全区、字号、协议和颜色来源。
+
+## 布局原型
+
+- `number/status`：主数值或状态为主视觉，单位/原因/时间为支撑。`2x4` 可左侧放主视觉、右侧放支撑/动作。
+- `timeline`：`2x2` 只展示当前/下一项；`2x4` 最多 3 项，当前/下一项使用该组最大字号、最靠前位置或唯一状态色。
+- `matrix/calendar`：只做小矩阵、周视图或单日；月历、年历和复杂表格改为摘要或详情入口。
+- `media`：真实媒体或内容预览优先；文字放安全遮罩或中性背板，不做装饰拼贴。
+- `action`：状态先行，动作次之；不要生成纯快捷方式或按钮网格。
+- `text`：标题加一句短支撑，不写段落。
+
+固定比例带只用：`62/38`、`55/45`、`50/50`、`30/70`、`15/85`。
+
+- 数字/状态常用 `55/45` 或 `50/50`。
+- 时间线常用 `30/70`。
+- 媒体常用 `62/38`。
+- 矩阵常用 `15/85`。
+- `2x2` 把比例理解为主视觉/主数值占比或纵向分区，不要把小方卡切碎。
+
+## 进度可视化选择
+
+先问主内容是否回答“距离目标/总量/范围还有多少”或“处在有序阶段的哪一步”。
+
+- 没有参考点：用普通文本/数字，不发明百分比或环形图。
+- 有序阶段：用分段/step bar，并配当前阶段标签；不要用连续百分比条替代阶段语义。
+- 单一目标/范围：当它是唯一主焦点时可用 ring；数值默认放在 ring 旁边，不塞进小环洞。
+- 多个同类比例：2-4 项可用 repeated small ring；超过约 4 项或需要精确比较时用 linear bar row。
+
+几何和尺寸细节进入 `design/layout-system.md`；颜色和 track/fill 来源进入 `design/color-token-system.md`。
+
+## 配色前置决策
+
+写颜色前先命名 2-4 个具体锚点，例如雨玻璃、日历纸、跑道、票纸、电池环、包裹标签、药盒、收据纸、夜间舞台。不要使用“高级、现代、清新、可信、科技感、漂亮”等抽象词当锚点。
+
+内部选择：
+
+- `compositionPattern`: `plain-card`、`single-panel`、`ambient-root`、`dark-focus`、`meter-dashboard`、`split-action`、`media-card`。
+- `surfaceStrategy`: `plain`、`tinted-surface`、`colored-root`、`split-surface`、`image-derived`、`dark-stage`、`soft-material`。
+- `sceneAccent`: 一个主色族。
+- `statusColorPolicy`: `none`、`state-only` 或 `primary-action-only`。
+- `actionMaterial`: 默认中性/磨砂；只有颜色本身表达确认、风险、破坏、品牌，或拨打、入会、开始、连接、清理、导航等必要动作时才用实色。
+
+随后用 `design/color-token-system.md` 映射到合法 hex。
+
+## 输出前计划门禁
+
+- 是否只有一个服务对象或主问题、一个主色族？显式可点击动作是否不超过当前尺寸或模板允许上限，且没有第二个主任务？
+- `mustKeep` 是否都能完整显示，`shouldKeep` 是否没有挤占主显示组？
+- requested size 是否被尊重，或 unsupported size 是否被降级说明？
+- `scene vector` 是否能推导出布局原型、比例带、字号层级和配色方向？
+- ring/bar/图标/媒体是否由 `mustKeep`、`shouldKeep`、主动作或主媒体触发？
+- 动作能力不明时，是否删除了点击并降级为支撑信息？
+
+
+ succeeded in 215ms:
+# 合规模板路由
+
+本文在从零生成完成内容分级后，出现模板候选时读取；读取本文就是为了判断布局是否能由模板固定槽位和区域预算承载。模板用于降低布局自由度，不替代 `core-rules.md`、协议规则、绑定规则、颜色规则或最终校验。
+
+## 内部闭环
+
+- 生成时只读取本 skill 内部文件：`assets/templates/index.json`、选中模板的 `manifest.json`、`template.genui.jsonl`、`cardspec.json`，以及本 skill 的 reference 文档。
+- 不要读取 skill 包外的历史样例、截图、布局目录或其它本地文件作为生成依据。旧样例已经折叠为 `index.json.sourceAuditSummary` 和各模板 `manifest.sourceObservation`。
+- 维护本 skill 时也以本包内 `assets/templates/`、`reference/` 和已声明素材为准；新增模板规则必须先折叠为本包内 manifest、模板骨架、合规素材索引和参考规则后再被使用。
+- 不要从外部链接、网络 URL、未声明本地路径或相似路径补素材。素材只允许来自本 skill 的 `reference/design/asset-library.md` 或用户在当前任务中明确提供的资源。
+- 历史样例里的旧尺寸、多段组件更新、base64 图片、未声明 SVG、emoji 和旧动作写法不得复制。正式模板统一按本 skill 校验口径输出：`2x2 = 140vp x 140vp`，`2x4 = 300vp x 140vp` 作为卡片比例虚拟像素和逻辑画布；`createSurface.width/height` 与 root `styles.width/height` 必须写对应数值，内部组件预算保持模板数值。
+
+## 使用前判定
+
+先用 `assets/templates/index.json` 查是否存在同尺寸候选，再判断槽位；`useWhen` 只作候选提示，不是业务关键词白名单。只有同时满足以下条件才使用模板：
+
+- 用户没有指定必须自定义的复杂布局。
+- 卡片能收敛到一个服务对象或主问题，并能映射到同一个模板的角色槽位；不要同时承载两个服务对象、两个主任务或两个动作目标。
+- 候选模板尺寸与用户指定尺寸或 `best-fit` 尺寸一致；索引中没有同尺寸模板时，直接回到非模板流程。
+- 用户字段能映射到模板 manifest 的槽位，并且受保护文本按 `layout-system.md` 估算能完整显示。
+- 所需素材存在于 `reference/design/asset-library.md`，或模板在删除素材后仍成立。
+- 动作能力能从用户需求、宿主能力或 `reference/capability/event-capability/click-event.md` 推导；否则删除事件，只保留非误导的支撑区域。
+
+任一条件不满足，回到非模板流程；跳过模板前必须形成内部否决理由，例如用户要求固定复杂布局、无同尺寸模板、两个主任务、两个动作、槽位文本超预算、素材/事件能力不成立，或删除槽位后模板结构已不成立。
+
+## 一致性决策
+
+- 角色槽位可收敛的短需求优先尝试模板；非标准需求、用户指定固定布局，或索引中无同尺寸模板的需求走非模板流程。
+- `useWhen`、`avoidWhen` 和 pattern 名只帮助缩小候选；真正是否使用模板，以槽位结构、尺寸预算、动作数量、素材需求、受保护文本长度和 manifest 约束为准。
+- 同时命中多个模板时，按 `assets/templates/index.json` 中出现顺序选择第一个满足全部条件的模板，不重新排序候选。
+- 模板生成默认采用 manifest 槽位模式：按 `object`、`primary`、`support`、`metric/tile/status/badge`、`action`、`asset` 分配内容；未被用户要求、无法提供独立判断或会重复 `primary` 的可选槽位直接删除。
+- 保留模板的卡片比例虚拟像素、root shell 形状、内部区域预算、核心层级、ID 命名和 `colorPolicy` 角色约束；输出时 `createSurface.width/height` 与 root `styles.width/height` 保持模板对应数值，删除槽位时同步删除组件引用、DataModel 字段和 CardSpec 冗余。
+- 模板填充也使用完整 `{{ ... }}` 表达式；manifest 槽位里的 `path` 只表示 DataModel 槽位地址，落到 DSL 组件值时写成 `"{{ ${/slot/path} }}"` 或模板项相对表达式。需要条件、计算或长字符串时，可先在 `updateDataModel` 中预计算展示字段，再用表达式读取。不要把模板中的 `{"path":...}` 或 `formatString` 当最终值绑定保留。
+
+## 读取顺序
+
+1. 读取 `assets/templates/index.json`，根据任务特征选择一个候选。
+2. 只读取该候选的 `manifest.json`，确认槽位、锁定结构、删除规则、预算和 `colorPolicy`。
+3. 读取该候选的 `template.genui.jsonl` 作为骨架。
+4. 按当前需求重填 DataModel、文案、素材、颜色和可证明合法的事件；颜色必须沿用 manifest `colorPolicy` 的 token 角色或按 `color-token-system.md` 做同角色重映射，不要照搬模板示例文案。
+5. 按 `core-rules.md` 做输出前校验；若预算失败，先删可选槽位，再回退非模板流程。
+
+## 模板索引
+
+模板顺序、`useWhen`、`avoidWhen`、槽位清单和文件路径只以 `assets/templates/index.json` 为准；本文不重复维护表格。选中模板后只读取该模板的 `manifest.json`、`template.genui.jsonl` 和 `cardspec.json`，并以 manifest 的 `lockedStructure`、`slots`、`colorPolicy`、`allowedEdits`、`forbiddenEdits` 和 `deleteRules` 做最终约束。
+
+## 当前模板 Pattern 速查
+
+这些 pattern 名只用于模板路由和 manifest 对齐，不输出给用户：
+
+- `meter-side-action`：一个进度环/仪表、1-2 条短事实、底部动作或支撑胶囊。
+- `multi-meter-action`：一个主容量/健康指标 + 2-3 个同类小状态，适合设备清理或多状态概览。
+- `bar-dual-metric-action`：一个横向阈值/进度条 + 两个小指标 + 一个动作或支撑提示。
+- `countdown-panel`：一个 `32/40fp` 倒计时或数字主值 + 一个支撑背板。
+- `meeting-action-badge`：会议/日程标题、时间/地点短信息、一个徽标值和一个动作。
+- `product-stat-tiles`：产品图片或设备图 + 两个状态 tile；需要真实产品素材。
+- `quadrant-ambient-action`：场景色 root 中放主值、状态图标、一个支撑块和一个图标动作。
+- `spotlight-context-action`：主数值/主图标 + 一个上下文背板 + 底部动作。
+- `stacked-schedule-action`：日程对象、事件标题、时间、提醒行和底部动作纵向堆叠。
+
+## 模板图片内容折叠结论
+
+维护模板规则时，历史模板图已经折叠为本包内 manifest 和当前速查，不要求生成时读取旧图片。容量判断按角色槽位而不是普通事实条数：
+
+- `support.*` 是一个支撑组，可以由 label/value、短说明或两行同组文本构成。
+- `metric.*`、`tile.*`、`status.*` 是结构化并列小事实；只要互不重复且 manifest 声明了槽位，2 个 metric、2 个 tile 或 2-3 个小状态环可以保留。
+- `badge.*` 是短徽标、计数或日期提示；不得重复时间、主数值或动作文案。
+- `action` 可以是文字 pill，也可以是 manifest 声明的图标动作目标。图标动作若可点击，视觉尺寸不小于 `24vp`，且必须由相邻对象、图标语义或当前场景明确说明用途；语义不清时删除点击或改用带文字动作槽位。
+
+## 被移除的重复模板
+
+- `meter-plus-fact`：与“进度环/仪表 + 短事实 + 底部动作”模板重叠，且缺少语义图标和动作图标槽位。
+- `top-hero-pill`：抽象度过高，已拆成主数值上下文、场景色象限、倒计时面板和日程堆叠四类模板。
+- `paper-panel`：作为抽象信息面板有用，但在当前样例集中和 `meeting-action-badge` 重叠，指导生成时容易回到上/中/下三段且缺少具体场景槽位的布局。
+
+## 槽位映射
+
+先把用户输入映射为内部槽位，再写 DSL：
+
+- `object`：卡片对象，例如会议、设备、城市、亲人、应用。
+- `primary.value` / `primary.title` / `primary.time`：主显示组，只回答同一个主问题；倒计时双数字、睡眠时长拆行等可由多个组件显示同一主值。
+- `primary.caption` / `primary.meta`：主显示组的短说明，不重复主值。
+- `support.*`：支撑组，只保留能提供新判断的信息；同一组内可以有短标签和值。
+- `metric.*` / `tile.*` / `status.*`：并列小事实，不计入 `support.*` 条数，但每个只承载一个独立判断，并受 manifest 数量和字符上限限制。
+- `badge.*`：短徽标或计数，不作为第二主显示组；如果与 `primary` 或 `support` 重复则删除。
+- `action.label` / `asset.actionIcon`：底部动作、支撑提示或图标动作目标；文字动作优先 2-6 个中文字，图标动作必须有可证明语义。只有事件能力完整时才视为主动作。
+- `asset.*`：只从 `asset-library.md` 选择；没有匹配素材时删除 Image 并重新分配宽度。
+
+## 模板专项规则
+
+模板特有规则只维护在对应 manifest 中。比如 `2x2-bar-dual-metric-action` 的阈值条处理读取 manifest 的 `adaptiveProgressGuidance`，不要在本文复制或改写。
+
+## 回退规则
+
+- 槽位超过宽度：先缩短标签，删可选角色槽位，再降低到同阶梯字号；仍失败则放弃模板。
+- 动作能力不明：删除 `onClick`，必要时把动作区改成非动作支撑区域；不要虚构 `call` 或宿主参数。
+- 素材不在素材库：删除图片并重分配宽度；不要用网络图、未声明 SVG、emoji 或相似路径替代。
+- 颜色无法说明来源：改用 `color-token-system.md` 中的 token 或删除装饰色。
+- 删除两个以上主区域后仍需大改：停止使用模板，走非模板流程。
+
+
+ succeeded in 228ms:
+{
+  "version": "v3",
+  "contract": "Self-contained normalized HarmonyOS A2UI Form layout templates for expression-first generation. Select at most one template, then keep size, root shell, region budgets, slot names, and full-expression binding style stable. Re-decide visible content, DataModel values, icons, colors, and only proven-valid onClick events. Historical observations have been folded into each manifest/sourceObservation; generation must not depend on reading any file outside this skill package.",
+  "sourceAuditSummary": [
+    "Ten rendered samples were reviewed and collapsed into nine distinct layout patterns; battery and sleep share the same side-meter/action structure.",
+    "The historical samples used a different 2x2 canvas size, while this skill validates formal 2x2 templates at 140x140; all formal templates are normalized to 140x140.",
+    "Old DSL patterns using multiple updateComponents messages, data URI images, undeclared SVG, emoji glyphs, or legacy action keys were not copied; only layout relationships and information density were retained.",
+    "Three earlier generic templates were removed from the formal route list because they overlap these more specific patterns: compact meter/fact, generic top-hero pill, and generic paper panel."
+  ],
+  "templates": [
+    {
+      "id": "2x2-meter-side-action",
+      "size": "2x2",
+      "pattern": "meter-side-action",
+      "manifest": "2x2-meter-side-action/manifest.json",
+      "template": "2x2-meter-side-action/template.genui.jsonl",
+      "cardspec": "2x2-meter-side-action/cardspec.json",
+      "useWhen": ["battery", "low-battery", "power-saving", "sleep", "sleep-monitoring", "bedtime-reminder", "progress", "meter", "completion", "habit", "device-status"],
+      "avoidWhen": ["no-progress-semantics", "two-primary-values", "center-label-longer-than-four-chars", "long-fact-list", "two-actions"],
+      "slots": ["object", "asset.primaryIcon", "progress.value", "progress.total", "primary.value", "primary.caption", "support.1", "support.2", "asset.actionIcon", "action.label"]
+    },
+    {
+      "id": "2x2-multi-meter-action",
+      "size": "2x2",
+      "pattern": "multi-meter-action",
+      "manifest": "2x2-multi-meter-action/manifest.json",
+      "template": "2x2-multi-meter-action/template.genui.jsonl",
+      "cardspec": "2x2-multi-meter-action/cardspec.json",
+      "useWhen": ["phone-status", "device-health", "cleanup", "multi-device", "memory", "storage"],
+      "avoidWhen": ["single-metric-only", "icons-unavailable", "long-labels", "more-than-three-secondary-statuses"],
+      "slots": ["object", "primary.value", "primary.total", "status.1.value", "status.2.value", "status.3.value", "asset.statusIcons", "action.label"]
+    },
+    {
+      "id": "2x2-bar-dual-metric-action",
+      "size": "2x2",
+      "pattern": "bar-dual-metric-action",
+      "manifest": "2x2-bar-dual-metric-action/manifest.json",
+      "template": "2x2-bar-dual-metric-action/template.genui.jsonl",
+      "cardspec": "2x2-bar-dual-metric-action/cardspec.json",
+      "useWhen": ["usage-limit", "quota", "screen-time", "remaining-time", "budget", "threshold-warning"],
+      "avoidWhen": ["no-threshold-semantics", "more-than-two-metrics", "exact-progress-width-unknown", "primary-value-needs-large-type"],
+      "slots": ["object", "asset.primaryIcon", "progress.value", "progress.total", "progress.color", "metric.1.label", "metric.1.value", "metric.2.label", "metric.2.value", "action.label"]
+    },
+    {
+      "id": "2x2-countdown-panel",
+      "size": "2x2",
+      "pattern": "countdown-panel",
+      "manifest": "2x2-countdown-panel/manifest.json",
+      "template": "2x2-countdown-panel/template.genui.jsonl",
+      "cardspec": "2x2-countdown-panel/cardspec.json",
+      "useWhen": ["countdown", "race", "deadline", "price-day-count", "step-goal", "limited-time"],
+      "avoidWhen": ["primary-value-longer-than-two-digits", "needs-action-and-two-facts", "date-range-is-primary"],
+      "slots": ["object", "asset.primaryIcon", "primary.tens", "primary.ones", "primary.unit", "support.label", "support.value"]
+    },
+    {
+      "id": "2x2-meeting-action-badge",
+      "size": "2x2",
+      "pattern": "meeting-action-badge",
+      "manifest": "2x2-meeting-action-badge/manifest.json",
+      "template": "2x2-meeting-action-badge/template.genui.jsonl",
+      "cardspec": "2x2-meeting-action-badge/cardspec.json",
+      "useWhen": ["meeting", "calendar", "appointment", "event", "class", "reservation"],
+      "avoidWhen": ["long-agenda", "multiple-meetings", "needs-two-actions", "no-short-badge-value"],
+      "slots": ["object", "primary.title", "primary.meta", "support.1", "badge.value", "action.label"]
+    },
+    {
+      "id": "2x2-product-stat-tiles",
+      "size": "2x2",
+      "pattern": "product-stat-tiles",
+      "manifest": "2x2-product-stat-tiles/manifest.json",
+      "template": "2x2-product-stat-tiles/template.genui.jsonl",
+      "cardspec": "2x2-product-stat-tiles/cardspec.json",
+      "useWhen": ["earbuds", "wearable", "device-product", "media-access", "connected-device", "product-status"],
+      "avoidWhen": ["product-image-unavailable", "long-product-name", "more-than-two-tiles", "critical-action-required"],
+      "slots": ["object", "asset.productImage", "support.1", "support.2", "tile.1.label", "tile.1.value", "tile.2.label", "tile.2.value"]
+    },
+    {
+      "id": "2x2-quadrant-ambient-action",
+      "size": "2x2",
+      "pattern": "quadrant-ambient-action",
+      "manifest": "2x2-quadrant-ambient-action/manifest.json",
+      "template": "2x2-quadrant-ambient-action/template.genui.jsonl",
+      "cardspec": "2x2-quadrant-ambient-action/cardspec.json",
+      "useWhen": ["care", "weather-plus-action", "contact", "commute", "environment-alert", "quick-call"],
+      "avoidWhen": ["long-text", "no-icon-action", "more-than-one-support-card", "requires-precise-table"],
+      "slots": ["primary.value", "primary.caption", "object", "asset.primaryIcon", "support.label", "support.value", "asset.actionIcon"]
+    },
+    {
+      "id": "2x2-spotlight-context-action",
+      "size": "2x2",
+      "pattern": "spotlight-context-action",
+      "manifest": "2x2-spotlight-context-action/manifest.json",
+      "template": "2x2-spotlight-context-action/template.genui.jsonl",
+      "cardspec": "2x2-spotlight-context-action/cardspec.json",
+      "useWhen": ["weather", "commute", "taxi", "spotlight-status", "single-event-context", "alert-with-action"],
+      "avoidWhen": ["long-context-title", "two-primary-values", "multiple-actions", "no-clear-context-card"],
+      "slots": ["asset.primaryIcon", "primary.value", "primary.caption", "support.title", "support.meta", "action.label"]
+    },
+    {
+      "id": "2x2-stacked-schedule-action",
+      "size": "2x2",
+      "pattern": "stacked-schedule-action",
+      "manifest": "2x2-stacked-schedule-action/manifest.json",
+      "template": "2x2-stacked-schedule-action/template.genui.jsonl",
+      "cardspec": "2x2-stacked-schedule-action/cardspec.json",
+      "useWhen": ["next-schedule", "focus-mode", "meeting-reminder", "single-event", "class-reminder"],
+      "avoidWhen": ["needs-room-and-participants", "multiple-events", "very-long-event-title", "time-range-longer-than-11-chars"],
+      "slots": ["object", "primary.title", "primary.time", "support.1", "action.label"]
+    }
+  ]
+}
+
+
+codex
+模板索引里有一个正好覆盖电池/低电量/省电入口的 `2x2-meter-side-action`，我会用它的槽位约束做骨架，但会重填数据、颜色、事件和素材。接下来只读这个模板和事件/素材/颜色/CardSpec 必要参考。
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\assets\\templates\\2x2-meter-side-action\\manifest.json\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\design\\asset-library.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\assets\\templates\\2x2-meter-side-action\\template.genui.jsonl\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\assets\\templates\\2x2-meter-side-action\\cardspec.json\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 187ms:
+{
+  "id": "2x2-meter-side-action",
+  "size": "2x2",
+  "pattern": "meter-side-action",
+  "template": "template.genui.jsonl",
+  "cardspec": "cardspec.json",
+  "sourceObservation": "Derived from the low-battery and sleep rendered samples: a compact header, left circular meter/progress focus, right short facts, and a bottom full-width action/support pill.",
+  "layoutSummary": "Top object row, left circular progress focus, right compact facts, bottom full-width action/support pill.",
+  "lockedStructure": {
+    "surface": {
+      "width": 140,
+      "height": 140
+    },
+    "root": {
+      "width": 140,
+      "height": 140,
+      "padding": 12,
+      "borderRadius": 18,
+      "clip": true
+    },
+    "sections": [
+      {
+        "id": "headerRow",
+        "width": 116,
+        "height": 20
+      },
+      {
+        "id": "mainRow",
+        "width": 116,
+        "height": 58
+      },
+      {
+        "id": "primaryAction",
+        "width": 116,
+        "height": 26
+      }
+    ]
+  },
+  "slots": {
+    "object": {
+      "path": "/card/title",
+      "component": "titleText",
+      "maxCharsCn": 6
+    },
+    "asset.primaryIcon": {
+      "path": "/asset/primaryIcon",
+      "component": "leadingIcon",
+      "source": "reference/design/asset-library.md"
+    },
+    "progress.value": {
+      "path": "/meter/progressValue",
+      "component": "meterRing"
+    },
+    "progress.total": {
+      "path": "/meter/progressTotal",
+      "component": "meterRing"
+    },
+    "primary.value": {
+      "path": "/meter/centerLabel",
+      "component": "meterValue",
+      "maxChars": 4
+    },
+    "primary.caption": {
+      "path": "/meter/caption",
+      "component": "factLabel",
+      "maxCharsCn": 4
+    },
+    "support.1": {
+      "path": "/support/line1",
+      "component": "factValue",
+      "maxCharsCn": 5
+    },
+    "support.2": {
+      "path": "/support/line2",
+      "component": "factMeta",
+      "maxCharsCn": 5
+    },
+    "asset.actionIcon": {
+      "path": "/asset/actionIcon",
+      "component": "actionIcon",
+      "source": "reference/design/asset-library.md"
+    },
+    "action.label": {
+      "path": "/action/label",
+      "component": "actionText",
+      "maxCharsCn": 5
+    }
+  },
+  "useWhen": [
+    "battery",
+    "low-battery",
+    "power-saving",
+    "sleep",
+    "sleep-monitoring",
+    "bedtime-reminder",
+    "progress",
+    "meter",
+    "completion",
+    "habit",
+    "device-status"
+  ],
+  "avoidWhen": [
+    "no-progress-semantics",
+    "two-primary-values",
+    "center-label-longer-than-four-chars",
+    "long-fact-list",
+    "two-actions"
+  ],
+  "allowedEdits": [
+    "replace DataModel values",
+    "bind progress value/total independently from the visible center label",
+    "replace icons through DataModel",
+    "remove icons and reallocate width",
+    "add onClick to primaryAction only with valid event capability"
+  ],
+  "forbiddenEdits": [
+    "change surface/root size",
+    "add a second meter hero",
+    "use emoji/base64/network image or SVG paths not declared in asset-library",
+    "turn factColumn into a long list"
+  ],
+  "deleteRules": [
+    "If support.2 duplicates support.1 or primary.value, delete factMeta and keep the right column vertically centered.",
+    "If the main value is naturally split, keep a short centerLabel and put at most two independent fragments in factColumn; do not concatenate a long duration inside the ring."
+  ],
+  "colorPolicy": {
+    "source": "reference/design/color-token-system.md + color-token-values.md",
+    "budget": "one blue meter scene family plus neutral glass action",
+    "sceneFamily": "multi_color_08 brand/tech blue",
+    "roles": {
+      "rootGradient": "multi_color_08 light/dark blue stops",
+      "meterTrack": "comp_emphasize_secondary light",
+      "meterFill": "font_on_primary on saturated surface",
+      "action": "font_on_fourth/tertiary glass material unless action color has semantic meaning"
+    },
+    "rewriteRules": [
+      "Do not mix purple sleep colors into the default blue meter template.",
+      "For sleep-specific cards, remap the same roles to multi_color_01/06 rather than adding a second hue."
+    ]
+  }
+}
+
+
+ succeeded in 184ms:
+# 素材库
+
+生成卡片需要图标、图片、媒体路径或视觉锚点时读取本文档。只要入选内容存在可由素材承担的识别、状态、动作、主媒体或视觉锚点职责，也先读取本文档再决定是否使用 `Image`。读完后只从下表选择 `src`，不要编造相似路径、重命名文件或替换目录。
+
+## 选择规则
+
+- 先按用户场景、语义角色和下表 `description` 匹配素材。
+- 触发素材检查看内容职责，不靠业务名枚举：对象需要被快速识别、状态需要图形化、动作需要方向/播放/拨打等视觉指示、主媒体或地点需要可视锚点、模板含 `asset` 槽位，或设计正准备用文字字形/自绘图形/背景图替代素材时，都先查表。
+- 用户未提供素材不等于素材不可用；本表声明的本地素材就是可用素材。
+- 如果存在明确匹配的素材，且卡片仍需要该语义图标、图片、媒体或视觉锚点，必须使用匹配素材的 `src`。
+- 图标数量不设独立硬上限，按角色槽位和 L1 布局预算判断：非模板 `2x2` 默认优先 1 个主视觉/身份图标；模板 `2x2` 可按 manifest 槽位保留两个 tile/metric 图标、2-3 个同组状态图标或一个图标动作；`2x4` 可随主媒体、并列事实、时间线或动作区扩展，但每个图标必须承担识别、状态、动作或主媒体职责。
+- 匹配成功后，不要用 `Text` 字形、emoji、自绘形状、相似资源路径、未声明 SVG 或未声明图片替代该语义素材。
+- 表中描述为黑色或黑白实心的 SVG 不可直接放在深色 root、暗色渐变、暗色背板、高饱和橙/绿等色面上；若必须使用，应放入不透明浅色图标底板，或改用可读 PNG/浅色素材。无法保证可读时删除该弱图标并重新分配空间给主文字或 CTA。
+- 只有没有语义匹配素材、加入图标会破坏 L1 布局预算，或用户明确要求不用图片/图标素材时，才省略 `Image`。
+
+## 本地素材索引
+
+所有 `src` 均以 `resources/base/media` 为前缀，素材格式为 `.svg` 或 `.png`。
+
+| src | description |
+| --- | --- |
+| `resources/base/media/air_fill.svg` | 空调/空气循环实心图标，黑色，图形呈矩形风口加出风箭头造型，适用场景：空调控制面板、智能家居空气管理 |
+| `resources/base/media/air_open_fill.svg` | 空调开启/新风实心图标，黑色，图形为开启状态的风口造型，适用场景：空调开启状态展示、新风系统控制 |
+| `resources/base/media/airplane_departure.svg` | 飞机起飞图标，黑色，图形为飞机从跑道起飞的侧视图，适用场景：出行计划、航班出发信息、旅行日程 |
+| `resources/base/media/airplane_fill_1.svg` | 飞机实心图标，黑色，图形为正面朝上的飞机俯视轮廓，适用场景：旅行场景、航班信息展示、出行卡片 |
+| `resources/base/media/alarm_fill_1.svg` | 闹钟实心图标，黑白双色，图形为带铃铛的圆形表盘，适用场景：闹钟设置、定时提醒、日程提醒 |
+| `resources/base/media/backward_fill.svg` | 快退/后退实心图标，黑色，图形为两个向左的三角箭头，适用场景：音乐播放器快退控制、视频回退 |
+| `resources/base/media/battery_leaf_fill.svg` | 电池与绿叶组合实心图标，黑色，图形为电池加叶片造型，适用场景：节能模式、绿色用电、环保出行 |
+| `resources/base/media/bell_fill.svg` | 铃铛实心图标，黑色，图形为经典吊铃造型，适用场景：通知提醒、消息提示、闹铃开启状态 |
+| `resources/base/media/bell_slash_fill.svg` | 铃铛加斜杠实心图标，黑白双色，图形为铃铛上叠加删除线，适用场景：静音模式、关闭通知、勿扰设置 |
+| `resources/base/media/bolt_fill.svg` | 闪电实心图标，黑色，图形为竖向闪电符号，适用场景：充电状态、快充指示、用电量展示 |
+| `resources/base/media/bus_fill.svg` | 公交车实心图标，黑色，图形为正面视角公共汽车轮廓，适用场景：公共交通出行、路线导航、公交到站提醒 |
+| `resources/base/media/calendar_fill.svg` | 日历实心图标，黑色，图形为带格线的日历本造型，适用场景：日程管理、日历事件查看、当日安排 |
+| `resources/base/media/checkmark_calendar_fill.svg` | 带对勾的日历实心图标，黑白双色，图形为日历上叠加对勾，适用场景：已完成日程、日程确认、任务打卡 |
+| `resources/base/media/clean_fill.svg` | 清洁实心图标，黑色，图形为清洁工具或净化造型，适用场景：清洁模式、空气净化、家居清洁提醒 |
+| `resources/base/media/clock.svg` | 时钟线框图标，黑色，图形为圆形表盘加指针的线性轮廓，适用场景：时间显示、定时功能、倒计时 |
+| `resources/base/media/clock_fill.svg` | 时钟实心图标，黑白双色，图形为圆形实心表盘加白色指针，适用场景：时间显示、闹钟设置、定时器 |
+| `resources/base/media/cold.svg` | 寒冷/雪花图标，黑色，图形为六角雪花晶体造型，适用场景：制冷模式、低温天气展示、空调冷风设置 |
+| `resources/base/media/cloudy.png` | 云朵组合，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/cloudy_turning_sunny.png` | 小云朵和太阳组合，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/courier_box.png` | 快递箱子，彩色图标，适用场景：物流信息、取件提醒 |
+| `resources/base/media/drop_1.svg` | 水滴图标，黑色，图形为圆润水滴轮廓，适用场景：湿度数据展示、饮水提醒、天气降雨信息 |
+| `resources/base/media/earphone_case_16644.svg` | 耳机收纳盒实心图标，黑色，图形为无线耳机充电盒造型，适用场景：蓝牙耳机设备连接、音频设备管理 |
+| `resources/base/media/externaldrive_fill.svg` | 外置存储设备实心图标，黑色，图形为矩形硬盘盒造型，适用场景：本地存储管理、数据备份、文件传输 |
+| `resources/base/media/face.svg` | 人脸图标，黑色，图形为简洁人脸轮廓，适用场景：人脸识别解锁、用户头像占位、个人身份展示 |
+| `resources/base/media/fast_forward.svg` | 快进图标，黑色，图形为两个向右的三角箭头，适用场景：音乐播放器快进控制、视频快进 |
+| `resources/base/media/figure_pool_swim.svg` | 游泳人物图标，黑色，图形为人体游泳动作侧视轮廓，适用场景：运动记录、游泳锻炼追踪、健康运动卡片 |
+| `resources/base/media/figure_run.svg` | 跑步人物图标，黑色，图形为人体奔跑动作侧视轮廓，适用场景：运动记录、跑步锻炼追踪、步数统计 |
+| `resources/base/media/flame_fill.svg` | 火焰实心图标，黑色，图形为向上燃烧的火焰造型，适用场景：热量消耗展示、加热功能、高温天气提示 |
+| `resources/base/media/heart_fill.svg` | 心形实心图标，黑色，图形为标准爱心轮廓，适用场景：健康数据、心率监测展示、收藏/喜欢功能 |
+| `resources/base/media/heat_generation.svg` | 发热/暖气图标，黑色，图形为散热或暖气片波浪造型，适用场景：暖气控制、制热模式、冬季取暖设置 |
+| `resources/base/media/house_fill.svg` | 房屋实心图标，黑白双色，图形为三角屋顶加矩形门洞的家形造型，适用场景：首页导航、智能家居入口、回家提醒 |
+| `resources/base/media/hourglass_fill.svg` | 沙漏和齿轮组合图标，图形为沙漏线性右下角齿轮组合的造型，适用场景：应用时长 |
+| `resources/base/media/id_fill.svg` | 身份证/工牌实心图标，黑色，图形为矩形证件卡片造型，适用场景：身份识别、工牌/证件展示、当下日程身份信息 |
+| `resources/base/media/kidswatch_fill.svg` | 儿童手表实心图标，黑色，图形为圆形表盘加表带的手表造型，适用场景：儿童设备管理、家长控制、儿童安全 |
+| `resources/base/media/l_circle_fill.svg` | 字母L圆形实心图标，黑色，图形为圆形背景内白色L字母，适用场景：标签分类标识、左侧导航标记 |
+| `resources/base/media/lamp_ceiling.svg` | 吸顶灯图标（关灯状态），黑色，图形为圆形灯盘加固定架造型，适用场景：智能照明控制、灯光管理、家居灯光 |
+| `resources/base/media/lamp_ceiling_light.svg` | 吸顶灯亮起图标（开灯状态），黑色，图形为圆形灯盘加射线光芒造型，适用场景：灯光开启状态展示、智能照明控制 |
+| `resources/base/media/local_fill.svg` | 本地/定位实心图标，黑色，图形为圆形加中心圆点的定位标记，适用场景：本地内容、当前位置标注、定位功能 |
+| `resources/base/media/location_north_up_right_fill.svg` | 方向导航实心图标，黑色，图形为指向右上方的导航箭头，适用场景：地图导航、方向指引、路线规划 |
+| `resources/base/media/moon_circle_fill.svg` | 月亮圆形实心图标，黑白双色，图形为圆形背景内白色月牙，适用场景：夜间模式、睡眠追踪、勿扰模式 |
+| `resources/base/media/moon_z_fill_1.svg` | 月亮加Z睡眠实心图标，黑色，图形为月牙旁附带字母Z表示入睡，适用场景：睡眠模式开启、休息提醒、晚安场景 |
+| `resources/base/media/music_fill.svg` | 音乐音符实心图标，黑色，图形为双音符连接造型，适用场景：音乐播放卡片、音频功能入口、歌单展示 |
+| `resources/base/media/pause_fill.svg` | 暂停实心图标，黑色，图形为两条竖向平行矩形，适用场景：音乐/视频播放暂停控制 |
+| `resources/base/media/person_3_fill.svg` | 三人组实心图标，黑色，图形为三个人形轮廓并排排列，适用场景：群组联系人、团队成员展示、家庭成员列表 |
+| `resources/base/media/phone_fill.svg` | 电话实心图标，黑色，图形为经典听筒造型，适用场景：拨打电话、通话功能入口 |
+| `resources/base/media/phone_fill_1.svg` | 电话实心图标（变体），黑色，图形为听筒加信号波形，适用场景：来电接听、通话状态展示 |
+| `resources/base/media/play_fill.svg` | 播放实心图标，黑色，图形为向右的实心三角形，适用场景：音乐/视频播放控制、媒体播放器 |
+| `resources/base/media/partly_cloudy.png` | 云朵在前、太阳在后的组合，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/qrcode.svg` | 二维码图标，黑色，图形为标准方形二维码点阵图案，适用场景：扫码功能、快速连接设备、信息分享 |
+| `resources/base/media/rain.png` | 云朵和雨滴组合，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/r_circle_fill.svg` | 字母R圆形实心图标，黑色，图形为圆形背景内白色R字母，适用场景：标签分类标识、录制状态标记 |
+| `resources/base/media/snow.png` | 雪花，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/stopwatch_fill.svg` | 秒表实心图标，黑白双色，图形为带按钮的圆形秒表造型，适用场景：计时功能、运动计时、倒计时 |
+| `resources/base/media/sunny.png` | 太阳，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/sun_max.svg` | 太阳最大亮度图标，黑色，图形为圆形太阳加多条粗放射线，适用场景：天气晴朗展示、屏幕亮度最大值 |
+| `resources/base/media/sun_min.svg` | 太阳最小亮度图标，黑色，图形为圆形太阳加短细放射线，适用场景：低亮度调节、柔和光线、日出/日落场景 |
+| `resources/base/media/thermometer_snowflake.svg` | 温度计/雪花组合图标，黑色，图形为温度计右侧叠加雪花造型，适用场景：寒冷预警、体感指数 |
+| `resources/base/media/thermometer_sun_fill.svg` | 温度计/太阳组合图标，黑色，图形为温度计右侧叠加太阳造型，适用场景：高温预警、体感指数 |
+| `resources/base/media/thunder.png` | 云朵和闪电组合，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/thunder_storm.svg` | 下雨和闪电造型组合图标，图形为下雨中带有闪电的造型，适用场景：雷暴预警 |
+| `resources/base/media/thunderstorm.png` | 云朵、闪电和雨滴组合，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/tornado.png` | 龙卷风，彩色图标，适用场景：天气、出行 |
+| `resources/base/media/tram_fill.svg` | 有轨电车实心图标，黑色，图形为带导线的有轨电车侧视轮廓，适用场景：城市公共交通、地铁/轻轨出行导航 |
+| `resources/base/media/typhoon_fill.svg` | 台风黑色图标，图形为台风漩涡造型，适用场景：台风预警、台风路径 |
+| `resources/base/media/z_alarm_fill.svg` | 带Z的闹钟贪睡实心图标，黑色，图形为闹钟旁附带字母Z表示贪睡，适用场景：闹钟贪睡功能、延迟提醒、睡眠场景 |
+
+## PNG 图标索引
+
+所有 `src` 均以 `resources/base/media` 为前缀，素材格式统一为 `.png`。
+
+| src | description |
+| --- | --- |
+| `resources/base/media/icon_id.png` | 工牌/ID图标，适用场景：当下日程 |
+| `resources/base/media/icon_meeting.png` | 会议图标，适用场景：当下日程 |
+| `resources/base/media/icon_time.png` | 时间图标，适用场景：当下日程 |
+| `resources/base/media/icon_watermark.png` | 水印图标，适用场景：当下日程 |
+| `resources/base/media/icon_allergy.png` | 过敏源图标，适用场景：亲人关怀 |
+| `resources/base/media/icon_call.png` | 电话图标，适用场景：亲人关怀 |
+| `resources/base/media/icon_high_temperature.png` | 高温/温度计图标，适用场景：亲人关怀 |
+| `resources/base/media/icon_weather1.png` | 天气/雨伞图标，适用场景：亲人关怀 |
+| `resources/base/media/icon_tiktok.png` | 抖音图标，适用场景：防沉迷 |
+| `resources/base/media/icon_timing.png` | 计时图标，适用场景：防沉迷 |
+| `resources/base/media/icon_charge.png` | 充电/闪电图标，适用场景：低电模式 |
+| `resources/base/media/icon_clear.png` | 清除图标，适用场景：清理无忧 |
+| `resources/base/media/icon_earphone.png` | 耳机图标，适用场景：戴耳机播控 |
+| `resources/base/media/icon_phone.png` | 手机图标，适用场景：专注模式 |
+| `resources/base/media/icon_car.png` | 汽车/打车图标，适用场景：雨天打车 |
+| `resources/base/media/icon_time1.png` | 时间图标，适用场景：雨天打车 |
+| `resources/base/media/icon_weathe2.png` | 天气图标，适用场景：雨天打车 |
+| `resources/base/media/icon_alarm_clock.png` | 闹钟图标，适用场景：当下日程 |
+| `resources/base/media/icon_focus.png` | 专注图标，适用场景：专注模式 |
+| `resources/base/media/icon_schedule.png` | 日程图标，适用场景：当下日程 |
+| `resources/base/media/icon_electricity.png` | 电池图标，适用场景：低电模式 |
+| `resources/base/media/icon_save_power.png` | 省电图标，适用场景：低电模式 |
+| `resources/base/media/icon_alarm_clock1.png` | 闹钟图标，适用场景：睡眠监督 |
+| `resources/base/media/icon_remind.png` | 提醒图标，适用场景：睡眠监督 |
+| `resources/base/media/icon_sleep.png` | 睡眠图标，适用场景：睡眠监督 |
+| `resources/base/media/icon_run.png` | 运动/跑步图标，适用场景：当下日程 |
+| `resources/base/media/icon_schedule2.png` | 日程图标，适用场景：当下日程 |
+| `resources/base/media/icon_left.png` | 上一首图标，适用场景：戴耳机播控 |
+| `resources/base/media/icon_like.png` | 收藏/心形图标，适用场景：戴耳机播控 |
+| `resources/base/media/icon_music.png` | 音乐图标，适用场景：戴耳机播控 |
+| `resources/base/media/icon_right.png` | 下一首图标，适用场景：戴耳机播控 |
+
+## 布局规则
+
+- 所有 `Image` 必须写明确 `width`、`height` 和 `objectFit: "contain"`。
+- 小语义图标通常 16-24vp；主视觉图标在 `2x2` 通常 44-64vp，在 `2x4` 通常 48-72vp。
+- 图标和文字之间保留 4-8vp；先扣除图标宽度和 gap，再估算文本能否完整显示。
+- 不要为了使用图标压缩 CTA、日期、时间、标题、状态或主指标。
+
+## 输出规则
+
+- 静态素材可直接写入 `Image.src`，例如 `"src": "resources/base/media/calendar_fill.svg"` 或 `"src": "resources/base/media/icon_meeting.png"`。
+- 如果素材选择需要由 DataModel 管理，将 `Image.src` 写成完整表达式（例如 `"{{ ${/asset/icon} }}"`），并在 `updateDataModel.value` 中把该字段初始化为上表声明过的 `src`。
+- 不要把素材库写入 CardSpec；CardSpec 只描述端侧 data capability。
+
+
+ succeeded in 197ms:
+{"version":"v0.9","createSurface":{"surfaceId":"meter-side-action-template","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
+{"version":"v0.9","updateComponents":{"surfaceId":"meter-side-action-template","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#0a59f7",0],["#317af7",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#330a59f7","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffffffff","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":400,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#33ffffff","borderWidth":1,"borderColor":"#66ffffff","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":500,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"meter-side-action-template","path":"/","value":{"card":{"title":"状态"},"asset":{"primaryIcon":"resources/base/media/bolt_fill.svg","actionIcon":"resources/base/media/battery_leaf_fill.svg"},"meter":{"progressValue":42,"progressTotal":100,"centerLabel":"42%","caption":"进度"},"support":{"line1":"正常","line2":"提示"},"action":{"label":"查看"}}}}
+
+
+ succeeded in 212ms:
+{
+  "suggestSize": "2x2"
+}
+
+
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\design\\color-token-system.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\design\\color-token-values.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\capability\\event-capability\\click-event.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -Path \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\capability\" -Recurse -File | Select-Object -ExpandProperty FullName" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 181ms:
+# 色彩 Token 系统
+
+本文件校验颜色是否合法。非图片颜色优先回溯到 HarmonyOS 语义 token、`ohos_id_color_*`、`multi_color_*` 或 `multi_color_aux_*`；当具体场景需要官方 token 表没有覆盖的 root 表面、重点面、半透明背板或线性渐变 stop 时，可以在官方 token 色族基础上声明少量场景拓展色。当前端侧不支持语义 token 渲染，最终 DSL 必须写映射或拓展后的 `#RRGGBB` 或 `#AARRGGBB` 色值；内部设计理由仍保留 token 名称、拓展来源和用途角色。
+
+## 单文件兜底
+
+- `scene vector`：场景字段组；颜色只取其中的场景目的、密度、主信息类型、时间性和表达调性，不改变内容取舍。
+- `compositionPattern`：构图枚举，例如中性工具卡、内容背板、场景色 root、暗色焦点、仪表主焦点、动作分区或媒体卡。
+- `surfaceStrategy`：表面策略，例如中性 root、低强度支撑背板、场景色 root、双表面分区、图片遮罩、暗色表面或柔和材质层。
+- `sceneAccent/statusAccent/actionMaterial`：分别表示场景主色、真实状态色和动作材质；三者不能互相冒充。
+
+## 校验目标
+
+写 DSL 前只需在内部确认：
+
+- 每个非图片颜色都有来源：HarmonyOS 语义 token、`ohos_id_color_*`、`multi_color_*`、`multi_color_aux_*`，或符合本文规则的场景拓展色。
+- DSL 中的颜色属性只输出映射后的 `#RRGGBB` 或 `#AARRGGBB`，不直接输出 token 名称、`ohos_id_color_*`、`multi_color_*` 或 `multi_color_aux_*` 字符串。
+- 深浅模式使用同一 token 名，只切换官方 light/dark 值。
+- 前景/背景配对符合本文规则。
+- 渐变 stop 都来自官方来源或合规场景拓展色，且只使用线性渐变。
+- 状态色只服务真实状态。
+- 没有无法说明来源、场景和用途的颜色；如无法说明，改用可回溯 token 或删除该颜色。
+- 背景颜色的**放置位置**不在本文范围：背景字段必须落在 `root.styles`（或 root 下真实背景组件），不得放 `createSurface`，见 [`../core-rules.md`](../core-rules.md) 与 [`../protocol/protocol.md`](../protocol/protocol.md)。
+
+## 配色决策流程
+
+颜色选择先做场景判断，再做 token 映射；不要从“好看、清新、高级、科技感”这类抽象词直接挑色。
+
+1. 从 `generation-workflow.md` 的 `scene vector`（场景字段组）取 `register`、`temporality`、`density`、`keyInfo` 和 `hierarchy`。
+2. 命名 2-4 个具体锚点，例如天空层、雨玻璃、日历纸、跑道、票纸、电池环、包裹标签、药盒、收据纸、夜间舞台。
+3. 选择一个 `compositionPattern`（构图枚举）和 `surfaceStrategy`（表面策略），再决定一个主场景色族；枚举定义见 `generation-workflow.md`。
+4. 先分配角色：`cardSurface`、`contentSurface`、`sceneAccent`、`actionMaterial`、`statusAccent`、`textIcon`。
+5. 将角色映射为本文件 token、多彩色或合规场景拓展色，并写入 DSL hex。
+6. 检查深浅模式同名、前景/背景配对、状态色语义、渐变 stop 和 2x2/2x4 色彩预算。
+
+色彩预算：
+
+- `2x2`：最多一个场景色信号、一个状态/动作信号和中性文字；最多一个渐变面。
+- `2x4`：最多一个场景色信号、一个中性支撑表面和一个状态/动作信号；可用一个 root 渐变加一个中性支撑背板，或中性 root 加一个渐变重点面。
+- 同一卡片不要让每个内容块都有独立主题色。
+
+## 阻塞项
+
+以下任一项失败都不能交付：
+
+- 非图片颜色既无法回溯到官方 token、`ohos_id_color_*` 或官方多彩色来源，也无法用合规场景拓展色说明来源、场景和用途。
+- DSL 颜色属性直接输出 token 名称、`ohos_id_color_*`、`multi_color_*` 或 `multi_color_aux_*`，而不是映射后的 hex。
+- 深浅模式使用不同语义名，而不是同一 token 切换值。
+- 普通背景上误用 `font_on_*`。
+- 饱和/渐变背景上叠加第二个高饱和彩色前景。
+- 状态色被用作整卡主题，且状态不是卡片主目的。
+- 常规提醒或轻建议误用 `warning` / `alert`。
+- 渐变 stop 含无场景依据的手调色、机械插值色、无来源 alpha 变体、径向装饰或 bokeh/orb。
+- 同一卡片出现两个以上主场景色族。
+
+## 来源优先级
+
+1. 优先使用 `color-token-values.md` 中的 token 名称和 light/dark 值，输出 DSL 时写入对应模式的 hex 值。
+2. 如果输入或源规范给出 `ohos_id_color_*`，先映射到等价 token；无法映射时只在内部保留 `ohos_id_color_*` 作为来源名，并使用其官方 light/dark hex 值，不要把源 ID 直接写进 DSL。
+3. 如果官方 token 无法表达具体场景表面（如朝阳暖雾、雨天玻璃、薄荷运动、夜间睡眠、音乐封面），可以创建场景拓展色；拓展色必须基于一个主色族或中性背景族，且只服务 root、重点面、半透明背板或渐变 stop。
+4. 多彩色优先使用 `multi_color_01..11` 和 `multi_color_aux_01..11`；允许从它们派生低饱和、高明度、低对比的场景表面色，但不得派生第二个高饱和主色。
+5. 状态色只用于真实状态；常规提示、建议、倒计时和轻提醒不自动使用 `warning` / `alert`。
+6. 深浅模式必须使用同一 token 名或同一场景拓展色名，只切换对应 light/dark 值；若只产出单一 DSL，至少在内部记录 light 来源。
+
+## 官方多彩色语义
+
+多彩色用于一个主场景色族、图表、徽标、小面积强调或同族辅助面，不是任意取色表。
+
+- `multi_color_01`：紫蓝、夜间、科技或阶段感。
+- `multi_color_02`：天空、天气、水、旅行冷感。
+- `multi_color_03`：设备、薄荷、健康辅助；不默认用作 CTA。
+- `multi_color_04`：确认、连接、安全、拨打等绿色动作。
+- `multi_color_05`：成长、完成辅助、自然场景小面积。
+- `multi_color_06`：夜间、睡眠、舞台紫。
+- `multi_color_07`：演出、情绪、玫瑰色小面积强调。
+- `multi_color_08`：品牌蓝或通用系统动作；不要当所有场景默认色。
+- `multi_color_09`：物流、运动、警示邻近的橙红能量。
+- `multi_color_10`：朝阳、行动、倒计时、庆祝。
+- `multi_color_11`：便签、日光、高亮；大面积使用时必须保证深色前景可读。
+
+`multi_color_aux_01..11` 只作为同族低强度支撑、渐变另一端、小面积图表或软表面。不要从辅助色再手调浅色、暗色或透明度。
+
+## 场景主色启发
+
+这些是内部起点，不是模板。用户给出更具体锚点时，以当前需求为准。
+
+- 天气/环境：`ambient-root`（场景色 root）或 `split-action`（主内容 + 动作/状态分区）；晴天/多云可用 `multi_color_02`、`multi_color_aux_02` 或 `multi_color_10/11` 小面积日光；雨夜可用 `multi_color_01 -> multi_color_02`。普通出行建议不是 `warning`。
+- 会议/日程：`plain-card`（中性工具卡）或 `single-panel`（一个内容背板）；中性表面为主，时间或入会动作可用 `brand` / `comp_background_emphasize`，不要把参会人和会议号做高饱和强调。
+- 演出/票券/夜间活动：`dark-focus`（暗色有场景语义）、`single-panel`（票面背板）或 `split-action`（票面 + 动作）；可用 `multi_color_06/07/10`，票券状态用 `confirm` 只作状态。
+- 运动/训练/倒计时：`meter-dashboard`（单一仪表/进度主焦点）或 `split-action`（指标 + 开始/继续动作）；可用 `multi_color_09/10`，完成/开始动作可用 `confirm` 或动作主色。
+- 设备/电量/清理：`meter-dashboard`（电量/容量环或条为主）或 `plain-card`（中性状态卡）；teal 只放进仪表/小徽标，清理、连接、可用状态用 `confirm`。
+- 亲情拨打/联系人：`split-action`（联系人 + 拨打动作）或 `single-panel`（联系人信息归组）；拨打动作可用 `confirm`，联系人信息使用中性表面或 `multi_color_aux_10/11` 小面积暖色。
+- 物流/包裹：`single-panel`（包裹状态归组）；包裹/派送可用 `multi_color_09 -> multi_color_10`，取件码是中性背板里的高可读主信息。
+- 备忘/便签：`plain-card`（纯文本提醒）或 `single-panel`（便签背板）；使用 `multi_color_aux_10/11` 做 1vp 边线、4-8vp 小标记或低强度背板，正文保持深色前景。
+- 睡眠/专注/夜间：`dark-focus`（暗色主表面）或 `ambient-root`（夜间场景色 root）；使用 `multi_color_01/06` 或深色中性表面，状态不足用文字说明，不把 ring 或动作改成警告色。
+
+## 按钮材质
+
+- 默认按钮/胶囊使用中性或磨砂材质：`comp_background_secondary` / `comp_background_tertiary`，必要时加 `#ffffff19` 这类有来源的低 alpha 白色描边。
+- 只有颜色本身表达含义时才用实色：品牌入会、确认/连接/拨打/清理、危险/破坏性操作或明确高能行动。
+- 查看、打开、详情、进入类动作默认不是实色按钮。
+- 实色按钮仍需要合规前景：品牌/强调背景用 `font_on_primary`，中性低强调动作使用普通前景。
+- 不要因为“主动作”三个字就给按钮换成高饱和色；位置、尺寸和文案已经能表达主次。
+
+## 场景拓展色板
+
+当官方 token 表不足以支撑场景表面、重点面、背板或渐变 stop 时，可以在内部声明 `scenePalette`，最终 DSL 仍只写 hex。声明时必须满足：
+
+- `scene`: 具体场景，而不是抽象风格词；例如 `weather.morning.cool`、`weather.morning.warm`、`fitness.mint`、`music.ambient`、`sleep.night`。
+- `anchors`: 2-4 个物理或文化锚点；例如晨雾、薄云、奶油纸、跑道、薄荷饮、夜灯、唱片封套。
+- `baseSources`: 使用的官方 token、`ohos_id_color_*`、`multi_color_*` 或 `multi_color_aux_*`；拓展色必须与这些来源保持同一主色族或中性表面关系。
+- `derivedRoles`: 每个拓展色的用途，例如 `rootStart`、`rootEnd`、`softPanel`、`actionFill`、`dividerWash`；不要用 `prettyBlue`、`warm1` 这类无用途命名。
+- `bounds`: 拓展色应低饱和、高明度、低对比；除主 CTA 外，不新增高饱和色。`2x2` 最多 2 个拓展色，`2x4` 最多 3 个拓展色。
+
+拓展色适用范围：
+
+- 允许：root 背景、重点面、低强度背板、线性渐变 stop、1vp 分隔层。
+- 谨慎：CTA 背景；只有品牌动作、确认动作、运动开始、导航、拨打、入会、连接或清理等必要动作可用实色。
+- 禁止：正文色、状态语义色、错误/警告/成功判断色、多个互相无关的主题色。
+
+推荐派生方向：
+
+- 天气晨间：从 `background_primary/background_secondary` 加入低饱和冷蓝或暖米表面，只用于 root 背景或低强度背板。
+- 雨雪天气：从 `background_secondary/background_tertiary` 加入低饱和蓝灰表面，避免高饱和蓝。
+- 运动健康：从 `multi_color_04` 或 `multi_color_aux_03/04` 派生薄荷浅表面，CTA 可用 `confirm` 或 `multi_color_04`。
+- 音乐耳机：从 `brand`、`multi_color_06/07` 或中性背景派生 root/重点面表面，避免同时使用多个高饱和娱乐色。
+- 睡眠夜间：从 `background_tertiary`、`multi_color_01/06` 派生暗色或柔紫表面，文字使用 on-color 或中性前景。
+
+场景拓展色仍需通过角色和预算检查：每个拓展色必须绑定 `rootStart/rootEnd/softPanel/actionFill/dividerWash` 等用途；若没有对应用途、导致 `2x2` 超过 2 个拓展色、导致 `2x4` 超过 3 个拓展色，或破坏前景/背景配对，则删除该拓展色。
+
+## Token 值映射
+
+需要把 token、`ohos_id_color_*` 或多彩色转换为最终 DSL hex 时，读取 `color-token-values.md`。本文只维护颜色决策、合法性、角色和配对规则，不重复 token 数值表。
+
+## 前景/背景配对
+
+普通背景：
+
+- 使用 `font_primary/secondary/tertiary/fourth` 与 `icon_primary/secondary/tertiary/fourth`。
+- 有意义的高亮可用 `font_emphasize` / `icon_emphasize`。
+- 不使用 `font_on_*`、纯黑/纯白手写值或彩色前景堆叠。
+
+品牌/高强调背景：
+
+- 使用 `font_on_primary/secondary/tertiary`、`icon_on_primary/secondary/tertiary`。
+- 不用 `font_emphasize`、`icon_emphasize`、黑色前景或低对比彩色前景。
+
+饱和/渐变背景：
+
+- 使用 on-color 或中性前景。
+- 不把 `warning`、`alert`、`confirm`、`font_emphasize`、`multi_color_*` 直接作为饱和背景上的第二高饱和前景。
+- 如果状态必须显示，把状态放入中性背板内。
+
+中性背板：
+
+- 使用 `comp_background_secondary` / `comp_background_tertiary` 承载低强度分组、按钮磨砂层和辅助提示。
+- 使用 `comp_divider` 或组件透明层做边界，不手写自定义灰色。
+
+## 渐变校验
+
+- 每个 stop 必须是 `color-token-values.md` 中 token、`ohos_id_color_*`、`multi_color_*`、`multi_color_aux_*` 对应的确切 hex 值，或符合“场景拓展色板”规则的派生 hex。
+- 只使用线性渐变。
+- 渐变角色只选一种：`ambient-band` 表达天气、睡眠、环境或音乐的 root/重点面；`temporal-band` 表达时间、夜间、季节、事件或倒计时；`action-fill` 表达运动、导航、清理或紧急动作。若渐变无法绑定这三类角色之一，则删除渐变。
+- 2 stop 优先；3 stop 仅用于时间、天气、夜间、舞台、倒计时等语义明确的带状渐变。
+- 不使用无场景依据的手调色、机械插值色、`color-mix()`、滤镜、无来源 alpha 变体、径向装饰、orb 或 bokeh。
+- 饱和或高对比渐变上的文本只用 on-color 或中性前景；状态色移入中性背板。
+
+## 输出策略
+
+- 设计说明里优先写 token 名和角色，例如 `root.bg = multi_color_06 -> multi_color_aux_06`；使用场景拓展色时，内部记录 `scene`、`anchors`、`baseSources`、`derivedRoles` 和最终 hex。
+- 最终 DSL 一律写 token 映射或场景拓展后的 hex，同时在内部推理中保留 token 来源或拓展来源。
+- 自定义角色名按用途命名，例如 `surface.default`、`text.primary`、`action.bg`；不要命名为 `blue1`、`prettyBg`。
+- 同一张卡最多一个主场景色族；跨族只用于状态语义或明确品牌动作。
+
+
+ succeeded in 189ms:
+# 色彩 Token 值表
+
+只有需要把 token、`ohos_id_color_*` 或多彩色映射为最终 DSL hex 时读取本文。配色决策、合法性、场景拓展色和前景/背景配对规则仍在 `color-token-system.md`。
+
+## 语义与文字
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `brand` | `#ff0a59f7` | `#ff317af7` |
+| `warning` | `#ffe84026` | `#ffd94838` |
+| `alert` | `#ffed6f21` | `#ffdb6b42` |
+| `confirm` | `#ff64bb5c` | `#ff5ba854` |
+| `font_primary` | `#e5000000` | `#e5ffffff` |
+| `font_secondary` | `#99000000` | `#99ffffff` |
+| `font_tertiary` | `#66000000` | `#66ffffff` |
+| `font_fourth` | `#33000000` | `#33ffffff` |
+| `font_emphasize` | `#ff0a59f7` | `#ff317af7` |
+| `font_on_primary` | `#ffffffff` | `#ffffffff` |
+| `font_on_secondary` | `#99ffffff` | `#99ffffff` |
+| `font_on_tertiary` | `#66ffffff` | `#66ffffff` |
+| `font_on_fourth` | `#33ffffff` | `#33ffffff` |
+
+## 图标
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `icon_primary` | `#e5000000` | `#e5ffffff` |
+| `icon_secondary` | `#99000000` | `#99ffffff` |
+| `icon_tertiary` | `#66000000` | `#66ffffff` |
+| `icon_fourth` | `#33000000` | `#33ffffff` |
+| `icon_emphasize` | `#ff0a59f7` | `#ff317af7` |
+| `icon_sub_emphasize` | `#660a59f7` | `#66317af7` |
+| `icon_on_primary` | `#ffffffff` | `#ffffffff` |
+| `icon_on_secondary` | `#99ffffff` | `#99ffffff` |
+| `icon_on_tertiary` | `#66ffffff` | `#66ffffff` |
+| `icon_on_fourth` | `#33ffffff` | `#33ffffff` |
+
+## 背景与组件层
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `background_primary` | `#ffffffff` | `#ffe5e5e5` |
+| `background_secondary` | `#fff1f3f5` | `#ff191a1c` |
+| `background_tertiary` | `#ffe5e5ea` | `#ff202224` |
+| `background_fourth` | `#ffd1d1d6` | `#ff2e3033` |
+| `background_emphasize` | `#ff0a59f7` | `#ff317af7` |
+| `comp_foreground_primary` | `#ff000000` | `#ffe5e5e5` |
+| `comp_background_primary` | `#ffffffff` | `#ff202224` |
+| `comp_background_primary_contrary` | `#ffffffff` | `#ffe5e5e5` |
+| `comp_background_gray` | `#fff1f3f5` | `#ffe5e5ea` |
+| `comp_background_secondary` | `#19000000` | `#19ffffff` |
+| `comp_background_tertiary` | `#0c000000` | `#0cffffff` |
+| `comp_background_emphasize` | `#ff0a59f7` | `#ff317af7` |
+| `comp_background_neutral` | `#ff000000` | `#ffffffff` |
+| `comp_emphasize_secondary` | `#330a59f7` | `#33317af7` |
+| `comp_emphasize_tertiary` | `#190a59f7` | `#19317af7` |
+| `comp_divider` | `#33000000` | `#33ffffff` |
+| `comp_common_contrary` | `#ffffffff` | `#ff000000` |
+| `comp_background_focus` | `#fff1f3f5` | `#ff000000` |
+| `comp_focused_primary` | `#e5000000` | `#e5ffffff` |
+| `comp_focused_secondary` | `#99000000` | `#99ffffff` |
+| `comp_focused_tertiary` | `#66000000` | `#66ffffff` |
+
+## 交互态
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `interactive_hover` | `#0c000000` | `#0cffffff` |
+| `interactive_pressed` | `#19000000` | `#19ffffff` |
+| `interactive_focus` | `#ff0a59f7` | `#ff317af7` |
+| `interactive_active` | `#ff0a59f7` | `#ff317af7` |
+| `interactive_select` | `#330a59f7` | `#33317af7` |
+| `interactive_click` | `#19000000` | `#19ffffff` |
+
+## 多彩色
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `multi_color_01` | `#564af7` | `#5f58c7` |
+| `multi_color_02` | `#46b1e3` | `#4796c4` |
+| `multi_color_03` | `#61cfbe` | `#5aada0` |
+| `multi_color_04` | `#64bb5c` | `#5ba854` |
+| `multi_color_05` | `#a5d61d` | `#86ad53` |
+| `multi_color_06` | `#ac49f5` | `#8c55c2` |
+| `multi_color_07` | `#e64566` | `#d64966` |
+| `multi_color_08` | `#0a59f7` | `#317af7` |
+| `multi_color_09` | `#ed6f21` | `#db6b42` |
+| `multi_color_10` | `#f9a01e` | `#e08c3a` |
+| `multi_color_11` | `#f7ce00` | `#d1a738` |
+| `multi_color_aux_01` | `#8981f7` | `#5550a6` |
+| `multi_color_aux_02` | `#86c5e3` | `#467794` |
+| `multi_color_aux_03` | `#92d6cc` | `#4c7a73` |
+| `multi_color_aux_04` | `#92c48d` | `#5c8059` |
+| `multi_color_aux_05` | `#bddb69` | `#6b8052` |
+| `multi_color_aux_06` | `#c386f0` | `#634794` |
+| `multi_color_aux_07` | `#e67c92` | `#a14a5c` |
+| `multi_color_aux_08` | `#e87361` | `#9c554b` |
+| `multi_color_aux_09` | `#ed955f` | `#9e644f` |
+| `multi_color_aux_10` | `#f9bc64` | `#9e7349` |
+| `multi_color_aux_11` | `#f5dc62` | `#997e39` |
+
+## OhOS ID 映射入口
+
+- `ohos_id_color_palette1..11` 映射到 `multi_color_01..11`。
+- `ohos_id_color_palette_aux1..11` 映射到 `multi_color_aux_01..11`。
+- `ohos_id_color_text_primary/secondary/tertiary` 映射到 `font_primary/secondary/tertiary`。
+- `ohos_id_color_text_*_contrary` 映射到对应 `font_on_*`。
+- `ohos_id_color_primary/secondary/tertiary/fourth` 映射到对应 `icon_*`。
+- `ohos_id_color_background/sub_background` 映射到 `background_primary/background_secondary`。
+- `ohos_id_color_warning`、`ohos_id_color_alert`、`ohos_id_color_connected` 映射到 `warning`、`alert`、`confirm`。
+- `ohos_id_color_click_effect`、`ohos_id_color_hover`、`ohos_id_color_focused_*` 映射到 `interactive_*` 或 `comp_focused_*`。
+
+若一个 `ohos_id_color_*` 没有明确映射，内部保留源 ID 并使用其官方 light/dark hex 值；不要发明替代 token 名，也不要把源 ID 直接写进 DSL。
+
+
+ succeeded in 189ms:
+# 点击事件能力
+
+本文只指导 DSL `onClick`，不进入 CardSpec，也不新增第三个输出代码块。生成时按“先匹配能力，再匹配目标，再填参数”的顺序执行；无法匹配时删除点击行为，改为静态展示或说明需要宿主补充 event-capability manifest。
+
+## 生成规则
+
+- 先按用户意图匹配能力说明，再校验 `parameters` 和目标清单；不能匹配时不要伪造点击能力。
+- `onClick.call` 必须使用下表 `functionCall`，不要把应用名、页面名或 description 写成 `call`。
+- `args` 只能包含对应能力的参数；跳转类能力还必须使用下表声明的合法目标和值组合。
+- 事件参数可来自安全静态值、DataModel 完整表达式或模板列表项相对表达式；来自 data capability 输出的字段，必须能由 `writeResultTo + outputSchema` 推导。
+- `clickToIntent.args.params` 必须严格匹配目标的 `params` 结构。若目标参数说明里出现 `type`、`description` 等 schema 元数据，DSL 只保留参数 key 和实际运行时值；若目标声明固定值，使用固定值。
+- 拨号参数名固定为 `phoneNumber`；地图导航参数名固定为 `trafficpe`，不要改成其它拼写。
+- 模板列表项内优先用相对表达式，例如 `"{{ ${entityId} }}"`；非模板区域用绝对表达式，例如 `"{{ ${/data/calendar/items/0/entityId} }}"`。
+
+## 能力速查
+
+- `clickToCallPhone`：拨号界面；参数 `phoneNumber` string。
+- `clickToDeeplink`：打开应用或页面；参数 `bundleName` string、`abilityName` string、`uri` string；三者至少一个有值。若目标通过长 URI 拉起，`bundleName` 和 `abilityName` 传空字符串 `""`。
+- `clickToIntent`：执行声明的 intent；参数 `intentName` string、`params` object。
+
+## 参数值类型
+
+- 上表的 `string`、`number`、`object` 是运行时值类型；DSL 里可以填静态 JSON 值，或用完整 `{{ ... }}` 表达式生成该运行时值。
+- 目标表中声明为固定值的 `bundleName`、`abilityName`、`uri`、`intentName` 或固定 `params` 必须直接复制静态值；不要改成表达式，也不要拼接。
+- 只有用户输入、DataModel 或 data capability 输出明确提供的参数才使用表达式；表达式引用必须能从 `updateDataModel.value`、模板当前项或 `writeResultTo + outputSchema` 推导。
+
+## Deeplink 目标
+
+`clickToDeeplink` 必须复制目标行中的 `bundleName`、`abilityName`、`uri` 结构和值；目标中为空的字段也传 `""`。
+
+| 应用 | 场景 | bundleName | abilityName | uri |
+| --- | --- | --- | --- | --- |
+| 设置 | 情景模式，免打扰或专注模式 | `com.huawei.hmos.settings` | `com.huawei.hmos.settings.MainAbility` | `intelligent_scene_entry` |
+| 设置 | 蓝牙设置页 | `com.huawei.hmos.settings` | `com.huawei.hmos.settings.MainAbility` | `bluetooth_entry` |
+| 设置 | 电池页 | `com.huawei.hmos.settings` | `com.huawei.hmos.settings.MainAbility` | `battery` |
+| 设置 | 电池健康页 | `com.huawei.hmos.settings` | `com.huawei.hmos.settings.MainAbility` | `smart_charge_battery_health` |
+| 设置 | 健康使用 App 页面，设置应用使用时长 | `com.huawei.hmos.settings` | `com.huawei.hmos.settings.MainAbility` | `parent_control` |
+| 设置 | 存储空间页 | `com.huawei.hmos.settings` | `com.huawei.hmos.settings.MainAbility` | `storage_settings` |
+| 天气 | 天气应用某城市页，uri 固定勿改 | `""` | `""` | `hww://www.huawei.com/totemweather?enterType=share&cityCode=` |
+| 闹钟 | 闹钟应用首页 | `com.huawei.hmos.clock` | `com.huawei.hmos.clock.phone` | `""` |
+| 音乐 | 每日 30 首歌单，uri 固定勿改 | `""` | `""` | `hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4` |
+| 音乐 | 收藏歌单/心动歌单，uri 固定勿改 | `""` | `""` | `hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412` |
+| 运动健康 | 锻炼 Tab 页 | `""` | `""` | `huaweischeme://healthapp/home/sport?sportType=2` |
+| 运动健康 | 睡眠详情页 | `""` | `""` | `huaweischeme://healthapp/router/sleepDetail` |
+
+## Intent 目标
+
+- `ViewCalendarEvent`：查看日程详情；`params = { "entityId": <日程 id> }`。列表模板内用 `"{{ ${entityId} }}"`，非模板区域用绝对表达式。
+- `StartNavigate`：地图导航；`params.dstLocation.latitude` string、`params.dstLocation.longitude` string，必须来自用户提供或已解析数据，不凭空估算；`params.trafficpe` string，取 `Drive|Walk|Cycle|Bus`，分别表示开车、步行、骑行、公共交通。
+- `SetSettingSwitch`：开启/关闭省电模式；`params.appBundleName = "com.huawei.hmos.settings"`，`params.itemName = "battery_saving_mode"`，`params.switchFlag` number，`0` 表示开启省电模式，`1` 表示关闭省电模式。
+
+最小写法：
+
+```json
+{"call":"clickToCallPhone","args":{"phoneNumber":"{{ ${/contact/phoneNumber} }}"}}
+{"call":"clickToDeeplink","args":{"bundleName":"com.huawei.hmos.settings","abilityName":"com.huawei.hmos.settings.MainAbility","uri":"battery"}}
+{"call":"clickToIntent","args":{"intentName":"ViewCalendarEvent","params":{"entityId":"{{ ${entityId} }}"}}}
+{"call":"clickToIntent","args":{"intentName":"StartNavigate","params":{"dstLocation":{"latitude":"{{ ${/destination/latitude} }}","longitude":"{{ ${/destination/longitude} }}"},"trafficpe":"Drive"}}}
+{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}
+```
+
+## 检查清单
+
+- `call` 是已声明的 `functionCall`。
+- `args` 字段名与所选能力参数完全一致。
+- deeplink 目标来自上表，空字段显式传 `""`。
+- intent 的 `params` 只保留运行时参数，不复制 schema 元数据。
+- 动态事件参数表达式能从 DataModel、模板当前项或 `writeResultTo + outputSchema` 推导。
+
+
+ succeeded in 214ms:
+D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\reference\capability\cardspec.md
+D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\reference\capability\data-capability\calendar.md
+D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\reference\capability\data-capability\weather.md
+D:\A2UI\CartTaskSpec\.agents\skills\harmony-card-generation-datamodel-first\reference\capability\event-capability\click-event.md
+
+codex
+事件能力里省电模式对应 `clickToIntent` + `SetSettingSwitch`，素材库也有低电/省电图标。现在需要确认 CardSpec 必填字段格式，然后我会生成静态 dataModelSchema 版本并写文件。
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -Encoding UTF8 \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\reference\\capability\\cardspec.md\"" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 157ms:
+# CardSpec 数据能力契约
+
+CardSpec 与 DSL 一起描述同一张卡片。最终响应只有两个代码块：`genui` DSL JSONL + `cardspec` JSON。DSL 负责可渲染 Form 组件；CardSpec 只负责推荐尺寸、端侧数据能力和持久化契约。事件能力不属于 CardSpec，点击、拨号、打开应用或详情页只写 DSL `onClick`。
+
+Agent 负责选择已声明能力、生成参数、设计 DataModel 初始结构，并让 DSL 与 CardSpec 对齐。端侧负责执行能力、处理权限、归一化结果、持久化配置，并在运行时发送 `updateDataModel`。
+
+## 先决策
+
+- 每张卡都输出 `genui` 和 `cardspec`；静态卡片也输出 CardSpec。
+- 静态卡片只写 `suggestSize`，不要虚构 `dataBindings`。
+- 动态卡片先选择已声明 data capability，再按其 `inputSchema` 填 `arguments`；不要沿用旧示例参数或自行改名。
+- `writeResultTo` 使用 `/data/...` JSON Pointer；UI 路径由 `writeResultTo + outputSchema` 推导。
+- `updateDataModel.value` 初始化 UI 会访问的根结构和加载态，不写死用户真实隐私数据。
+- DSL 仍按 [`../protocol/protocol.md`](../protocol/protocol.md)、[`../protocol/component-catalog.md`](../protocol/component-catalog.md) 和 [`../protocol/data-binding.md`](../protocol/data-binding.md) 生成。
+
+## 输出形态
+
+静态卡片：
+
+```json
+{"suggestSize":"2x2"}
+```
+
+动态卡片：
+
+```json
+{"suggestSize":"2x4","dataBindings":[{"capabilityId":"calendar.events.search","arguments":{"timeInterval":[1766448000000,1766534399999]},"writeResultTo":"/data/calendar"}]}
+```
+
+## 字段规则
+
+- `suggestSize` 必须与 DSL 尺寸一致，只能是 `"2x2"` 或 `"2x4"`。
+- 动态卡片必须包含 `dataBindings`；每个 `dataBindings[]` 表示一次端侧能力调用。
+- `capabilityId` 必须来自 [`data-capability/`](data-capability/) 中选定能力 manifest 的 `id`。
+- `arguments` 只能使用该能力 `inputSchema.properties` 声明的字段；不要沿用旧示例参数或自行改名。
+- `arguments` 是端侧能力入参配置，使用由用户需求或默认策略确定的 JSON 值；不要把 DSL 表达式、`{"path":...}` 或 `formatString` 绑定对象写进 `arguments`，除非能力 `inputSchema` 明确要求这种对象结构。
+- `writeResultTo` 必须是 `/data` 下的 JSON Pointer，例如 `/data/weather`；多个 binding 的 `writeResultTo` 不得相同、互为父子或互相覆盖。
+- 默认只写 `capabilityId`、`arguments`、`writeResultTo`；只有端侧明确需要时才加入 `bindingId` 或 `capabilityVersion`。
+
+## 能力选择
+
+按场景逐个读取必要能力文档，不要预先加载全部能力：
+
+- 天气：[`data-capability/weather.md`](data-capability/weather.md)
+- 日历：[`data-capability/calendar.md`](data-capability/calendar.md)
+
+如果用户请求的动态能力未声明，不要编造能力；改用静态降级方案，或说明需要端侧补充 capability manifest。
+
+## DataModel 映射
+
+端侧执行 `dataBindings` 后，将标准化结果整体写入 `writeResultTo`。UI 访问路径由 `writeResultTo + outputSchema 字段` 推导：
+
+- `writeResultTo = /data/calendar` 且输出有 `items`，列表路径是 `/data/calendar/items`。
+- `writeResultTo = /data/status` 且输出有 `current.valueText`，主值路径是 `/data/status/current/valueText`。
+
+初始化 DataModel 只放 UI 会访问的根结构和加载态：
+
+```json
+{"data":{"calendar":{"items":[]}},"state":{"loading":true}}
+```
+
+组件表达式示例：
+
+```json
+{"id":"current_value","component":"Text","content":"{{ ${/data/weather/current/temperatureText} }}"}
+{"id":"event_list","component":"Column","children":{"componentId":"event_template","path":"/data/calendar/items"}}
+{"id":"event_title","component":"Text","content":"{{ ${title} }}"}
+{"call":"clickToIntent","args":{"intentName":"ViewCalendarEvent","params":{"entityId":"{{ ${entityId} }}"}}}
+```
+
+## 检查清单
+
+- DSL 与 CardSpec 的尺寸选择一致。
+- DSL 和 CardSpec 是同一张卡，DataModel 访问路径互相对齐。
+- 所有 UI 访问字段都能从 `writeResultTo + outputSchema` 推导。
+- 事件参数若来自数据能力输出，也能从同一 DataModel 路径推导；事件能力本身不写入 CardSpec。
+- `updateDataModel.value` 初始化了 `/data/...` 根结构和必要 `/state/...` 字段。
+- 数组字段使用模板循环，不展开成固定重复组件。
+- CardSpec 不包含 DSL catalog、组件规则、事件能力或示例结构的替代定义。
+- 不暴露意图框架原始返回结构，不写死用户真实隐私数据。
+
+
+codex
+我会写一个 140x140 的模板化卡片：标题和电量数字走表达式绑定，底部红色危险提示/省电入口承载点击。为避免深色底上的黑色 SVG 不可读，低电和省电图标使用素材库里声明的 PNG。
+apply patch
+patch: completed
+D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005\card.cardspec.json
+D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005\card.dsl.jsonl
+D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005\task.taskSpec.json
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..de2f61e9607f7abf42efb0b8ba2549d9d9a0f797
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "展示当前低电量数字和危险提示，并提供开启省电模式入口。",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa6c0958aa2198f42c5b3b4d3ec3be17ee692d63
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#1f1112",0],["#571b20",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..de2f61e9607f7abf42efb0b8ba2549d9d9a0f797
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "展示当前低电量数字和危险提示，并提供开启省电模式入口。",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa6c0958aa2198f42c5b3b4d3ec3be17ee692d63
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#1f1112",0],["#571b20",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+codex
+产物已写入当前目录。下面运行专项引用校验和卡片校验；如果有布局、文本或协议风险，我会直接修正后重跑。
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python \"D:\\A2UI\\CartTaskSpec\\scripts\\validate_taskspec_dsl_refs.py\" --taskspec \"task.taskSpec.json\" --dsl \"card.dsl.jsonl\" --format json" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\scripts\\validate_card.py\" --dsl \"card.dsl.jsonl\" --cardspec \"card.cardspec.json\" --format json" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 225ms:
+{
+  "valid": true,
+  "taskspec": "task.taskSpec.json",
+  "dsl": "card.dsl.jsonl",
+  "errors": []
+}
+
+ succeeded in 258ms:
+{
+  "status": "polished",
+  "qualityScore": 94,
+  "errorCount": 0,
+  "warningCount": 3,
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "CARD_STATIC_FIELD_INVALID",
+      "stage": "hard",
+      "file_kind": "cardspec",
+      "message": "CardSpec.description 建议更短。",
+      "fix_hint": "压缩成宿主展示用的短标题/短概述。",
+      "json_pointer": "/description",
+      "actual": "展示当前低电量数字和危险提示，并提供开启省电模式入口。",
+      "expected": "不超过 12 个字符"
+    },
+    {
+      "severity": "warning",
+      "code": "COLOR_SOURCE_UNKNOWN",
+      "stage": "quality",
+      "file_kind": "genui",
+      "message": "颜色 hex 未能回溯到 token、多彩色或已声明场景拓展色。",
+      "fix_hint": "优先使用 color-token-values.md 中映射后的 hex，或在 color.json 声明场景拓展色。",
+      "line": 2,
+      "actual": "#1f1112"
+    },
+    {
+      "severity": "warning",
+      "code": "COLOR_SOURCE_UNKNOWN",
+      "stage": "quality",
+      "file_kind": "genui",
+      "message": "颜色 hex 未能回溯到 token、多彩色或已声明场景拓展色。",
+      "fix_hint": "优先使用 color-token-values.md 中映射后的 hex，或在 color.json 声明场景拓展色。",
+      "line": 2,
+      "actual": "#571b20"
+    }
+  ]
+}
+
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..de2f61e9607f7abf42efb0b8ba2549d9d9a0f797
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "展示当前低电量数字和危险提示，并提供开启省电模式入口。",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa6c0958aa2198f42c5b3b4d3ec3be17ee692d63
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#1f1112",0],["#571b20",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+codex
+引用校验通过了，卡片校验还有 3 个 warning：CardSpec 描述偏长，以及两个 root 渐变色不是声明色值。我会把描述压短，并把暗色背景换成色值表里的深色背景 token 映射。
+apply patch
+patch: completed
+D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005\card.cardspec.json
+D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005\card.dsl.jsonl
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b5787b01ed43b734d56a843b2e3402da023e254
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "低电危险提示",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..30e0af0cd774a5f9ba03ef3d3c34dea5af9f80ec
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#ff191a1c",0],["#ff202224",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b5787b01ed43b734d56a843b2e3402da023e254
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "低电危险提示",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..30e0af0cd774a5f9ba03ef3d3c34dea5af9f80ec
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#ff191a1c",0],["#ff202224",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+codex
+已修正描述和颜色来源。现在重新跑两项校验，确认没有 error、warning 或低质量分。
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python \"D:\\A2UI\\CartTaskSpec\\scripts\\validate_taskspec_dsl_refs.py\" --taskspec \"task.taskSpec.json\" --dsl \"card.dsl.jsonl\" --format json" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python \"D:\\A2UI\\CartTaskSpec\\.agents\\skills\\harmony-card-generation-datamodel-first\\scripts\\validate_card.py\" --dsl \"card.dsl.jsonl\" --cardspec \"card.cardspec.json\" --format json" in D:\A2UI\CartTaskSpec\datasets\case-600-newSkill-gpt5.5\Case-01-low-power-005
+ succeeded in 185ms:
+{
+  "valid": true,
+  "taskspec": "task.taskSpec.json",
+  "dsl": "card.dsl.jsonl",
+  "errors": []
+}
+
+ succeeded in 199ms:
+{
+  "status": "polished",
+  "qualityScore": 100,
+  "errorCount": 0,
+  "warningCount": 0,
+  "diagnostics": []
+}
+
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b5787b01ed43b734d56a843b2e3402da023e254
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "低电危险提示",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..30e0af0cd774a5f9ba03ef3d3c34dea5af9f80ec
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#ff191a1c",0],["#ff202224",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+codex
+已完成当前 case 产物生成并保存：
+
+- `query.txt` 保持原始语义未改
+- `task.taskSpec.json`
+- `card.dsl.jsonl`
+- `card.cardspec.json`
+
+两项校验均已通过：引用校验 `valid: true`，卡片校验 `status: polished`、`qualityScore: 100`、无 warning/error。
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b5787b01ed43b734d56a843b2e3402da023e254
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.cardspec.json
+@@ -0,0 +1,5 @@
++{
++  "title": "低电模式",
++  "description": "低电危险提示",
++  "suggestSize": "2x2"
++}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+new file mode 100644
+index 0000000000000000000000000000000000000000..30e0af0cd774a5f9ba03ef3d3c34dea5af9f80ec
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/card.dsl.jsonl
+@@ -0,0 +1,3 @@
++{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
++{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["headerRow","mainRow","primaryAction"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#ff191a1c",0],["#ff202224",1]]}}},{"id":"headerRow","component":"Row","children":["leadingIcon","titleText"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"leadingIcon","component":"Image","src":"{{ ${/asset/primaryIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"titleText","component":"Text","content":"{{ ${/card/title} }}","styles":{"width":94,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"mainRow","component":"Row","children":["meterGauge","factColumn"],"itemMargin":8,"styles":{"width":116,"height":58,"justifyContent":"start","alignItems":"center"}},{"id":"meterGauge","component":"Stack","children":["meterTrack","meterRing","meterValue"],"styles":{"width":58,"height":58,"alignContent":"center"}},{"id":"meterTrack","component":"Progress","value":100,"total":100,"styles":{"type":"ring","color":"#33ffffff","width":58,"height":58}},{"id":"meterRing","component":"Progress","value":"{{ ${/meter/progressValue} }}","total":"{{ ${/meter/progressTotal} }}","styles":{"type":"ring","color":"#ffed6f21","width":58,"height":58}},{"id":"meterValue","component":"Text","content":"{{ ${/meter/centerLabel} }}","styles":{"width":58,"height":24,"fontSize":20,"fontWeight":700,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"factColumn","component":"Column","children":["factLabel","factValue","factMeta"],"itemMargin":2,"styles":{"width":50,"height":58,"justifyContent":"center","alignItems":"start"}},{"id":"factLabel","component":"Text","content":"{{ ${/meter/caption} }}","styles":{"width":50,"height":14,"fontSize":12,"fontWeight":500,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factValue","component":"Text","content":"{{ ${/support/line1} }}","styles":{"width":50,"height":16,"fontSize":14,"fontWeight":700,"fontColor":"#ffed6f21","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"factMeta","component":"Text","content":"{{ ${/support/line2} }}","styles":{"width":50,"height":12,"fontSize":12,"fontWeight":500,"fontColor":"#e5ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"primaryAction","component":"Row","children":["actionIcon","actionText"],"itemMargin":6,"onClick":[{"call":"clickToIntent","args":{"intentName":"SetSettingSwitch","params":{"appBundleName":"com.huawei.hmos.settings","itemName":"battery_saving_mode","switchFlag":0}}}],"styles":{"width":116,"height":26,"padding":{"left":10,"right":10},"borderRadius":13,"backgroundColor":"#ffed6f21","justifyContent":"center","alignItems":"center"}},{"id":"actionIcon","component":"Image","src":"{{ ${/asset/actionIcon} }}","styles":{"width":16,"height":16,"objectFit":"contain"}},{"id":"actionText","component":"Text","content":"{{ ${/action/label} }}","styles":{"width":70,"height":18,"fontSize":14,"fontWeight":600,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}}]}}
++{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"card":{"title":"低电模式"},"asset":{"primaryIcon":"resources/base/media/icon_electricity.png","actionIcon":"resources/base/media/icon_save_power.png"},"meter":{"progressValue":12,"progressTotal":100,"centerLabel":"12%","caption":"电量"},"support":{"line1":"危险","line2":"立即省电"},"action":{"label":"开启省电"}}}}
+diff --git a/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..9429c3a2153e654054e1667c31ba79e2f8f9e40b
+--- /dev/null
++++ b/datasets/case-600-newSkill-gpt5.5/Case-01-low-power-005/task.taskSpec.json
+@@ -0,0 +1,91 @@
++{
++  "userQuery": "整个电量数字会变的卡片 点一下能进省电模式 还要有红色危险提示",
++  "size": "2x2",
++  "eventCandidates": [
++    {
++      "call": "clickToIntent",
++      "args": {
++        "intentName": "SetSettingSwitch",
++        "params": {
++          "appBundleName": "com.huawei.hmos.settings",
++          "itemName": "battery_saving_mode",
++          "switchFlag": 0
++        }
++      }
++    }
++  ],
++  "dataModelSchema": {
++    "card": {
++      "title": {
++        "type": "string",
++        "description": "卡片标题，说明当前展示的是低电模式状态。",
++        "sampleValue": "低电模式"
++      }
++    },
++    "asset": {
++      "primaryIcon": {
++        "type": "string",
++        "description": "低电模式状态识别图标路径。",
++        "sampleValue": "resources/base/media/icon_electricity.png"
++      },
++      "actionIcon": {
++        "type": "string",
++        "description": "省电模式动作图标路径。",
++        "sampleValue": "resources/base/media/icon_save_power.png"
++      }
++    },
++    "meter": {
++      "progressValue": {
++        "type": "number",
++        "description": "当前电量进度数值，用于仪表环展示。",
++        "sampleValue": 12
++      },
++      "progressTotal": {
++        "type": "number",
++        "description": "电量总量基准。",
++        "sampleValue": 100
++      },
++      "centerLabel": {
++        "type": "string",
++        "description": "当前电量百分比主显示文本。",
++        "sampleValue": "12%"
++      },
++      "caption": {
++        "type": "string",
++        "description": "电量状态短标签。",
++        "sampleValue": "电量"
++      }
++    },
++    "support": {
++      "line1": {
++        "type": "string",
++        "description": "低电危险状态提示。",
++        "sampleValue": "危险"
++      },
++      "line2": {
++        "type": "string",
++        "description": "建议用户立即开启省电的短提示。",
++        "sampleValue": "立即省电"
++      }
++    },
++    "action": {
++      "label": {
++        "type": "string",
++        "description": "进入省电模式的动作文案。",
++        "sampleValue": "开启省电"
++      }
++    }
++  },
++  "assetCandidates": [
++    {
++      "src": "resources/base/media/icon_electricity.png",
++      "description": "电池图标，适合低电模式卡片中表达当前电量状态。",
++      "bindTo": "/asset/primaryIcon"
++    },
++    {
++      "src": "resources/base/media/icon_save_power.png",
++      "description": "省电图标，适合省电模式入口或节能动作提示。",
++      "bindTo": "/asset/actionIcon"
++    }
++  ]
++}
+
+tokens used
+63,746

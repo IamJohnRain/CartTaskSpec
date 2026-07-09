@@ -1,0 +1,124 @@
+{
+  "userQuery": "帮我做个会议室巡检清单的滚动卡片，不用放任何图片，纯文字和色块就行。读取日历今天的巡检日程，列表里每一项都可以勾选打勾，并且这块列表底色用深蓝色，上面那个嵌着的仪器状态面板块用浅灰色。中间显示“今日已检查设备4台”这种动态数据，点一下任务可以进去看详情。如果哪个会议室被占用了，直接用红字标出“取消预约”的危险告警状态。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-room-a-0900"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-room-b-1030"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条日程详情唯一标识符。",
+              "sampleValue": "calendar-room-a-0900"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条会议室巡检任务标题。",
+              "sampleValue": "A301 投影与麦克风巡检"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "第一条巡检会议室位置。",
+              "sampleValue": "A301"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条巡检开始时间。",
+              "sampleValue": "09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第一条巡检结束时间。",
+              "sampleValue": "09:30"
+            },
+            "description": {
+              "type": "string",
+              "description": "第一条巡检状态说明。",
+              "sampleValue": "正常巡检"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条日程详情唯一标识符。",
+              "sampleValue": "calendar-room-b-1030"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条会议室巡检任务标题。",
+              "sampleValue": "B210 视频会议设备巡检"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "第二条巡检会议室位置。",
+              "sampleValue": "B210"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条巡检开始时间。",
+              "sampleValue": "10:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条巡检结束时间。",
+              "sampleValue": "11:00"
+            },
+            "description": {
+              "type": "string",
+              "description": "第二条巡检状态或占用告警说明。",
+              "sampleValue": "取消预约"
+            }
+          }
+        ]
+      },
+      "inspection": {
+        "checkedSummary": {
+          "type": "string",
+          "description": "今日已检查设备数量的展示文本。",
+          "sampleValue": "今日已检查设备4台"
+        },
+        "panelTitle": {
+          "type": "string",
+          "description": "仪器状态面板标题。",
+          "sampleValue": "仪器状态"
+        },
+        "panelStatus": {
+          "type": "string",
+          "description": "仪器状态面板的短状态。",
+          "sampleValue": "4台已完成"
+        },
+        "task0Checked": {
+          "type": "boolean",
+          "description": "第一条巡检任务是否已勾选。",
+          "sampleValue": true
+        },
+        "task1Checked": {
+          "type": "boolean",
+          "description": "第二条巡检任务是否已勾选。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

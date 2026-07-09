@@ -1,0 +1,139 @@
+{
+  "userQuery": "能搞个考试倒计时吗，列出各科剩余时间，点一下能导航去考点，能读日历看安排，并看哪些已经考完了",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/data/calendar/items/0/siteLocation/latitude} }}",
+            "longitude": "{{ ${/data/calendar/items/0/siteLocation/longitude} }}"
+          },
+          "trafficpe": "Bus"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "summaryTitle": {
+          "type": "string",
+          "description": "考试倒计时卡片标题",
+          "sampleValue": "考试倒计时"
+        },
+        "nextCountdownText": {
+          "type": "string",
+          "description": "下一科考试的剩余时间展示文本",
+          "sampleValue": "2天"
+        },
+        "nextSubjectLabel": {
+          "type": "string",
+          "description": "下一科考试的简短说明",
+          "sampleValue": "语文开考"
+        },
+        "completedSummary": {
+          "type": "string",
+          "description": "已考完科目的摘要",
+          "sampleValue": "已考完1科"
+        },
+        "items": {
+          "type": "array",
+          "description": "从日历读取并归一化后的考试科目安排列表",
+          "sampleValue": [
+            {
+              "entityId": "exam-cn-001",
+              "title": "语文",
+              "remainingText": "2天",
+              "statusText": "待考试",
+              "dtStart": "07月11日 09:00",
+              "dtEnd": "11:30",
+              "eventLocation": "第一中学南门",
+              "siteLocation": {
+                "latitude": "22.5431",
+                "longitude": "114.0579"
+              }
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单科考试安排",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识",
+                "sampleValue": "exam-cn-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "考试科目名称",
+                "sampleValue": "语文"
+              },
+              "remainingText": {
+                "type": "string",
+                "description": "距离该科考试开始或结束的剩余时间文本",
+                "sampleValue": "2天"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "该科考试状态，如待考试、进行中或已考完",
+                "sampleValue": "待考试"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "考试开始时间展示文本",
+                "sampleValue": "07月11日 09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "考试结束时间展示文本",
+                "sampleValue": "11:30"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "考点位置名称",
+                "sampleValue": "第一中学南门"
+              },
+              "siteLocation": {
+                "type": "object",
+                "description": "考点导航坐标",
+                "sampleValue": {
+                  "latitude": "22.5431",
+                  "longitude": "114.0579"
+                },
+                "properties": {
+                  "latitude": {
+                    "type": "string",
+                    "description": "考点纬度",
+                    "sampleValue": "22.5431"
+                  },
+                  "longitude": {
+                    "type": "string",
+                    "description": "考点经度",
+                    "sampleValue": "114.0579"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达考试安排和日历读取来源。"
+    },
+    {
+      "src": "resources/base/media/clock_fill.svg",
+      "description": "时钟实心图标，适合表达倒计时和剩余时间。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表达前往考点的导航动作。"
+    }
+  ]
+}

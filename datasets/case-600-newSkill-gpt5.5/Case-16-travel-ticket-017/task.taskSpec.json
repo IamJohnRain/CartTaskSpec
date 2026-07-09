@@ -1,0 +1,125 @@
+{
+  "userQuery": "纵向堆叠的行程卡,顶部主视觉,下面用横排三项并排显示候机楼的导航信息,每项配一个小环图显示距离,要有\"安检排队15分钟\"这种临近待处理状态,夜晚渐变,文字符号 ⚠ 当图标,读取我日历里下午的航班事件。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下午日历中匹配到的航班事件列表，卡片展示第一条。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-flight-001",
+              "title": "HU7608 北京",
+              "dtStart": "15:35",
+              "dtEnd": "18:40",
+              "eventLocation": "T3 E12登机口"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条航班日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于点击查看日程详情。",
+                "sampleValue": "calendar-flight-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "航班日历事件标题。",
+                "sampleValue": "HU7608 北京"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "航班事件开始时间，当天事件使用 HH:MM。",
+                "sampleValue": "15:35"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "航班事件结束时间，当天事件使用 HH:MM。",
+                "sampleValue": "18:40"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "航班候机楼、登机口或集合地点。",
+                "sampleValue": "T3 E12登机口"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "visualGlyph": {
+        "type": "string",
+        "description": "航班主视觉文字标记。",
+        "sampleValue": "飞"
+      },
+      "warningGlyph": {
+        "type": "string",
+        "description": "用户指定的警示文字符号，用于临近待处理状态图标。",
+        "sampleValue": "⚠"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "临近待处理状态摘要。",
+        "sampleValue": "安检排队15分钟"
+      },
+      "guide": {
+        "type": "array",
+        "description": "候机楼导航三项摘要，固定展示前三项。",
+        "sampleValue": [
+          {
+            "label": "值机",
+            "distanceText": "320m",
+            "progress": 62
+          },
+          {
+            "label": "安检口",
+            "distanceText": "180m",
+            "progress": 78
+          },
+          {
+            "label": "登机口",
+            "distanceText": "640m",
+            "progress": 46
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个候机楼导航点。",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "导航点名称。",
+              "sampleValue": "安检口"
+            },
+            "distanceText": {
+              "type": "string",
+              "description": "到导航点的距离展示文本。",
+              "sampleValue": "180m"
+            },
+            "progress": {
+              "type": "number",
+              "description": "距离环图的展示进度值，范围 0 到 100。",
+              "sampleValue": 78
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}
