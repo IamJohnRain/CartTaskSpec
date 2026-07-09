@@ -1,0 +1,117 @@
+{
+  "userQuery": "我家两只主子每天定时要吃,做个宠物喂食卡提醒我一下。主题色背景,顶部大字显示\"今日已喂2/3次\"做主视觉,下面是个可滚动的勾选列表,每行一只宠物,打完勾心里踏实。中间要有\"距离下次喂食还有1小时20分\"和\"余粮剩余18%\"这种固定文字+动态数值的拼接,余粮低于20%整张卡要变黄提示我赶紧补粮。还要能点宠物店地址触发地图导航,日历里\"晚上7点遛狗\"那个日程也要读到。纯文字色块就行,不要渐变,也不要图片。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.2800",
+            "longitude": "114.1600"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "feeder": {
+        "statusText": {
+          "type": "string",
+          "description": "今日宠物喂食完成次数与计划总次数的展示文本。",
+          "sampleValue": "今日已喂2/3次"
+        },
+        "nextFeedInText": {
+          "type": "string",
+          "description": "距离下一次喂食的剩余时间展示文本。",
+          "sampleValue": "1小时20分"
+        },
+        "foodPercent": {
+          "type": "number",
+          "description": "余粮剩余百分比数值，用于低于20%时触发黄色背景提醒。",
+          "sampleValue": 18
+        },
+        "foodPercentText": {
+          "type": "string",
+          "description": "余粮剩余百分比展示文本。",
+          "sampleValue": "18%"
+        },
+        "pets": [
+          {
+            "name": {
+              "type": "string",
+              "description": "第一只宠物名称。",
+              "sampleValue": "猫猫"
+            },
+            "fed": {
+              "type": "boolean",
+              "description": "第一只宠物本次是否已喂。",
+              "sampleValue": true
+            }
+          },
+          {
+            "name": {
+              "type": "string",
+              "description": "第二只宠物名称。",
+              "sampleValue": "狗狗"
+            },
+            "fed": {
+              "type": "boolean",
+              "description": "第二只宠物本次是否已喂。",
+              "sampleValue": true
+            }
+          }
+        ]
+      },
+      "petStore": {
+        "addressText": {
+          "type": "string",
+          "description": "宠物店地址或导航入口展示文本。",
+          "sampleValue": "宠物店"
+        },
+        "location": {
+          "latitude": {
+            "type": "string",
+            "description": "宠物店地址解析后的纬度，用于地图导航。",
+            "sampleValue": "22.2800"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "宠物店地址解析后的经度，用于地图导航。",
+            "sampleValue": "114.1600"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历中晚上7点遛狗日程的唯一标识。",
+              "sampleValue": "calendar-walk-dog-1900"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "遛狗"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间，今天内使用HH:MM展示。",
+              "sampleValue": "19:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间，今天内使用HH:MM展示。",
+              "sampleValue": "20:00"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

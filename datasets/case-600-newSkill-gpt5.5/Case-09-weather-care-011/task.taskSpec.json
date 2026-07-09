@@ -1,0 +1,72 @@
+{
+  "userQuery": "画个防台风的关怀卡片，背景用乌云密布的暗黑风格，中间横着排几个“风力12级”、“暴雨预警”的模块和气象图标，状态显示风险临近，还要能一键导航去应急避难所。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.54310",
+            "longitude": "114.05790"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称，用于标识当前防台风关怀地点。",
+            "sampleValue": "南山区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名称，用于辅助区县消歧。",
+            "sampleValue": "深圳市"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，适合短文本展示。",
+            "sampleValue": "暴雨"
+          },
+          "windDirection": {
+            "type": "string",
+            "description": "当前风向文本。",
+            "sampleValue": "东北风"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "当前风力等级，用于展示台风风力强度。",
+            "sampleValue": 12
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息，用于展示暴雨或台风预警。",
+            "sampleValue": "暴雨预警"
+          }
+        }
+      }
+    },
+    "ui": {
+      "riskStatus": {
+        "type": "string",
+        "description": "根据天气预警归一化后的短状态提示。",
+        "sampleValue": "风险临近"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/tornado.png",
+      "description": "龙卷风彩色气象图标，适合在防台风、强风、极端天气卡片中作为主要天气视觉锚点。"
+    }
+  ]
+}

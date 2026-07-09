@@ -1,0 +1,135 @@
+{
+  "userQuery": "想要一张水电缴费提醒卡,纵向堆三块:电费还剩47%、水费\"距离缴费还有5天\"、燃气费待支付,点卡片能跳到音乐歌单放点轻音乐,顺便读一下日历看我哪天有空去缴费。底色用浅米色,整体加个橙黄到红的渐变氛围,用电⚡、水💧、气🔥当图标,有快过期的账单要标红提醒。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "utility": {
+        "bills": {
+          "electricity": {
+            "label": {
+              "type": "string",
+              "description": "电费账单短标签",
+              "sampleValue": "电费"
+            },
+            "statusText": {
+              "type": "string",
+              "description": "电费当前剩余额度状态",
+              "sampleValue": "还剩47%"
+            }
+          },
+          "water": {
+            "label": {
+              "type": "string",
+              "description": "水费账单短标签",
+              "sampleValue": "水费"
+            },
+            "statusText": {
+              "type": "string",
+              "description": "水费缴费倒计时状态",
+              "sampleValue": "5天后缴费"
+            },
+            "statusColor": {
+              "type": "string",
+              "description": "水费临近缴费期限时使用的提醒色",
+              "sampleValue": "#FFE84026"
+            }
+          },
+          "gas": {
+            "label": {
+              "type": "string",
+              "description": "燃气费账单短标签",
+              "sampleValue": "燃气"
+            },
+            "statusText": {
+              "type": "string",
+              "description": "燃气费待支付状态",
+              "sampleValue": "待支付"
+            },
+            "statusColor": {
+              "type": "string",
+              "description": "燃气费待支付时使用的提醒色",
+              "sampleValue": "#FFE84026"
+            }
+          }
+        }
+      },
+      "calendar": {
+        "availability": {
+          "nextFreeSlotText": {
+            "type": "string",
+            "description": "根据近期日历日程归纳出的缴费空档摘要",
+            "sampleValue": "周日午后有空"
+          }
+        },
+        "items": {
+          "type": "array",
+          "description": "近期日历事件列表，用于判断哪天有空缴费",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "sample-calendar-001",
+              "title": "家庭采购",
+              "dtStart": "周六 10:00",
+              "dtEnd": "周六 11:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历事件项",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日历事件实体类型",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识符",
+                "sampleValue": "sample-calendar-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题",
+                "sampleValue": "家庭采购"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历事件开始时间",
+                "sampleValue": "周六 10:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日历事件结束时间",
+                "sampleValue": "周六 11:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/bolt_fill.svg",
+      "description": "闪电实心图标，适合表示电费或用电状态，在浅色账单面板中作为电费识别图标。"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴轮廓图标，适合表示水费、水量或缴水费提醒，在浅色账单面板中作为水费识别图标。"
+    },
+    {
+      "src": "resources/base/media/flame_fill.svg",
+      "description": "火焰实心图标，适合表示燃气、热量或待支付燃气费，在浅色账单面板中作为燃气费识别图标。"
+    }
+  ]
+}

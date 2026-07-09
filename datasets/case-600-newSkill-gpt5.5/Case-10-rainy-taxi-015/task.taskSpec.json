@@ -1,0 +1,135 @@
+{
+  "userQuery": "做一个雨天打车卡片，环形显示\"打车倒计时\"配固定文案\"距离出发还有X分钟\"，旁边横向排今天的几个日程块（用日历图标），点进去能看日程详情。司机取消就标红色，静态数据填一下就行。运动风渐变背景。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt_0930"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt_1100"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt_1215"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "taxi": {
+      "countdownValue": {
+        "type": "number",
+        "description": "打车倒计时环形进度的剩余分钟数",
+        "sampleValue": 12
+      },
+      "countdownTotal": {
+        "type": "number",
+        "description": "打车倒计时环形进度的总分钟范围",
+        "sampleValue": 30
+      },
+      "countdownNumber": {
+        "type": "string",
+        "description": "倒计时主数值文本",
+        "sampleValue": "12"
+      },
+      "countdownUnit": {
+        "type": "string",
+        "description": "倒计时主数值单位",
+        "sampleValue": "分钟"
+      },
+      "departureCaption": {
+        "type": "string",
+        "description": "距离出发还有多少分钟的固定说明文案",
+        "sampleValue": "距离出发还有12分钟"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "司机状态提示文本，取消时需要红色提示",
+        "sampleValue": "司机已取消"
+      },
+      "statusColor": {
+        "type": "string",
+        "description": "司机取消状态对应的告警红色",
+        "sampleValue": "#ffed6f21"
+      }
+    },
+    "events": [
+      {
+        "entityId": {
+          "type": "string",
+          "description": "第一条日程详情实体 ID",
+          "sampleValue": "evt_0930"
+        },
+        "time": {
+          "type": "string",
+          "description": "第一条今日日程时间",
+          "sampleValue": "09:30"
+        },
+        "title": {
+          "type": "string",
+          "description": "第一条今日日程标题",
+          "sampleValue": "客户会"
+        }
+      },
+      {
+        "entityId": {
+          "type": "string",
+          "description": "第二条日程详情实体 ID",
+          "sampleValue": "evt_1100"
+        },
+        "time": {
+          "type": "string",
+          "description": "第二条今日日程时间",
+          "sampleValue": "11:00"
+        },
+        "title": {
+          "type": "string",
+          "description": "第二条今日日程标题",
+          "sampleValue": "取雨衣"
+        }
+      },
+      {
+        "entityId": {
+          "type": "string",
+          "description": "第三条日程详情实体 ID",
+          "sampleValue": "evt_1215"
+        },
+        "time": {
+          "type": "string",
+          "description": "第三条今日日程时间",
+          "sampleValue": "12:15"
+        },
+        "title": {
+          "type": "string",
+          "description": "第三条今日日程标题",
+          "sampleValue": "准点出发"
+        }
+      }
+    ]
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合雨天打车场景中的服务识别。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合今日日程块和日程详情入口。"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "userQuery": "给我做个全主题色背景的内存优化卡片，里面嵌套两个小面板。左边实时显示天气状况和手机电量百分比，右边横向排几个待清理的相册、应用缓存项，每个项目前面带个勾选框能让我手动选。再给加个一键开启省电模式的开关，整体加点黑紫色的夜间倒计时渐变风，图标用你库里自带的就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气状况文本",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "device": {
+        "batteryPercentText": {
+          "type": "string",
+          "description": "手机当前电量百分比展示文本",
+          "sampleValue": "82%"
+        },
+        "powerSavingSelected": {
+          "type": "boolean",
+          "description": "省电模式开关当前是否处于选中状态",
+          "sampleValue": false
+        }
+      },
+      "cleanup": {
+        "items": [
+          {
+            "label": {
+              "type": "string",
+              "description": "第一个待清理项名称",
+              "sampleValue": "相册"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "第一个待清理项是否被选中",
+              "sampleValue": true
+            }
+          },
+          {
+            "label": {
+              "type": "string",
+              "description": "第二个待清理项名称",
+              "sampleValue": "缓存"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "第二个待清理项是否被选中",
+              "sampleValue": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵天气图标，适合展示当前天气状况。"
+    },
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合展示手机电量百分比。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合展示一键开启省电模式的操作。"
+    }
+  ]
+}

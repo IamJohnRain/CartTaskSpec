@@ -1,0 +1,103 @@
+{
+  "userQuery": "想做一个智能缴费助手卡,横向三块根据天气预测(读取天气数据)显示\"明天预计用电增加15%\"、\"冷空气将增加燃气用量\"之类的,根据天气图片延伸出冷暖色调。中间要有个\"加入缴费日程\"按钮,点一下能跳到日历加一个缴费提醒事件。卡片分内外两层,里面那块是详细预测,外面是标题状态,纯文字图标,环境氛围渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.calendar",
+        "abilityName": "com.huawei.hmos.calendar.MainAbility",
+        "uri": "calendar://addEvent?title=utility_bill_reminder"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询所在区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "未来每日天气预报列表。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "23° / 30°",
+              "rainProbabilityPercent": "30%",
+              "coldLevel": "舒适"
+            },
+            {
+              "weekday": "明天",
+              "condition": "晴热",
+              "temperatureRangeText": "24° / 33°",
+              "rainProbabilityPercent": "20%",
+              "coldLevel": "冷空气"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "sampleValue": {
+              "weekday": "明天",
+              "condition": "晴热",
+              "temperatureRangeText": "24° / 33°",
+              "rainProbabilityPercent": "20%",
+              "coldLevel": "冷空气"
+            },
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期文本。",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "晴热"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "24° / 33°"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比。",
+                "sampleValue": "20%"
+              },
+              "coldLevel": {
+                "type": "string",
+                "description": "感冒或冷空气相关指数文本。",
+                "sampleValue": "冷空气"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy_turning_sunny.png",
+      "description": "小云朵和太阳组合的彩色天气图标，可作为晴转多云天气氛围和冷暖渐变的视觉锚点。"
+    }
+  ]
+}

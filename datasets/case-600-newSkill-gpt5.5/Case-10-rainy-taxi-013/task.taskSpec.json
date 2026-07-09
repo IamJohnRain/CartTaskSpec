@@ -1,0 +1,122 @@
+{
+  "userQuery": "下雨天做打车卡，磨砂底，左侧主视觉放个地图符号，右侧动态'距上车还有12分钟'，下面可滚动列表显示附近3辆车的车牌距离。叫不到车红色警告（已经等了快20分钟），点一下导航去公司。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.543096",
+            "longitude": "114.057865"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称，用于表达雨天打车场景。",
+            "sampleValue": "南山区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名称。",
+            "sampleValue": "深圳市"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警等级或提醒文本。",
+            "sampleValue": "雨天"
+          }
+        }
+      }
+    },
+    "taxi": {
+      "pickupEtaText": {
+        "type": "string",
+        "description": "距离上车的剩余时间展示文本。",
+        "sampleValue": "12分钟"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "长时间叫不到车的红色告警展示文本。",
+        "sampleValue": "等20分钟"
+      },
+      "cars": [
+        {
+          "plate": {
+            "type": "string",
+            "description": "附近第一辆车的车牌号。",
+            "sampleValue": "粤B T21A8"
+          },
+          "distanceText": {
+            "type": "string",
+            "description": "附近第一辆车距当前位置的距离。",
+            "sampleValue": "320m"
+          }
+        },
+        {
+          "plate": {
+            "type": "string",
+            "description": "附近第二辆车的车牌号。",
+            "sampleValue": "粤B K73D2"
+          },
+          "distanceText": {
+            "type": "string",
+            "description": "附近第二辆车距当前位置的距离。",
+            "sampleValue": "510m"
+          }
+        },
+        {
+          "plate": {
+            "type": "string",
+            "description": "附近第三辆车的车牌号。",
+            "sampleValue": "粤B P90F6"
+          },
+          "distanceText": {
+            "type": "string",
+            "description": "附近第三辆车距当前位置的距离。",
+            "sampleValue": "780m"
+          }
+        }
+      ],
+      "destination": {
+        "name": {
+          "type": "string",
+          "description": "导航目的地名称。",
+          "sampleValue": "公司"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "公司目的地纬度，用于地图导航事件。",
+          "sampleValue": "22.543096"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "公司目的地经度，用于地图导航事件。",
+          "sampleValue": "114.057865"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "黑色方向导航箭头图标，适合用作地图导航或路线规划的主视觉符号。"
+    }
+  ]
+}

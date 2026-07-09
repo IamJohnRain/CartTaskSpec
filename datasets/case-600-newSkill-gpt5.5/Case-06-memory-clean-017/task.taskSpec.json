@@ -1,0 +1,139 @@
+{
+  "userQuery": "手机内存天天爆满，帮我弄个素净点的清理卡片。上面放个大环形进度条展示空间占比，旁边横着排开几个内存占用大头应用。每个应用前面得有个勾选框让我勾选，下面放个一键清理的按钮。顺便在卡片里嵌个日历日程的小块，显示明天日程。要是勾选清理时不小心把正在用的应用选了，得亮红色报错提示“清理失败”或者超限告警。底部整个快捷开关帮我一键切换到超级省电模式。背景和按钮用那种清理加速的蓝绿渐变色，扫描和垃圾桶的小图标都给我加上。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "memory": {
+      "usagePercent": {
+        "type": "number",
+        "description": "当前手机空间占用百分比，用于环形进度条展示。",
+        "sampleValue": 86
+      },
+      "totalPercent": {
+        "type": "number",
+        "description": "空间占比进度条总量。",
+        "sampleValue": 100
+      },
+      "alertText": {
+        "type": "string",
+        "description": "勾选到正在使用应用或超过清理限制时的红色失败提示。",
+        "sampleValue": "清理失败"
+      }
+    },
+    "apps": [
+      {
+        "name": {
+          "type": "string",
+          "description": "第一个内存占用较高应用的短名称。",
+          "sampleValue": "视频"
+        },
+        "usageText": {
+          "type": "string",
+          "description": "第一个应用占用内存的短文本。",
+          "sampleValue": "2G"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "第一个应用是否已被勾选。",
+          "sampleValue": true
+        }
+      },
+      {
+        "name": {
+          "type": "string",
+          "description": "第二个内存占用较高应用的短名称。",
+          "sampleValue": "社交"
+        },
+        "usageText": {
+          "type": "string",
+          "description": "第二个应用占用内存的短文本。",
+          "sampleValue": "1G"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "第二个应用是否已被勾选。",
+          "sampleValue": true
+        }
+      },
+      {
+        "name": {
+          "type": "string",
+          "description": "第三个内存占用较高应用的短名称。",
+          "sampleValue": "游戏"
+        },
+        "usageText": {
+          "type": "string",
+          "description": "第三个应用占用内存的短文本。",
+          "sampleValue": "1G"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "第三个应用是否已被勾选。",
+          "sampleValue": false
+        }
+      }
+    ],
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "明日首条日程的唯一标识符。",
+              "sampleValue": "calendar-demo-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "明日首条日程标题。",
+              "sampleValue": "例会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "明日首条日程开始时间。",
+              "sampleValue": "10:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "明日首条日程结束时间。",
+              "sampleValue": "10:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/qrcode.svg",
+      "description": "二维码扫描图标，可用于表达扫描、检测或快速扫描入口。"
+    },
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标，适合表达垃圾清理、释放空间或清除缓存动作。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于日程摘要和日历事件识别。"
+    }
+  ]
+}

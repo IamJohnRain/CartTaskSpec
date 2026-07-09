@@ -1,0 +1,94 @@
+{
+  "userQuery": "雨天打车卡片：左边放个天气图标和当前温度当主视觉，简洁素净的底色。右边横着排几个出行平台让我勾选(滴滴、高德、T3)，打勾的会被选中。点确定就直接跳到天气应用看接下来几小时雨势。排队超过20人还没叫到车就标红色提醒我。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询对应的区县名称。",
+            "sampleValue": "青浦"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雨"
+          }
+        },
+        "daily": [
+          {
+            "weekday": {
+              "type": "string",
+              "description": "预报日期对应的星期文本。",
+              "sampleValue": "今天"
+            },
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "当天白天降雨概率百分比。",
+              "sampleValue": "82%"
+            }
+          }
+        ]
+      }
+    },
+    "ride": {
+      "queueStatusText": {
+        "type": "string",
+        "description": "根据排队人数和是否叫到车生成的短提醒；超过20人且未叫到车时提示偏久。",
+        "sampleValue": "排队24人 偏久"
+      },
+      "queueStatusColor": {
+        "type": "string",
+        "description": "排队人数超过20且尚未叫到车时使用 warning 红色，否则使用次级文字色。",
+        "sampleValue": "#ffe84026"
+      },
+      "platforms": [
+        {
+          "selected": {
+            "type": "boolean",
+            "description": "滴滴是否被选中。",
+            "sampleValue": true
+          }
+        },
+        {
+          "selected": {
+            "type": "boolean",
+            "description": "高德是否被选中。",
+            "sampleValue": true
+          }
+        },
+        {
+          "selected": {
+            "type": "boolean",
+            "description": "T3是否被选中。",
+            "sampleValue": false
+          }
+        }
+      ]
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合雨天天气和出行场景主视觉。"
+    }
+  ]
+}
