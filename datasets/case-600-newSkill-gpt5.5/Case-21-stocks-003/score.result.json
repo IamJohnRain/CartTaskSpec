@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-21-stocks-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "截图中可见四个核心诉求均有明确落地：标题'中证白酒'与右上角'已清仓'状态徽标呈现清仓标记；主数值'¥38,240'下方紧跟绿色'实时更新 +1.26%'展示实时变化；日历图标配合'7/18 除息'展示除息日；底部'去交易'按钮配置了正确的 clickToDeeplink 事件。DataModel 路径与 TaskSpec 字段一一对应，eventCandidates 参数原样使用，assetCandidates 的 calendar_fill.svg 被正确绑定。轻微扣分点：'已清仓'徽标在'已清仓'语义下视觉处理过于低调，与实时持仓的视觉权重区分不够明显。",
+    "aesthetic": "截图整体配色克制：白底+深色文字+绿色涨幅提示，层级清晰；标题'中证白酒'与'已清仓'徽标、主数值'¥38,240'、'实时更新+1.26%'、除息行、'去交易'按钮形成了明显的字号阶梯。但存在以下不足：(1) 卡片下方有约 1/3 的空白区域，视觉重心集中在上半部，留白分布不均；(2) '去交易'按钮使用 #19000000 极浅灰底，CTA 视觉强度偏弱，与上方主数值的视觉权重脱节；(3) '已清仓'徽标仅以浅灰底+黑字呈现，作为状态标识缺乏色彩语义强调。",
+    "layout": "从截图观察：所有元素均完整显示在卡片边界内，未出现文字截断、组件溢出或堆叠遮挡。标题'中证白酒'(4字)在 72px 宽度内无截断；'已清仓'徽标在 40px 宽度内完整显示；'¥38,240'主数值字体 20pt 在 116px 宽度内一行展示无截断；'实时更新 +1.26%' 在 116px 宽度内未截断；'7/18 除息' 在 98px 宽度内无截断；'去交易'按钮底边距卡片底边约 12vp，符合 2x2 不超过 16vp 约束。纵向空间核算：12+16+2+26+2+12+2+1+2+16+2+32=125，加 padding 后 137，落在 140 以内。唯一不足是 Column 内部子项未做 justifyContent 分布，导致内容全部聚集在卡片上半部，下半部留白过多。"
+  },
+  "issues": [
+    "卡片下半部约 1/3 区域空白，内容视觉重心偏上，留白分布不均",
+    "'去交易'按钮背景色 #19000000 过于浅淡，CTA 视觉强度不足",
+    "'已清仓'状态徽标使用浅灰底+黑字，缺乏清仓状态的色彩语义强调（如暖色边框/底色）",
+    "Column 根未设置 justifyContent，内容默认顶部堆叠，未利用垂直空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"meta_text\",\"thin_divider\",\"dividend_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/holding/name} }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/holding/clearedText} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#CCE53935\",\"borderRadius\":9}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/holding/marketValueText} }}\",\"styles\":{\"width\":116,\"height\":28,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"meta_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/holding/realtimeLabel} + ' · ' + ${/data/holding/dayChangeText} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FF1B873F\",\"maxLines\":1}},{\"id\":\"thin_divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#1A000000\"}},{\"id\":\"dividend_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"dividend_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"dividend_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去交易\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.broker\",\"abilityName\":\"com.example.broker.MainAbility\",\"uri\":\"broker://portfolio/holding\"}}],\"styles\":{\"width\":116,\"height\":34,\"borderRadius\":17,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF1B873F\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"holding\":{\"name\":\"中证白酒\",\"marketValueText\":\"¥38,240\",\"realtimeLabel\":\"实时更新\",\"dayChangeText\":\"+1.26%\",\"clearedText\":\"已清仓\"},\"calendar\":{\"items\":[{\"entityId\":\"dividend-20260718\",\"title\":\"除息\",\"dtStart\":\"7/18\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

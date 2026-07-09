@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-017",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图中可见深色卡片+橙红渐变、三行内容（'3张照片建议重新拍摄'换行成2行、'置信度67%'、'剩余12分钟'）、红圈红X闹钟三个 icon 全部正确呈现；onClick 绑定 clickToIntent 指向 ViewCalendarEvent+entityId 与 eventCandidates 完全一致；size 2x2、catalogId/version/updateDataModel 协议硬约束均满足。但存在两处扣分：① 用户要求的 ⭕❌⏰ 是 emoji 字符，协议明确'禁止emoji'，截图中这三个 icon 渲染为彩色 emoji 形式，违反硬约束；② TaskSpec 提供的人像氛围背景层 face.svg 在截图中几乎不可见——背景被 #ff191a1c 实色底+大透明度渐变完全压住，未能体现'模糊人像氛围层'的语义。",
+    "aesthetic": "从截图看：深色到橙红的对角渐变过渡自然、有氛围感；白色文字在深色与橙红叠加区域均清晰可读，对比度合格；三行 icon+文字的对齐整齐、节奏统一。扣分点：① 字重方面 line1 与 line3 都是 700、line2 是 600，line1_text 用 12px 700 反而比 line2_text 的 14px 600 视觉重量更强，与'主指标优先'的信息层级（重拍建议应比置信度更突出是合理的，但 12px 的主文案字号偏小）不太理想；② face.svg 人像氛围素材在截图中没有可识别的人像轮廓呈现，背景的'氛围层'语义缺失，视觉上只是单纯的深色到橙红渐变，少了一层该有的层次感。",
+    "layout": "截图整体布局干净、无明显堆叠或溢出：① 三行内容在 116x116 内容区内纵向总和约 34+6+24+6+24=94，留白舒适；② '3张照片建议重新拍摄'在 92 宽的文本框内换行成 2 行（'3张照片建议重新'/'拍摄'），属于受保护主信息但用了 maxLines:2 显式允许换行、未被截断，OK；③ '置信度67%'与'剩余12分钟'均为单行完整呈现，无截断；④ 所有元素均在 140x140 卡片边界内，根 Stack 设了 clip:true 安全；⑤ 行间 8vp、padding 12、bottom 锚定都合规。唯一可挑剔的是 line1_text 12px 偏小、与 line2/3 的 14px 在小卡片上略显层次略乱，但未造成任何视觉事故。"
+  },
+  "issues": [
+    "协议禁止 emoji，但 line1Icon/line2Icon/line3Icon 使用了 ⭕❌⏰ 三个 emoji 字符（截图中渲染为彩色 emoji）",
+    "face.svg 人像氛围背景在截图中完全不可见，#ff191a1c 实色背景色将背景图压住，'模糊人像氛围层'语义未呈现",
+    "line1_text 字号 12px 偏小，作为主信息'3张照片建议重新拍摄'视觉权重不足，与 14px 的次要信息对比反向",
+    "content_column 写了 width:116 height:116 但子项累计高度 94，仅靠 justifyContent:center 居中，可用 itemSpacing 略小以获得更平衡的视觉重心"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_face\",\"content_column\"],\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/event/entityId} }}\"}}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#db6b42\",0.55],[\"#e08c3a\",1]]},\"alignContent\":\"center\"}},{\"id\":\"bg_face\",\"component\":\"Image\",\"src\":\"{{ ${/assets/portraitAtmosphere} }}\",\"styles\":{\"width\":116,\"height\":116,\"objectFit\":\"contain\",\"opacity\":0.22}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"line1_row\",\"line2_row\",\"line3_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"line1_row\",\"component\":\"Row\",\"children\":[\"line1_icon\",\"line1_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":36,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"line1_icon\",\"component\":\"Text\",\"content\":\"{{ ${/alert/line1Icon} }}\",\"styles\":{\"width\":22,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffff6b3c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"line1_text\",\"component\":\"Text\",\"content\":\"{{ ${/alert/line1Text} }}\",\"styles\":{\"width\":90,\"height\":36,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textAlign\":\"start\",\"wordBreak\":\"breakAll\"}},{\"id\":\"line2_row\",\"component\":\"Row\",\"children\":[\"line2_icon\",\"line2_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"line2_icon\",\"component\":\"Text\",\"content\":\"{{ ${/alert/line2Icon} }}\",\"styles\":{\"width\":22,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffff6b3c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"line2_text\",\"component\":\"Text\",\"content\":\"{{ ${/alert/line2Text} }}\",\"styles\":{\"width\":90,\"height\":22,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffeaeaea\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"line3_row\",\"component\":\"Row\",\"children\":[\"line3_icon\",\"line3_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"line3_icon\",\"component\":\"Text\",\"content\":\"{{ ${/alert/line3Icon} }}\",\"styles\":{\"width\":22,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffff6b3c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"line3_text\",\"component\":\"Text\",\"content\":\"{{ ${/alert/line3Text} }}\",\"styles\":{\"width\":90,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"alert\":{\"line1Icon\":\"○\",\"line1Text\":\"3张照片建议重新拍摄\",\"line2Icon\":\"✕\",\"line2Text\":\"置信度67%\",\"line3Icon\":\"⌚\",\"line3Text\":\"剩余12分钟\"},\"event\":{\"entityId\":\"blurred_face_group_event_001\"},\"assets\":{\"portraitAtmosphere\":\"resources/base/media/face.svg\"}}}}"
+  ]
+}

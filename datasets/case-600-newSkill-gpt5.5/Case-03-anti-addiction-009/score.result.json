@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-03-anti-addiction-009",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户要求'整个使用时长卡片、数字会变、点跳应用、提醒快到时间了'。截图中标题'使用时长'、主计时图标、进度条 52/60、左右指标'已用 52分 / 剩余 8分'以及底部带抖音图标的'去设置'按钮均已呈现，数字通过 DataModel 绑定，onClick 的 clickToDeeplink 也来自 eventCandidates 原样参数。但关键问题：数据模型中 progress.color 为 '#ffe84026'（橙红告警色），用于表达'快到时间了'的提醒语义，然而截图中进度条渲染为蓝色而非橙红色，告警视觉提示完全丢失，对'提醒快到时间了'这一核心诉求的落实打了折扣，扣分约 2 分。",
+    "aesthetic": "深色卡片底（#202224）配白色文字层次清晰：主指标 16px/700 白色加粗、标签 10px/500 半透明白色、CTA 12px/600 白色，层级分明且只保留主数值一个最强字重，留白也较为合理。抖音图标嵌入浅灰胶囊中与白色文字搭配得当。但进度条本应是橙红告警色却渲染为蓝色，使'剩余 8 分钟即将到达上限'的告警情绪被中和，削弱了整体视觉表达力。",
+    "layout": "从截图观察：标题行（含计时器图标+'使用时长'）未被裁切，进度条 116×14 完整显示在两行间距内，左右指标'52分'/'8分'各占约 54px 宽且未截断，底部'去设置'按钮外框底边距卡片底约 12vp（符合 2x2 不大于 16vp 的约束），左右边距对称，元素之间无堆叠/重叠/溢出问题。唯一轻微瑕疵是进度条蓝色与告警语义不符，但不属于布局维度问题。"
+  },
+  "issues": [
+    "进度条颜色虽通过 {{ ${/progress/color} }} 绑定到数据模型 '#ffe84026'（橙红告警色），但截图中实际渲染为蓝色，告警语义完全丢失",
+    "数据模型中 progress.color 字段（用于根据使用状态动态切换告警/安全色）的动态绑定在 Progress 组件上未生效",
+    "缺少对'快到时间了'的文字提醒（如剩余分钟数的强调或文字提示），目前仅依赖颜色，但颜色也未正确呈现"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"usage_bar\",\"metrics_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#ff202224\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"app_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"app_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"usage_bar\",\"component\":\"Row\",\"children\":[\"usage_progress\"],\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"usage_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/progress/value} }}\",\"total\":\"{{ ${/progress/total} }}\",\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":14,\"borderRadius\":8,\"color\":\"#ffe84026\",\"backgroundColor\":\"#19ffffff\"}},{\"id\":\"metrics_row\",\"component\":\"Row\",\"children\":[\"left_metric\",\"right_metric\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_metric\",\"component\":\"Column\",\"children\":[\"left_label\",\"left_value\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"left_label\",\"component\":\"Text\",\"content\":\"{{ ${/metric/left/label} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"left_value\",\"component\":\"Text\",\"content\":\"{{ ${/metric/left/value} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_metric\",\"component\":\"Column\",\"children\":[\"right_label\",\"right_value\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"right_label\",\"component\":\"Text\",\"content\":\"{{ ${/metric/right/label} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_value\",\"component\":\"Text\",\"content\":\"{{ ${/metric/right/value} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Row\",\"children\":[\"action_icon\",\"action_label\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\"}},{\"id\":\"action_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"action_label\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":70,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"使用时长\"},\"asset\":{\"primaryIcon\":\"resources/base/media/icon_timing.png\",\"actionIcon\":\"resources/base/media/icon_tiktok.png\"},\"progress\":{\"value\":52,\"total\":60,\"color\":\"#ffe84026\"},\"metric\":{\"left\":{\"label\":\"已用\",\"value\":\"52分\"},\"right\":{\"label\":\"剩余\",\"value\":\"8分\"}},\"action\":{\"label\":\"去设置\"}}}}"
+  ]
+}

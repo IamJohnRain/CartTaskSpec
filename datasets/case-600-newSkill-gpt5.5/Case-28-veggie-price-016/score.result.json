@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-28-veggie-price-016",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户要求的层次感视觉、背景色块叠前景文字数字、固定'今日鸡蛋均价'+动态数字、主视觉放左边、菜市场鲜亮配色、纯文字色块无真图片、横向排列菜价——这些诉求在截图中均有体现：渐变背景+黄绿色块+文字堆叠、'5.8'为主视觉在左、'今日鸡蛋均价'固定文案、三个菜价横向排列。但绿色块覆盖了主数字'5.8'导致'5'字被色块边界切分，'元/斤'、'09:30'、'均价'等文字位于绿色块上，可读性下降，扣分。",
+    "aesthetic": "截图中橙黄渐变背景搭配黄色和绿色色块，整体有菜市场鲜亮感，色彩方向正确。但绿色块直接压住'5.8'数字、'元/斤'单位、'09:30'时间和'均价'文字，深色文字在绿色块上对比度中等偏弱，视觉上略显浑浊。字号层级清晰（40/14/12/10），但主数字'5'被色块分割后视觉冲击力打折。",
+    "layout": "截图中最严重的问题是Stack层叠遮挡：绿色fresh_block位于约(28,28)到(104,74)，覆盖了主视觉区域。'5.8'数字的'5'字左半部分在黄色块上、右半部分在绿色块上，视觉上被色块边界切分，看起来不完整；'元/斤'单位文字位于绿色块上；'今日鸡蛋均价'折行成3行后第3行'均价'落在绿色块上；'09:30'时间也在绿色块上。这些都是关键信息被Stack遮挡的问题，扣重分。"
+  },
+  "issues": [
+    "绿色fresh_block覆盖主数字'5.8'，'5'字被色块边界切分，视觉上不完整",
+    "'元/斤'单位文字位于绿色块上，对比度下降",
+    "'今日鸡蛋均价'折行3行，第3行'均价'落在绿色块上",
+    "'09:30'更新时间位于绿色块上，可读性降低",
+    "warm_block和fresh_block的margin设置导致色块侵入主视觉区域"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"warm_block\",\"fresh_block\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#f5dc62\",1]]},\"alignContent\":\"topStart\"}},{\"id\":\"warm_block\",\"component\":\"Divider\",\"styles\":{\"width\":78,\"height\":82,\"margin\":{\"top\":0,\"left\":0},\"borderRadius\":18,\"backgroundColor\":\"#f7ce00\",\"shadow\":{\"radius\":8,\"offsetY\":4,\"color\":\"#19000000\"}}},{\"id\":\"fresh_block\",\"component\":\"Divider\",\"styles\":{\"width\":44,\"height\":40,\"margin\":{\"top\":8,\"left\":70},\"borderRadius\":14,\"backgroundColor\":\"#92c48d\",\"shadow\":{\"radius\":8,\"offsetY\":4,\"color\":\"#19000000\"}}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"main_area\",\"veggie_row\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"main_area\",\"component\":\"Row\",\"children\":[\"left_visual\",\"right_caption\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":72,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"left_visual\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":2,\"styles\":{\"width\":66,\"height\":72,\"padding\":{\"top\":12,\"right\":4,\"bottom\":4,\"left\":4},\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/market/eggAverageValue} }}\",\"styles\":{\"width\":62,\"height\":44,\"fontSize\":36,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"元/斤\",\"styles\":{\"width\":62,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"right_caption\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"update_time\"],\"itemMargin\":4,\"styles\":{\"width\":46,\"height\":72,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"今日鸡蛋均价\",\"styles\":{\"width\":46,\"height\":42,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2}},{\"id\":\"update_time\",\"component\":\"Text\",\"content\":\"{{ ${/market/updateText} }}\",\"styles\":{\"width\":46,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"veggie_row\",\"component\":\"Row\",\"children\":[\"tile_0\",\"tile_1\",\"tile_2\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"tile_0\",\"component\":\"Column\",\"children\":[\"tile_0_name\",\"tile_0_price\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":38,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"tile_0_name\",\"component\":\"Text\",\"content\":\"{{ ${/market/items/0/name} }}\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"tile_0_price\",\"component\":\"Text\",\"content\":\"{{ ${/market/items/0/priceText} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"tile_1\",\"component\":\"Column\",\"children\":[\"tile_1_name\",\"tile_1_price\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":38,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"tile_1_name\",\"component\":\"Text\",\"content\":\"{{ ${/market/items/1/name} }}\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"tile_1_price\",\"component\":\"Text\",\"content\":\"{{ ${/market/items/1/priceText} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"tile_2\",\"component\":\"Column\",\"children\":[\"tile_2_name\",\"tile_2_price\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":38,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"tile_2_name\",\"component\":\"Text\",\"content\":\"{{ ${/market/items/2/name} }}\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"tile_2_price\",\"component\":\"Text\",\"content\":\"{{ ${/market/items/2/priceText} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"market\":{\"eggAverageValue\":\"5.8\",\"updateText\":\"09:30\",\"items\":[{\"name\":\"黄瓜\",\"priceText\":\"¥3.2\"},{\"name\":\"番茄\",\"priceText\":\"¥4.6\"},{\"name\":\"青菜\",\"priceText\":\"¥2.8\"}]}}}}"
+  ]
+}

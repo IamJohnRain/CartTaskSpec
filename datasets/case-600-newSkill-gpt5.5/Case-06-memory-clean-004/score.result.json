@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-06-memory-clean-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求四点全部满足：标题'内存清理'清晰呈现；占比'68%'作为主数值醒目展示（带环形进度可视化）；底部按钮'查看日程'配置了来自 eventCandidates 的 clickToIntent 事件，参数 entityId 通过数据绑定解析为 sample-calendar-event-001，与 eventCandidates 字面量一致；状态文字'已完成'以绿色独立呈现。尺寸 2x2、catalogId、version、updateDataModel.path='/' 与 value 与 TaskSpec 完全一致。微扣 1 分：onClick args 用了数据绑定表达式而非 eventCandidates 的字面量字符串（虽语义等价，但严格'原样'要求下算轻微偏差）。",
+    "aesthetic": "截图中青绿渐变背景清新干净，与主题'内存清理'的健康/科技感匹配；环形进度与按钮使用同系绿色（#64bb5c），主数值'68%'用 20pt 800 字重形成最强视觉锚点，标题 14pt 次之，'可清2.4G' 10pt 最小，'已完成' 12pt 居中——字重阶梯清晰且只有一个最强字重。文字与背景对比度足够，深色文字在浅青绿上可读，绿色'已完成'色相和谐不刺眼。整体留白均衡，视觉克制专业。",
+    "layout": "从截图观察：标题'内存清理'完整显示未截断；环形 Progress(56×56) 与右侧 Column(52×56) 水平排列在 main_row(116×56) 内不重叠；'68%'/'可清2.4G'/'已完成' 三行纵向紧凑无截断；按钮'查看日程'完整显示，底边到卡片底边约 8-10vp，触控区 116×32 充足。纵向核算：12+16+6+56+6+32+12=140 恰好填满，无溢出。全部内容居中对齐，左右边界对称，无 Stack 遮挡或元素裁切。"
+  },
+  "issues": [
+    "onClick.args.entityId 用了数据绑定表达式 {{ ${/data/calendar/items/0/entityId} }}，未严格使用 eventCandidates 中的字面量 'sample-calendar-event-001'，属于轻微协议偏差",
+    "进度环 fill 颜色与背景青绿色相接近，环内进度弧的对比度可进一步提升以增强可视化识别度"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"main_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92d6cc\",0],[\"#61cfbe\",1]]}}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"memory_ring\",\"memory_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"memory_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/memory/usagePercent} }}\",\"total\":\"{{ ${/memory/totalPercent} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#3da83a\",\"width\":56,\"height\":56}},{\"id\":\"memory_info\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\",\"schedule_status\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/memory/displayPercent} }}\",\"styles\":{\"width\":52,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/memory/cleanableText} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"schedule_status\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff3da83a\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"sample-calendar-event-001\"}}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff3da83a\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"内存清理\"},\"memory\":{\"usagePercent\":68,\"totalPercent\":100,\"displayPercent\":\"68%\",\"cleanableText\":\"可清2.4G\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"sample-calendar-event-001\",\"title\":\"清理提醒\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"description\":\"已完成\"}]}},\"action\":{\"label\":\"查看日程\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

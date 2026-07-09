@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-001",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户六大诉求在截图中均得到落实：标题'内存清理'清晰可读；比例以大字号'82%'配合环形进度展示；'已清理 1.8GB'以胶囊形式独立显示一行清理数字；右下角绿色'打开清理'按钮绑定 clickToDeeplink 跳转 storage_settings；右侧白色面板读取并展示日历'产品评审 10:30-11:00'；'可用空间偏低'红色徽章作为不够用提醒。事件/数据/素材约束均满足，root shell、catalogId、version、updateDataModel.path/value 等硬约束均合规。微扣 0.5 分因为环形进度视觉上仅约 25-30% 弧度被填满，与 82% 文本存在感知差异（虽不阻断信息传达），updatedText '刚刚更新' 未被引用属于轻微冗余。",
+    "aesthetic": "截图整体观感干净专业：浅灰到青绿的对角渐变背景柔和不抢戏，白色侧面板与主区形成清晰分层；红色警告徽章、绿色 CTA 按钮、青色环形构成有节制的三色点缀，配色克制协调。字号层级清晰（14 标题/20 主指标/12 辅助），字重以 700 为主、最强字重唯一。扣分点：1）环形进度条视觉填充比例与 82% 文字明显不一致，弧度看上去只有约 1/4 圆周，造成指标感知的视觉错位；2）'已清理 1.8GB' 灰色胶囊左右几乎贴满主列边缘，留白略显局促。",
+    "layout": "截图中所有元素均落在 2x4（300x140）卡片内，未见任何文字被裁切或截断：'内存清理'完整、'可用空间偏低'徽章完整、'82%'与'剩余 3.2GB'完整、'已清理 1.8GB'完整、'今日日程/产品评审/10:30-11:00'完整、'打开清理'按钮完整无截断。左右两栏（主列 166 + 间距 10 + 侧栏 100 = 276 + padding 24 = 300）布局方程闭合，垂直方向 header_row 24 + 间距 8 + meter_row 52 + 间距 8 + cleaned_text 24 + padding 24 = 140 也吻合。按钮热区 32 高、距底部约 12vp，处于 8-12vp 安全区间。无元素堆叠重叠、Stack 遮盖、CTA 不可用等问题。"
+  },
+  "issues": [
+    "Progress 环形视觉填充仅约 25-30% 弧度，与 82% 文本存在明显感知不一致",
+    "已清理胶囊左右几乎贴满主列边缘，与卡片左边距/警告徽章的视觉留白节奏不统一",
+    "dataModel 中 updatedText '刚刚更新' 字段未被任何组件引用（信息冗余）",
+    "侧栏宽度 100 在 300 总宽下略显紧凑，按钮左右内边距较小"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_col\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#92d6cc\",1]]},\"alignItems\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"meter_row\",\"cleaned_text\"],\"itemMargin\":8,\"styles\":{\"width\":166,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"warning_badge\"],\"itemMargin\":8,\"styles\":{\"width\":166,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"内存清理\",\"styles\":{\"width\":70,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/memory/warningText} }}\",\"styles\":{\"width\":88,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"usage_ring\",\"metric_col\"],\"itemMargin\":10,\"styles\":{\"width\":166,\"height\":52,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"usage_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/memory/usagePercent} }}\",\"total\":\"{{ ${/memory/progressTotal} }}\",\"styles\":{\"width\":52,\"height\":52,\"type\":\"ring\",\"color\":\"#ff61cfbe\",\"backgroundColor\":\"#26000000\",\"style\":\"solid\"}},{\"id\":\"metric_col\",\"component\":\"Column\",\"children\":[\"percent_text\",\"available_text\"],\"itemMargin\":2,\"styles\":{\"width\":104,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"percent_text\",\"component\":\"Text\",\"content\":\"{{ ${/memory/usagePercent} + '%' }}\",\"styles\":{\"width\":104,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"available_text\",\"component\":\"Text\",\"content\":\"{{ ${/memory/availableText} }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"cleaned_text\",\"component\":\"Text\",\"content\":\"{{ ${/memory/cleanedText} }}\",\"styles\":{\"width\":150,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#19000000\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"calendar_label\",\"calendar_title\",\"calendar_time\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"calendar_label\",\"component\":\"Text\",\"content\":\"今日日程\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"calendar_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":84,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"calendar_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开清理\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":84,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"memory\":{\"usagePercent\":82,\"progressTotal\":100,\"cleanedText\":\"已清理 1.8GB\",\"availableText\":\"剩余 3.2GB\",\"warningText\":\"可用空间偏低\",\"updatedText\":\"刚刚更新\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日程\",\"entityId\":\"calendar-demo-001\",\"title\":\"产品评审\",\"dtStart\":\"10:30\",\"dtEnd\":\"11:00\"}]}}}}}"
+  ]
+}

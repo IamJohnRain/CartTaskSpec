@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-07-sports-event-007",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户三大诉求基本落实：1)「比赛倒计时卡片」以 kicker「赛事倒计时」+ 数字「9」+ 单位「天」实现；2)「从日历读比赛日程」通过 ${/data/calendar/items/0/title|dtStart|eventLocation} 完整呈现了城市马拉松、07.18 07:30、奥体中心；3)「点开跳开跳进app」由 onClick[clickToDeeplink] 接住，call/args 与 eventCandidates 完全一致。size=2x4、catalogId、version、updateDataModel.path=/ 与 value 一致等硬约束均满足。扣分点：「数字写背景图上」语义上要求数字与背景图有视觉整合，但截图中数字与跑步图标均呈白色，缺乏对比与排版呼应，数字并未真正『写在背景图上』，只是被叠在图标旁。",
+    "aesthetic": "右侧半透明卡片（开赛时间/07.18 07:30/奥体中心/打开按钮）整体观感干净，配色与橙色 CTA 对比清晰；但左侧「城市马拉松」一行被跑步小人的右腿/右脚直接穿字而过，白字压在白色剪影之上，字与图几乎融成一团，严重影响可读性与美观度。整体卡片只有『9』一个最强字重，符合字重收敛原则，但左右视觉重量失衡：左侧文字被图标干扰，右侧面板过于完整。",
+    "layout": "截图中最显著的堆叠/截断问题集中在左侧 Stack：sport_bg（108x108, margin left:16, top:4）与 left_content(166x116) 在同一 Stack 中完全重叠，跑者剪影从约 x=40 一直延伸到 x=140，正好横切『城市马拉松』四个字中部（腿部穿字），并覆盖了『9』的右半侧（手臂/躯干）以及底部『07.18 07:30 开赛』区域。Stack 中图标层虽然位于文字层之下，但因图标过亮、过大、过白，产生了『反向遮挡』式的视觉断裂，标题与主指标都未被保护。右面板 100x116 内容布局干净，无截断，CTA 距底边约 10vp 也合规。整体扣分主要来自左侧面板的多处实质重叠。"
+  },
+  "issues": [
+    "左侧 Stack 中跑步图标（108x108）与 left_content 在视觉上完全堆叠，跑者腿部穿切『城市马拉松』标题",
+    "跑者上半身/手臂位于『9』倒计时数字后方，白字+白剪影导致主指标读数不够锐利",
+    "跑者脚部压在『07.18 07:30 开赛』副信息行上，进一步削弱可读性",
+    "图标 108x108 相对 166x116 的左区占比过大，违背『背景图作视觉锚点』的克制原则",
+    "未充分利用线性渐变暗色空间——图标占据了卡片本应留白的位置，破坏节奏",
+    "数字未被真正『写』在背景图上，而是与背景图争抢同一像素，与用户语义需求不符"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#9e644f\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"left_stack\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_stack\",\"component\":\"Stack\",\"children\":[\"left_content\",\"sport_bg\"],\"styles\":{\"width\":166,\"height\":116,\"alignContent\":\"topStart\"}},{\"id\":\"sport_bg\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_run.png\",\"styles\":{\"width\":64,\"height\":64,\"objectFit\":\"contain\",\"margin\":{\"left\":96,\"top\":6}}},{\"id\":\"left_content\",\"component\":\"Column\",\"children\":[\"kicker_text\",\"countdown_row\",\"event_title\",\"event_meta\"],\"itemMargin\":3,\"styles\":{\"width\":166,\"height\":116,\"padding\":{\"left\":2,\"right\":2,\"top\":0,\"bottom\":0},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"kicker_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/kicker} }}\",\"styles\":{\"width\":162,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"countdown_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":162,\"height\":48,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/countdownNumber} }}\",\"styles\":{\"width\":56,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"{{ ${/ui/countdownUnit} }}\",\"styles\":{\"width\":22,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":162,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"event_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' 开赛' }}\",\"styles\":{\"width\":162,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"time_label\",\"time_value\",\"place_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"time_label\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timeLabel} }}\",\"styles\":{\"width\":84,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":84,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":84,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#e08c3a\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"城市马拉松\",\"dtStart\":\"07.18 07:30\",\"dtEnd\":\"07.18 11:30\",\"eventLocation\":\"奥体中心\",\"importantEventType\":2}]}},\"ui\":{\"kicker\":\"赛事倒计时\",\"countdownNumber\":\"9\",\"countdownUnit\":\"天\",\"timeLabel\":\"开赛时间\",\"actionLabel\":\"打开\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

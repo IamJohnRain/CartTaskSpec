@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-13-health-reminder-008",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户要求喝水吃药提醒+可勾选项+跳应用+读天气。截图中标题'喝水吃药'正常显示，4个复选框、天气信息(26°C/多云·良)、'看天气'按钮及 onClick 事件均按 spec 实现。但截图里 4 个复选框的标签全部被截断为'晨...''早...''午...''晚...',用户无法识别具体提醒项，削弱了'能打勾选几项'的核心可用性，扣分。",
+    "aesthetic": "从截图看整体设计良好：青蓝渐变背景与白色面板对比和谐，绿色已选项+蓝色 CTA 按钮配色自然，标题/温度/CTA 三处字重最强字重收敛到位。但 4 个标签全部以省略号收尾，视觉上像 4 个'神秘复选框'，显得粗糙不完整，扣分。",
+    "layout": "截图中 4 个复选框标签均被截断为'晨...''早...''午...''晚...'（仅 1 字+省略号），属于受保护文本（用户点名要求显示的提醒项）被强制截断，是严重的排版问题。原因在于 2x2 网格下每个 Checkbox 仅 75vp 宽，无法容纳'晨起水/早餐药/午后水/晚间药'3 字标签+勾选视觉+内边距。卡片边界、Stack 层叠、按钮热区、底部锚定等其他维度无明显问题，仅这一处文字截断就足以让 D3 大幅失分。"
+  },
+  "issues": [
+    "左侧 4 个复选框标签全部被截断为'晨...''早...''午...''晚...'，用户无法识别具体提醒项",
+    "2x2 网格下 Checkbox 宽度(75vp)不足以容纳 3 字中文标签+勾选视觉+组件内边距",
+    "勾选标记 mark.size=12 进一步压缩了标签可用空间",
+    "标签截断未触发 maxLines 显式声明但仍省略，缺少降级策略（缩短文案/换尺寸）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92d6cc\",0],[\"#86c5e3\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"check_water_morning\",\"check_medicine_breakfast\",\"check_water_afternoon\",\"check_medicine_night\",\"summary_text\"],\"itemMargin\":2,\"styles\":{\"width\":174,\"height\":116,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"water_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":162,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"water_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/drop_1.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminders/title} }}\",\"styles\":{\"width\":138,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"check_water_morning\",\"component\":\"Checkbox\",\"label\":\"{{ ${/reminders/items/0/label} }}\",\"value\":\"{{ ${/reminders/items/0/value} }}\",\"select\":\"{{ ${/reminders/items/0/select} }}\",\"styles\":{\"width\":162,\"height\":18,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"check_medicine_breakfast\",\"component\":\"Checkbox\",\"label\":\"{{ ${/reminders/items/1/label} }}\",\"value\":\"{{ ${/reminders/items/1/value} }}\",\"select\":\"{{ ${/reminders/items/1/select} }}\",\"styles\":{\"width\":162,\"height\":18,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"check_water_afternoon\",\"component\":\"Checkbox\",\"label\":\"{{ ${/reminders/items/2/label} }}\",\"value\":\"{{ ${/reminders/items/2/value} }}\",\"select\":\"{{ ${/reminders/items/2/select} }}\",\"styles\":{\"width\":162,\"height\":18,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"check_medicine_night\",\"component\":\"Checkbox\",\"label\":\"{{ ${/reminders/items/3/label} }}\",\"value\":\"{{ ${/reminders/items/3/value} }}\",\"select\":\"{{ ${/reminders/items/3/select} }}\",\"styles\":{\"width\":162,\"height\":18,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminders/summary} }}\",\"styles\":{\"width\":162,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"weather_row\",\"weather_meta\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":92,\"height\":116,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_temp\"],\"itemMargin\":4,\"styles\":{\"width\":80,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":46,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看天气\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":80,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"reminders\":{\"title\":\"喝水吃药\",\"summary\":\"今日 2/4 项\",\"items\":[{\"label\":\"晨起水\",\"select\":true,\"value\":\"morning_water\"},{\"label\":\"早餐药\",\"select\":false,\"value\":\"breakfast_medicine\"},{\"label\":\"午后水\",\"select\":false,\"value\":\"afternoon_water\"},{\"label\":\"晚间药\",\"select\":true,\"value\":\"night_medicine\"}]},\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"良\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

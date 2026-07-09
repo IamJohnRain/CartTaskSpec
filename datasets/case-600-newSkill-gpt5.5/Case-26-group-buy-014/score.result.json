@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-26-group-buy-014",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.2,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户要求浅色底+橙红渐变，但截图实际呈现的是饱和度较高的暖橙/桃色渐变（#f9bc64→#ed955f），整体偏暖偏浓，并未做到'浅色底'的清爽感；'列表可滚动'在2x2尺寸下未实现，仅有一个'饮'字符作为主图标；'🥤🧋这类字符当大图标'用'饮'代替，语义尚可但情绪传达略弱；成团进度环+差2人+红色'18:00截'的阈值提醒明显，天气跳转按钮onClick的call/args与eventCandidates完全一致；assetCandidates中person_3_fill.svg和cloudy_turning_sunny.png都被正确引用；尺寸/catalogId/version/updateDataModel等硬约束均满足。",
+    "aesthetic": "截图整体配色暖橙，渐变过渡自然，能传达紧迫感；红色'18:00截'在橙底上对比足够；底部白底胶囊按钮与暖色背景形成清晰反差；问题在于'浅色底'未落实——背景饱和度偏中，作为'浅色'不够克制；字号层级合理（14/12/14/12），字重上有700（差2人/饮）和600两种主字重；圆环进度与文字'饮'组合有质感；留白与对齐整体尚可。",
+    "layout": "截图中'饮'字符位于环内偏上位置（glyphText高38置于58x58 Stack中），未完美居中，看起来略偏顶；右栏'差2人/18:00截/14:30会'三行竖向排列整齐，文字均完整无截断；标题'下午茶团'与左侧小人图标对齐良好；底部CTA胶囊按钮高度约26vp，热区达标；卡片四周边距均匀，未观察到元素溢出、堆叠遮挡或文字被裁切。"
+  },
+  "issues": [
+    "背景渐变色饱和度偏高（#f9bc64→#ed955f），与用户'浅色底'诉求不符",
+    "主图标'饮'字符在环形进度内偏上，未在Stack中真正垂直居中",
+    "用户要求的'列表可滚动'在2x2尺寸下未实现",
+    "日历信息仅显示'14:30会'，未呈现完整日程标题'评审会'，信息密度偏低",
+    "iconGlyph采样'饮'字作为🥤🧋类型大图标的替代，语义近似但情感传达偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"group_buy_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"group_buy_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"headerRow\",\"mainRow\",\"primaryAction\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffe1c4\",0],[\"#f8a76a\",1]]}}},{\"id\":\"headerRow\",\"component\":\"Row\",\"children\":[\"leadingIcon\",\"titleText\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"leadingIcon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"mainRow\",\"component\":\"Row\",\"children\":[\"meterGauge\",\"factColumn\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meterGauge\",\"component\":\"Stack\",\"children\":[\"meterTrack\",\"meterRing\",\"glyphWrap\"],\"styles\":{\"width\":58,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"meterTrack\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#33000000\",\"width\":58,\"height\":58}},{\"id\":\"meterRing\",\"component\":\"Progress\",\"value\":\"{{ ${/group/joinedCount} }}\",\"total\":\"{{ ${/group/targetCount} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ed6f21\",\"width\":58,\"height\":58}},{\"id\":\"glyphWrap\",\"component\":\"Column\",\"children\":[\"glyphText\"],\"styles\":{\"width\":58,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"glyphText\",\"component\":\"Text\",\"content\":\"{{ ${/group/iconGlyph} }}\",\"styles\":{\"width\":58,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"factColumn\",\"component\":\"Column\",\"children\":[\"peopleText\",\"deadlineText\",\"calendarText\"],\"itemMargin\":2,\"styles\":{\"width\":50,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"peopleText\",\"component\":\"Text\",\"content\":\"{{ '差' + ${/group/remainingCount} + '人' }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"deadlineText\",\"component\":\"Text\",\"content\":\"{{ ${/group/deadlineText} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"calendarText\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primaryAction\",\"component\":\"Row\",\"children\":[\"actionIcon\",\"actionText\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"backgroundColor\":\"#ffffffff\",\"borderWidth\":1,\"borderColor\":\"#33000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"actionIcon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' 户外?' }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"group_buy_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"下午茶团\"},\"asset\":{\"primaryIcon\":\"resources/base/media/person_3_fill.svg\",\"actionIcon\":\"resources/base/media/cloudy_turning_sunny.png\"},\"group\":{\"iconGlyph\":\"饮\",\"joinedCount\":4,\"targetCount\":6,\"remainingCount\":2,\"deadlineText\":\"18:00截\"},\"data\":{\"weather\":{\"location\":{},\"current\":{\"condition\":\"多云\"},\"daily\":[],\"updatedAt\":\"\"},\"calendar\":{\"items\":[{\"entityName\":\"日程\",\"entityId\":\"calendar_sample_001\",\"title\":\"评审会\",\"dtStart\":\"14:30\",\"dtEnd\":\"15:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

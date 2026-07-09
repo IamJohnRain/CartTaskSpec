@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-017",
+  "scores": {
+    "instruction": {
+      "score": 2.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.6,
+  "reasons": {
+    "instruction": "截图中可见的内容极少：只有顶部一个蓝色的勾和黑色文字'播控定时关闭'可见，整张卡片背景为白色而非用户要求的主题色铺满；用户明确要求的'耳机状态'列、横向重复排的'日程'、'天气数据'以及底部点击跳天气APP的可点击区域均不可见，因此用户主要诉求在视觉上几乎全部未落地。DSL 协议层面尺寸 2x4、catalogId、version、updateDataModel、事件 call/args 写法合规，但渲染结果无法让用户感知到这些信息。",
+    "aesthetic": "截图显示卡片是一片白底（主题色背景完全未铺上），只有左上角一个蓝色对勾和一行黑色'播控定时关闭'，其余约 90% 的画布是空白，对比、留白、层级全部失效：内层卡片用的 #19ffffff 半透明白底在白底上完全不可见，文字用的 #ffffffff/#99ffffff 在白底上也完全不可读，整体观感严重崩坏，远达不到'专业克制'的基线。",
+    "layout": "截图中只有 Checkbox '播控定时关闭' 出现在左上角；中段应该是'左耳机状态 + 右两段日程'的内容区整段缺失，底部应该是'天气文字 + 天气详情'的可点击 Row 也整段缺失。卡片下方约 2/3 区域是纯白空场，没有任何可见元素。看不到堆叠，但中段和底段的内容整体不可见等同于'被吞掉'，底部点击热区也未渲染出来。"
+  },
+  "issues": [
+    "根容器 backgroundColor 使用 '{{ ${/theme/rootColor} }}' 绑定，但渲染图中完全没有蓝底，整卡是白底，主题色铺满的需求未达成",
+    "所有 Text 使用 #ffffffff/#99ffffff 白色文字、所有内层容器使用 #19ffffff 半透明白底，在白底上完全不可见，导致左耳机状态、右日程、天气象限几乎全部隐藏",
+    "底部 weather_link 区域未渲染出可见内容，点击跳天气APP的热区在截图中找不到任何视觉锚点",
+    "卡片下 2/3 区域是纯空白，视觉密度严重失衡"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_layer\",\"content_col\"],\"styles\":{\"width\":300,\"height\":140,\"borderRadius\":22,\"clip\":true}},{\"id\":\"bg_layer\",\"component\":\"Column\",\"children\":[],\"styles\":{\"width\":300,\"height\":140,\"backgroundColor\":\"#ff0a59f7\"}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"timer_checkbox\",\"content_row\",\"weather_link\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"timer_checkbox\",\"component\":\"Checkbox\",\"label\":\"播控定时关闭\",\"value\":\"timerOff\",\"group\":\"musicTimer\",\"select\":\"{{ ${/settings/timerOffSelected} }}\",\"styles\":{\"width\":276,\"height\":24,\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#80ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"earphone_col\",\"schedule_row\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"earphone_col\",\"component\":\"Column\",\"children\":[\"earphone_label\",\"earphone_status\",\"playback_status\"],\"itemMargin\":2,\"styles\":{\"width\":92,\"height\":58,\"padding\":[4,8,4,8],\"borderRadius\":14,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"earphone_label\",\"component\":\"Text\",\"content\":\"耳机状态\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"earphone_status\",\"component\":\"Text\",\"content\":\"{{ ${/device/earphoneStatus} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"playback_status\",\"component\":\"Text\",\"content\":\"{{ ${/device/playbackStatus} }}\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"schedule_row\",\"component\":\"Row\",\"children\":[\"schedule_item_1\",\"schedule_item_2\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"schedule_item_1\",\"component\":\"Column\",\"children\":[\"schedule_time_1\",\"schedule_title_1\"],\"itemMargin\":4,\"styles\":{\"width\":84,\"height\":58,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"schedule_time_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"schedule_title_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"schedule_item_2\",\"component\":\"Column\",\"children\":[\"schedule_time_2\",\"schedule_title_2\"],\"itemMargin\":4,\"styles\":{\"width\":84,\"height\":58,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"schedule_time_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"schedule_title_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"weather_link\",\"component\":\"Row\",\"children\":[\"weather_text\",\"weather_hint\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":276,\"height\":24,\"padding\":[0,8,0,8],\"borderRadius\":12,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' ' + ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":180,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":\"天气详情 ›\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"settings\":{\"timerOffSelected\":true},\"device\":{\"earphoneStatus\":\"已连接\",\"playbackStatus\":\"播控待命\"},\"theme\":{\"rootColor\":\"#ff0a59f7\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"cal-1001\",\"title\":\"产品评审\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\"},{\"entityId\":\"cal-1002\",\"title\":\"健身课\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:30\"}]},\"weather\":{\"location\":{\"districtName\":\"青浦\",\"prefectureName\":\"上海\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

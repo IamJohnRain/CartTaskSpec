@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-19-photo-album-005",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户三大诉求（勾选照片、打电话、看到天气）在截图中都明确呈现：左侧面板有可勾选的绿色 Checkbox 并显示'已勾选照片'与'已选 12 张'，右侧面板有'26°C 朝阳区 多云'与'空气 优'的天气信息，绿色'打电话'按钮携带 onClick 事件 call=clickToCallPhone、args.phoneNumber=4008001234，与 eventCandidates 完全一致。2x4 尺寸、catalogId、version、updateDataModel.path/value 均符合协议。phone_fill.svg 属于 SVG 素材被协议禁用，未使用属于正确规避；唯一轻微遗憾是用户语义'勾完能打电话'，当前按钮始终可点击，未与 photoSelected 联动，但用户未明确要求条件启用。",
+    "aesthetic": "渐变背景（紫→青蓝）配上方形磨砂玻璃面板，视觉风格统一专业。左侧'家庭相册'与温度'26°C'两个最强字重对应良好，绿色 Checkbox 与绿色 CTA 按钮形成色彩呼应。但截图中可观察到次级文字（'已选 12 张'、'空气 优'、'朝阳区 多云'）使用 #99ffffff 浅灰白，叠加在低不透明度的浅色面板上对比度偏弱，视觉上略显发灰、不够清晰，应适当提高不透明度或加深文字色。",
+    "layout": "截图无任何元素堆叠或文字截断。Root 横向 12+140+8+128+12=300 严格对齐，竖向 12+116+12=140 完整。左侧面板竖向 20+8+32+8+16=84 居中分布无溢出；右侧面板 38+6+14+6+32=96 在 116 高度内居中，间距舒适。CTA 按钮 96x32 热区充足，底边距卡片底约 14vp，符合规范。Stack 未被滥用，关键信息（标题、主温度、CTA）全部在最上层、未被遮挡。"
+  },
+  "issues": [
+    "左侧面板 backgroundColor:#19ffffff 不透明度仅约 10%，叠加在亮色渐变区域时面板感弱",
+    "album_count 文字色 #99ffffff（60%白）在半透明白底上对比度不足，'已选 12 张'略发灰",
+    "air_text 同样使用 #99ffffff，'空气 优'在右面板上视觉权重偏弱",
+    "condition_text 拼接为 '朝阳区 多云' 缺少城市名'北京'，信息密度可更丰富"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"album_panel\",\"side_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5f58c7\",0],[\"#467794\",1]]},\"alignItems\":\"center\"}},{\"id\":\"album_panel\",\"component\":\"Column\",\"children\":[\"album_title\",\"album_check_row\",\"album_count\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"album_title\",\"component\":\"Text\",\"content\":\"{{ ${/selection/photoTitle} }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"album_check_row\",\"component\":\"Row\",\"children\":[\"photo_checkbox\",\"photo_state\"],\"itemMargin\":8,\"styles\":{\"width\":120,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"photo_checkbox\",\"component\":\"Checkbox\",\"label\":\"\",\"value\":\"photo-main\",\"group\":\"album\",\"select\":\"{{ ${/selection/photoSelected} }}\",\"styles\":{\"width\":24,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#99ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":16,\"strokeWidth\":2}}},{\"id\":\"photo_state\",\"component\":\"Text\",\"content\":\"{{ ${/selection/photoSelected} ? '已勾选照片' : '选择照片' }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#f0ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"album_count\",\"component\":\"Text\",\"content\":\"{{ ${/selection/photoCountText} }}\",\"styles\":{\"width\":120,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"weather_row\",\"air_text\",\"call_button\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":116,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_texts\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":38,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"weather_texts\",\"component\":\"Column\",\"children\":[\"temperature_text\",\"condition_text\"],\"itemMargin\":2,\"styles\":{\"width\":78,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"temperature_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":78,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/prefectureName} + ' ' + ${/data/weather/location/districtName} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"air_text\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"打电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"4008001234\"}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"selection\":{\"photoTitle\":\"家庭相册\",\"photoCountText\":\"已选 12 张\",\"photoSelected\":true},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\",\"prefectureName\":\"北京\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"优\"},\"daily\":[],\"updatedAt\":\"\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

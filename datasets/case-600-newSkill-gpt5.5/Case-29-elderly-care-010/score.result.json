@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-29-elderly-care-010",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户明确要求'红色危险提示'，截图中底部'危险提示'胶囊使用的是与外框同色系的橙色（#ffed6f21），并非红色，警示语义被弱化，是明显失分点。'老人关怀'标题、'1项目程'带数字行、'09:30'+'服药提醒'从日历读取的信息均可见，事件路径绑定正确（dtStart/title/items.size）。但用户强调'整个文字叠在背景图上'，截图中深色半透明内容面板几乎完全遮盖了 icon_schedule2.png 背景图，背景图仅在右侧露出一小片深色剪影，'叠在背景图上'的诉求落实不充分。无 onClick 需求，符合 eventCandidates 为空的契约；尺寸 2x2、root 140x140、catalogId/version/updateDataModel 路径与值均合规。",
+    "aesthetic": "从截图看：暖橙渐变外框与深蓝近黑的内容面板对比尚可，文字清晰可读。字号阶梯合理（09:30 最大、其余次之），主次字重（800/700/600/500）层级清晰。扣分点：1) '危险提示'胶囊使用与外框相同的橙色，与警示语义冲突，削弱了'红色危险提示'的视觉冲击；2) 内容明显偏上堆积，胶囊下方到面板底边几乎无留白，整体空间分布不均；3) 背景图被深色面板压住几乎不可见，未能形成'文字叠在背景图上'的氛围。",
+    "layout": "截图观察：内容面板内文字全部左对齐挤在面板上半部，'老人关怀''1项目程''09:30''服药提醒'依次排列后，'危险提示'胶囊已经非常接近内容面板底边，视觉上几乎贴着下边沿（content_panel 116×116、padding 8，Column 高度 16+14+22+16+22=90 加 4×2=98，内高 100，可用空间仅余 2vp，胶囊底缘距面板内边很近）。各受保护文本未发生裁切/截断；Stack 叠层顺序（背景图→内容面板）正确，面板覆盖了关键文字是设计意图而非遮挡；无元素溢出卡片边界，底部胶囊到卡片底边距离约 12vp 在 2x2 合理区间。扣分主要在垂直分布不均衡、上方密集下方空，以及背景图被遮挡的布局选择上。"
+  },
+  "issues": [
+    "用户明确要求'红色危险提示'，但截图中胶囊为橙色 #ffed6f21，与外框同色，警示语义被削弱",
+    "背景图 icon_schedule2.png 被深色半透明面板几乎完全遮住，未能实现'文字叠在背景图上'的视觉效果",
+    "内容面板内文字全部上对齐堆积，胶囊到面板底边留白极小（约 2vp），整体垂直分布不均",
+    "'危险提示'胶囊背景与外框渐变色同系，视觉上'与边框融成一片'，缺少对比",
+    "时间 '09:30' 字号 20 已较大，但对老人关怀场景可再放大一档以提升可读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"background_image\",\"content_panel\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff5d8\",0],[\"#ffc78d\",0.55],[\"#ff7a3c\",1]]}}},{\"id\":\"background_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule2.png\",\"styles\":{\"width\":120,\"height\":120,\"objectFit\":\"contain\"}},{\"id\":\"content_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"count_text\",\"time_text\",\"event_title\",\"alert_pill\"],\"styles\":{\"width\":120,\"height\":120,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#b3000000\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"老人关怀\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"count_text\",\"component\":\"Text\",\"content\":\"{{ size(${/data/calendar/items}) + '项日程' }}\",\"styles\":{\"width\":104,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":104,\"height\":26,\"fontSize\":22,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":104,\"height\":12,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"alert_pill\",\"component\":\"Row\",\"children\":[\"alert_text\"],\"styles\":{\"width\":104,\"height\":22,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":11,\"backgroundColor\":\"#ffe53935\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"危险提示\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"sample-care-001\",\"title\":\"服药提醒\",\"dtStart\":\"09:30\",\"dtEnd\":\"09:45\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-013",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户要求的环形倒计时（30天）、下方一排小图标、'查看纪念日'按钮、点击跳转日历事件均已落实，事件参数entityId正确绑定到anniv-2026-001，size=2x2、catalogId、version、updateDataModel.path均符合协议。扣分点：用户明确要求图标是'心形、戒指、蛋糕'三种情感符号，但可用素材中并无戒指和蛋糕，模型改用心形+日历+秒表代替，语义偏离用户原始诉求；'距离纪念日'与'30天'同置于环形内部，环形笔触与'距离纪念日'文字边缘相切，造成视觉信息被截。",
+    "aesthetic": "截图整体配色（橙→粉渐变）和底部白色胶囊按钮看起来比较温暖、按钮文字清晰可读。但主视觉区存在明显问题：环形顶部的'距离纪念日'文字被环形粉红色笔触横向切断，左右两端'距''日'笔画被遮，破坏可读性与美观；中部'30天'虽居于环形留白区可读，但与上方被截文字形成不协调的视觉断裂；图标行白胶囊在渐变背景上略显生硬，三枚黑色实心图标在14x14尺寸下偏小、几乎只是'点'级视觉。",
+    "layout": "截图中最显著的布局问题是'距离纪念日'文字被环形上沿的笔触覆盖：文字高度12vp居中叠在58x58的环形Stack内，环形描边宽度侵入了文字所在Y轴范围，导致'距'与'日'两侧笔画被裁。其次图标行高度仅14vp，三枚14x14图标紧贴边缘，白胶囊padding几乎为零，视觉过密；底部'查看纪念日'按钮底边距卡片底边约10vp，虽未越界但整体垂直空间被压满，4个区块（caption+ring+icons+button）纵向叠加后空间紧张。按钮热区约108x32符合≥24vp要求。"
+  },
+  "issues": [
+    "截图中环形笔切覆盖'距离纪念日'文字左右两侧笔画，可读性受损",
+    "用户要求'心形、戒指、蛋糕'，实际渲染为'心形、日历、秒表'，偏离情感化诉求",
+    "图标行尺寸过小（14x14），三枚图标紧贴白胶囊边缘，视觉密度过高",
+    "整卡垂直空间被4个区块压满，按钮底边距卡片底边偏紧，缺少呼吸感",
+    "主视觉区内'距离纪念日'与'30天'同处环形内部，字号/层级未拉开"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"ring_caption\",\"countdown_stack\",\"icon_row\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#e67c92\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"ring_caption\",\"component\":\"Text\",\"content\":\"{{ ${/view/ringCaption} }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#f2ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"countdown_stack\",\"component\":\"Stack\",\"children\":[\"countdown_ring\",\"primary_value\"],\"styles\":{\"width\":58,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"countdown_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/view/progressValue} }}\",\"total\":\"{{ ${/view/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffff\",\"width\":58,\"height\":58}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/view/daysRemainingText} }}\",\"styles\":{\"width\":50,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"icon_row\",\"component\":\"Row\",\"children\":[\"icon_heart\",\"icon_calendar\",\"icon_clock\"],\"itemMargin\":10,\"styles\":{\"width\":90,\"height\":18,\"backgroundColor\":\"#b3ffffff\",\"borderRadius\":9,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"icon_heart\",\"component\":\"Image\",\"src\":\"resources/base/media/heart_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"icon_calendar\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"icon_clock\",\"component\":\"Image\",\"src\":\"resources/base/media/stopwatch_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/view/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":108,\"height\":28,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e67c92\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"view\":{\"ringCaption\":\"距离纪念日\",\"daysRemainingText\":\"30天\",\"progressValue\":70,\"progressTotal\":100,\"actionLabel\":\"查看纪念日\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"anniv-2026-001\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

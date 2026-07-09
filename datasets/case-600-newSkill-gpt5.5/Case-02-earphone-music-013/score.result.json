@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-013",
+  "scores": {
+    "instruction": {
+      "score": 7.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.2,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户主要诉求基本落实：左耳 15% 红色告警、右侧三歌单入口、深色渐变背景、左右两块分栏均到位；三个 deeplink 事件 call/args 与 TaskSpec.eventCandidates 完全一致；size=2x4、root shell、catalogId、version、updateDataModel.path/value 均合规。但歌单按钮 label 被简化为单字'日/藏/荐'，语义过于晦涩，违背用户'三个歌单入口'的明确诉求，扣分。",
+    "aesthetic": "深紫渐变与红色告警组合音乐氛围契合；字重层级清晰（主数值 800 最强、标题 700 居中、辅助 500 弱化），全卡最强字重唯一为左耳 15%。但截图中左上角的耳机图标仅渲染为纯白圆角方块，看不出耳机轮廓，资源未能传达语义；右侧歌单按钮使用单字且字色为白色放在浅灰圆内，文字与圆比例略显空，整体偏空泛。",
+    "layout": "截图未观察到任何元素堆叠重叠或文字被截断：左列四层（图标行、主数值、进度条、告警 pill）依次纵向排布，告警 pill '电量过低' 完整可读；右侧'歌单入口'标题、'跳转音乐APP'副标题、三按钮行均完整呈现；中间竖向 Divider 清晰切分两区；按钮热区 36×34 满足 ≥24vp；底部外框底边到卡片底边约 14vp，符合 2x4 标准。唯一微瑕是按钮宽 36/高 34 与单字 '日/藏/荐' 视觉略不协调，但并未造成截断。"
+  },
+  "issues": [
+    "歌单按钮 label 被压缩为单字 '日/藏/荐'，对用户而言无法直观识别为'日推/收藏/推荐'三个歌单入口，违反用户明确诉求",
+    "左上角耳机图标在截图中仅显示为白色圆角方块，未呈现耳机形态，资源语义传达失败",
+    "歌单圆形按钮宽 36/高 34，单字位于圆内偏大且视觉空旷，圆形与文字比例欠协调",
+    "左侧 alert_pill 内 Text 显式 width:64 而 pill 容器 width:88，文字在 pill 中未水平居中（取决于 alignItems:center 行为），截图中文本视觉偏左对齐，与 pill 中心略有偏差"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_section\",\"divider\",\"action_section\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#634794\",0.55],[\"#ff202224\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_section\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"battery_bar\",\"alert_pill\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"earphone_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/earbud/name} }}\",\"styles\":{\"width\":100,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/earbud/sideLabel} + ' ' + ${/earbud/batteryText} }}\",\"styles\":{\"width\":140,\"height\":28,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"battery_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/earbud/batteryPercent} }}\",\"total\":\"{{ ${/earbud/batteryTotal} }}\",\"styles\":{\"width\":124,\"height\":8,\"type\":\"linear\",\"color\":\"#ffd94838\"}},{\"id\":\"alert_pill\",\"component\":\"Row\",\"children\":[\"alert_text\"],\"styles\":{\"width\":96,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/earbud/statusText} }}\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":88,\"vertical\":true,\"color\":\"#33ffffff\"}},{\"id\":\"action_section\",\"component\":\"Column\",\"children\":[\"action_title\",\"playlist_row\",\"action_caption\"],\"itemMargin\":6,\"styles\":{\"width\":125,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_title\",\"component\":\"Text\",\"content\":\"歌单入口\",\"styles\":{\"width\":110,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"playlist_row\",\"component\":\"Row\",\"children\":[\"daily_button\",\"favorite_button\",\"recommend_button\"],\"itemMargin\":4,\"styles\":{\"width\":125,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"daily_button\",\"component\":\"Button\",\"label\":\"日推\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":39,\"height\":36,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}},{\"id\":\"favorite_button\",\"component\":\"Button\",\"label\":\"收藏\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":39,\"height\":36,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}},{\"id\":\"recommend_button\",\"component\":\"Button\",\"label\":\"推荐\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=recommend&type=4\"}}],\"styles\":{\"width\":39,\"height\":36,\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}},{\"id\":\"action_caption\",\"component\":\"Text\",\"content\":\"跳转音乐APP\",\"styles\":{\"width\":110,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"earbud\":{\"name\":\"耳机音乐\",\"sideLabel\":\"左耳\",\"batteryText\":\"15%\",\"batteryPercent\":15,\"batteryTotal\":100,\"statusText\":\"电量过低\"}}}}"
+  ]
+}

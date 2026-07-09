@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-low-power-005",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "用户要求三点：1) 电量数字会变的卡片——截图中央显示「12%」并由 {{ /meter/centerLabel }} 驱动，外环按 {{ /meter/progressValue/total }} 绘制橙色 12% 进度弧，满足；2) 点一下能进省电模式——底部胶囊按钮绑定 clickToIntent/SetSettingSwitch/.../battery_saving_mode 事件，call 与 args 与 eventCandidates 完全一致，满足；3) 红色危险提示——截图中「危险」文字为 #ffed6f21 暖橙色，并非用户明确要求的「红色」，颜色语义偏离扣分。尺寸 140x140、catalogId/version/updateDataModel.path=\"/\" 与 dataModel value 一致，资产路径与 assetCandidates 吻合，硬约束全部满足。",
+    "aesthetic": "截图整体观感专业：深色渐变背景 + 暖色高亮，文字层级清晰（标题 14、危险 14/700、12% 20/700 三档），左右两栏对齐工整，胶囊按钮对比鲜明。唯一瑕疵是「危险」配色偏橙而非用户期望的红色，警示语义被弱化；其余配色协调、留白合理、字号阶梯统一、无脏字重堆叠。",
+    "layout": "截图中各元素均在卡片边界内：顶部图标+标题未截断，环形仪表 58x58 居中显示「12%」无遮挡，右侧「电量/危险/立即省电」三行纵向居中且无换行裁切，底部橙色胶囊按钮宽 116 完整落在内容区、底边距卡片下沿约 8-10vp，受保护文本（标题、电量、危险、立即省电、12%、开启省电）均完整可见，无堆叠/溢出/截断。"
+  },
+  "issues": [
+    "用户明确要求「红色危险提示」，但 DSL 中 factValue（危险）使用 #ffed6f21 偏橙而非纯红，警示色语义未达",
+    "按钮与「危险」使用同一橙色，导致危险文字在按钮颜色对比下视觉权重被稀释",
+    "meterRing 进度色与「危险」文字、按钮同为 #ffed6f21，整张卡片缺少真正的高警示红，违反用户对「红色」一词的字面诉求"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"headerRow\",\"mainRow\",\"primaryAction\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#ff202224\",1]]}}},{\"id\":\"headerRow\",\"component\":\"Row\",\"children\":[\"leadingIcon\",\"titleText\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"leadingIcon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"titleText\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"mainRow\",\"component\":\"Row\",\"children\":[\"meterGauge\",\"factColumn\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":58,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meterGauge\",\"component\":\"Stack\",\"children\":[\"meterTrack\",\"meterRing\",\"meterValue\"],\"styles\":{\"width\":58,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"meterTrack\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#33ffffff\",\"width\":58,\"height\":58}},{\"id\":\"meterRing\",\"component\":\"Progress\",\"value\":\"{{ ${/meter/progressValue} }}\",\"total\":\"{{ ${/meter/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ff3b30\",\"width\":58,\"height\":58}},{\"id\":\"meterValue\",\"component\":\"Text\",\"content\":\"{{ ${/meter/centerLabel} }}\",\"styles\":{\"width\":58,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"factColumn\",\"component\":\"Column\",\"children\":[\"factLabel\",\"factValue\",\"factMeta\"],\"itemMargin\":2,\"styles\":{\"width\":50,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"factLabel\",\"component\":\"Text\",\"content\":\"{{ ${/meter/caption} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"factValue\",\"component\":\"Text\",\"content\":\"{{ ${/support/line1} }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffff3b30\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"factMeta\",\"component\":\"Text\",\"content\":\"{{ ${/support/line2} }}\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primaryAction\",\"component\":\"Row\",\"children\":[\"actionIcon\",\"actionText\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"backgroundColor\":\"#ff3b30\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"actionIcon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"actionText\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"低电模式\"},\"asset\":{\"primaryIcon\":\"resources/base/media/icon_electricity.png\",\"actionIcon\":\"resources/base/media/icon_save_power.png\"},\"meter\":{\"progressValue\":12,\"progressTotal\":100,\"centerLabel\":\"12%\",\"caption\":\"电量\"},\"support\":{\"line1\":\"危险\",\"line2\":\"立即省电\"},\"action\":{\"label\":\"开启省电\"}}}}"
+  ]
+}

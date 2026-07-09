@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-18-carpool-017",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户要求的字段基本齐全：顶部'已拼车通勤18天'配汽车图标可见、中部'节省 ¥312'大字突出、底部'今日步数 4,328'与步数环图同排、黄色警告条'晚19:00 拼车回家'醒目、'早通勤偏少 多走点'红色提醒明确呈现，'查看健康'按钮事件 call/args 原样来自 eventCandidates（huaweischeme://healthapp/home/sport?sportType=2），浅薄荷绿底色与汽车/步行图标均按 assetCandidates 使用。尺寸 2x2、catalogId/version/updateDataModel.path='/' 均符合硬约束。扣分点：底部'查看健康'按钮文字在截图中出现明显重叠/串字现象（视觉上像'查丟健康'），导致 CTA 文案辨识度受损，指令中要求'点查看健康'的可读性打了折扣。",
+    "aesthetic": "配色整体协调：薄荷绿底、白色卡片、黄色警告、红色提醒形成清晰的功能色彩区分，字重层级合理（saving 700+20pt 最强、commute 600+12pt、其余 10pt）。但从截图观察到两处不美观：1) 底部按钮文字'查看健康'出现字形叠压/串字，视觉上呈现为'查丟健康'，是明显的渲染瑕疵；2) 步数环图直径仅 22vp、嵌入的步行图标仅 10vp，在 116vp 宽的内容区里占比过小，步行图标几乎不可辨，影响'小步数环图'的视觉表达力。",
+    "layout": "从截图看，卡片整体未出现溢出边界，header_row(18)+saving(22)+bottom_panel(68)+itemMargin*2=112，在 140-(12*2)=116 内容区里留 4vp 余量，无明显挤压。三段纵向堆叠次序正确、左右对称居中。底部面板内 calendar_warning(16)+step_row(22)+action_button(24)+itemMargin*2=66，面板高 68，刚好放下。Stack 内 Progress 环与 walk_icon 同层叠放未见遮盖数字文字。但有两处问题：1) 按钮文字出现重叠/串字（'查丟健康'），疑似 Button 组件在半透明底色上对中文字符的渲染异常，导致 CTA 文案被破坏；2) step_ring_stack 22x22 偏小，walk_icon 10x10 几乎被 Progress 环吞没，'步数环图'的存在感不足。"
+  },
+  "issues": [
+    "底部'查看健康'按钮文字出现字形重叠/串字，截图中显示为'查丟健康'，CTA 文案可读性受损",
+    "步数环图(22x22)及内部步行图标(10x10)尺寸过小，步行图标几乎不可见",
+    "按钮使用 #19000000 半透明背景叠加 #E5000000 半透明文字，疑似导致字符渲染异常",
+    "步数环图使用 #61CFBE 薄荷绿与底色 #92D6CC 接近，环图进度对比度偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"saving_text\",\"bottom_panel\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#92D6CC\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"car_icon\",\"commute_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"car_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"commute_text\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/commuteDaysText} }}\",\"styles\":{\"width\":98,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"saving_text\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/savingText} }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_panel\",\"component\":\"Column\",\"children\":[\"calendar_warning\",\"step_row\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":68,\"borderRadius\":14,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_warning\",\"component\":\"Text\",\"content\":\"{{ '晚' + ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":110,\"height\":16,\"borderRadius\":8,\"backgroundColor\":\"#F7CE00\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"step_row\",\"component\":\"Row\",\"children\":[\"step_ring_stack\",\"step_text_col\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"step_ring_stack\",\"component\":\"Stack\",\"children\":[\"step_ring\",\"walk_icon\"],\"styles\":{\"width\":24,\"height\":24,\"alignContent\":\"center\"}},{\"id\":\"step_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/health/steps} }}\",\"total\":\"{{ ${/health/stepGoal} }}\",\"styles\":{\"width\":24,\"height\":24,\"type\":\"ring\",\"color\":\"#1F8F7E\"}},{\"id\":\"walk_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_run.png\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"step_text_col\",\"component\":\"Column\",\"children\":[\"steps_text\",\"activity_reminder\"],\"itemMargin\":0,\"styles\":{\"width\":84,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"steps_text\",\"component\":\"Text\",\"content\":\"{{ ${/health/stepsText} }}\",\"styles\":{\"width\":84,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"activity_reminder\",\"component\":\"Text\",\"content\":\"{{ ${/health/activityReminder} }}\",\"styles\":{\"width\":84,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/healthLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":92,\"height\":24,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#1F8F7E\",\"borderRadius\":12}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"carpool\":{\"commuteDaysText\":\"已拼车通勤18天\",\"savingText\":\"节省 ¥312\"},\"health\":{\"stepsText\":\"今日步数 4,328\",\"steps\":4328,\"stepGoal\":8000,\"activityReminder\":\"早通勤偏少 多走点\"},\"action\":{\"healthLabel\":\"查看健康\"},\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar-carpool-home-1900\",\"title\":\"拼车回家\",\"dtStart\":\"19:00\",\"dtEnd\":\"19:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

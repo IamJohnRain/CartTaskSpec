@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-26-group-buy-015",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "用户要求基本落实：2x4 尺寸正确；标题\"拼单免密支付\"清晰展示；状态药丸\"已连接·免密可用\"在右上角；勾选框保持勾选状态（绿色对勾），文案\"到账自动支付\"正确；主指标\"200元\"显示对应雨天提额；天气提示\"小雨，自动提额200元\"有展示；右侧三条历史色块完整呈现（蓝/绿/橙）；调额度按钮已绑定 eventCandidates 中的 clickToDeeplink 事件，参数原样正确。扣分点：调额度按钮文字在截图中出现明显重叠/难以辨认，疑似按钮宽度过窄导致文本被压缩或重复渲染，CTA 可读性受损。",
+    "aesthetic": "整体配色和谐：浅蓝渐变背景搭配半透明白色控制面板，视觉层次清晰。绿色勾选框与三色历史色块（蓝/绿/橙）形成节奏感。标题字重 700 与主指标 200元字重 700 形成两个强字重，略偏多但可接受。状态药丸白底深色字对比清晰。扣分点：调额度按钮背景色 #190a59f7（透明度仅 10%）与蓝色文字 #0a59f7 对比度偏低，文字显得发糊；按钮文字区出现明显字符重叠/重影，严重影响美观与可读性。",
+    "layout": "整体布局结构合理：头部 24vp + 主体 84vp，padding 12 后纵向恰好 140vp。控制面板 166vp + 间距 8 + 历史列表 102vp = 276vp 横向恰好填满。勾选行 22vp、额度行 24vp、天气备注 14vp，加 padding 和 itemMargin 合计 84vp，无纵向溢出。问题集中在调额度按钮：截图中按钮文字\"调额度\"与相邻文字明显重叠/错位（疑似文字被压缩或重复渲染），按钮热区仅 60×24vp，虽然满足 ≥24vp 最低要求但偏窄，文字几乎贴边且出现重影；其余组件（标题、状态药丸、勾选框、200元主值、历史色块）均无截断或溢出，边界干净。"
+  },
+  "issues": [
+    "调额度按钮宽度过窄（60vp），文字\"调额度\"在截图中出现明显重叠/重影，几乎不可读",
+    "调额度按钮背景透明度仅 10%，与蓝色文字对比度不足，加剧文字模糊感",
+    "调额度按钮热区偏小（60×24vp），可点击区域不足，建议提升至 76-80vp 宽",
+    "标题字重 700 与主指标\"200元\"字重 700 同时为最强字重，层级略有冲突"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#86c5e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_pill\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/title} }}\",\"styles\":{\"width\":136,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_pill\",\"component\":\"Text\",\"content\":\"{{ ${/connection/statusText} }}\",\"styles\":{\"width\":132,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"control_panel\",\"history_list\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"control_panel\",\"component\":\"Column\",\"children\":[\"check_row\",\"quota_row\",\"weather_note\"],\"itemMargin\":4,\"styles\":{\"width\":166,\"height\":84,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#99ffffff\"}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"auto_checkbox\",\"auto_label\"],\"itemMargin\":6,\"styles\":{\"width\":150,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"auto_checkbox\",\"component\":\"Checkbox\",\"value\":\"autoPay\",\"select\":\"{{ ${/settings/autoPayEnabled} }}\",\"styles\":{\"width\":22,\"height\":22,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"auto_label\",\"component\":\"Text\",\"content\":\"{{ ${/settings/autoPayText} }}\",\"styles\":{\"width\":122,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"quota_row\",\"component\":\"Row\",\"children\":[\"limit_value\",\"limit_button\"],\"itemMargin\":6,\"styles\":{\"width\":150,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"limit_value\",\"component\":\"Text\",\"content\":\"{{ ${/payment/effectiveLimitText} }}\",\"styles\":{\"width\":64,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"limit_button\",\"component\":\"Button\",\"label\":\"{{ ${/payment/settingsLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"payment_passwordless_limit\"}}],\"styles\":{\"width\":80,\"height\":24,\"padding\":{\"left\":10,\"right\":10,\"top\":2,\"bottom\":2},\"borderRadius\":12,\"backgroundColor\":\"#330a59f7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"center\"}},{\"id\":\"weather_note\",\"component\":\"Text\",\"content\":\"{{ ${/payment/rainLimitReason} }}\",\"styles\":{\"width\":150,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"history_list\",\"component\":\"List\",\"children\":[\"history_item_0\",\"history_item_1\",\"history_item_2\"],\"space\":4,\"styles\":{\"width\":102,\"height\":84,\"listDirection\":\"vertical\",\"scrollBar\":\"auto\"}},{\"id\":\"history_item_0\",\"component\":\"Text\",\"content\":\"{{ ${/history/recent0/text} }}\",\"styles\":{\"width\":102,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#86c5e3\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"history_item_1\",\"component\":\"Text\",\"content\":\"{{ ${/history/recent1/text} }}\",\"styles\":{\"width\":102,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#92c48d\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"history_item_2\",\"component\":\"Text\",\"content\":\"{{ ${/history/recent2/text} }}\",\"styles\":{\"width\":102,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#f9bc64\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"title\":\"拼单免密支付\",\"connection\":{\"statusText\":\"已连接·免密可用\"},\"settings\":{\"autoPayEnabled\":true,\"autoPayText\":\"到账自动支付\"},\"payment\":{\"effectiveLimitText\":\"200元\",\"settingsLabel\":\"调额度\",\"rainLimitReason\":\"小雨，自动提额200元\"},\"history\":{\"recent0\":{\"text\":\"生鲜拼单 已成团\"},\"recent1\":{\"text\":\"奶茶拼单 已到账\"},\"recent2\":{\"text\":\"周末团购 待配送\"}},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"21°C\",\"condition\":\"小雨\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

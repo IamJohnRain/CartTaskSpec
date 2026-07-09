@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-18-carpool-008",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.3,
+  "reasons": {
+    "instruction": "用户三条诉求在截图中全部完整呈现：1）左上角有汽车图标和'拼车出行'标题；2）左白卡显示'周五出差'标题、时间'周五 08:30-09:00'和地点'公司南门拼车点'，完整还原'日程显示周五出差'；3）右白卡显示'已联系司机'状态文案及绿色'打电话'按钮，按钮绑定 clickToCallPhone/13800138000 事件，原样来自 eventCandidates。汽车/日程图标均来自 assetCandidates。size=2x4、root 300x140、catalogId/version/updateDataModel 等硬约束均满足。仅极轻微不足：标题'拼车出行'是硬编码静态文本而非数据驱动，但语义上可接受。",
+    "aesthetic": "截图整体观感干净专业：浅灰卡片底（#fff1f3f5）与两块白色子卡形成柔和层次；右上角'周五日程'胶囊用淡蓝紫底配同色调文字，呼应主品牌色又不喧宾夺主；绿色'打电话'按钮（#ff64bb5c）与浅灰底形成清晰对比，白色按钮文字可读性高；时间行采用图标+灰字、次级字色（#99000000）区分主次，字号阶梯（16/14/12）合理、字重最重落在'周五出差'标题上，整体只有一个最强字重。留白节奏舒适、对齐统一。",
+    "layout": "截图显示无堆叠、无文字截断、无组件溢出。header_row 高度 24 容纳图标+标题+胶囊，恰到好处；content_row 高度 84 容纳左 178 右 88 两块白卡，间距 10 适中；左白卡内 16+18+16 三行（标题+时间+地点）加 padding=8 共约 82，与高度 84 匹配；右白卡内 18+34+间距 12 共 64，垂直居中。底部'打电话'按钮热区约 72×34 ≥24vp，按钮底边距卡片底约 12vp，处于 2x4 推荐范围 10-14vp 之内。左右卡与卡片边缘左右各留 8vp，对称协调。截图中所有受保护文本（标题、CTA、主指标）均完整可见。"
+  },
+  "issues": [
+    "标题'拼车出行'是硬编码静态文本，未从 DataModel 驱动（语义可接受但严格来说应数据化）",
+    "左卡底部'公司南门拼车点'与卡片内 padding 间距略紧，可微调以提升呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"content_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"car_icon\",\"title_text\",\"day_chip\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"car_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"拼车出行\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"day_chip\",\"component\":\"Text\",\"content\":\"周五日程\",\"styles\":{\"width\":66,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#190a59f7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"schedule_panel\",\"call_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":84,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"event_title\",\"time_row\",\"location_text\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":84,\"padding\":{\"left\":10,\"right\":10,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":158,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"time_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"time_text\"],\"itemMargin\":6,\"styles\":{\"width\":158,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":136,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":158,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"call_panel\",\"component\":\"Column\",\"children\":[\"driver_status\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":88,\"height\":84,\"padding\":{\"left\":8,\"right\":8,\"top\":10,\"bottom\":10},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"driver_status\",\"component\":\"Text\",\"content\":\"{{ ${/driver/contactStatus} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"13800138000\"}}],\"styles\":{\"width\":72,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"周五出差\",\"dtStart\":\"周五 08:30\",\"dtEnd\":\"09:00\",\"eventLocation\":\"公司南门拼车点\"}]}},\"driver\":{\"contactStatus\":\"已联系司机\"}}}}"
+  ]
+}

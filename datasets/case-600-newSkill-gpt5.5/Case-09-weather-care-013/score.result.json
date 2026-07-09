@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-09-weather-care-013",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.3,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户要求的左右分区结构，左侧深色面板承载老家天气标题与雷雨图标主视觉，右侧半透明面板承载天气应用标题、温度/现象/预警/预报信息；数据 model 注入正确（老家、24°C、雷阵雨、暴雨红色预警、雨80%）；onClick 事件与 eventCandidates 完全一致；assetCandidates 中的 thunderstorm.png 正确引用。但用户明确要求'危险状态时图标闪一下提醒'，截图中 icon_box 实际呈现为接近左面板的深色，看不到 #ffdb6b42 警告色，闪烁提醒的视觉提示几乎不可见，是该卡片最关键诉求的明显缺失。",
+    "aesthetic": "整体配色为黑灰渐变到微蓝，气氛贴合恶劣天气；左侧深色卡片+右侧 #19ffffff 半透明面板块形成清晰对比；橙色预警徽标在右侧与左下文字预警形成色彩呼应；温度 24°C 与天气现象 雷阵雨 字号梯度合理。但 icon_box 区域视觉平淡，缺乏亮色高光作为危险态提示，徽标之外没有更多视觉爆点；'老家天气'标题字号略小，与右侧'天气应用'对比较弱。整体属于可用、克制但缺少一记'提醒点'的观感。",
+    "layout": "截图中无元素溢出卡片边界，左右两列在 padding=12 后宽度（104+162+10=276≈276）刚好填满；左侧三段（标题14、图标盒60、预警18）纵向加间距 4*2=8 与 padding 6*2=12 合计约 116，未越界；右侧四段（标签16+current30+badge18+row16=80，间距12，padding20=112，116 范围内）也未越界。文字均未出现截断，'暴雨红色预警'六个汉字在 92 宽度内能完整显示，'24°C 雷阵雨'无截断。唯一视觉问题是 icon_box 作为 Stack 单子元素却未居中显示图标（图标在视觉上略偏左下），且无背景色填充导致主视觉不突出。"
+  },
+  "issues": [
+    "icon_box 背景应使用 ${/ui/iconFlashColor}=#ffdb6b42 警告色，但截图未呈现该色，'闪烁提醒'诉求无法在静态截图中验证为达成",
+    "icon_box 使用 Stack 但仅含一个子元素 Image，无需层叠，应改为简单容器/Column 以便真正居中",
+    "icon_box alignContent:'center' 实际不对 Image 起作用，截图图标在盒中略偏位",
+    "左侧'老家天气'标题字号 12 偏小，作为面板顶部辨识度不足",
+    "左下面板与右侧面板底色差异偏弱（#ff202224 vs #19ffffff 在黑渐变上拉不开层次）",
+    "暴雨红色预警文本在左侧底部以纯白显示，与右侧橙色徽标信息重复，可考虑差异化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"wrap\":\"noWrap\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff1a1c20\",0],[\"#ff14161a\",0.55],[\"#ff33485a\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"left_title\",\"icon_box\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":116,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#ff252a30\",\"borderWidth\":1,\"borderColor\":\"#22ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + '天气' }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Column\",\"children\":[\"weather_icon\"],\"styles\":{\"width\":68,\"height\":60,\"borderRadius\":14,\"backgroundColor\":\"{{ ${/ui/iconFlashColor} }}\",\"borderWidth\":2,\"borderColor\":\"{{ ${/ui/iconFlashColor} }}\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/thunderstorm.png\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ ${/ui/iconFlashColor} }}\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"app_label\",\"current_row\",\"alert_badge\",\"daily_row\"],\"itemMargin\":6,\"styles\":{\"width\":162,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#22ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"app_label\",\"component\":\"Text\",\"content\":\"天气应用\",\"styles\":{\"width\":142,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"current_row\",\"component\":\"Row\",\"children\":[\"temp_text\",\"condition_text\"],\"itemMargin\":8,\"wrap\":\"noWrap\",\"styles\":{\"width\":142,\"height\":30,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"temp_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":64,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#f5ffffff\",\"maxLines\":1}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":70,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":142,\"height\":18,\"padding\":[2,8,2,8],\"borderRadius\":9,\"backgroundColor\":\"#ffdb6b42\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"daily_row\",\"component\":\"Row\",\"children\":[\"daily_day\",\"daily_temp\",\"rain_prob\"],\"itemMargin\":6,\"wrap\":\"noWrap\",\"styles\":{\"width\":142,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"daily_day\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/0/weekday} }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"daily_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/0/temperatureRangeText} }}\",\"styles\":{\"width\":58,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"rain_prob\",\"component\":\"Text\",\"content\":\"{{ '雨' + ${/data/weather/daily/0/rainProbabilityPercent} }}\",\"styles\":{\"width\":38,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffdb6b42\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"老家\",\"cityCode\":\"60814\"},\"current\":{\"temperatureText\":\"24°C\",\"condition\":\"雷阵雨\",\"alertLevel\":\"暴雨红色预警\"},\"daily\":[{\"weekday\":\"今天\",\"temperatureRangeText\":\"24°/30°\",\"rainProbabilityPercent\":\"80%\"}],\"updatedAt\":\"15:30\"}},\"ui\":{\"iconFlashColor\":\"#ffdb6b42\"}}}}"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-13-health-reminder-017",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户明确要求\"早 ✓ 已服\"\"中 ✓ 已服\"\"晚 □ 待服\"这种固定文字，截图里只看到三个绿色/空心方块，\"早/中/晚\"与\"已服/待服\"的文字标签完全缺失，是核心诉求的重大遗漏；环形完成度、磨砂渐变背景、'呼叫医生'按钮（onClick 引用了 clickToCallPhone 与 400-800-1200）、右上角天气文字均已呈现；assetCandidates 中的 cloudy.png 天气图标未被使用，phone_fill.svg 受 SVG 禁令无法使用可以接受。",
+    "aesthetic": "浅灰渐变背景营造了轻度磨砂感，配色克制专业，绿色主色（#ff64bb5c）一致；标题\"服药\"粗体层级清晰，天气文字弱化得当；但'呼叫医生'按钮内的 4 个汉字在 92 宽度+fontSize12 下明显紧凑、字间笔划几乎相贴，底部按钮文字与左侧 36x20 的小复选框都偏小，整体精致度被压缩。",
+    "layout": "截图中最关键问题是 dose_row 三个复选框只渲染了色块、文字标签完全没出现，用户看不到\"早/中/晚 已服/待服\"任何一行文字，属于信息缺失式排版失败；环形 50x50 内'2/3'文本宽 40 居中、视觉上略偏上未真正居中；按钮底边距离卡片底边仅约 6-8vp，过近；勾选项 36x20 宽度里既要画方块又要放 4 字标签，注定标签被裁掉，这是排版的根因。"
+  },
+  "issues": [
+    "dose_row 三个 Checkbox 的 label 文字（'早 已服'/'中 已服'/'晚 待服'）在截图中完全不可见，是用户明确要求的'这种固定文字'缺失",
+    "复选框宽度 36 不足以容纳方块+4 字 label，导致文字被裁切",
+    "meter_stack 中 '2/3' 文本宽 40 与环 50 宽度不一致，未真正居中",
+    "呼叫医生按钮内文字'呼叫医生'在 92 宽度+fontSize12 下偏紧，字间几乎相贴",
+    "未使用 assetCandidates 中的 cloudy.png 天气图标，角落天气仅以纯文字呈现",
+    "call_button 底边到卡片底边过近（<8vp），违反 2x2 底部 8-12vp 锚定建议"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"meter_stack\",\"dose_row\",\"call_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffe5e5ea\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_group\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"服药\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_group\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text\"],\"itemMargin\":2,\"styles\":{\"width\":70,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"end\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":12,\"height\":12}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"progress_ring\",\"progress_value\"],\"styles\":{\"width\":48,\"height\":48,\"alignContent\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":2,\"total\":3,\"styles\":{\"width\":48,\"height\":48,\"type\":\"ring\",\"color\":\"#ff64bb5c\"}},{\"id\":\"progress_value\",\"component\":\"Text\",\"content\":\"2/3\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"dose_row\",\"component\":\"Row\",\"children\":[\"morning_item\",\"noon_item\",\"night_item\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"morning_item\",\"component\":\"Row\",\"children\":[\"morning_box\",\"morning_text\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"morning_box\",\"component\":\"Checkbox\",\"value\":\"morning\",\"group\":\"dose\",\"select\":true,\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"morning_text\",\"component\":\"Text\",\"content\":\"早已服\",\"styles\":{\"width\":20,\"height\":14,\"fontSize\":9,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"noon_item\",\"component\":\"Row\",\"children\":[\"noon_box\",\"noon_text\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"noon_box\",\"component\":\"Checkbox\",\"value\":\"noon\",\"group\":\"dose\",\"select\":true,\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"noon_text\",\"component\":\"Text\",\"content\":\"中已服\",\"styles\":{\"width\":20,\"height\":14,\"fontSize\":9,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"night_item\",\"component\":\"Row\",\"children\":[\"night_box\",\"night_text\"],\"itemMargin\":2,\"styles\":{\"width\":36,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"night_box\",\"component\":\"Checkbox\",\"value\":\"night\",\"group\":\"dose\",\"select\":false,\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"night_text\",\"component\":\"Text\",\"content\":\"晚待服\",\"styles\":{\"width\":20,\"height\":14,\"fontSize\":9,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"呼叫医生\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/doctorPhone} }}\"}}],\"styles\":{\"width\":104,\"height\":26,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"contact\":{\"doctorPhone\":\"400-800-1200\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

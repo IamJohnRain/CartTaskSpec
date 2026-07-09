@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-11-fitness-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图清晰呈现了'运动清单'标题、'2/2 已完成'状态、环形进度+主数值'2/2'+'今日已完成'辅助说明、两条锻炼日程（07:30 力量训练 已完成 / 20:00 拉伸放松 已完成）以及底部'打开锻炼'按钮。点击跳app通过 Button.onClick 调用 clickToDeeplink，uri 原样来自 eventCandidates。size=2x2 协议（catalogId、version、width/height、borderRadius、clip、updateDataModel 路径与值）均满足。轻微扣分：进度环在 100% 完成时只呈现一个空心圆环，几乎不传递'进度'信息；用户原始指令'显示带数字的话'对应的可点主指标是'2/2'大数字，但截图里'2/2'是纯文本，并未作为可点击元素触发 onClick（点击跳app落在了底部 Button 上），与'点一下跳app'的最佳落点略有偏差。",
+    "aesthetic": "截图整体观感较好：绿色对角线渐变背景与运动/健康主题契合，白色文字在绿底上对比清晰、阅读无障碍；白底胶囊形 CTA 按钮与暗色文字反差强、可点击识别度高；2/2 大数字 + 弱化辅助文字 '今日已完成' 形成清晰的字重阶梯。扣分点：进度环仅为一条细白色描边圆形，作为 100% 完成态视觉信息量低、与主指标 2/2 重复表达；列表区浅色半透明底色与绿色背景的对比偏弱，'已完成'三字与背景分离度一般。",
+    "layout": "截图自上而下元素排列整齐：标题行 16vp + 进度行 34vp + 列表 32vp + 按钮 28vp，合计 110vp 加上 4vp itemMargin 与 24vp padding = 138vp（≈140vp），未观察到任何元素溢出卡片边界；列表两条记录时间/标题/状态在水平方向上排成一行，未出现文字被裁切或重叠；按钮完整可见、未贴边到底部 borderRadius 圆角外缘。扣分点：进度环 ring 与右侧 2/2 + '今日已完成' 列起点靠左对齐，但 primary_group 整体宽度 74 与环之间间距过窄，使得视觉上 2/2 文字略压环右沿；'2/2 已完成'顶部状态文字与 '运动清单' 标题之间无明显 padding 区分。"
+  },
+  "issues": [
+    "进度环在 100% 完成时仅渲染为细空心圆，视觉信息量低，与右侧 '2/2' 主指标重复",
+    "列表条目 '已完成' 文字与浅色半透明背景对比度偏弱",
+    "顶部 header_row 内 '运动清单' 与 '2/2 已完成' 之间留白靠 spaceBetween，无明显视觉分组",
+    "用户指令'点一下跳app'在原 DSL 中只绑定到底部 Button，建议把 '2/2' 主指标或整张卡也做成可点击以更贴合'带数字的点一下'语义"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"meter_row\",\"workout_list\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#4ea24a\",0],[\"#9bc99a\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"运动清单\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/completionText} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"completion_ring\",\"primary_group\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"completion_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/summary/completedCount} }}\",\"total\":\"{{ ${/summary/totalCount} }}\",\"styles\":{\"type\":\"ring\",\"width\":30,\"height\":30,\"color\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"strokeWidth\":3}},{\"id\":\"primary_group\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":1,\"styles\":{\"width\":80,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/summary/completedCount} + '/' + ${/summary/totalCount} }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"今日已完成\",\"styles\":{\"width\":80,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"workout_list\",\"component\":\"Column\",\"children\":[\"item_row_1\",\"item_row_2\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":32,\"padding\":{\"top\":5,\"right\":8,\"bottom\":5,\"left\":8},\"borderRadius\":10,\"backgroundColor\":\"#26ffffff\"}},{\"id\":\"item_row_1\",\"component\":\"Row\",\"children\":[\"item_time_1\",\"item_title_1\",\"item_state_1\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":9,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"item_time_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":28,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"item_title_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":36,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"item_state_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":32,\"height\":10,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ffd9b3\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"item_row_2\",\"component\":\"Row\",\"children\":[\"item_time_2\",\"item_title_2\",\"item_state_2\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":9,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"item_time_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} }}\",\"styles\":{\"width\":28,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"item_title_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":36,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"item_state_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/description} }}\",\"styles\":{\"width\":32,\"height\":10,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ffd9b3\",\"maxLines\":1,\"textAlign\":0,\"textAlign\":\"end\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开锻炼\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#1a4a1a\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"summary\":{\"completedCount\":2,\"totalCount\":2,\"completionText\":\"2/2 已完成\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"workout-001\",\"title\":\"力量训练\",\"dtStart\":\"07:30\",\"dtEnd\":\"08:10\",\"description\":\"已完成\"},{\"entityId\":\"workout-002\",\"title\":\"拉伸放松\",\"dtStart\":\"20:00\",\"dtEnd\":\"20:20\",\"description\":\"已完成\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

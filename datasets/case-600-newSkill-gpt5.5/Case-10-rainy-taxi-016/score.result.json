@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-10-rainy-taxi-016",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.7,
+  "reasons": {
+    "instruction": "用户原始指令要求'右边横着排几个出行平台让我勾选(滴滴、高德、T3)'，但截图中三个 Checkbox 的 label 全部被截断为 '...'，导致用户完全无法辨认哪个是滴滴、哪个是高德、哪个是 T3，平台名这一关键信息事实上未呈现给用户，指令遵从严重打折。其余诉求均已落实：左侧天气图标 + 26°C 主视觉、简洁素净的浅蓝渐变底色、确定按钮通过 clickToDeeplink 跳到天气应用 uri、排队 24 人（>20）通过 queueStatusColor 标记为红色 #ffe84026。尺寸 2x4（300x140）符合规范，updateDataModel.path 为 '/' 且 value 与 TaskSpec.dataModel.value 原样一致。",
+    "aesthetic": "截图整体配色协调：浅蓝渐变底色契合'简洁素净'主题，右侧白底圆角面板让功能区更聚焦；26°C 字号 32 粗体作为主视觉突出，'小雨 · 降雨82%' 灰色次级信息层级清晰。但 Checkbox label 全部显示为 '...'，让平台行视觉上像未完工的占位，严重拉低观感。队列状态'排队24人 偏久'虽绑定红色，但因字体 12px 加深红，视觉警示冲击力偏弱。",
+    "layout": "截图中可观察到明确的布局问题：1）右侧平台行内三个 Checkbox 的文字 label（滴滴、高德、T3）全部被截断为 '...'，属于文字被裁切/截断，是核心排版失败；2）出现 '...' 的位置位于两个 Checkbox 视觉之间，说明 label 容器宽度 48（didi/amap）、42（t3）扣除 Checkbox 方块 + 内边距后已无可用空间，文字被强制截断；3）右侧面板 content 区域为 160vp，但三个 Checkbox 总宽 48+48+42+itemMargin 6×2=150，留给 label 的实际渲染宽度不足；4）卡片整体未越界，按钮热区 32vp 满足 ≥24vp 要求，确认按钮距底边约 8-10vp 在合理范围。"
+  },
+  "issues": [
+    "三个 Checkbox 的 label（滴滴、高德、T3）全部被截断为 '...'，用户无法识别平台名称",
+    "didi_check 和 amap_check 宽度 48vp、t3_check 宽度 42vp 不足以容纳 Checkbox 方块 + 2 字符中文/T3 label",
+    "platform_row 宽度 156vp，content 区域 160vp 仍有少量富余但未合理分配给 label"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_col\",\"right_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#86c5e3\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_col\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"temperature_text\",\"condition_text\"],\"itemMargin\":4,\"styles\":{\"width\":92,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/rain.png\",\"styles\":{\"width\":54,\"height\":54,\"objectFit\":\"contain\"}},{\"id\":\"temperature_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":92,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · 降雨' + ${/data/weather/daily/0/rainProbabilityPercent} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"platform_title\",\"platform_row\",\"queue_status\",\"confirm_button\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"platform_title\",\"component\":\"Text\",\"content\":\"选择出行平台\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"platform_row\",\"component\":\"Row\",\"children\":[\"didi_check\",\"amap_check\",\"t3_check\"],\"itemMargin\":2,\"styles\":{\"width\":160,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"didi_check\",\"component\":\"Checkbox\",\"label\":\"滴滴\",\"value\":\"didi\",\"group\":\"taxi_platforms\",\"select\":\"{{ ${/ride/platforms/0/selected} }}\",\"styles\":{\"width\":56,\"height\":24,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"amap_check\",\"component\":\"Checkbox\",\"label\":\"高德\",\"value\":\"amap\",\"group\":\"taxi_platforms\",\"select\":\"{{ ${/ride/platforms/1/selected} }}\",\"styles\":{\"width\":56,\"height\":24,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"t3_check\",\"component\":\"Checkbox\",\"label\":\"T3\",\"value\":\"t3\",\"group\":\"taxi_platforms\",\"select\":\"{{ ${/ride/platforms/2/selected} }}\",\"styles\":{\"width\":44,\"height\":24,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"queue_status\",\"component\":\"Text\",\"content\":\"{{ ${/ride/queueStatusText} }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"{{ ${/ride/queueStatusColor} }}\",\"maxLines\":1}},{\"id\":\"confirm_button\",\"component\":\"Button\",\"label\":\"确定\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":160,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#190a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"小雨\"},\"daily\":[{\"weekday\":\"今天\",\"rainProbabilityPercent\":\"82%\"}],\"updatedAt\":\"2026-07-09 08:30\"}},\"ride\":{\"queueStatusText\":\"排队24人 偏久\",\"queueStatusColor\":\"#ffe84026\",\"platforms\":[{\"selected\":true},{\"selected\":true},{\"selected\":false}]},\"state\":{\"loading\":false}}}}"
+  ]
+}

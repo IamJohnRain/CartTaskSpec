@@ -1,0 +1,31 @@
+{
+  "case_id": "Case-12-finance-007",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.4,
+  "reasons": {
+    "instruction": "截图清晰呈现四大用户诉求：① 余额数字会变 —— 主数值 ¥8642 通过表达式从 /finance/balanceText 绑定，运行时可更新；② 点进app —— '进入' 按钮使用 onClick+clickToDeeplink，call/args 与 eventCandidates 原样一致；③ 从日历读记账日 —— 头部有日历图标，'今天 · 记账日' 从 /data/calendar/items/0 读取，calendarIcon 来自 assetCandidates；④ 红色警告 —— 右上角 '红色警告' 红色徽章醒目呈现。硬约束全部满足：2x2 尺寸、root 140x140、catalogId、version、updateDataModel.path='/' 均正确。",
+    "aesthetic": "从截图看整体观感专业克制：浅色渐变背景（白→浅灰）柔和不刺眼，红色徽章与黑色日历图标形成清晰的警示-信息对比，文字层级分明（32pt 余额为主、14pt 标题、12pt 副信息），只有一个最强字重（余额 700）。留白均衡，无空洞也无拥挤。对齐统一，'余额' 与 '红色警告' 徽章左右对称分布。仅 '进入' 按钮采用浅灰底 #19000000 稍显克制，但属于次级 CTA 的合理表达，不影响整体美观。",
+    "layout": "截图显示排版干净无任何堆叠或截断：header_row(22) + itemMargin 4 + primary_value(34) + itemMargin 4 + divider(1) + itemMargin 4 + date_text(17) + itemMargin 4 + action_button(26) = 116，刚好填满内容区且与 root 140 减去上下 padding 12+12=24 相符。'¥8642' 主数值完整显示未裁切，'今天 · 记账日' 完整显示，'进入' 按钮文字居中可见，红色徽章 '红色警告' 文字完整。日历图标与 '余额' 标题、徽章在 header_row 内均未重叠。底部按钮距卡片底边约 10-12vp，落在 2x2 的 8-12vp 最佳区间。"
+  },
+  "issues": [
+    "轻微：'进入' 按钮背景色 #19000000 透明度较低，作为卡片主 CTA 视觉上略显克制，可考虑略提升对比以强化点击引导"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"divider\",\"date_text\",\"action_button\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"title_text\",\"alert_badge\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/calendarIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\",\"backgroundColor\":\"#19000000\",\"borderRadius\":8}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"余额\",\"styles\":{\"width\":44,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/finance/alertText} }}\",\"styles\":{\"width\":48,\"height\":20,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":10,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ '¥' + ${/finance/balanceText} }}\",\"styles\":{\"width\":116,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"date_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' · ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进入\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":116,\"height\":26,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"backgroundColor\":\"#ffffffff\",\"borderWidth\":1,\"borderColor\":\"#ffe84026\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"finance\":{\"balanceText\":\"8642\",\"alertText\":\"红色警告\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-ledger-001\",\"title\":\"记账日\",\"dtStart\":\"今天\",\"dtEnd\":\"23:59\"}]}},\"asset\":{\"calendarIcon\":\"resources/base/media/calendar_fill.svg\"}}}}"
+  ]
+}

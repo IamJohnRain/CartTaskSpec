@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-02-earphone-music-006",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.3,
+  "reasons": {
+    "instruction": "截图中可清楚看到'已连接'徽章、绿色'听歌'按钮（带音乐 deeplink 事件，call/args 与 eventCandidates 完全一致）、天气'26°C 多云'（经数据绑定正确呈现），专辑图（音乐图标）确实位于中间行；唯一不足是封面面板未真正水平居中而是明显偏左，与用户'中间放张专辑图'的精准诉求有偏差，按用户原话应位于卡片视觉中心。",
+    "aesthetic": "紫色斜向渐变背景（#ac49f5→#c386f0）与白色主文字、绿色 CTA 按钮搭配协调，'已连接'深色半透明胶囊状徽章使状态文字在紫底上可读性高；字号层级（20°C>12>10）与字重（700>600>500）形成清晰对比，无杂乱信息；唯一遗憾是中间专辑图标的音乐符号在浅紫半透底上略偏淡、对比度一般，但属素材本身的呈现特性。",
+    "layout": "截图显示卡片无溢出、无文字截断、无元素互相重叠，底部 32vp 行高内'听歌'按钮热区约 48×32vp 满足点击需求；主要可观察到的问题：root Column 缺少 alignItems:center，导致 58 宽的 cover_panel 在 116 内容区里按默认 flex-start 左对齐，从截图可见封面明显靠左（约从 x≈12 起到 x≈70），与用户要求的'中间'不符，是本卡最明显的布局瑕疵。"
+  },
+  "issues": [
+    "root Column 未设置 alignItems:center，导致 cover_panel 水平左偏，专辑图未真正置于卡片中央",
+    "cover_panel 实际渲染 x 起点约 12px、终点约 70px，而卡片水平中心应位于 x≈70，故视觉上明显左偏"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"cover_panel\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ac49f5\",0],[\"#c386f0\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"已连接\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#33000000\",\"borderRadius\":9}},{\"id\":\"cover_panel\",\"component\":\"Stack\",\"children\":[\"cover_image\"],\"styles\":{\"width\":58,\"height\":54,\"alignContent\":\"center\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":16,\"clip\":true}},{\"id\":\"cover_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_col\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"temperature_text\",\"condition_text\"],\"itemMargin\":0,\"styles\":{\"width\":64,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"temperature_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":64,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"听歌\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":48,\"height\":32,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

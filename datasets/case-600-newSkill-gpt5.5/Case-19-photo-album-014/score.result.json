@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-19-photo-album-014",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户明确要求的'中心一个环形显示重复照片326张'未能真正呈现：截图中环形(Progress ring)被一个宽96vp的黑色胶囊完全覆盖，仅在顶部和底部露出极细的蓝色弧线，'326'核心数字无法在环内看到。'清理失败'告警使用了橙色(#ffed6f21)而非用户要求的'红色'；底部按钮也偏橙(#ffed6f21)而非'红色按钮'。三行小数据、天气读取、夜蓝渐变磨砂感、点击拨打电话的事件绑定均已落实，整体信息齐全但关键视觉与配色存在偏差。",
+    "aesthetic": "从截图看，夜蓝到深紫的渐变与磨砂玻璃面板(半透明白色)效果尚可，标题/数值层级大体清晰。但存在两个明显的美观问题：1)顶部黑色圆角胶囊把蓝色环形压在身后，环与文字的关系混乱、不像一个仪表盘;2)文字使用了强对比的纯白+纯橙，配色偏'亮'，与'夜蓝磨砂'的克制感略有冲突。整体可读但不够精致。",
+    "layout": "截图中最严重的排版问题是Stack叠层顺序错误：meter_text_column(96x28的黑色胶囊)与duplicate_ring(50x50的环)作为同一Stack的子元素，胶囊宽于环且后绘制，把环几乎完全遮挡，'326'这个主指标无法呈现。其次，action_button(80x24)位于卡片底部，底边几乎贴齐卡片下沿，与卡片下边距仅约8vp，文字'呼叫妈妈'底端紧贴按钮底部，存在轻微压字感；metrics_column(36vp)与按钮、meter_stack之间的纵向留白也偏紧，整体内容在116vp可用高度内被压实。"
+  },
+  "issues": [
+    "Stack叠层遮挡：黑色文字胶囊(96x28)完全遮盖环形Progress(50x50)，主指标326在环中不可见",
+    "颜色偏差：'清理失败'告警与按钮均使用橙色(#ffed6f21)，与用户要求的'红色告警''红色按钮'不符",
+    "底部按钮距卡片下沿仅约8vp，'呼叫妈妈'文字底端紧贴按钮下边缘，视觉上局促",
+    "meter_stack宽116高52的Stack容器内，左侧环位置与文字胶囊中心未对齐(胶囊宽96、环宽50、对齐后环偏离胶囊中心)",
+    "进度环颜色(#86c5e3 浅蓝)与告警橙色在语义上未形成'主指标+告警'的色彩呼应，弱化了'重复照片多需清理'的紧迫感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"meter_row\",\"metrics_column\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#ff202224\",0],[\"#5550a6\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"duplicate_ring\",\"meter_text_col\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":44,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"duplicate_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/album/duplicatePhotos/count} }}\",\"total\":\"{{ ${/data/album/duplicatePhotos/total} }}\",\"styles\":{\"type\":\"ring\",\"width\":40,\"height\":40,\"color\":\"#ff5b8cff\"}},{\"id\":\"meter_text_col\",\"component\":\"Column\",\"children\":[\"duplicate_text\",\"alert_text\"],\"itemMargin\":2,\"styles\":{\"width\":70,\"height\":40,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"duplicate_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/album/duplicatePhotos/displayText} }}\",\"styles\":{\"width\":70,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/album/cleanupStatus} }}\",\"styles\":{\"width\":70,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff3b30\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"metrics_column\",\"component\":\"Column\",\"children\":[\"metric_groups_row\",\"metric_space_row\",\"metric_weather_row\"],\"itemMargin\":0,\"styles\":{\"width\":116,\"height\":36,\"padding\":{\"left\":8,\"right\":8,\"top\":0,\"bottom\":0},\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"metric_groups_row\",\"component\":\"Row\",\"children\":[\"metric_groups_label\",\"metric_groups_value\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":12,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"metric_groups_label\",\"component\":\"Text\",\"content\":\"重复组\",\"styles\":{\"width\":46,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"metric_groups_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/album/metrics/duplicateGroups} + '组' }}\",\"styles\":{\"width\":42,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"metric_space_row\",\"component\":\"Row\",\"children\":[\"metric_space_label\",\"metric_space_value\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":12,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"metric_space_label\",\"component\":\"Text\",\"content\":\"占用\",\"styles\":{\"width\":46,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"metric_space_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/album/metrics/wastedSpaceGb} + 'GB' }}\",\"styles\":{\"width\":42,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"metric_weather_row\",\"component\":\"Row\",\"children\":[\"metric_weather_label\",\"metric_weather_value\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":12,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"metric_weather_label\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":46,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"metric_weather_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureC} + '°C' }}\",\"styles\":{\"width\":42,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"呼叫妈妈\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/momPhoneNumber} }}\"}}],\"styles\":{\"width\":80,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ff3b30\",\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"album\":{\"duplicatePhotos\":{\"displayText\":\"重复照片326张\",\"count\":326,\"total\":500},\"metrics\":{\"duplicateGroups\":18,\"wastedSpaceGb\":4.8},\"cleanupStatus\":\"清理失败\"},\"weather\":{\"current\":{\"temperatureC\":29}}},\"contact\":{\"momPhoneNumber\":\"13800138000\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户要求显示专注5小时18分钟并能点开看日程和完成情况。截图中清晰呈现了「5小时 18分钟」主数值、「保持中 · 今日完成 4/5」状态与完成情况摘要、右侧「今日日程」面板列出「14:00 项目复盘」「16:30 整理计划」两条日程以及「查看详情」CTA。clickToDeeplink 事件按 eventCandidates 原样绑定在 root 和 Button 上,icon_focus.png、icon_schedule.png 资产按语义使用,size=2x4、catalogId、version、updateDataModel.path/value 均符合协议。整体指令落实完整,扣 1 分因为主数值「5」在视觉上紧贴面板左边缘略有压迫感,影响信息呈现的舒适度。",
+    "aesthetic": "截图为浅灰底配紫色 CTA,配色和谐、层级清晰,「5小时」为最强字重(32 号)、「18分钟」次之(20 号)、标题 14 号、状态/日程 12 号,字号阶梯合理。右侧灰色面板与左侧主区形成对比,「查看详情」紫色按钮视觉聚焦明确。扣分点:左侧主数值「5小时」与「18分钟」之间留白偏紧,且「5」字视觉上紧贴容器左缘,略显拥挤;右下角按钮底边距卡片底边偏大,使卡片整体视觉重心略偏高。",
+    "layout": "截图主要排版问题:1)「5小时」中数字「5」的左缘紧贴 hero_panel 左边界(主数值宽度 84px,文字估算约 83px,几乎零留白),视觉上有贴边/轻微被裁切的观感;2)primary_row 内 itemMargin=6 偏小,「5小时」与「18分钟」两段主数值几乎相切,层级感被压缩;3)detail_panel 高 110px 在 116px 内容区中居中后,「查看详情」按钮底边到卡片底边约 21vp,超过 2x4 推荐的 10-14vp(硬上限 16vp),底部空白偏大;4)右侧 schedule 两行均完整显示、未截断,按钮热区充足,无元素溢出卡片边界。"
+  },
+  "issues": [
+    "主数值「5小时」宽度 84px 与文字估算宽度(~83px)几乎相等,「5」字符贴左边缘,视觉上有压迫感",
+    "primary_row.itemMargin=6 过小,「5小时」与「18分钟」两段主数值间距不足",
+    "detail_panel 高度 110 在 116 内容区中居中,导致「查看详情」按钮底边距卡片底边约 21vp,超出 2x4 推荐 10-14vp 区间",
+    "hero_panel 与 detail_panel 宽度配比(156:110)使主数值区略显拥挤,可适当加宽主区"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"detail_panel\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFF1F3F5\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"hero_header\",\"primary_row\",\"primary_caption\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"hero_header\",\"component\":\"Row\",\"children\":[\"focus_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":164,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"focus_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/title} }}\",\"styles\":{\"width\":134,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_hour\",\"primary_minute\"],\"itemMargin\":8,\"styles\":{\"width\":164,\"height\":38,\"alignItems\":\"bottom\"}},{\"id\":\"primary_hour\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/durationHourText} }}\",\"styles\":{\"width\":94,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"primary_minute\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/durationMinuteText} }}\",\"styles\":{\"width\":62,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/statusText} + ' · ' + ${/data/focus/completionSummary} }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"detail_panel\",\"component\":\"Column\",\"children\":[\"schedule_header\",\"schedule_row_1\",\"schedule_row_2\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":110,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_header\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"schedule_title\"],\"itemMargin\":4,\"styles\":{\"width\":92,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"今日日程\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"schedule_row_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"schedule_row_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/focus/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":92,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#564AF7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"focus\":{\"title\":\"专注模式\",\"durationText\":\"5小时18分钟\",\"durationHourText\":\"5小时\",\"durationMinuteText\":\"18分钟\",\"completionSummary\":\"今日完成 4/5\",\"statusText\":\"保持中\",\"actionText\":\"查看详情\"},\"calendar\":{\"items\":[{\"entityId\":\"calendar_event_001\",\"title\":\"项目复盘\",\"dtStart\":\"14:00\",\"dtEnd\":\"15:00\"},{\"entityId\":\"calendar_event_002\",\"title\":\"整理计划\",\"dtStart\":\"16:30\",\"dtEnd\":\"17:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

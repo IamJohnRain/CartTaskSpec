@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-11-fitness-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户要求的全部要素：标题'健身总结'、右上'已连设备'徽标、左侧白色图标盘中的人物跑步图标、主语句'今天运动 48 分钟'和大号'燃烧 520 千卡'（带数字的健身总结一句话）、底部'已连 Watch GT 4'设备信息行、以及绿色'打开应用'按钮（通过 onClick 正确绑定了 clickToDeeplink 事件，参数完全来自 eventCandidates）。size 2x4、root 300x140/borderRadius 22/clip、catalogId/version、updateDataModel.path='/value 原样回填'等硬约束全部满足。轻微扣分点：用户说'一句话带数字那种'，截图实际呈现了主语句+热量两行文字，未严格合并为单一带数字的一句话。",
+    "aesthetic": "截图整体观感良好：橙红到金黄的对角渐变与健身/运动主题契合，前景白色文字在橙底上对比清晰、可读性强。白色圆角图标盘与橙色背景形成清爽层次，绿色'打开应用'按钮作为唯一彩色 CTA，在暖色背景上识别度高。字号阶梯（14 标题 / 16 主句 / 20 热量）层次清晰、字重区分合理（仅 700/600/500 三档），左右主区与底部行动区分组对齐、留白密度舒适。略减分：'今天运动 48 分钟'行高偏紧，与下方 20px 大号热量文字之间的视觉节奏略显局促。",
+    "layout": "截图未观察到明显的元素堆叠或裁切：标题与右上徽标同行不重叠，跑步图标盘与右侧双行文字主区水平居中对齐，底部'已连设备'长徽标与'打开应用'按钮左右铺满 276 宽度且未越界。受保护文本（标题、状态、CTA、主数值'燃烧 520 千卡'）均完整可读，无 ellipsis 截断。最大行高核算：root 列总占用 12+20+6+48+6+32+12=136 ≤ 140，未溢出。底部 CTA 按钮底边距卡片底边约 12vp，处于推荐 10-14vp 区间。扣分点：primary_col 中 calorie_text 声明 height:20 但 fontSize:20，文本实际行高需要约 24px，导致'燃烧 520 千卡'上沿笔画（尤其是'燃'字顶部）与容器顶非常接近，存在轻微视觉拥挤感；main_row 高度 48 也与图标盘 48 同步偏紧，缺少内呼吸空间。"
+  },
+  "issues": [
+    "primary_sentence(22)+itemMargin(4)+calorie_text(20)=46 塞进 height:48 的 primary_col，再加上 calorie_text fontSize:20 的真实行高 ~24px，'燃烧 520 千卡'顶部笔画像素与容器边界几乎贴合，存在轻微拥挤",
+    "main_row 高度 48 与图标盘 48 同步偏紧，文字双行与图标中心对齐后整体缺内呼吸",
+    "用户'一句话带数字那种'的诉求被拆为 sentence + caloriesText 两行展示，未严格合并为单一带数字主句"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"device_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/title} }}\",\"styles\":{\"width\":180,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"device_badge\",\"component\":\"Text\",\"content\":\"{{ ${/summary/deviceStatusText} }}\",\"styles\":{\"width\":88,\"height\":20,\"padding\":[2,8,2,8],\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"icon_panel\",\"primary_col\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"fitness_icon\"],\"styles\":{\"width\":56,\"height\":54,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"fitness_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/figure_run.svg\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"primary_col\",\"component\":\"Column\",\"children\":[\"primary_sentence\",\"calorie_text\"],\"itemMargin\":2,\"styles\":{\"width\":212,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_sentence\",\"component\":\"Text\",\"content\":\"{{ ${/summary/sentence} }}\",\"styles\":{\"width\":212,\"height\":22,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"calorie_text\",\"component\":\"Text\",\"content\":\"{{ ${/summary/caloriesText} }}\",\"styles\":{\"width\":212,\"height\":28,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"device_line\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"device_line\",\"component\":\"Text\",\"content\":\"{{ ${/summary/deviceLine} }}\",\"styles\":{\"width\":176,\"height\":30,\"padding\":[6,10,6,10],\"borderRadius\":16,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/summary/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":92,\"height\":30,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"summary\":{\"title\":\"健身总结\",\"deviceStatusText\":\"已连设备\",\"sentence\":\"今天运动 48 分钟\",\"caloriesText\":\"燃烧 520 千卡\",\"deviceLine\":\"已连 Watch GT 4\",\"actionLabel\":\"打开应用\"}}}}"
+  ]
+}

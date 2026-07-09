@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-15-smart-home-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户要求做一个'一按就开灯'的开关。截图清晰呈现了：吸顶灯图标、标题'吸顶灯'、状态'待开启'、提示'点按开灯'、绿色'开灯'按钮，开灯事件使用 eventCandidates 中原样提供的 clickToIntent/SetSettingSwitch/battery_saving_mode，assetCandidates 中的 lamp_ceiling_light.svg 也正确绑定到 /asset/lampIcon。尺寸 2x4、catalogId、version、updateDataModel.path=/ 等硬约束均满足。唯一可议点在于 eventCandidates 语义与'开灯'场景不完全匹配（实为电池省电开关），但 DSL 严格遵循了 TaskSpec 契约，不能因此扣分。",
+    "aesthetic": "截图整体观感良好：暖黄色斜向渐变背景温暖克制，右侧绿色 CTA 与背景形成高对比，文字可读性佳。字号阶梯 18/16/12 分明，标题加粗作为最强字重。但 info_column 中标题'吸顶灯'与状态'待开启'间距过近（itemMargin 6、字重差不够大），导致两者视觉层级略显模糊，'待开启'几乎和'吸顶灯'等量齐观，弱化了'主标题 + 状态'的常规层级。图标圆角面板的浅色半透明白底处理干净。",
+    "layout": "截图未观察到任何元素堆叠、溢出或裁切：左侧图标圆角面板、中部三行文字、右侧绿色按钮均完整呈现于卡片 300x140 边界内；三栏主行宽度 72+106+74 + 2*12 = 276，恰好填满内容区，无挤压；三行文字（22+20+16 + 2*6 = 70）也安全落在 92 高度内。受保护文本（标题、状态、CTA）均无截断；按钮热区 74x36 充足，底部到卡片底边约 12vp，合规。"
+  },
+  "issues": [
+    "info_column 中标题与状态文字 itemMargin 仅 6vp，且状态字重 500，导致'吸顶灯'与'待开启'视觉间距偏紧、层级区分不够清晰",
+    "主行 alignItems/justifyContent 均为 center，配合 Column 的高度 116，可能让 info_column 的三行文字在垂直方向被压在中线，未紧贴顶部，顶部留白略多于底部（轻微）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f5dc62\",0],[\"#f9bc64\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"icon_panel\",\"info_column\",\"action_column\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"lamp_icon\"],\"styles\":{\"width\":72,\"height\":92,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"lamp_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/lampIcon} }}\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"state_text\",\"hint_text\"],\"itemMargin\":10,\"styles\":{\"width\":106,\"height\":92,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/lighting/title} }}\",\"styles\":{\"width\":106,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"state_text\",\"component\":\"Text\",\"content\":\"{{ ${/lighting/stateText} }}\",\"styles\":{\"width\":106,\"height\":20,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ ${/lighting/hint} }}\",\"styles\":{\"width\":106,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_column\",\"component\":\"Column\",\"children\":[\"action_button\"],\"styles\":{\"width\":74,\"height\":92,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/lighting/buttonLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":74,\"height\":36,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":18}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"lighting\":{\"title\":\"吸顶灯\",\"stateText\":\"待开启\",\"hint\":\"点按开灯\",\"buttonLabel\":\"开灯\"},\"asset\":{\"lampIcon\":\"resources/base/media/lamp_ceiling_light.svg\"}}}}"
+  ]
+}

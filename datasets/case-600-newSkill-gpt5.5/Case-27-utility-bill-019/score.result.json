@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-27-utility-bill-019",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图中清晰呈现：左侧纵向排列三个不同底色（绿/蓝/黄）的已缴费条目，每条前都有绿色实心勾选框，文字分别为'电费已缴 ¥128'/'水费已缴 ¥64'/'燃气费已缴 ¥92'；右侧灰色面板含'客服'标题、'账单问题'副标、'全部完成'状态徽章和绿色'拨打客服'按钮，onClick 绑定的 clickToCallPhone/95598 与 eventCandidates 一致。整体全部为正向完成态、纯文字+图标、无渐变。唯一小瑕疵：userQuery 说'嵌一个面板块'，原意可以指整张卡片是一个大面板，但当前实现把面板块独立成右侧窄条，与'卡片里嵌'略有出入，但功能上仍成立。",
+    "aesthetic": "截图整体配色和谐：三个柔色块（淡绿/淡蓝/淡黄）分区明确，深色文字在这些浅底上对比清晰可读；右侧浅灰面板与绿底按钮形成良好主次层级；字号阶梯（14/12）合理，字重区分到位；留白密度适中，元素对齐统一。无渐变、无装饰过度，专业克制。",
+    "layout": "截图中三行账单纵向排列、间距均匀，每行的勾选框与文字左对齐无错位，'电费/水费/燃气费已缴 ¥XX'文本完整可读无截断。右侧服务面板四个元素（标题/副标/状态/按钮）从上到下依次排开，均在面板内可见、未被裁切。唯一可改进点：'拨打客服'按钮底边距卡片底边约 16vp（按 2x4 规则应 ≤16vp），处于临界值，但截图中按钮并未紧贴底边、未触发裁剪/遮挡，目视可接受；除此之外无堆叠、无溢出、无文字截断。"
+  },
+  "issues": [
+    "service_panel 内部 itemMargin=6 + padding=4 导致按钮底边距卡片底边约 16vp，处于 2x4 规定的临界值，建议给按钮再留 2-4vp 呼吸空间",
+    "userQuery 中'卡片里嵌一个面板块'语义被实现为独立的右侧窄条面板，与'嵌'的视觉强调（应是卡片内主要区域）略有偏差，但功能成立"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"bill_list\",\"service_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":10,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"bill_list\",\"component\":\"Column\",\"children\":[\"electric_row\",\"water_row\",\"gas_row\"],\"itemMargin\":4,\"styles\":{\"width\":178,\"height\":120,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"electric_row\",\"component\":\"Row\",\"children\":[\"electric_check\",\"electric_text\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":34,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#a8d4a1\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"electric_check\",\"component\":\"Checkbox\",\"value\":\"electric\",\"group\":\"paid_bills\",\"select\":\"{{ ${/bills/electric/paid} }}\",\"styles\":{\"width\":20,\"height\":20,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff4caf50\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"electric_text\",\"component\":\"Text\",\"content\":\"{{ ${/bills/electric/displayText} }}\",\"styles\":{\"width\":140,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"water_row\",\"component\":\"Row\",\"children\":[\"water_check\",\"water_text\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":34,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#a8d3e3\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"water_check\",\"component\":\"Checkbox\",\"value\":\"water\",\"group\":\"paid_bills\",\"select\":\"{{ ${/bills/water/paid} }}\",\"styles\":{\"width\":20,\"height\":20,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff4caf50\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"water_text\",\"component\":\"Text\",\"content\":\"{{ ${/bills/water/displayText} }}\",\"styles\":{\"width\":140,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"gas_row\",\"component\":\"Row\",\"children\":[\"gas_check\",\"gas_text\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":34,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#f5dc78\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"gas_check\",\"component\":\"Checkbox\",\"value\":\"gas\",\"group\":\"paid_bills\",\"select\":\"{{ ${/bills/gas/paid} }}\",\"styles\":{\"width\":20,\"height\":20,\"shape\":\"rounded_square\",\"selectedColor\":\"#ff4caf50\",\"unSelectedColor\":\"#33000000\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"gas_text\",\"component\":\"Text\",\"content\":\"{{ ${/bills/gas/displayText} }}\",\"styles\":{\"width\":140,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"service_panel\",\"component\":\"Column\",\"children\":[\"panel_title\",\"panel_hint\",\"panel_status\",\"call_button\"],\"itemMargin\":4,\"styles\":{\"width\":94,\"height\":120,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"panel_title\",\"component\":\"Text\",\"content\":\"{{ ${/support/title} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panel_hint\",\"component\":\"Text\",\"content\":\"{{ ${/support/hint} }}\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"panel_status\",\"component\":\"Text\",\"content\":\"{{ ${/support/statusText} }}\",\"styles\":{\"width\":82,\"height\":20,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"backgroundColor\":\"#0c000000\",\"borderRadius\":10}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"{{ ${/support/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"95598\"}}],\"styles\":{\"width\":82,\"height\":32,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff4caf50\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"bills\":{\"electric\":{\"displayText\":\"电费已缴 ¥128\",\"paid\":true},\"water\":{\"displayText\":\"水费已缴 ¥64\",\"paid\":true},\"gas\":{\"displayText\":\"燃气费已缴 ¥92\",\"paid\":true}},\"support\":{\"title\":\"客服\",\"hint\":\"账单问题\",\"statusText\":\"全部完成\",\"actionLabel\":\"拨打客服\"}}}}"
+  ]
+}

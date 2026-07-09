@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-018",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见'持有收益'标题、'+1280'主数值、'科技 -0.5%'与'医药 -3.2%'两只基金小方块、'导航到营业部'蓝色按钮，事件 onClick 中 call=clickToIntent 与 args 完整来自 eventCandidates，updateDataModel.path='/'，catalogId/version/尺寸 140x140/borderRadius 18/clip true 等硬约束全部满足。assetCandidates 为空且未引用任何图片/emoji，符合'纯文字色块不配图'的要求。跌多的'医药 -3.2%'使用橙色高亮，'标红告警'的诉求得到落实。",
+    "aesthetic": "截图整体配色和谐：左上白向右下橙的线性渐变营造出'紧迫感'氛围且不过分浓烈；深色文字在浅色底上对比清晰、读取无障碍；蓝色按钮作为唯一强色 CTA 视觉焦点明确；'医药 -3.2%'橙色告警块与主渐变呼应但靠白字保持对比。字号梯度 12(标题)/32(主值)/10(色块)/12(按钮)层级清晰，主值 700 为唯一最强字重，节奏合理。卡片为 2x2 尺寸下略显紧凑但留白仍可接受。",
+    "layout": "截图中各元素无堆叠、无裁切、无溢出：标题'持有收益'完整居中显示，'+1280'主数值完整居中且无截断，两个基金小方块横排居中且文字'科技 -0.5%''医药 -3.2%'均完整可读，'导航到营业部'按钮文字完整、底边距卡片底约 12vp 处于合规区间(8-12vp)，按钮高 28vp 满足热区≥24vp。Row 横向占用 56+4+56=116 正好等于父宽 116，Column 纵向 12+2+52+6+22+6+28+12=140 等于父高 140，布局自洽无挤压。"
+  },
+  "issues": [
+    "2x2 卡片内 7 个文本+1 块信息密度偏高，主值 32px 与底部按钮 28vp 之间间距略紧，截图视觉上整体偏'满'",
+    "'科技 -0.5%'方块使用 #19000000 浅灰底，与卡片白底对比偏弱，作为非告警项可接受但信息层级略平",
+    "基金小方块高度 22vp 在 10px 字号下纵向留白略显单薄，可适度增加高度至 24vp 以提升可点击感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"primary_group\",\"fund_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#f9bc64\",1]]},\"alignItems\":\"center\"}},{\"id\":\"primary_group\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"primary_value\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":48,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/profitLabel} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/profitValue} }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"fund_row\",\"component\":\"Row\",\"children\":[\"fund_tile_1\",\"fund_tile_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"fund_tile_1\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/0/summary} }}\",\"styles\":{\"width\":56,\"height\":24,\"padding\":{\"left\":2,\"right\":2},\"borderRadius\":7,\"backgroundColor\":\"#26000000\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"fund_tile_2\",\"component\":\"Text\",\"content\":\"{{ ${/portfolio/funds/1/summary} }}\",\"styles\":{\"width\":56,\"height\":24,\"padding\":{\"left\":2,\"right\":2},\"borderRadius\":7,\"backgroundColor\":\"#ffed6f21\",\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"导航到营业部\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"31.2304\",\"longitude\":\"121.4737\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"portfolio\":{\"profitLabel\":\"持有收益\",\"profitValue\":\"+1280\",\"funds\":[{\"summary\":\"科技 -0.5%\"},{\"summary\":\"医药 -3.2%\"}]}}}}"
+  ]
+}

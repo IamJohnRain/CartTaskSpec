@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-05-agenda-001",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "用户要求做会议提醒(✓ 显示'会议提醒'标题)、显示一行带时间的(✓ 09:30-10:00 时间在蓝色面板第一行)、点一下能进系统操作(✓ '打开日历'按钮绑定 clickToIntent+ViewCalendarEvent 事件，entityId 通过表达式正确绑定)、还能显示天气(✓ '多云 26°C' 显示在面板外)。数据绑定路径与 schema 一致，createSurface/updateDataModel 协议合规。扣分点：用户强调'一行带时间的'，但实际时间与会议标题分两行展示(09:30-10:00 / 项目例会)，更接近'两行'而非'一行'，信息层级处理与用户原意略有偏差。",
+    "aesthetic": "截图中'会议提醒'标题用 #E5000000 深色加粗，与白色卡片底对比清晰；'09:30-10:00' 用 #FF0A59F7 蓝色加粗，配 #190A59F7 浅蓝面板底色，视觉层次分明；'项目例会'、'多云 26°C' 用 #99000000 中灰作辅助信息，字号阶梯 14/12 合理。但底部'打开日历'按钮背景仅为 #19000000(10%黑色)，与白底卡片几乎融为一体，视觉上像占位灰块而非可点击 CTA，辨识度严重不足；卡片整体内容偏左上聚集，底部留白偏多，视觉重心不均衡。",
+    "layout": "截图显示卡片为 140x140 尺寸，标题、蓝色面板、天气、按钮四项自上而下排列，经核算纵向总占用 16+6+36+6+14+6+32+12+12=140，恰好填满卡片高度，理论上无溢出。但截图中所有内容明显聚集在画面顶部约 25%-30% 区域，按钮下方到画面底部存在大片空白(远超 12vp 底部 padding)，说明渲染呈现与预期布局存在偏差或截图被额外留白。从截图直接观察：未见文字截断/裁切/元素堆叠，按钮文字'打开日历'完整可读，热区 32vp ≥ 24vp 满足最小点击要求；唯一视觉问题是内容集中顶部、底部大面积空白，布局不够均衡。"
+  },
+  "issues": [
+    "底部'打开日历'按钮背景 #19000000(10%黑)在白底卡片上几乎不可见，缺乏 CTA 视觉辨识度",
+    "用户要求'一行带时间的'，但当前将时间与会议标题分两行展示(09:30-10:00 / 项目例会)，与原意有偏差",
+    "卡片内容 top-left 排列，截图显示底部留白过大，视觉重心不均衡",
+    "Button.fontWeight 写成字符串'medium'，应使用数字字重 500/600 以保持协议一致性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"meeting_panel\",\"weather_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"会议提醒\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"meeting_panel\",\"component\":\"Column\",\"children\":[\"time_text\",\"meeting_title\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":36,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#190A59F7\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":108,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FF0A59F7\",\"maxLines\":1}},{\"id\":\"meeting_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开日历\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-sample-001\",\"title\":\"项目例会\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\"}]},\"weather\":{\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

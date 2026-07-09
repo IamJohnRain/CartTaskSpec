@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户四项诉求在截图中均可见：(1) 顶部标题'喂食机'呈现了喂食设备名称；(2) 底部'看天气'白色按钮正确绑定 clickToDeeplink 事件，uri 与 eventCandidates 完全一致；(3) 顶部右侧显示 26°C，左侧 cloud 图标和中部'多云'呈现天气信息；(4) 状态文本'出粮卡住'使用红色（#ffe84026）醒目提醒，与 schema 中异常态要求一致。DataModel 路径正确，资产 cloudy.png 被使用。唯一轻微不足是用户表述'点一下能跳app'更倾向于整卡可点，当前仅按钮可点，但功能上已落实。",
+    "aesthetic": "截图整体观感清爽：蓝色渐变背景柔和自然，白色状态面板与白色按钮形成两层视觉聚焦，红色'出粮卡住'在白底上对比强烈、警示效果突出。字号层级清晰（14pt 标题/状态加粗、12pt 辅助信息、14pt 按钮），字重使用合理，留白适中。不过标题与温度同为 14pt/700，对齐方向相反（start vs end），视觉重量平分略显平均；底部两个白色圆角组件上下叠放层次略重复，缺少一点呼吸变化。整体仍属专业、克制的设计。",
+    "layout": "截图显示 2x2 (140x140) 卡片内所有元素均无溢出或裁切：顶部行 weather_icon(20)+title_text(50)+weather_temp(34)+itemMargin×2=120，居于 116 内容区内正常；中部白色状态面板 116×48 内含'出粮卡住'和'多云 · 下餐 18:30'，文字完整无截断；底部'看天气'按钮 116×32 完整显示，文字未切；底边距卡边约 8-10vp，处于规范 8-12vp 区间。Stack 未被使用，无层叠遮挡问题。整体布局干净、元素层级清晰。"
+  },
+  "issues": [
+    "顶部 header_row 中 title_text 与 weather_temp 均为 fontSize:14 fontWeight:700 fontColor:#ffffffff，权重对等导致视觉焦点不集中，标题应是最强字重",
+    "状态面板与底部按钮均为白色填充 + 16 圆角的相同视觉块，上下两块外观高度雷同，缺少层次区分",
+    "action_button 缺少主操作语义区分（如填充深色或强调色），与状态面板视觉权重相当，按钮'可点击'感不强"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"status_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#46b1e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"title_text\",\"weather_temp\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/title} }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":36,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"support_text\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":46,\"padding\":{\"left\":10,\"right\":10,\"top\":6,\"bottom\":6},\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/feeder/statusText} }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"{{ ${/feeder/statusColor} }}\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · ' + ${/feeder/nextMealText} }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#0d2b3a\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"feeder\":{\"title\":\"喂食机\",\"statusText\":\"出粮卡住\",\"statusColor\":\"#ffe84026\",\"nextMealText\":\"下餐 18:30\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

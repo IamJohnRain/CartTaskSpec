@@ -1,0 +1,85 @@
+{
+  "userQuery": "持仓金额要实时变，点一下能直接进交易软件，日历里能看除息日，标记已清仓的",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.example.broker",
+        "abilityName": "com.example.broker.MainAbility",
+        "uri": "broker://portfolio/holding"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "holding": {
+        "name": {
+          "type": "string",
+          "description": "当前持仓标的或基金名称，用于卡片标题。",
+          "sampleValue": "中证白酒"
+        },
+        "marketValueText": {
+          "type": "string",
+          "description": "当前持仓金额展示文本，运行时应随行情和持仓实时更新。",
+          "sampleValue": "¥38,240"
+        },
+        "realtimeLabel": {
+          "type": "string",
+          "description": "持仓金额数据的新鲜度或实时更新状态。",
+          "sampleValue": "实时更新"
+        },
+        "dayChangeText": {
+          "type": "string",
+          "description": "持仓当日变动或收益率展示文本。",
+          "sampleValue": "+1.26%"
+        },
+        "clearedText": {
+          "type": "string",
+          "description": "是否已清仓的短状态标签。",
+          "sampleValue": "已清仓"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "与持仓相关的日历事项列表，第一项用于展示下一次除息日。",
+          "sampleValue": [
+            {
+              "entityId": "dividend-20260718",
+              "title": "除息",
+              "dtStart": "7/18"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条持仓相关日历事项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事项唯一标识。",
+                "sampleValue": "dividend-20260718"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事项标题。",
+                "sampleValue": "除息"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历事项开始日期的短展示文本。",
+                "sampleValue": "7/18"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，黑色，适合标记除息日等日程日期信息。"
+    }
+  ]
+}

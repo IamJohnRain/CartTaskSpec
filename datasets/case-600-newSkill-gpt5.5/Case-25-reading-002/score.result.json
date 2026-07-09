@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-25-reading-002",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求显示本周听书分钟数并在接近目标时提醒。截图中可见：大号 268 + 分钟单位清晰呈现'本周已听时长'；右上'快到目标'红色徽标作为状态提示；进度条 89% 视觉化接近达成；右侧'再听会儿达标'给出提醒文案；'距目标还差 32 分钟'进一步明确差距；'周日 20:30 更新'补充时间信息。dataModel 全部 8 个字段都被引用并真实呈现，尺寸 2x4、catalogId/version/path 全部符合协议。无 eventCandidates 因此无 onClick，符合预期。",
+    "aesthetic": "截图整体观感克制专业：浅灰底（#fff1f3f5）配合深色文字、单一红色作为强调色，色彩协调。字重层级清晰——268（40pt/700）为唯一最强视觉锚点，'本周听书'/'再听会儿达标'（14pt/700）次之，'快到目标'徽标（12pt/500）再次之，其余说明文字（10-12pt/400-500）层级递减。右侧进度面板用 #0c000000 弱底色与主区形成自然分区，留白舒适。",
+    "layout": "截图未见任何元素堆叠、截断或溢出。header_row 高度 20pt 内'本周听书'与'快到目标'徽标完整可见；content_row 中左侧主列 150pt 与右侧面板 116pt 拼接 276pt 与父宽完全匹配；右侧面板内 goal(16) + progress(8) + reminder(18) + updated(14) + padding/margin 总和 84pt 未超 88pt 高度；'268'大号数字与'分钟'单位在 86+4+36=126pt 内排开且完整；进度条红色填充约 89% 比例与数值一致。所有受保护文本（标题、状态、提醒、主数值）均无 ellipsis/clip 痕迹。"
+  },
+  "issues": [
+    "无明显问题，截图中信息完整呈现、布局无溢出截断",
+    "可选优化：右侧面板的'再听会儿达标'使用 #e5000000（近黑）而非强调红色，与左上'快到目标'徽标的红色形成两个不同语气的强调，若希望视觉统一可考虑保留当前差异化的'重点提醒+状态标签'分级"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"content_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"本周听书\",\"styles\":{\"width\":180,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/reading/weekListening/statusText} }}\",\"styles\":{\"width\":76,\"height\":20,\"padding\":[2,8,2,8],\"borderRadius\":10,\"backgroundColor\":\"#19000000\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"main_column\",\"progress_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":88,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"primary_row\",\"remaining_text\"],\"itemMargin\":4,\"styles\":{\"width\":150,\"height\":88,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"本周已听时长\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":150,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/reading/weekListening/minutesText} }}\",\"styles\":{\"width\":86,\"height\":44,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"分钟\",\"styles\":{\"width\":36,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"remaining_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/reading/weekListening/remainingText} }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"progress_panel\",\"component\":\"Column\",\"children\":[\"goal_text\",\"goal_progress\",\"reminder_text\",\"updated_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":88,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"goal_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/reading/weekListening/goalText} }}\",\"styles\":{\"width\":100,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"goal_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/reading/weekListening/progressPercent} }}\",\"total\":100,\"styles\":{\"width\":100,\"height\":8,\"type\":\"linear\",\"color\":\"#ffe84026\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/reading/weekListening/reminderText} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/reading/weekListening/updatedText} }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"reading\":{\"weekListening\":{\"minutesText\":\"268\",\"targetText\":\"300\",\"goalText\":\"目标 300 分钟\",\"progressPercent\":89,\"remainingText\":\"距目标还差 32 分钟\",\"statusText\":\"快到目标\",\"reminderText\":\"再听会儿达标\",\"updatedText\":\"周日 20:30 更新\"}}}}}}"
+  ]
+}

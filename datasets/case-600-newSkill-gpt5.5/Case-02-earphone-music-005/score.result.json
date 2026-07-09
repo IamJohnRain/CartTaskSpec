@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-005",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求做一个能点进 app 并能读天气的卡片，截图显示左侧完整呈现了天气信息（位置'当前位置'、主温度'26°C'、天气'多云'、温度范围'22° / 29°'、空气'优'、湿度'62%'），右侧蓝色渐变卡片含耳机音乐图标和'进音乐'按钮，onClick 事件原样引用了 eventCandidates 中的 clickToDeeplink 和 music uri；尺寸 2x4、catalogId、version、updateDataModel.path/value 等硬约束均满足；素材 partly_cloudy.png 和 icon_music.png 按语义正确使用。无明显指令遗漏。",
+    "aesthetic": "从截图看，主体白底卡片配右侧蓝紫渐变（#0a59f7→#564af7）动作卡形成清晰冷色重点，前景文字在白底和蓝底上对比度良好、可读性强；字号阶梯 32/18/14/12 层级清晰，主温度 32px 配 700 字重作为视觉焦点，其余文字克制；圆角胶囊状的'空气 优''湿度 62%'底色使用 #0c000000 极浅灰不抢戏，蓝色按钮白底蓝字对比鲜明；留白密度舒适、对齐统一，整体观感专业克制，无多余装饰。",
+    "layout": "截图未观察到任何元素堆叠重叠或文字被裁切/截断现象。header_row 内 weather_icon(22)+title_text(68)+location_text(72) 三者水平合计 170 与容器宽度一致；primary_row 主温度 92 + condition_col 70 = 162 + 8 itemMargin = 170 恰好装下；support_row 两个胶囊 78+84+8 = 170 装下。右侧 action_col 宽 94 在 (170+12+94=276) 范围内未溢出根容器 276 内容区。icon_back/music_title/action_button 三项在 116 高度内竖向排布紧凑但完整可见，'进音乐'按钮底边到卡片底边约 8vp 在允许范围内。所有受保护文本（标题、温度、CTA、状态）均完整呈现。"
+  },
+  "issues": [
+    "action_col 内三个子项（icon_back、music_title、action_button）纵向分布略显紧凑，'进音乐'按钮与上方文字间距偏小",
+    "header_row 内'当前位置'与左侧'天气速览'视觉重量相当，缺少主次层次",
+    "整体配色偏冷单调，无暖色或点缀色增加活力"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"weather_col\",\"action_col\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff7f8fb\",\"alignItems\":\"center\"}},{\"id\":\"weather_col\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_row\",\"support_row\"],\"itemMargin\":10,\"styles\":{\"width\":170,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":170,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }} · 天气\",\"styles\":{\"width\":138,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"condition_col\"],\"itemMargin\":8,\"styles\":{\"width\":170,\"height\":50,\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":90,\"height\":50,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"condition_col\",\"component\":\"Column\",\"children\":[\"condition_text\",\"range_text\"],\"itemMargin\":4,\"styles\":{\"width\":72,\"height\":50,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":72,\"height\":22,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"range_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/0/temperatureRangeText} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"support_row\",\"component\":\"Row\",\"children\":[\"air_quality_pill\",\"humidity_pill\"],\"itemMargin\":8,\"styles\":{\"width\":170,\"height\":26,\"alignItems\":\"center\"}},{\"id\":\"air_quality_pill\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":78,\"height\":26,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#0c000000\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"humidity_pill\",\"component\":\"Text\",\"content\":\"{{ '湿度 ' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":84,\"height\":26,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#0c000000\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"icon_back\",\"music_title\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":94,\"height\":116,\"padding\":8,\"borderRadius\":18,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#0a59f7\",0],[\"#564af7\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"icon_back\",\"component\":\"Row\",\"children\":[\"music_icon\"],\"styles\":{\"width\":38,\"height\":38,\"padding\":4,\"borderRadius\":19,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"music_title\",\"component\":\"Text\",\"content\":\"耳机音乐\",\"styles\":{\"width\":78,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进音乐\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":78,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"优\",\"humidityPercent\":62},\"daily\":[{\"weekday\":\"今天\",\"temperatureRangeText\":\"22° / 29°\"}]}}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-sleep-002",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 3.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 3.2,
+  "reasons": {
+    "instruction": "用户要求'文字叠在图片上'且'数字会跳'(主数字突出)，并能读日历标题、底部有'已连接'提示。截图中确实呈现了'睡眠日历'标题、'23:00'主数字、'已连接'底部 pill，2x2 尺寸与 createSurface/updateDataModel 协议合规。但关键诉求'文字叠在图片上、数字突出'并未真正落实——白色月亮大图直接压在主数字 '23:00' 上，'23:00' 被月亮严重遮挡，肉眼只能看到两端的 '2' 和 '0'，中间 ':' 与 '3' 被白色月亮覆盖；'睡眠提醒'事件标题被截断为'睡眠'两字，看不到'提醒'。因此用户最核心的信息诉求'看到 23:00'基本失败，扣分较多。",
+    "aesthetic": "截图中背景深紫渐变本身尚可，'睡眠日历'白色次级文字和'已连接'绿色文字与背景对比清晰。但整体观感非常差：(1) 一大块纯白色月亮图位于卡片中央，与深紫底色形成刺眼的高对比色块，像贴纸糊在屏幕中央；(2) 月亮把最大最关键的数字'23:00'拦腰截断，构图严重失衡；(3) 月亮下方还能看到一些'睡眠'字样与月亮轮廓重叠，可读性极差；(4) 整体像元素互相打架而非设计。视觉质量属于'丑陋且关键信息被破坏'。",
+    "layout": "这是该卡片最严重的问题，也是低分的核心来源。截图中可明确观察到：(1) Stack 叠层把 86×86 的白色月亮 Image 直接覆盖在 Column 内容之上，月亮位置正好压在主数字 '23:00' 中央，导致数字中段被白色色块完全遮盖，只能看到边缘的 '2' 与 '0'——主指标被 Stack 上层遮挡，属于协议中明确禁止的'受保护文本被 Stack 遮挡'；(2) 事件标题'睡眠提醒'被月亮与数字挤到下一行后又被月亮下缘截断，'提醒'二字不见；(3) 元素明显溢出/互相重叠，2x2 的 116×116 内容区被一个 86×86 的不透明 Image 占据中央，造成严重视觉拥堵；(4) '已连接' pill 虽然完整可见，但位置贴边且被月亮下缘略微干扰，底部锚定尚可。整体属于'主指标被堆叠遮挡、多处截断'的典型失败布局。"
+  },
+  "issues": [
+    "Stack 叠层导致 86×86 白色月亮 Image 覆盖在主数字 '23:00' 上，数字中段被遮住，主指标不可读",
+    "事件标题 '睡眠提醒' 被月亮与数字挤断，仅显示 '睡眠'，'提醒' 缺失",
+    "图片尺寸相对于 2x2 卡片(140×140)过大，应作为角落图标/小型锚点而非中央大图",
+    "主数字与图片缺少明确的空间分区或主次关系，'数字会跳'的核心诉求被破坏",
+    "深紫渐变与纯白月亮对比过强，缺乏过渡/弱化处理，视觉上像贴纸糊在中央"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_image\",\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#634794\",1]]}}},{\"id\":\"bg_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_sleep.png\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\",\"opacity\":0.18,\"position\":\"absolute\",\"top\":36,\"right\":-12}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"event_title\",\"status_pill\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"睡眠日历\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":116,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":70,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":13,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"已连接\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff5ba854\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日历\",\"entityId\":\"sleep-event-001\",\"title\":\"睡眠提醒\",\"dtStart\":\"23:00\",\"dtEnd\":\"07:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

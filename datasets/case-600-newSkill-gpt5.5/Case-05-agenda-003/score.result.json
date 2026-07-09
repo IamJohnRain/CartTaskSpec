@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-05-agenda-003",
+  "scores": {
+    "instruction": {
+      "score": 9.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.6,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图清晰呈现了用户要求的全部要素：顶部'下一日程 14:30'标识了日程从日历读取；中上部'12 分钟'展示了会变化的倒计时数字（绑定 countdownText/countdownUnit）；标题'产品评审'展示了日程名；左下'快开始'红色状态与'提前10分钟'提醒文本完整呈现；右下蓝色'打开'按钮带有 clickToIntent 事件，args 中 entityId 来自日历数据，符合 eventCandidates。createSurface 尺寸 140x140、catalogId、version、updateDataModel.path='/'、value 结构均合规。assetCandidates 为空故无背景图使用，未违反协议。",
+    "aesthetic": "截图整体观感干净专业：白底卡片配合蓝色（#0a59f7）为主色用于主信息与 CTA，红色（#e84026）用于'快开始'紧迫感，灰色用于辅助信息，色彩克制、对比清晰。倒计时'12'用 32pt 粗体作为视觉焦点，配合浅蓝胶囊背景突出层级；标题 14pt 粗黑、CTA 12pt 白字蓝底，层级清晰。留白在卡片内紧凑不空洞，标题居中、状态左对齐、按钮右对齐，对齐统一。唯一轻微不足是 root Column 使用 justifyContent:'start'，使得内容聚集在卡片上半部，视觉重心略偏上。",
+    "layout": "截图显示卡片内容全部在 140x140 边界内，无文字截断、无元素堆叠重叠。header_row 上下排布正常；countdown 胶囊居中显示，'12'与'分钟'字号差异但通过 justifyContent:'center' 协调共存；'产品评审'标题单行完整；分割线横贯；底部 status_group 与 open_button 通过 spaceBetween 分布，'快开始/提前10分钟'两行紧凑、'打开'按钮热区充足。整体堆叠顺序正确，无遮挡。但渲染画布相对卡片留有较大空白，视觉上感觉内容偏顶部紧凑，符合 DSL 中 justifyContent:'start' 的设定，不构成溢出或截断问题。"
+  },
+  "issues": [
+    "root Column 使用 justifyContent:'start'，使内容整体上移靠拢顶部，可考虑改为 'center' 或 'spaceBetween' 让视觉重心更平衡",
+    "event_title 颜色 #e5000000 含透明度，在白底上略显灰，可使用纯黑 #ff000000 提升对比",
+    "header_row 中 label_text 字号 12 与 time_text 字号 12 同字重 600，但功能分主次不够明显，时间可稍加重或换主色以呼应'即将到来'",
+    "卡片底部留白较少（仅 5vp 左右），打开按钮距离卡片底边过近，建议给底部稍多呼吸空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140,\"borderRadius\":18}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"countdown_row\",\"event_title\",\"divider\",\"footer_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"label_text\",\"time_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"label_text\",\"component\":\"Text\",\"content\":\"下一日程\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":48,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"countdown_row\",\"component\":\"Row\",\"children\":[\"countdown_value\",\"countdown_unit\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"bottom\",\"backgroundColor\":\"#190a59f7\",\"borderRadius\":16}},{\"id\":\"countdown_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/countdownText} }}\",\"styles\":{\"width\":44,\"height\":32,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"countdown_unit\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/countdownUnit} }}\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"footer_row\",\"component\":\"Row\",\"children\":[\"status_group\",\"open_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_group\",\"component\":\"Column\",\"children\":[\"status_text\",\"remind_text\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/statusText} }}\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"remind_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":52,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"open_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":58,\"height\":28,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-1001\",\"title\":\"产品评审\",\"dtStart\":\"14:30\",\"dtEnd\":\"15:00\",\"eventLocation\":\"3号会议室\",\"remindTime\":[\"提前10分钟\"],\"countdownText\":\"12\",\"countdownUnit\":\"分钟\",\"statusText\":\"快开始\"}]}}}}}"
+  ]
+}

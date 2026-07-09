@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-10-rainy-taxi-019",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "截图中可清晰看到左侧信息区横向排开的三个会议药丸（会1/会2/会3），右侧动作区有'设闹钟'按钮并配置了 clickToDeeplink 事件（参数 bundleName/abilityName 与 eventCandidates 完全一致）。蓝色渐变（#564af7→#46b1e3）传达紧迫感，纯色块加文字无图片，无状态色变化。尺寸 2x2、catalogId、version、updateDataModel 全部符合协议。额外添加的'今日会议'标题与'雨天出门'提示与雨天主题契合，属于合理增益。",
+    "aesthetic": "蓝色对角线渐变整体观感清爽、紧迫感足；白色文字在渐变上对比清晰、可读性良好。三个会议药丸采用半透明白色（#33ffffff）与主渐变形成层次。但右侧动作面板（#19ffffff）底色偏淡，导致按钮下方约一半的右下面板看起来比较空旷，视觉上'尾巴'略长，留白处理可以更紧凑；左侧三个药丸偏窄长，比例稍显瘦削，缺少更克制的节奏感。",
+    "layout": "截图中无文字截断、堆叠或溢出：'今日会议'标题完整居中显示；'会1/会2/会3'分别在三个药丸内清晰居中、无省略；右侧'雨天出门'与'设闹钟'按钮均完整显示，按钮热区充足。根容器 140×140、padding 12，左右两栏宽度 58+4+54=116 与内容区等宽，无溢出。问题在于右侧 action_panel 高度 116，但内部 hint(12) + margin(8) + button(36)=56，按 justifyContent:center 排布后下半部存在约 30vp 的空透明白底，造成观感上'按钮悬在面板中'的不平衡；底部动作区底边到卡片底边约 12vp，符合 2x2 范围。",
+    "issues": [
+      "右侧 action_panel 下半部约 30vp 为空白，视觉上不平衡",
+      "三个会议药丸宽 18×高 76，偏瘦长，可适当加宽或缩短",
+      "action_hint 字号 10、字重 500，在渐变上略显平淡，可略提亮颜色增强层次"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"action_panel\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#46b1e3\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"meetings_row\"],\"itemMargin\":6,\"styles\":{\"width\":60,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日会议\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meetings_row\",\"component\":\"Row\",\"children\":[\"meeting_tile_1\",\"meeting_tile_2\",\"meeting_tile_3\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":84,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"meeting_tile_1\",\"component\":\"Column\",\"children\":[\"meeting_text_1\"],\"styles\":{\"width\":18,\"height\":84,\"borderRadius\":9,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"meeting_tile_2\",\"component\":\"Column\",\"children\":[\"meeting_text_2\"],\"styles\":{\"width\":18,\"height\":84,\"borderRadius\":9,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"meeting_tile_3\",\"component\":\"Column\",\"children\":[\"meeting_text_3\"],\"styles\":{\"width\":18,\"height\":84,\"borderRadius\":9,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"meeting_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":18,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meeting_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":18,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meeting_text_3\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/title} }}\",\"styles\":{\"width\":18,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"action_hint\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":52,\"height\":116,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\",\"padding\":6}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"雨天出门\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#dde6f8\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"设闹钟\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":42,\"height\":38,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":19}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"会1\"},{\"title\":\"会2\"},{\"title\":\"会3\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

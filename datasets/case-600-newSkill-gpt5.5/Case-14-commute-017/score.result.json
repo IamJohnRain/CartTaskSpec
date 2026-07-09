@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-14-commute-017",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图中三条通勤方案纵向排列,每条都有勾选(✓)的圆形 Checkbox 展示,标题\"通勤方案\"和右上\"设置\"提示均可见;公交行的\"已取消\"用橙红色(#db6b42)标注,语义上传达了故障/取消。但用户明确要求\"标红\",实际颜色偏橙(暖棕色),与\"红\"的预期有偏差,扣 0.5 分。整卡点击事件 onClick 挂在 panel 上而非 root,导致卡片外圈 12vp 的深色描边区域不可点击,与\"点整张卡\"的诉求有轻微出入,再扣 0.5 分。事件 call/args 原样来自 eventCandidates,无渐变、深色色块、size=2x2、catalogId/version/updateDataModel 等硬约束全部满足,数据字段完整呈现。",
+    "aesthetic": "整体深色配色克制专业,卡片外深内浅的两层色块形成清晰层次;三行统一高度的圆角胶囊条带与字色层级(标题粗白 12sp、方案名中粗 10sp、时间/状态细 10sp)对比合理,信息密度舒适。\"已取消\"使用偏橙红(#db6b42)而非更纯粹的红色,与用户\"标红\"的直观感受略有落差,但视觉上仍能有效区分为警示态。Checkbox 颜色:正常为绿、异常为橙,语义可读;整体留白和居中对齐处理良好,无花哨装饰。",
+    "layout": "截图显示卡片四周无边距溢出,三行内容均完整可见、无文字截断或裁切,Checkbox 与文字之间无重叠,右侧时间/状态右对齐整齐。顶部 header(通勤方案 + 设置)与下方三行间距均匀,各行 24vp 高度配 2vp itemMargin 排布紧凑但不拥挤。底部 24vp 的行底边到面板内底约 6vp 留白,符合视觉节奏。未观察到 Stack 遮挡或点击热区过小的问题。"
+  },
+  "issues": [
+    "用户明确要求\"标红\",但\"已取消\"及对应 Checkbox 使用的是 #db6b42 橙棕色,视觉上偏橙而非正红,与\"红\"的预期不符",
+    "onClick 挂在 panel 上,卡片外圈 12vp 的描边区域(深色根容器边距)不可点击,未完全覆盖\"点整张卡\"的诉求",
+    "status_1 宽度设为 32,在该行 padding 4+checkbox 14+gap+name 40 的挤压下,右侧空间偏紧,如改用更长字段有截断风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"children\":[\"panel\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\"}},{\"id\":\"panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"plan_row_0\",\"plan_row_1\",\"plan_row_2\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"hint_text\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":50,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/hint} }}\",\"styles\":{\"width\":22,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"plan_row_0\",\"component\":\"Row\",\"children\":[\"check_0\",\"plan_text_0\",\"status_0\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":24,\"padding\":{\"left\":4,\"right\":4},\"borderRadius\":12,\"backgroundColor\":\"#0cffffff\",\"alignItems\":\"center\"}},{\"id\":\"check_0\",\"component\":\"Checkbox\",\"label\":\"\",\"value\":\"plan0\",\"select\":\"{{ ${/plans/0/checked} }}\",\"styles\":{\"shape\":\"circle\",\"selectedColor\":\"#5ba854\",\"unSelectedColor\":\"#33ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2},\"width\":14,\"height\":14}},{\"id\":\"plan_text_0\",\"component\":\"Text\",\"content\":\"{{ ${/plans/0/name} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"status_0\",\"component\":\"Text\",\"content\":\"{{ ${/plans/0/time} }}\",\"styles\":{\"width\":32,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"plan_row_1\",\"component\":\"Row\",\"children\":[\"check_1\",\"plan_text_1\",\"status_1\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":24,\"padding\":{\"left\":4,\"right\":4},\"borderRadius\":12,\"backgroundColor\":\"#0cffffff\",\"alignItems\":\"center\"}},{\"id\":\"check_1\",\"component\":\"Checkbox\",\"label\":\"\",\"value\":\"plan1\",\"select\":\"{{ ${/plans/1/checked} }}\",\"styles\":{\"shape\":\"circle\",\"selectedColor\":\"#e74c3c\",\"unSelectedColor\":\"#33ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2},\"width\":14,\"height\":14}},{\"id\":\"plan_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/plans/1/name} }}\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"status_1\",\"component\":\"Text\",\"content\":\"{{ ${/plans/1/status} }}\",\"styles\":{\"width\":36,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffe74c3c\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"plan_row_2\",\"component\":\"Row\",\"children\":[\"check_2\",\"plan_text_2\",\"status_2\"],\"itemMargin\":2,\"styles\":{\"width\":100,\"height\":24,\"padding\":{\"left\":4,\"right\":4},\"borderRadius\":12,\"backgroundColor\":\"#0cffffff\",\"alignItems\":\"center\"}},{\"id\":\"check_2\",\"component\":\"Checkbox\",\"label\":\"\",\"value\":\"plan2\",\"select\":\"{{ ${/plans/2/checked} }}\",\"styles\":{\"shape\":\"circle\",\"selectedColor\":\"#5ba854\",\"unSelectedColor\":\"#33ffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2},\"width\":14,\"height\":14}},{\"id\":\"plan_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/plans/2/name} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"status_2\",\"component\":\"Text\",\"content\":\"{{ ${/plans/2/time} }}\",\"styles\":{\"width\":32,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"通勤方案\",\"hint\":\"设置\"},\"plans\":[{\"name\":\"地铁\",\"time\":\"36分钟\",\"status\":\"可选\",\"checked\":true},{\"name\":\"公交\",\"time\":\"48分钟\",\"status\":\"已取消\",\"checked\":true},{\"name\":\"驾车\",\"time\":\"42分钟\",\"status\":\"可选\",\"checked\":true}]}}}"
+  ]
+}

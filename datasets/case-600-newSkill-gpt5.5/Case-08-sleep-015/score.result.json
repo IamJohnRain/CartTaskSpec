@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-sleep-015",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.0,
+  "reasons": {
+    "instruction": "用户明确要求当第二天有紧急日程时显示'一键呼叫同事的电话按钮'，dataModel 中 data.calendar.items 包含 1 条紧急日程，条件满足，但截图底部完全看不到任何按钮，核心功能缺失。顶部主视觉'睡眠不足 5小时12分'、黄色警告徽标、三个色块带勾选、深紫渐变、纯文字色块等其余诉求均已在截图中可见，size 2x2/root shell/catalogId/version 等硬约束也都满足，因此按关键功能缺失给予中等偏低分数。",
+    "aesthetic": "截图中可见的紫蓝渐变整体协调，黄色警告徽标在深紫底上对比强烈、阅读清晰，三个色块颜色有层次感（紫/青/紫红），主指标'5小时12分'字号最大、字重最重，层级明确。但卡片下半部分（约 60px 高度）完全空荡，只有深色渐变收尾，没有承载任何内容，视觉上'未完成感'明显，破坏了整体观感。",
+    "layout": "截图中可观察到的关键布局问题：1）action_button 在 DSL 中 height:32 + tile_row 26 + hero_group 42 + itemMargin 8+8=24，合计 124，加 padding 12+12=24 正好等于 140，理论上贴边但渲染后按钮完全消失，怀疑 visibility 三元表达式 'visible'/'hidden' 未被 Button 解析支持导致整个组件未渲染；2）卡片下沿约 50% 区域为空白，Stack/Column 内没有任何元素承载；3）渐变终点色 '#FF202224'（ARGB，alpha=FF）将右下角涂成接近纯黑，使按钮若存在也会被深色背景吞掉；4）头部'警告'徽标 +'睡眠不足'文本与 duration_text 间距略紧，但无明显截断。"
+  },
+  "issues": [
+    "截图底部'呼叫同事'按钮完全不可见，但 dataModel 中 calendar.items 非空，条件成立，按钮应当渲染",
+    "Button 上的 visibility 表达式 '{{ size(${/data/calendar/items}) > 0 ? \"visible\" : \"hidden\" }}' 疑似不被 Button 组件解析，导致整个 action_button 未渲染",
+    "根容器 linearGradient 终点色 '#FF202224' 透明度为 FF(不透明)且 RGB 极深，将卡片右下角涂成全黑，吞没本应存在的按钮",
+    "卡片下半部约 50% 区域无任何组件占位，视觉留白过大、构图不平衡",
+    "action_button 与 tile_row 间距仅由 root.itemMargin=8 提供，缺少与底部卡边的安全留白(>16vp 风险)"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_group\",\"tile_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5F58C7\",0],[\"#8C55C2\",0.55],[\"#4A2880\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"hero_group\",\"component\":\"Column\",\"children\":[\"header_row\",\"duration_text\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"warning_badge\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/warningLabel} }}\",\"styles\":{\"width\":32,\"height\":16,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"backgroundColor\":\"#F5DC62\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/mainLabel} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"duration_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/durationText} }}\",\"styles\":{\"width\":120,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"tile_row\",\"component\":\"Row\",\"children\":[\"tile_slept\",\"tile_deep\",\"tile_light\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"tile_slept\",\"component\":\"Row\",\"children\":[\"tile_slept_mark\",\"tile_slept_label\"],\"itemMargin\":2,\"styles\":{\"width\":38,\"height\":24,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":6,\"backgroundColor\":\"#5550A6\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"tile_slept_mark\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/tiles/0/mark} }}\",\"styles\":{\"width\":8,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"tile_slept_label\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/tiles/0/label} }}\",\"styles\":{\"width\":22,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1}},{\"id\":\"tile_deep\",\"component\":\"Row\",\"children\":[\"tile_deep_mark\",\"tile_deep_label\"],\"itemMargin\":2,\"styles\":{\"width\":38,\"height\":24,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":6,\"backgroundColor\":\"#2F7E94\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"tile_deep_mark\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/tiles/1/mark} }}\",\"styles\":{\"width\":8,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"tile_deep_label\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/tiles/1/label} }}\",\"styles\":{\"width\":22,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1}},{\"id\":\"tile_light\",\"component\":\"Row\",\"children\":[\"tile_light_mark\",\"tile_light_label\"],\"itemMargin\":2,\"styles\":{\"width\":38,\"height\":24,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":6,\"backgroundColor\":\"#634794\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"tile_light_mark\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/tiles/2/mark} }}\",\"styles\":{\"width\":8,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"tile_light_label\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/tiles/2/label} }}\",\"styles\":{\"width\":22,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#E5FFFFFF\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/contact/callLabel} }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/phoneNumber} }}\"}}],\"styles\":{\"width\":120,\"height\":26,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#5BA854\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"mainLabel\":\"睡眠不足\",\"durationText\":\"5小时12分\",\"warningLabel\":\"警告\",\"tiles\":[{\"label\":\"已睡\",\"mark\":\"√\"},{\"label\":\"深睡\",\"mark\":\"√\"},{\"label\":\"浅睡\",\"mark\":\"√\"}]},\"contact\":{\"phoneNumber\":\"13800138000\",\"callLabel\":\"呼叫同事\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_urgent_001\",\"title\":\"紧急交接\",\"dtStart\":\"09:00\",\"dtEnd\":\"09:30\"}]}}}}"
+  ]
+}

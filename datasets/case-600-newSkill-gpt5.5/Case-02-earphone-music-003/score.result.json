@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-02-earphone-music-003",
+  "scores": {
+    "instruction": {
+      "score": 9.3,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户四项核心诉求（耳机卡、点进app读天气、低电提醒、点击跳转）均得到落实：截图中可见耳机图标、'当前位置 29°C'、'多云 · 空气良'、'18%'红字加'电量偏低'提示、'打开音乐'按钮。事件 clickToDeeplink 的 call 与 args（hwmusic://…?code=a001&type=4）原样来自 eventCandidates；assetCandidates 中的 icon_earphone.png 被作为 hero 图标使用；dataModelSchema 中四个字段（districtName/temperatureText/condition/airQuality）均通过 {{...}} 表达式绑定并正确渲染。size=2x4、root 300x140、catalogId/version/updateDataModel.path=/ 等硬约束全部满足。轻微扣分点：用户说'提醒我快没电了'，当前'18%'为静态写死而非 DataModel 驱动（如改为 {{/data/.../batteryPercent}} 更佳），但 TaskSpec 中未定义 batteryPercent 字段，所以此处理解为用'18%'做状态展示是合理的。",
+    "aesthetic": "整体配色干净：白色卡底、浅灰面板、红色低电警告形成简洁的视觉层级。右侧信息区标题/主值/元信息/按钮四层字重清晰，'18%'作为最强字重与红色识别度高，左侧面板与右侧信息区中间用细分隔线做出明显分区。扣分点：截图中耳机图标非常浅淡，与左侧浅灰面板对比度不足，几乎接近隐去，视觉存在感偏弱；info_col 中 '多云 · 空气良' 元信息字号略小，与'当前位置 29°C'主值之间留白略大但仍可接受。整体观感专业、克制，但图标可读性拖累了美观评分。",
+    "layout": "截图显示卡片为 2x4（300x140）布局，左侧 92x116 圆角面板容纳耳机图标 + '18%' + '电量偏低'，中间 1px 竖向分隔线，右侧 163x116 信息列容纳标题/主值/元信息/按钮。三段水平占用 92+10+1+10+163=276，恰等于 root padding 后的内容宽度 276，无横向溢出。垂直方向，左面板内图标 52 + 文字 38 + 间距 8 + padding 16 = 114 ≤ 116；右侧信息列 18+28+18+32+18 = 114 ≤ 116，均收得住。截图中未观察到文字被裁切、堆叠重叠或 CTA 被遮挡；按钮 88x32 热区充足；底部无溢出。但注意：hero_panel 的 padding 8 + 内容 90 + itemMargin 8 = 106 ≤ 116 是收得下的，只是垂直居中后内容相对偏上（图标在面板中上部），布局可读但不够紧凑——仍属可接受范围。"
+  },
+  "issues": [
+    "左侧 hero_panel 背景色 #0C000000 在白卡上几乎不可见（仅约 5% 灰），导致耳机图标缺乏对比度，截图中图标几乎隐去",
+    "信息列中主值'当前位置 29°C'与元信息'多云 · 空气良'之间的纵向间距相对其他元素略偏大，节奏稍不均匀",
+    "battery_value 与 battery_hint 使用静态字面量 '18%'/'电量偏低' 而非 DataModel 绑定，刷新能力受限（虽然 TaskSpec 未提供电池字段，但可考虑抽象路径）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"content_divider\",\"info_col\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"earphone_icon\",\"battery_value\",\"battery_hint\"],\"itemMargin\":4,\"styles\":{\"width\":92,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#FFF1EE\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":52,\"height\":52,\"objectFit\":\"contain\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"18%\",\"styles\":{\"width\":76,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#FFE84026\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"battery_hint\",\"component\":\"Text\",\"content\":\"电量偏低\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"content_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":92,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"weather_value\",\"weather_meta\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":163,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"耳机音乐\",\"styles\":{\"width\":163,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":163,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"weather_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · 空气' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":163,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开音乐\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\",\"airQuality\":\"良\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

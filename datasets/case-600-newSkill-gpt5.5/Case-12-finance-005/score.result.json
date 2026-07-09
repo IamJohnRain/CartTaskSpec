@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-12-finance-005",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "截图中可见用户三项明确诉求均被满足：标题'支出分类'位于左上，右上角红底白字的'快超支'状态徽章 + 84% 进度条 + 底部'预算已用84%，还剩¥620'共同形成超支提醒，底部'记一笔'按钮绑定 clickToDeeplink(ledger://add_expense) 事件，可点击进入记账。dataModel 路径与 TaskSpec 完全对应。Size 2x4、root shell、catalogId、version 均符合协议。无明显缺失。",
+    "aesthetic": "截图整体观感专业克制：浅灰到暖橙的对角渐变背景与红色警示元素和谐统一；前景文字（深黑主文、灰次文）在渐变底色上对比清晰可读；字号层级分明（32/16/14/12），最强字重统一在主金额与标题，间距舒适。唯一可改进：底部'记一笔'按钮使用 #19000000 极低透明背景，作为主 CTA 视觉强调偏弱，理想应使用对比度更高的填色以提升点击引导。",
+    "layout": "截图未观察到任何文字截断、组件溢出或堆叠遮挡。Header 行（标题+徽章）、主信息行（金额/餐饮/进度/剩余）、分割线、底部分隔行（警告+按钮）四段在 276×116 内容区内排布整齐，垂直占用 18+53+1+32 + 三处 4vp 间距 = 116vp，恰填满。左右两列在 main_row 内顶部对齐，warning_text 文本 176vp 宽度内单行完整显示，按钮 88×32 热区充足，状态徽章'快超支'三字在 88vp 宽度内完整居中。底部按钮底边距卡片底边约 12vp，处于规范区间。"
+  },
+  "issues": [
+    "底部'记一笔'主 CTA 按钮背景 #19000000 透明度极低，作为引导记账的核心动作视觉强调不足，建议提升对比度",
+    "右侧 category_col 宽度 112 偏紧，'剩余额度 ¥620' 等 12px 文字接近边缘，未来文案稍长可能溢出（当前未触发）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"divider\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#f9bc64\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/finance/title} }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/finance/statusText} }}\",\"styles\":{\"width\":80,\"height\":18,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":9,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"primary_col\",\"category_col\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":53,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"primary_col\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":2,\"styles\":{\"width\":148,\"height\":53,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/spentText} }}\",\"styles\":{\"width\":148,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/finance/spentCaption} }}\",\"styles\":{\"width\":148,\"height\":15,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"category_col\",\"component\":\"Column\",\"children\":[\"category_text\",\"budget_progress\",\"remaining_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":53,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"category_text\",\"component\":\"Text\",\"content\":\"{{ ${/finance/topCategoryText} }}\",\"styles\":{\"width\":116,\"height\":17,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"budget_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/finance/budgetProgressValue} }}\",\"total\":\"{{ ${/finance/budgetProgressTotal} }}\",\"styles\":{\"width\":116,\"height\":8,\"type\":\"linear\",\"color\":\"#ffe84026\"}},{\"id\":\"remaining_text\",\"component\":\"Text\",\"content\":\"{{ ${/finance/remainingText} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"warning_text\",\"action_button\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/finance/warningText} }}\",\"styles\":{\"width\":168,\"height\":32,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/finance/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"ledger://add_expense\"}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#e5000000\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"finance\":{\"title\":\"支出分类\",\"statusText\":\"快超支\",\"spentText\":\"¥3,680\",\"spentCaption\":\"本月已支出\",\"topCategoryText\":\"餐饮 ¥1,260\",\"budgetProgressValue\":84,\"budgetProgressTotal\":100,\"remainingText\":\"剩余额度 ¥620\",\"warningText\":\"预算已用84%，还剩¥620\",\"actionLabel\":\"记一笔\"}}}}"
+  ]
+}

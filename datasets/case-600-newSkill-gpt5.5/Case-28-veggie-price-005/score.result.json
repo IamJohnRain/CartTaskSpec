@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-005",
+  "scores": {
+    "instruction": {
+      "score": 9.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.6,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.1,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "截图中可见用户要求的全部要素均完整呈现：标题'菜价比价'、主数字行'6.8元 偏高'、菜价变化说明'雨后叶菜易涨'、天气信息（青浦区 小雨 29°C 湿度86% 15:30）、强提醒'快不行了'、点击提示'点一下设提醒'；onClick 配置的 clickToDeeplink 的 bundleName/abilityName/uri 与 eventCandidates 完全一致；root shell/catalogId/version/updateDataModel.path='/' 全部合规；dataModel.value 中所有 view/data 字段均提供了 sample。轻微扣分点：右侧面板的 alertLevel='无预警' 字号偏小（10pt），以及'快不行了'使用同色系橙色与背景渐变存在轻微对比度风险，但内容仍可清晰阅读。",
+    "aesthetic": "截图整体观感良好：暖橙色渐变背景契合菜价/食物主题；主数值'6.8元 偏高'使用 32pt 粗黑字形成清晰焦点；右侧深色半透明圆角面板为操作区提供视觉锚点；'快不行了'使用品牌橙红突出警示；顶部行三段信息层级（粗-中-浅）合理。轻微不足：右侧面板内'无预警'字号偏小（10pt）略显吃力；渐变方向导致左上角偏浅、右下角偏深，对深色文字的对比度差异略大。",
+    "layout": "截图中无明显堆叠/截断：顶部行'菜价比价 | 青浦区 小雨 | 15:30'三段按 88+100+80+2×4=276vp 精确填满，水平无溢出；分割线横贯内容区；左侧主区（176vp）与右侧操作面板（88vp）间留 12vp 间距，垂直占用 22+1+77+24+16=140vp 刚好对齐底部；'6.8元 偏高'未触右面板边界；右侧面板内三行文字（warning_badge 18、action_hint 16、alert_text 15）合计 49vp + 8vp 间距 = 57vp，落在 77vp 容器内无溢出；所有受保护文本（标题、主数值、CTA、警示）均完整可见。唯一微瑕是 alert_text 10pt 字号略小，但内容未截断。"
+  },
+  "issues": [
+    "右侧面板 alertLevel 文本'无预警'字号 10pt 偏小，弱化可读性",
+    "'快不行了'使用 #ffed6f21 橙红与背景渐变色系同源，对比度有轻微风险",
+    "顶部行 justifyContent:start 使 title 与 location 之间因 title 实际宽度小于 88vp 产生空隙，视觉上不够紧凑（截图可观察到）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"divider\",\"content_row\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#f5dc62\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"location_text\",\"updated_text\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/view/title} }}\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/updatedAt} }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":77,\"justifyContent\":\"start\",\"alignItems\":\"top\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\",\"weather_line\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":77,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/view/primaryLine} }}\",\"styles\":{\"width\":176,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/view/caption} }}\",\"styles\":{\"width\":176,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} + ' 湿度' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"warning_badge\",\"action_hint\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":88,\"height\":77,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/view/warningText} }}\",\"styles\":{\"width\":76,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff3d00\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"{{ ${/view/actionHint} }}\",\"styles\":{\"width\":76,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":76,\"height\":15,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#80000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"view\":{\"title\":\"菜价比价\",\"primaryLine\":\"6.8元 偏高\",\"caption\":\"雨后叶菜易涨\",\"warningText\":\"快不行了\",\"actionHint\":\"点一下设提醒\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦区\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"小雨\",\"humidityPercent\":86,\"alertLevel\":\"无预警\"},\"daily\":[],\"updatedAt\":\"15:30\"}},\"state\":{\"loading\":false}}}}"
+  ]
+}

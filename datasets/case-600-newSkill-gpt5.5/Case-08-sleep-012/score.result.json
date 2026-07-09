@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-08-sleep-012",
+  "scores": {
+    "instruction": {
+      "score": 2.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 1.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 1.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 1.6,
+  "reasons": {
+    "instruction": "截图中只看到顶部一个红色圆环和右侧的'严重偏低'红色文字，其余用户要求的内容均未呈现：渐变背景应为紫蓝色但整张卡片几乎全白；圆环内部的'18%'动态值文本未显示；右侧信息列的'深睡比例'标题、天气夜间提示完全不可见；底部'入睡23:45''起床06:50''手环电量43%'三块数据条在截图中彻底缺失，onClick 跳转也无从体现。圆环和'严重偏低'两项是仅有的可见信息，故 D1 给到 2.5。",
+    "aesthetic": "截图显示卡片背景几乎全白，毫无夜色渐变氛围，前景信息（圆环和'严重偏低'）漂浮在大片空白上，可读但严重失衡。缺少'18%'主指标、内文与三块数据条后，卡片只露出两个零散红色元素，留白比例严重失调、视觉空洞，整体观感不可接受，D2 给 1.0。",
+    "layout": "截图中可见的顶部 Row 只渲染了 Progress 圆环本身，Stack 内的'18%'文本和右侧 Column 的'深睡比例'标题/天气提示均不可见，提示存在文字被裁切或图层未对齐问题；底部 metrics_row 完全不在画面中，等同于整段组件未渲染。卡片基本只显示左上一个圆环和'严重偏低'两处元素，布局大面积缺失，D3 给 1.0。"
+  },
+  "issues": [
+    "卡片渐变背景未渲染，整张卡片几乎全白，未体现'天气+夜晚'氛围",
+    "圆环内部'18%'动态值文本未出现，Stack 居中样式（alignContent）写法可能未生效",
+    "顶部右侧信息列'深睡比例'标题和'多云夜'天气提示完全不可见",
+    "底部三块数据条（入睡/起床/电量）整段未渲染，metrics_row 缺失",
+    "卡片边缘圆角与裁剪未体现，整张卡片与白底无视觉边界"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"metrics_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#5f58c7\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"{{ ${/theme/backgroundStart} }}\",0],[\"{{ ${/theme/backgroundEnd} }}\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"ring_stack\",\"info_col\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":68,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"deep_progress\",\"ring_value_text\"],\"styles\":{\"width\":54,\"height\":54,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"deep_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/sleep/deepSleep/ratioValue} }}\",\"total\":\"{{ ${/sleep/deepSleep/total} }}\",\"styles\":{\"width\":54,\"height\":54,\"type\":\"ring\",\"color\":\"#d64966\"}},{\"id\":\"ring_value_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/deepSleep/ratioText} }}\",\"styles\":{\"width\":40,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"metric_title\",\"status_text\",\"weather_hint\"],\"itemMargin\":1,\"styles\":{\"width\":56,\"height\":60,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"metric_title\",\"component\":\"Text\",\"content\":\"深睡比例\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/deepSleep/statusText} }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ff5577\",\"maxLines\":1}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + '夜' }}\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"metrics_row\",\"component\":\"Row\",\"children\":[\"sleep_start_tile\",\"wake_tile\",\"battery_tile\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":42,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"sleep_start_tile\",\"component\":\"Column\",\"children\":[\"sleep_start_label\",\"sleep_start_value\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":36,\"height\":42,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"sleep_start_label\",\"component\":\"Text\",\"content\":\"入睡\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"sleep_start_value\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/fallAsleepTime} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"wake_tile\",\"component\":\"Column\",\"children\":[\"wake_label\",\"wake_value\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":36,\"height\":42,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"wake_label\",\"component\":\"Text\",\"content\":\"起床\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"wake_value\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/wakeUpTime} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"battery_tile\",\"component\":\"Column\",\"children\":[\"battery_label\",\"battery_value\"],\"itemMargin\":2,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":36,\"height\":42,\"padding\":4,\"borderRadius\":8,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"battery_label\",\"component\":\"Text\",\"content\":\"电量\",\"styles\":{\"width\":28,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/wearableBatteryText} }}\",\"styles\":{\"width\":28,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"theme\":{\"backgroundStart\":\"#5f58c7\",\"backgroundEnd\":\"#634794\"},\"data\":{\"weather\":{\"current\":{\"condition\":\"多云\"},\"location\":{},\"daily\":[],\"updatedAt\":\"\"}},\"sleep\":{\"deepSleep\":{\"ratioValue\":18,\"ratioText\":\"18%\",\"total\":100,\"statusText\":\"严重偏低\"},\"fallAsleepTime\":\"23:45\",\"wakeUpTime\":\"06:50\",\"wearableBatteryText\":\"43%\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

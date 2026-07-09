@@ -1,0 +1,82 @@
+{
+  "userQuery": "我家猫快没粮了,想做个紧急的卡。视觉从一张宠物照片延伸出那种色调和氛围,左右分信息区和动作区,左边显示\"余粮 8% / 够吃 1.2 天\"和\"今日气温 32°C\"这种警告,右边一个大大的\"立即补粮\"按钮,点进去能跳到最近一次喂食日程事件。下方横排几个常用快捷(标准餐/加餐/零食),从黄到红的紧迫感渐变,粮桶和猫爪图标可以用。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-feed-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "feeder": {
+        "statusText": {
+          "type": "string",
+          "description": "宠物喂食器余粮告警状态文本。",
+          "sampleValue": "猫粮告急"
+        },
+        "remainingText": {
+          "type": "string",
+          "description": "当前余粮百分比展示文本。",
+          "sampleValue": "8%"
+        },
+        "remainingPercent": {
+          "type": "number",
+          "description": "当前余粮百分比数值，用于进度或状态判断。",
+          "sampleValue": 8
+        },
+        "daysText": {
+          "type": "string",
+          "description": "按当前消耗速度估算的剩余可吃天数。",
+          "sampleValue": "1.2天"
+        }
+      },
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "今日当前气温展示文本。",
+            "sampleValue": "32°C"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "最近一次喂食日程事件的唯一标识。",
+              "sampleValue": "cal-feed-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "最近一次喂食日程标题。",
+              "sampleValue": "最近一次喂食"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "最近一次喂食日程开始时间。",
+              "sampleValue": "18:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "最近一次喂食日程结束时间。",
+              "sampleValue": "18:35"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_high_temperature.png",
+      "description": "高温温度计图标，适合表达今日气温偏高或环境提醒，彩色 PNG 可用于浅色信息面板。"
+    }
+  ]
+}

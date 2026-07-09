@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-020",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户要求白底简洁风格会议时间轴：左侧夜间深色渐变竖轴+小星月图标、右侧纵向堆叠几场夜会并用细线分隔、显示固定时间与会议室号、点击跳详情。截图中可见白底卡片、深色月亮图标、紫色渐变竖轴、3 行时间+会议室号、两道细线分隔；3 个 onClick 原样引用 eventCandidates 的 clickToIntent/ViewCalendarEvent；尺寸 2x4 (300x140)、catalogId、version、updateDataModel.path/value 等硬约束均满足。首行有极淡灰底（#0c000000）属于静态高亮，不构成动态数值，规则上不违规但非用户明确要求。",
+    "aesthetic": "截图中白底干净，紫色渐变竖轴与深色月亮图标形成夜间语义锚点，色调和谐；时间文字 fontWeight:600、会议室号 fontWeight:400 配以不同灰度（#e5000000 / #99000000），字重层级清晰、克制；首行极淡灰底圆角提供轻微视觉引导，不抢戏；留白整体舒适，无明显空洞或过密。",
+    "layout": "截图中 3 行时间与会议室号均完整可读，无截断、无溢出；月亮图标与竖轴在左侧列顶部居中，3 行事件在右侧列纵向均匀分布，分隔细线清晰可见；竖轴长度（86px）比事件列内容高度（约 106px）略短，但视觉上仍有锚定作用；卡片整体内容在 300x140 内布局合理，无元素堆叠或越界。"
+  },
+  "issues": [
+    "月亮图标在 DSL 中设置了 backgroundColor:#ffffffff 和 borderRadius:12，在白底卡片上形成冗余白色圆形底",
+    "首行 event_row_1 带有 backgroundColor:#0c000000 的极淡灰底高亮，虽不违规但并非用户明确要求",
+    "竖轴 axis_band 高度 86px 略短于事件列内容高度，视觉上未完全贯穿事件区域"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_axis\",\"agenda_column\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"left_axis\",\"component\":\"Column\",\"children\":[\"moon_icon\",\"axis_band\"],\"itemMargin\":6,\"styles\":{\"width\":54,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"moon_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/moon_circle_fill.svg\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"axis_band\",\"component\":\"Divider\",\"styles\":{\"width\":6,\"height\":92,\"strokeWidth\":6,\"vertical\":true,\"color\":\"#564af7\",\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#564af7\",0],[\"#ac49f5\",0.55],[\"#c386f0\",1]]},\"borderRadius\":3,\"margin\":{\"top\":0}}},{\"id\":\"agenda_column\",\"component\":\"Column\",\"children\":[\"event_row_1\",\"separator_1\",\"event_row_2\",\"separator_2\",\"event_row_3\"],\"itemMargin\":2,\"styles\":{\"width\":210,\"height\":112,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"event_row_1\",\"component\":\"Row\",\"children\":[\"event_time_1\",\"event_room_1\"],\"itemMargin\":12,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":210,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"padding\":{\"left\":10,\"right\":10}}},{\"id\":\"event_time_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_room_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"separator_1\",\"component\":\"Divider\",\"styles\":{\"width\":202,\"height\":1,\"margin\":{\"left\":4},\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"event_row_2\",\"component\":\"Row\",\"children\":[\"event_time_2\",\"event_room_2\"],\"itemMargin\":12,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/1/entityId} }}\"}}}],\"styles\":{\"width\":210,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"padding\":{\"left\":10,\"right\":10}}},{\"id\":\"event_time_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + '-' + ${/data/calendar/items/1/dtEnd} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_room_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/eventLocation} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"separator_2\",\"component\":\"Divider\",\"styles\":{\"width\":202,\"height\":1,\"margin\":{\"left\":4},\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"event_row_3\",\"component\":\"Row\",\"children\":[\"event_time_3\",\"event_room_3\"],\"itemMargin\":12,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/2/entityId} }}\"}}}],\"styles\":{\"width\":210,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"start\",\"padding\":{\"left\":10,\"right\":10}}},{\"id\":\"event_time_3\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/dtStart} + '-' + ${/data/calendar/items/2/dtEnd} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_room_3\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/eventLocation} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"dtStart\":\"19:30\",\"dtEnd\":\"20:00\",\"eventLocation\":\"会议室 3A\"},{\"entityId\":\"calendar-event-002\",\"dtStart\":\"20:15\",\"dtEnd\":\"20:45\",\"eventLocation\":\"会议室 5B\"},{\"entityId\":\"calendar-event-003\",\"dtStart\":\"21:00\",\"dtEnd\":\"21:30\",\"eventLocation\":\"会议室 8C\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

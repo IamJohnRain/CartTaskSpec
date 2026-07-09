@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-20-notif-aggregate-001",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中清晰可见：左侧日程图标作为主体图形、右上角红色'紧急'徽标、'09:30'开始时间、'项目周会'标题、底部'进微信'按钮，所有用户诉求（图标主体、点击进微信、读取日历日程、红色紧急提示）均已落实。Button.onClick 的 call/args 原样来自 eventCandidates，Image.src 来自 assetCandidates，size=2x2 与 root shell 各项硬约束均满足。dtEnd 与 eventLocation 未在 2x2 中展示属于合理的取舍，不算缺漏。",
+    "aesthetic": "配色协调：浅灰底 + 红色徽标 + 深色文字，红色作为唯一强调色与'紧急'语义一致。字重层级清晰：时间 16pt 700 最强、标题 14pt 600、徽标 12pt 700、按钮 14pt 500，留白节奏舒适。扣分点：截图中左侧日历图标几乎与背景同色、视觉上非常淡（接近水印），导致'主体是个图'的诉求在视觉上被弱化，徽标反而抢戏。",
+    "layout": "截图中未观察到文字截断、堆叠重叠或溢出：'紧急'、'09:30'、'项目周会'、'进微信'均完整显示；top_row(52)+6+title(18)+6+button(32)=114 < 116 内容区，竖向不溢出；横向 52+8+56=116 也正好填满。按钮底边距卡片底约 14vp，略超 8-12vp 理想区间但未越线。无 Stack 遮挡问题。整体排版干净规整。"
+  },
+  "issues": [
+    "左侧主体日历图标颜色过淡、与背景几乎融合，'主体是个图'的视觉重量不足",
+    "按钮底边距卡片底约 14vp，略大于理想 8-12vp 区间",
+    "缺少 dtEnd/eventLocation 等次要信息的视觉提示（虽非硬要求，可通过排版强化日程感）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"meeting_title\",\"time_range\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"hero_wrap\",\"summary_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_wrap\",\"component\":\"Stack\",\"children\":[\"hero_bg\",\"hero_image\"],\"styles\":{\"width\":48,\"height\":48}},{\"id\":\"hero_bg\",\"component\":\"Column\",\"styles\":{\"width\":48,\"height\":48,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"{{ ${/assets/heroIcon} }}\",\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"summary_col\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"time_text\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/status/alertText} }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":10,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"meeting_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"time_range\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}-{{ ${/data/calendar/items/0/dtEnd} }} · {{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进微信\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.tencent.mm\",\"abilityName\":\"com.tencent.mm.ui.LauncherUI\",\"uri\":\"weixin://\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"event-001\",\"title\":\"项目周会\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\",\"eventLocation\":\"会议室A\"}]}},\"assets\":{\"heroIcon\":\"resources/base/media/icon_schedule.png\"},\"status\":{\"alertText\":\"紧急\"}}}}"
+  ]
+}

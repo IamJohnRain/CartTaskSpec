@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-016",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "截图中可见用户全部明确诉求均落地：顶部'今日超时3次'标题含动态数值、橙色系统告警胶囊（带icon_timing.png计时图标与'告警'文本）、半透明面板纵向列出家人/主管/伴侣三个联系人、底部白色'开启勿扰'按钮绑定clickToDeeplink事件，deeplink三参数与eventCandidates完全一致。size 2x2(140x140)、catalogId、version v0.9、updateDataModel path='/且value与TaskSpec一致，硬约束全部满足。轻微扣分点：用户原话'红色告警状态'实际渲染为橙色(#ed6f21)，语义略偏离'红色告警'。",
+    "aesthetic": "截图中红黑到橙红的渐变营造了紧迫感，方向自右上至左下，色相过渡较自然。橙色告警胶囊在深色渐变上跳出明显，白底'开启勿扰'按钮形成强对比收尾。问题在于联系人面板块：第二、第三个联系人使用#99ffffff(60%不透明)，在#19ffffff半透明背景叠加后对比度过低，'主管'和'伴侣'几乎隐入背景、辨识困难；'家人'虽用纯白却相对突兀。整体字号层级（14/12/10/12）合理，但10号小字在2x2卡片上偏小，留白略局促。",
+    "layout": "从截图观察未出现元素堆叠/越界：标题、告警胶囊、联系人面板、按钮四个区域纵向自上而下排布清晰，垂直占用合计140vp恰好填满卡片内容区。底部白色'开启勿扰'按钮下沿距卡片底边约12vp，CTA热区28vp可接受。主要问题集中在联系人面板内部：40vp高度内塞入3行10vp字号的文本，行高过紧导致三条名字视觉上几乎粘连成一团；'家人/主管/伴侣'三者纵向几乎贴在一起，缺乏呼吸感与视觉分组，但未发生真实裁切或溢出。"
+  },
+  "issues": [
+    "联系人面板中contact_2/contact_3使用#99ffffff(60%透明)，叠加半透明背景后对比度严重不足，截图中'主管''伴侣'几乎不可读",
+    "2x2卡片内塞入3行紧急联系人，contacts_panel高度40vp、每行height:10，垂直节奏过于拥挤，三行名字视觉粘连",
+    "用户要求'红色告警状态'，实际告警胶囊使用#ffed6f21橙色，色相偏离'红色告警'语义",
+    "联系名字号10在140vp宽度卡片上偏小，且第一行用#ffffffff纯白而其他两行#99ffffff，形成不必要的视觉断层"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"metric_row\",\"alert_row\",\"contacts_panel\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#d64966\",0.58],[\"#db6b42\",1]]}}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"metric_text\"],\"styles\":{\"width\":116,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"metric_text\",\"component\":\"Text\",\"content\":\"{{ '今日超时' + ${/focus/overtimeCount} + '次' }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"alert_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"padding\":2,\"borderRadius\":10,\"backgroundColor\":\"#ffd93030\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_timing.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/focus/alertText} }}\",\"styles\":{\"width\":90,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"contacts_panel\",\"component\":\"Column\",\"children\":[\"contact_1\",\"contact_2\",\"contact_3\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":40,\"padding\":3,\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"contact_1\",\"component\":\"Text\",\"content\":\"{{ ${/contacts/contact1} }}\",\"styles\":{\"width\":110,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"contact_2\",\"component\":\"Text\",\"content\":\"{{ ${/contacts/contact2} }}\",\"styles\":{\"width\":110,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"contact_3\",\"component\":\"Text\",\"content\":\"{{ ${/contacts/contact3} }}\",\"styles\":{\"width\":110,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"开启勿扰\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"focus\":{\"overtimeCount\":3,\"alertText\":\"告警\"},\"contacts\":{\"contact1\":\"家人\",\"contact2\":\"主管\",\"contact3\":\"伴侣\"}}}}"
+  ]
+}

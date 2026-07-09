@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-09-weather-care-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户要求的'一行带数字的显示'以36°C大字号温度满足；'点跳应用'通过'打开'按钮绑定eventCandidates中的clickToDeeplink事件落实；'读天气'展示了温度、天气状况(多云)、地区(青浦区)和更新时间；'快不行的提醒'通过半透明预警面板展示'高温橙色预警'。所有数据字段均通过{{...}}表达式从dataModel正确读取，updateDataModel.path与value与TaskSpec一致，catalogId与version符合协议，size为2x4(300x140)，硬约束全部满足。轻微扣分点：预警面板在卡片上视觉占比较大、温度主指标虽大但与'多云'之间的距离感稍弱。",
+    "aesthetic": "截图中蓝色渐变背景过渡自然，冷色调与高温预警的橙色形成较好的冷暖对比；白色主文字在蓝色背景上清晰可读；橙色预警文字与蓝色背景形成强烈视觉警示，层次分明。字号阶梯(40/16/14/12/10)合理，主指标'36°C'为最强字重。但右侧温度计图标在截图中显得过于灰白/半透明，与蓝色背景对比度不足，视觉存在感偏弱；预警面板的半透明白色背景质感尚可但内部文字层级略平淡。",
+    "layout": "截图中所有元素均无重叠、堆叠或溢出。Root Row(300x140，padding 12)下main_column(176)与side_column(90)之间留有10vp间距，横向刚好铺满276vp内容区。纵向三段布局(20+6+48+6+36=116)恰好填满116vp内容区，无溢出。'36°C'大字号温度完整显示无截断；'多云'位于主指标右侧无遮挡；'青浦区'和'天气关怀'在一行内排布无挤压；预警面板内'预警提醒'与'高温橙色预警'上下两行清晰；'打开'按钮位于side_column底部，距卡片底边约10-12vp，符合规范；'更新 15:30'在按钮上方居中。整体布局干净工整，元素边界清晰。"
+  },
+  "issues": [
+    "右侧温度计图标在蓝色渐变背景上显得灰白透明，对比度不足，视觉存在感弱",
+    "预警面板占据左侧主列较大面积(176x36)，可考虑弱化次要标签以加强主预警文字的视觉冲击",
+    "主指标'36°C'与'多云'之间使用itemMargin 8，截图中两者紧贴在一起，温度主值与状态说明之间缺少呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_column\",\"side_column\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#1e5a8a\",0],[\"#2d8fc9\",0.55],[\"#5fb5d9\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_line\",\"alert_panel\"],\"itemMargin\":8,\"styles\":{\"width\":172,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"location_text\"],\"itemMargin\":8,\"styles\":{\"width\":172,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"天气关怀\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":90,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_line\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":12,\"styles\":{\"width\":172,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"baseline\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":96,\"height\":46,\"fontSize\":40,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":60,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_panel\",\"component\":\"Row\",\"children\":[\"alert_dot\",\"alert_value\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":32,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":10,\"backgroundColor\":\"#33ff6b35\",\"borderWidth\":1,\"borderColor\":\"#80ff6b35\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"alert_dot\",\"component\":\"Text\",\"content\":\"●\",\"styles\":{\"width\":12,\"height\":16,\"fontSize\":10,\"fontColor\":\"#ffff6b35\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":146,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffe0d0\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"side_column\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"update_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":92,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_high_temperature.png\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\",\"backgroundColor\":\"#22ffffff\",\"borderRadius\":24,\"padding\":4}},{\"id\":\"update_text\",\"component\":\"Text\",\"content\":\"{{ '更新 ' + ${/data/weather/updatedAt} }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":92,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦区\"},\"current\":{\"temperatureText\":\"36°C\",\"condition\":\"多云\",\"alertLevel\":\"高温橙色预警\"},\"updatedAt\":\"15:30\"}}}}}"
+  ]
+}

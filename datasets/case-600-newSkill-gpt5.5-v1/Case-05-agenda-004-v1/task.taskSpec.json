@@ -1,0 +1,119 @@
+{
+  "userQuery": "整个时间轴图那种，点一下能进会议详情，日历日程要读出来",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历日程结果列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:30",
+              "eventLocation": "B座 8F 会议室"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "项目同步",
+              "dtStart": "14:00",
+              "dtEnd": "14:45",
+              "eventLocation": "线上会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项。",
+            "sampleValue": {
+              "entityId": "calendar-event-001",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:30",
+              "eventLocation": "B座 8F 会议室"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情页使用的唯一标识符。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "产品评审会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程通常为 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程通常为 HH:MM。",
+                "sampleValue": "10:30"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生地点或会议入口摘要。",
+                "sampleValue": "B座 8F 会议室"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "dateLabel": {
+        "type": "string",
+        "description": "卡片展示的日程日期标签。",
+        "sampleValue": "今日日程"
+      },
+      "timelineLabel": {
+        "type": "string",
+        "description": "时间轴区域的短标题。",
+        "sampleValue": "时间轴"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "进入第一条日程详情的动作文案。",
+        "sampleValue": "查看详情"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于日程卡片的服务识别。"
+    },
+    {
+      "src": "resources/base/media/icon_meeting.png",
+      "description": "会议图标，适合用于会议或当下日程的主对象识别。"
+    },
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合用于日程时间或时间轴辅助识别。"
+    }
+  ]
+}

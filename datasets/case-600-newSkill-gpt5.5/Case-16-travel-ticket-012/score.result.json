@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-16-travel-ticket-012",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "用户明确要求顶部大字号显示'1天12小时'，截图中可见且完整；底部三块横向并列结构也呈现出来；onClick 配置齐全，事件均来自 eventCandidates。扣分点：1) 截图中第三块'再下一个航段'显示为'MU45'，'MU456'中的'6'被裁切丢失，信息不完整；2) 第一块天气图标用'天'字表达天气现象语义略显牵强（更接近'日/天'），'云26°'中'°'也几乎贴边；3) 紫色渐变偏鲜艳，与用户'简洁素净'的要求稍有偏差，但符合'夜间渐变'的诉求。",
+    "aesthetic": "截图中可以看到紫色到品红的渐变作为夜间背景，主标题'1天12小时'白色加粗，与背景对比清晰；副标题'距离出发还有'用半透明白处理，层级关系清楚。扣分点：1) 渐变颜色饱和度偏高，更像活力紫而非'素净'夜间色；2) 三块小瓦片的文字明显过密、过小，'MU45'被截断、'云26°'几乎贴边，整体观感局促；3) 瓦片内图标与数值纵向堆叠导致两行都偏紧，缺少呼吸感。",
+    "layout": "截图中第三块瓦片底部数值清晰显示为'MU45'，'6'被右边界裁切丢失，属文字截断问题；第一块'云26°'右侧的'°'符号也几乎贴近瓦片右边缘，视觉上拥挤；瓦片宽 36px、内边距 2、内可用 32px，而 10pt 字体下的'MU456'实测宽度已超过该值。瓦片纵向高度 38 减去上下 padding 4 后仅 34 可用，'icon 12 + gap 2 + value 14' 几乎撑满，没有容错空间。整体三块在 116 宽内勉强排开，截图中无元素溢出卡片边界或堆叠重叠，但瓦片内文字截断为最显著的布局缺陷。"
+  },
+  "issues": [
+    "截图中第三块瓦片显示为'MU45'，'MU456'的'6'被裁切丢失",
+    "第一块瓦片'云26°'中'°'符号贴边，视觉拥挤",
+    "瓦片宽 36px、padding 2，内宽 32px 不足以容纳 10pt 下的'云26°'/'MU456'",
+    "瓦片高度 38 减去 padding 后纵向空间过紧",
+    "天气图标用'天'字表达天气现象语义不够直观",
+    "渐变偏鲜艳浓烈，与用户'简洁素净'诉求略有偏差"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"caption_text\",\"countdown_text\",\"tile_list\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#3a3470\",0],[\"#6b4ba8\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"距离出发还有\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/countdownText} }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":22,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"tile_list\",\"component\":\"List\",\"children\":[\"weather_tile\",\"next_tile\",\"after_tile\"],\"space\":3,\"styles\":{\"width\":116,\"height\":46,\"listDirection\":\"horizontal\",\"scrollBar\":\"off\"}},{\"id\":\"weather_tile\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"weather_value\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":36,\"height\":46,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#22ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Text\",\"content\":\"云\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"next_tile\",\"component\":\"Column\",\"children\":[\"next_icon\",\"next_value\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":36,\"height\":46,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#22ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"next_icon\",\"component\":\"Text\",\"content\":\"一\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"next_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"after_tile\",\"component\":\"Column\",\"children\":[\"after_icon\",\"after_value\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/1/entityId} }}\"}}}],\"styles\":{\"width\":36,\"height\":46,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#22ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"after_icon\",\"component\":\"Text\",\"content\":\"二\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"after_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"ui\":{\"countdownText\":\"1天12小时\"},\"data\":{\"weather\":{\"current\":{\"condition\":\"云\",\"temperatureText\":\"26°\"}},\"calendar\":{\"items\":[{\"title\":\"CA123\",\"entityId\":\"evt-flight-1\"},{\"title\":\"MU456\",\"entityId\":\"evt-flight-2\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

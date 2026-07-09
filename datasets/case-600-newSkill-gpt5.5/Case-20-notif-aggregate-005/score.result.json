@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-20-notif-aggregate-005",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "用户原始指令的四点诉求均在截图中得到落实：标题'通知聚合'与铃铛图标在顶部呈现；未读数'28'与单位'未读'以主指标形式居中突出；底部'去工位'按钮配带 onClick.clickToIntent 事件（带 intentName/StartNavigate/dstLocation/trafficpe 参数，原样出自 eventCandidates）；'堆多了 快处理'以红色短句作为堆量过多提醒。素材方面，bell_fill.svg 来自 assetCandidates 并用作头部图标。尺寸 2x2、根容器 140x140/borderRadius 18/clip、catalogId、version、updateDataModel.path='/' 全部合规。",
+    "aesthetic": "截图整体观感清爽：白到暖橙的线性渐变（RightBottom 方向）营造出有温度的提醒感，与红色 statusHint 色调相呼应。字重层级清晰：'28'(700/32) 强主指标 > 标题(600/14) > 状态/单位(500/12-14) > 按钮(medium/14)，主次分明。轻微不足：底栏'去工位'按钮底色 #19000000 透明度低，在右下橙渐变区上对比度偏弱，按钮的'可点击感'不够明确；statusHint 红色与右下橙色在同一色相区间，存在轻微色彩同质化。",
+    "layout": "截图观察：标题行、'28 未读'主指标行、状态提示、分隔线、按钮五段自上而下排列，元素之间无堆叠重叠；标题'通知聚合'完整未截断，主指标'28'与'未读'均完整显示，状态句'堆多了 快处理'单行容纳，按钮'去工位'在底边内约 10-12vp 处，未被裁切，也未被渐变遮挡。布局密度适中，留白舒适。极小问题：primary_row 内部'28'与'未读'用 center 对齐，导致小数基线略不共线，但截图视觉上可接受。"
+  },
+  "issues": [
+    "按钮 backgroundColor #19000000 在右下橙色渐变上对比度偏弱，'可点击视觉提示'不够明显",
+    "primary_row 使用 alignItems:center，'28'与'未读'基线不齐，理想应用 alignItems:baseline",
+    "statusHint 红色 (#ffe84026) 与右下橙渐变同色相，存在轻微色彩同质化风险",
+    "fontWeight 同时使用 700/600/500/medium 四档，超出'一张卡只保留一个最强字重'的克制建议（实际最强为 700，整体仍可接受但可收敛）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_row\",\"status_hint\",\"divider\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",0.55],[\"#f9bc64\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"bell_icon\",\"title_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"bell_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bell_fill.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/notification/title} }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":36,\"alignItems\":\"baseline\",\"justifyContent\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/notification/unreadText} }}\",\"styles\":{\"width\":48,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\",\"alignSelf\":\"center\"}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"{{ ${/notification/unreadUnit} }}\",\"styles\":{\"width\":34,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"alignSelf\":\"center\"}},{\"id\":\"status_hint\",\"component\":\"Text\",\"content\":\"{{ ${/notification/statusHint} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/notification/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":72,\"height\":28,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#33000000\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"notification\":{\"title\":\"通知聚合\",\"unreadText\":\"28\",\"unreadUnit\":\"未读\",\"statusHint\":\"堆多了 快处理\",\"actionLabel\":\"去工位\"}}}}"
+  ]
+}

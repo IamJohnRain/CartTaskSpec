@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-04-focus-018",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "截图中可以看到顶部天气行（雪花图标+小雪 -2°C）、中部橙色环形倒计时（考研倒计时 45 天）、底部磨砂面板两条专注时间段，整体已落实用户全部明确诉求：磨砂质感通过半透明面板体现，时间夜晚渐变通过深黑到紫到蓝的 RightBottom 渐变实现，onClick 事件原样来自 eventCandidates 的 clickToDeeplink。轻微扣分：用户原话要求'用 ❄ emoji'做图标，协议禁止 emoji 而改用 snow.png 是合规调整，但相比纯文字描述，'用 ❄'的语义被替换为 PNG 雪花图标，属于协议允许的替代但与原指令字面有出入。",
+    "aesthetic": "截图整体观感良好：深色到紫蓝的渐变给到夜晚流逝的氛围，半透明面板提供磨砂质感，橙色环形进度条与冷色背景形成和谐对比，'45 天'作为主信息使用 fontSize 14 + fontWeight 700 突出，字号层级清晰。但中部环内文字与外环之间留白偏紧，半透明圆角面板与橙色环在右侧形成轻微视觉竞争，让中间区域显得略'满'，扣 0.5；底部专注面板两行间距较密，整体仍有提升空间。",
+    "layout": "截图中可观察到：顶部天气行、底部专注面板均完整可读；中部环形结构上，圆环（62×62）与中央文字面板（54×36）距离过近，半透明面板的右边缘几乎触及橙色环的右半弧线（55% 进度填充弧正好经过文字右侧），形成'文字贴着环'的紧迫感；'考研倒计时'五个字位于面板顶端，'时'字右侧距环很近；'45 天'虽位置居中但与环的下半弧距离也较近。未见明显文字被裁切或组件溢出卡片边界，但视觉上属于'挤'的布局，需要松开间距。"
+  },
+  "issues": [
+    "中部 ring_center 半透明面板右边缘紧贴橙色进度环的右半弧线，视觉上有挤压感（截图中央区域）",
+    "ring_center 仍带 #19ffffff 背景与橙色环同时占据视觉焦点，使中心区域显得拥挤",
+    "底部 focus_panel 中两行专注时间相距仅 2px，密度偏高、略显拥挤",
+    "天气行 frosted 面板的左右内边距看着略小，icon 与文字的留白可再加宽"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_column\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#5550a6\",0.58],[\"#467794\",1]]}}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"weather_row\",\"meter_stack\",\"focus_panel\"],\"itemMargin\":5,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"padding\":{\"left\":10,\"right\":10},\"alignItems\":\"center\",\"justifyContent\":\"center\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":9}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/weatherIcon} }}\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"countdown_ring\",\"ring_center\"],\"styles\":{\"width\":66,\"height\":66,\"alignContent\":\"center\"}},{\"id\":\"countdown_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/goal/progressValue} }}\",\"total\":\"{{ ${/goal/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#f9bc64\",\"width\":66,\"height\":66}},{\"id\":\"ring_center\",\"component\":\"Column\",\"children\":[\"goal_title\",\"days_text\"],\"itemMargin\":2,\"styles\":{\"width\":46,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"goal_title\",\"component\":\"Text\",\"content\":\"{{ ${/goal/title} }}\",\"styles\":{\"width\":46,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"days_text\",\"component\":\"Text\",\"content\":\"{{ ${/goal/daysLeft} + ' 天' }}\",\"styles\":{\"width\":40,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"focus_panel\",\"component\":\"Column\",\"children\":[\"focus_row_1\",\"focus_row_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"backgroundColor\":\"#19ffffff\",\"borderRadius\":12}},{\"id\":\"focus_row_1\",\"component\":\"Text\",\"content\":\"{{ ${/focusSessions/0/time} + ' ' + ${/focusSessions/0/subject} }}\",\"styles\":{\"width\":100,\"height\":9,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"focus_row_2\",\"component\":\"Text\",\"content\":\"{{ ${/focusSessions/1/time} + ' ' + ${/focusSessions/1/subject} }}\",\"styles\":{\"width\":100,\"height\":9,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"海淀\"},\"current\":{\"temperatureText\":\"-2°C\",\"condition\":\"小雪\"}}},\"goal\":{\"title\":\"考研倒计时\",\"daysLeft\":45,\"progressValue\":55,\"progressTotal\":100},\"focusSessions\":[{\"time\":\"08:00-10:00\",\"subject\":\"英语\"},{\"time\":\"14:00-16:00\",\"subject\":\"政治\"}],\"asset\":{\"weatherIcon\":\"resources/base/media/snow.png\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

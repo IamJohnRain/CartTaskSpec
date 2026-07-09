@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-29-elderly-care-007",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "截图中可清晰看到血压主显示值'120'配以'mmHg'单位大字呈现；右上角灰色胶囊内显示绿色'已连接'状态文本；左下胶囊内显示日历读取的'08:30 降压药'服药提醒；右下蓝色按钮'进入应用'配置了来自 eventCandidates 的 clickToDeeplink 事件，call/args 与契约完全一致。素材 heart_fill.svg、calendar_fill.svg 均按语义使用。看护状态标题、看护名称、血压、设备连接、日历时间、跳转事件全部到位，扣 1 分因按钮的 uri 指向 totemweather（天气）应用，与老人看护场景语义不匹配，但 DSL 严格按 eventCandidates 实现，不算违规。",
+    "aesthetic": "截图整体观感简洁专业：纯白卡片底配黑色主文字、绿色'已连接'语义色、蓝色'进入应用'行动色，色彩层次清晰且对比度好；'120'用 40px 超大号字体作为视觉锚点，字重层级（700/600/500）分明，留白舒适。略扣分：右侧'已连接'胶囊与'进入应用'按钮之间因 spaceBetween 留出较大空隙，与左侧紧凑的内容块在视觉重量上略不对等。",
+    "layout": "截图未观察到文字截断、元素堆叠或溢出：标题'看护状态'完整显示，'120 mmHg'主指标未截断，'已连接'与'08:30 降压药'胶囊内的次级文本均完整呈现；心形图标、日历图标尺寸合适未被裁切。left_panel 三个子块（22+42+36+16=116）恰好填满 116px 高度区。right_panel 因 spaceBetween 让 status_pill 贴顶、action_button 贴底，中部留白较大但未造成任何元素重叠或越界，组件均锚定在卡片内。底部按钮底边距卡片底边约 14vp，符合 2x4 ≤16vp 约束。"
+  },
+  "issues": [
+    "right_panel 使用 spaceBetween 导致'已连接'胶囊与'进入应用'按钮之间产生较大视觉空隙，与左侧紧凑布局观感略不均衡",
+    "deeplink uri 指向 totemweather 天气应用，与老人看护卡片语义不匹配（属于 TaskSpec 层面问题，DSL 无法修复）",
+    "medicine_panel 文字字号 14px 偏小，针对老年用户看护场景可适度放大至 16px 以提升可读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"bp_row\",\"medicine_panel\"],\"itemMargin\":8,\"styles\":{\"width\":172,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"health_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"health_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/heart_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/care/name} }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"bp_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":172,\"height\":42,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/care/bloodPressure/systolicText} }}\",\"styles\":{\"width\":80,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"{{ ${/care/bloodPressure/unitText} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"medicine_panel\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"medicine_time\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":36,\"padding\":8,\"borderRadius\":12,\"backgroundColor\":\"#0C000000\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"medicine_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":132,\"height\":18,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_pill\",\"action_button\"],\"itemMargin\":0,\"styles\":{\"width\":92,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":92,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#0C000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/care/device/connectionText} }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#FF64BB5C\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进入应用\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":92,\"height\":36,\"borderRadius\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#FF0A59F7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"care\":{\"name\":\"看护状态\",\"bloodPressure\":{\"systolicText\":\"120\",\"unitText\":\"mmHg\"},\"device\":{\"connectionText\":\"已连接\"}},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"medicine-event-001\",\"title\":\"降压药\",\"dtStart\":\"08:30\",\"dtEnd\":\"08:45\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-18-carpool-005",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.2,
+  "reasons": {
+    "instruction": "用户原始指令包含5项诉求：文字叠在地图背景上、距离数字会变、点一下导航、日历能读、快迟到喊我一声。截图中可见标题\"拼车出发\"、时间\"08:20 上车\"、距离数字\"3.2\"、导航按钮、迟到大字\"快迟到了\"、地点\"市民中心\"，5项诉求均已落实，onClick 事件使用 eventCandidates 中原样的 clickToIntent/StartNavigate 模板，数据绑定路径正确。但截图中\"km\"单位的\"m\"被分隔线横切几乎不可见，导致距离信息呈现不完整，扣 2 分。",
+    "aesthetic": "浅蓝到米白的对角渐变背景提供了一定的\"地图\"氛围，底部白色圆角面板中\"快迟到了\"红色警示与蓝色\"导航\"按钮形成清晰的色彩层级。标题字重最强（fontWeight 700），次级文本使用 12/10 灰阶，层次合理。但截图中可见横向分隔线（map_line_1/2/3，#33000000）穿过\"km\"与\"上车点\"文字中部，破坏了文字的完整度与可读性，造成视觉杂讯与破图感，整体观感下降。",
+    "layout": "这是本卡片最突出的问题。基于截图像素观察：1) map_lines Column 内的 3 条 Divider 经布局计算分别落在 y≈40、57、74 处，恰好横穿 distance_row（y=40-76）的文字区域，截图中\"k\"与\"上车点\"两处明显被细灰线穿过；2) \"km\"单位的\"m\"字符被第二条 map_line 切到中线，导致单位信息残缺；3) 文字与背景分隔线分层虽有 Stack 层级设计，但分隔线落点未避开正文热区，违反\"Stack 叠层不得覆盖受保护文本\"的硬约束。底部按钮与面板对齐良好、底边距合理，热区也合格，主要扣分来自地图分隔线对关键文本的覆盖。"
+  },
+  "issues": [
+    "map_lines 三条 Divider 落在 distance_row 文字区域内，导致\"km\"与\"上车点\"被细灰线横穿",
+    "\"km\"单位的\"m\"字符被分隔线切到，截图中仅\"k\"清晰可读，单位信息不完整",
+    "地图背景分隔线的颜色与位置未与正文热区做避让，违反 Stack 层叠不遮挡受保护文本的约束",
+    "distance_row 中 distance_value 宽 56 + distance_unit 宽 18 + distance_caption 宽 36 + itemMargin 4 = 114，留白仅 2vp 偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"map_bg\",\"content_column\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#fff1f3f5\",1]]}}},{\"id\":\"map_bg\",\"component\":\"Column\",\"children\":[\"line1\",\"line2\"],\"itemMargin\":42,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"line1\",\"component\":\"Divider\",\"styles\":{\"width\":80,\"height\":1,\"strokeWidth\":1,\"color\":\"#22000000\"}},{\"id\":\"line2\",\"component\":\"Divider\",\"styles\":{\"width\":60,\"height\":1,\"strokeWidth\":1,\"color\":\"#22000000\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"header_column\",\"distance_row\",\"bottom_panel\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"header_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"time_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' 上车' }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance_row\",\"component\":\"Row\",\"children\":[\"distance_value\",\"distance_unit\",\"distance_caption\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"distance_value\",\"component\":\"Text\",\"content\":\"{{ ${/route/distanceValue} }}\",\"styles\":{\"width\":52,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance_unit\",\"component\":\"Text\",\"content\":\"km\",\"styles\":{\"width\":22,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"distance_caption\",\"component\":\"Text\",\"content\":\"上车点\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"bottom_panel\",\"component\":\"Row\",\"children\":[\"alert_column\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":16,\"clip\":true}},{\"id\":\"alert_column\",\"component\":\"Column\",\"children\":[\"alert_text\",\"location_text\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminder/alertText} }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"导航\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/route/destination/latitude} }}\",\"longitude\":\"{{ ${/route/destination/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":52,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-carpool-001\",\"title\":\"拼车出发\",\"dtStart\":\"08:20\",\"dtEnd\":\"08:45\",\"eventLocation\":\"市民中心\"}]}},\"route\":{\"distanceValue\":\"3.2\",\"destination\":{\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"}},\"reminder\":{\"alertText\":\"快迟到了\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

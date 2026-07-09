@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-15-smart-home-003",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "用户要求'文字叠背景图上一行带数字点了能跳app还能读天气'，截图显示：背景图为多云天气插图（来自assetCandidates），文字叠在背景上，主指标'26°C'突出显示，右下'打开'按钮绑定了clickToDeeplink事件（参数与eventCandidates完全一致），天气信息（位置、温度、现象、空气质量、风向风力、更新时间）齐全。尺寸2x4/catalogId/version/updateDataModel均符合协议。扣分点：用户提到'一行带数字'的诉求在实现上分散到了多行布局（标题/主指标/支撑/底部），与'一行'的简洁表达略有偏差。",
+    "aesthetic": "整体蓝白配色与天气插图相呼应，渐变自然，白色文字在深色半透明面板上可读性良好。'26°C'作为最强字重（32pt）形成清晰视觉焦点，层级合理。扣分点：右上角'多云'胶囊底色透明度较高（#33ffffff），背景的太阳光晕直接穿透了胶囊，文字与太阳叠在一起略显杂乱；天气插图整体偏大且偏中心，与文字信息争夺视觉注意力。",
+    "layout": "截图中各信息块结构清晰：标题行/主指标行/底部行三段式布局无明显截断或溢出。'26°C'完整显示，'空气 优'与'东南风2级'两行支撑文字完整，'08:30 更新'与'打开'按钮在底部对齐良好，按钮热区26vp合理，Stack层叠中背景图在下、内容面板在上的关系正确。扣分点：右上角'多云'胶囊与背景太阳插图在视觉上发生层叠冲突，胶囊背景透明度太低导致太阳从胶囊中透出，影响胶囊可读性；插图比例偏大，右侧太阳被胶囊遮挡后又透出，造成局部视觉脏点。"
+  },
+  "issues": [
+    "右上角'多云'胶囊背景透明度（#33ffffff）过高，背景太阳插图穿透胶囊造成视觉混乱",
+    "天气插图比例偏大且居中，与文字争夺视觉焦点",
+    "用户提到'一行带数字'，当前实现为多行布局，与简洁诉求略有偏差",
+    "标题'家居 · 青浦'字号14pt相对偏小，层级感可再强化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_image\",\"content_panel\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"alignContent\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#46b1e3\",0],[\"#86c5e3\",1]]}}},{\"id\":\"bg_image\",\"component\":\"Image\",\"src\":\"resources/base/media/partly_cloudy.png\",\"styles\":{\"width\":160,\"height\":116,\"objectFit\":\"contain\",\"borderRadius\":16,\"marginLeft\":128}},{\"id\":\"content_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#4d000000\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"condition_pill\"],\"itemMargin\":8,\"styles\":{\"width\":260,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ '家居 · ' + ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":176,\"height\":22,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"condition_pill\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":76,\"height\":22,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"borderRadius\":11,\"backgroundColor\":\"#80000000\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"support_column\"],\"itemMargin\":12,\"styles\":{\"width\":260,\"height\":36,\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":100,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"support_column\",\"component\":\"Column\",\"children\":[\"air_text\",\"wind_text\"],\"itemMargin\":2,\"styles\":{\"width\":148,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"air_text\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":148,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"wind_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/windDirection} + ${/data/weather/current/windLevel} + '级' }}\",\"styles\":{\"width\":148,\"height\":17,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"updated_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":260,\"height\":26,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/updatedAt} + ' 更新' }}\",\"styles\":{\"width\":188,\"height\":26,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":64,\"height\":26,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"优\",\"windDirection\":\"东南风\",\"windLevel\":2},\"updatedAt\":\"08:30\"}}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-18-carpool-001",
+  "scores": {
+    "instruction": {
+      "score": 6.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.2,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.8,
+  "reasons": {
+    "instruction": "用户要求'拼车路上+数字一直变+红色提示注意安全'。截图中可见标题'拼车路上'、主指标'18'、状态'拥堵延时'、时间'2分钟前'、红色'注意安全'按钮,主要诉求均已落地。但有两处明显扣分:1) 模板表达式 {{ ${.../delayMinutes} + '分' }} 在截图中只渲染出'18','分'单位缺失,用户看到的不是'18分';2) 头部 icon_box 仅为一个白色圆形,内部 car_icon 图片未渲染,虽然 DSL 中引用了 resources/base/media/icon_car.png 资源,但截图里没有任何车辆视觉。事件 candidates 为空,未涉及点击,协议合规。size=2x2、catalogId、version、updateDataModel 均正确。",
+    "aesthetic": "整体观感:橙红渐变背景(由浅到暖橙)与红色'注意安全'按钮在色调上有呼应,但背景偏橙而'红'感不够强烈,用户原话强调的'红色提示'主要靠底部胶囊承担,卡片底色未能强化紧迫氛围。字重层级上,'18' 与 '注意安全' 都使用 fontWeight 800,出现两个最强字重,违反'同一卡片只保留一个最强字重'规则。'拥堵延时' 在右侧与卡片右内边距几乎贴齐,留白偏紧;标题前空白圆点(应为车标)显得突兀、像一个未加载的占位符。",
+    "layout": "从截图看三段(标题行/主指标行/红色提示行)上下排列,无明显堆叠,红色按钮底边距卡片底约 8-10vp,符合 2x2 底部锚定建议。扣分点:1) 主指标行 '18' 与 '拥堵延时' 中间缺少 '分' 字,与右侧状态列之间出现较大空隙,单位信息丢失;2) '拥堵延时' 四字在 fontSize 12、可用宽 48 的列中几乎贴边,右边'延时'两字看起来被列宽压紧,若不缩字存在轻微截断风险;3) 头部 icon_box 仅显示一个 22x22 的纯白圆,内含的车图未渲染,视觉上像是空 Stack,降低了头部识别度。"
+  },
+  "issues": [
+    "delay_value 模板 '{{ delayMinutes + \\'分\\' }}' 未正确渲染单位 '分',截图只显示 '18'",
+    "icon_box 内的 car_icon(Image)未在截图中渲染,只看到白色圆形 Stack,缺少出行视觉锚点",
+    "'18' 与 '注意安全' 同时使用 fontWeight 800,违反'同一卡片只保留一个最强字重'",
+    "status_column 宽 48 中 '拥堵延时' 4 字在 fontSize 12 下贴边,缺乏安全留白",
+    "卡片背景为橙黄渐变而非红色调,与用户'红色提示'的紧迫感诉求贴合度不足"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"alert_panel\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#fff5f0ef\",0],[\"#f9b46a\",0.6],[\"#e85a3c\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_box\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Stack\",\"children\":[\"car_icon\"],\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":11,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"car_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/carpool/routeTitle} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"delay_value\",\"unit_text\",\"status_column\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"delay_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/carpool/delayMinutes} }}\",\"styles\":{\"width\":40,\"height\":40,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"unit_text\",\"component\":\"Text\",\"content\":\"分\",\"styles\":{\"width\":14,\"height\":40,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"status_column\",\"component\":\"Column\",\"children\":[\"status_text\",\"update_text\"],\"itemMargin\":4,\"styles\":{\"width\":50,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/carpool/statusText} }}\",\"styles\":{\"width\":50,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"update_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/carpool/updateText} }}\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_panel\",\"component\":\"Row\",\"children\":[\"alert_text\"],\"styles\":{\"width\":116,\"height\":34,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#ffe84026\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/carpool/safetyAlert} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"carpool\":{\"routeTitle\":\"拼车路上\",\"delayMinutes\":18,\"statusText\":\"拥堵延时\",\"updateText\":\"2分钟前\",\"safetyAlert\":\"注意安全\"}}}}}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-17-queue-012",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "用户要求的横向三栏布局+分隔线已实现：左 H/036/当前、中 前方/12人环形进度、右 电/78%/电量。'立即拨打医院电话'按钮（显示为'拨打医院'，来自 callLabel）已绑定 clickToCallPhone 与电话号 01012345678。日历预约 '10:30 就诊预约' 已读取。绿→黄→红渐变背景已实现。但两点扣分：①用户明确要求'快轮到了用红色或橙色提醒'，主号 036 与环形进度本应取 warningColor (#ffe84026) 渲染为红色/橙色，截图中 036 实际呈黑色、环形填充呈洋红/品红色，说明 8 位 ARGB 颜色未被解析生效，警示语义未传达；②用户要求'图标用文字字符比如⚕或⌚那种'，但当前仅使用普通字母 H 与汉字 '电'，缺少图标气质。",
+    "aesthetic": "渐变方向 RightBottom 从绿到黄到橙的过渡较为自然，仪表盘分区感明确。但样式问题明显：①主指标 036 文字呈黑色（应为警示红/橙），与渐变绿区对比一般，警示色没有在视觉上跳出来；②环形进度填充为洋红/品红色，与绿色背景和警告色意图都不一致，破坏整体配色和谐；③三栏字号层级清晰（18/14/12/10），但 '12人' 在环内较小（12pt），可读性中等；④按钮为纯绿胶囊形，与渐变右下角的橙色衔接稍显突兀。整体观感可用但不够精致。",
+    "layout": "截图中卡片为标准 140x140 2x2 形态，无明显溢出/裁切：①主行三栏+两条竖向 Divider 横向相加 34+1+42+1+30=108，加上 itemMargin 4*2=8，共 116 恰好填满内容宽度，无挤压；②纵向 main_row 60 + 间距 6 + 预约文字 14 + 间距 6 + 按钮 30 = 116，与内容高度吻合；③'036'、'12人'、'78%' 三个主指标均居中且未被截断；④'10:30 就诊预约' 单行未折行；⑤按钮热区 116x30 远超 24vp，底边距卡片底约 5vp 在 8-12vp 建议区间略偏紧但未越界；⑥无 Stack 遮挡关键信息，环形中文字 12人 浮于进度上方未被遮盖。底部无截断、无元素堆叠。"
+  },
+  "issues": [
+    "warningColor 数据值为 8 位 ARGB '#ffe84026'，渲染器未识别，导致主号 036 渲染为黑色、环形填充渲染为洋红色，警示语义丢失",
+    "用户要求'快轮到了用红色或橙色提醒'，但当前截图未呈现红色/橙色提醒效果",
+    "图标字符 'H' 与 '电' 过于普通，缺少用户期望的 '⚕/⌚' 类图标化字符的仪表盘感",
+    "按钮绿色与背景右下角橙色在色相上略有冲突，可考虑中性或半透明处理",
+    "环形内 '12人' 文字 12pt 在 42x42 的环内偏小，中心略显空"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"appointment_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#64bb5c\",0],[\"#f7ce00\",0.52],[\"#ed6f21\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"divider_left\",\"center_panel\",\"divider_right\",\"right_panel\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":60,\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"hospital_glyph\",\"current_number\",\"current_label\"],\"itemMargin\":2,\"styles\":{\"width\":34,\"height\":60,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hospital_glyph\",\"component\":\"Text\",\"content\":\"⚕\",\"styles\":{\"width\":34,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"current_number\",\"component\":\"Text\",\"content\":\"{{ ${/queue/currentNumber} }}\",\"styles\":{\"width\":34,\"height\":20,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"{{ ${/queue/warningColor} }}\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"current_label\",\"component\":\"Text\",\"content\":\"当前\",\"styles\":{\"width\":34,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"divider_left\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":52,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#99ffffff\"}},{\"id\":\"center_panel\",\"component\":\"Column\",\"children\":[\"waiting_label\",\"ring_stack\"],\"itemMargin\":2,\"styles\":{\"width\":42,\"height\":60,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"waiting_label\",\"component\":\"Text\",\"content\":\"前方\",\"styles\":{\"width\":42,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"waiting_ring\",\"waiting_value\"],\"styles\":{\"width\":42,\"height\":42,\"alignContent\":\"center\"}},{\"id\":\"waiting_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/queue/waitingCount} }}\",\"total\":\"{{ ${/queue/waitingTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"{{ ${/queue/warningColor} }}\",\"width\":42,\"height\":42}},{\"id\":\"waiting_value\",\"component\":\"Text\",\"content\":\"{{ ${/queue/waitingText} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"divider_right\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":52,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#99ffffff\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"battery_glyph\",\"battery_value\",\"battery_label\"],\"itemMargin\":2,\"styles\":{\"width\":30,\"height\":60,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"battery_glyph\",\"component\":\"Text\",\"content\":\"⌚\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/device/batteryText} }}\",\"styles\":{\"width\":30,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"battery_label\",\"component\":\"Text\",\"content\":\"电量\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"appointment_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }} · {{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/hospital/callLabel} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/hospital/phoneNumber} }}\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#e84026\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"queue\":{\"currentNumber\":\"036\",\"waitingCount\":12,\"waitingTotal\":30,\"waitingText\":\"12人\",\"warningColor\":\"#e84026\"},\"device\":{\"batteryText\":\"78%\"},\"hospital\":{\"phoneNumber\":\"01012345678\",\"callLabel\":\"拨打医院\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-visit-001\",\"title\":\"就诊预约\",\"dtStart\":\"10:30\",\"dtEnd\":\"11:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

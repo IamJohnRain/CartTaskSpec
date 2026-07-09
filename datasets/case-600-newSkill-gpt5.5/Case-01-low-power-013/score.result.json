@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-013",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.9,
+  "reasons": {
+    "instruction": "用户要求的暗色低电卡片、三个横向小面板、环形电池+百分比、省电开关、勿扰开关、夜晚深色渐变、提醒文案均在截图中可见；尺寸2x2、catalogId、version、updateDataModel.path/value均合规；两个onClick事件call/args原样来自eventCandidates。但截图里电池面板中心的闪电图标与'30%'百分比文字在Stack中明显叠压，'0'被图标部分遮挡，核心特征'环形电池图标叠百分比数字'被破坏，因此扣分。",
+    "aesthetic": "深紫蓝渐变与'夜晚'主题契合，标题、状态、提醒文字白色在深色背景上可读性良好，三个面板的半透明白色卡片底色形成统一层级。但电池面板中心闪电图标与'30%'文字叠在一起产生视觉杂糅，破坏了该区域的视觉清晰度，影响整体观感。",
+    "layout": "截图中电池Stack的环形进度、闪电图标、百分比文字三者在中心40x40区域叠层，闪电图标(18x18居中)与'30%'文字(40x18居中)在y方向完全重叠，'0'字符被图标压住，'3'和'%'分别从图标左右挤出，造成文字被截断/被遮挡的典型Stack叠层问题；这是卡片最核心的电量指标区域。其余面板布局基本均衡，标题、提醒文字未被裁切。",
+    "issues": [
+      "电池Stack中battery_icon(闪电图标18x18)与battery_percent('30%'文字)在中心区域重叠，导致'0'被图标遮挡",
+      "battery_percent文字宽度40与图标宽度18叠压，文字被截断成'3⚡%'形态",
+      "两个开关面板(32x66)中checkbox+label+state垂直堆叠后下方有约14px留白，视觉重心偏上",
+      "assetCandidates中的icon_electricity.png在Stack内与文字争抢中心位置，不应直接作为Stack同级子项"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_col\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"topStart\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#FF191A1C\",0],[\"#5550A6\",0.58],[\"#634794\",1]]}}},{\"id\":\"content_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"panel_row\",\"reminder_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"低电夜间\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"panel_row\",\"component\":\"Row\",\"children\":[\"battery_panel\",\"power_panel\",\"dnd_panel\"],\"itemMargin\":4,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":66,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"battery_panel\",\"component\":\"Column\",\"children\":[\"battery_stack\",\"battery_caption\"],\"itemMargin\":4,\"styles\":{\"width\":44,\"height\":66,\"padding\":2,\"borderRadius\":10,\"backgroundColor\":\"#19FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"battery_stack\",\"component\":\"Stack\",\"children\":[\"battery_ring\",\"battery_percent\"],\"styles\":{\"width\":40,\"height\":40,\"alignContent\":\"center\"}},{\"id\":\"battery_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/battery/percent} }}\",\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#FFD94838\",\"width\":40,\"height\":40}},{\"id\":\"battery_percent\",\"component\":\"Text\",\"content\":\"{{ ${/battery/percentText} }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"battery_caption\",\"component\":\"Text\",\"content\":\"{{ ${/battery/statusText} }}\",\"styles\":{\"width\":40,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"power_panel\",\"component\":\"Column\",\"children\":[\"power_checkbox\",\"power_label\",\"power_state\"],\"itemMargin\":4,\"styles\":{\"width\":34,\"height\":66,\"padding\":2,\"borderRadius\":10,\"backgroundColor\":\"#19FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"power_checkbox\",\"component\":\"Checkbox\",\"value\":\"battery_saving_mode\",\"select\":\"{{ ${/settings/powerSaving/enabled} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":24,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#5BA854\",\"unSelectedColor\":\"#33FFFFFF\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"power_label\",\"component\":\"Text\",\"content\":\"{{ ${/settings/powerSaving/label} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"power_state\",\"component\":\"Text\",\"content\":\"{{ ${/settings/powerSaving/stateText} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"dnd_panel\",\"component\":\"Column\",\"children\":[\"dnd_checkbox\",\"dnd_label\",\"dnd_state\"],\"itemMargin\":4,\"styles\":{\"width\":34,\"height\":66,\"padding\":2,\"borderRadius\":10,\"backgroundColor\":\"#19FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"dnd_checkbox\",\"component\":\"Checkbox\",\"value\":\"dnd_mode\",\"select\":\"{{ ${/settings/dnd/enabled} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":24,\"height\":24,\"shape\":\"rounded_square\",\"selectedColor\":\"#5BA854\",\"unSelectedColor\":\"#33FFFFFF\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"dnd_label\",\"component\":\"Text\",\"content\":\"{{ ${/settings/dnd/label} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"dnd_state\",\"component\":\"Text\",\"content\":\"{{ ${/settings/dnd/stateText} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/reminder} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"battery\":{\"percent\":30,\"percentText\":\"30%\",\"statusText\":\"低电\"},\"settings\":{\"powerSaving\":{\"enabled\":false,\"label\":\"省电\",\"stateText\":\"未开\"},\"dnd\":{\"enabled\":false,\"label\":\"勿扰\",\"stateText\":\"未开\"}},\"reminder\":\"该开启省电了\"}}}"
+  ]
+}

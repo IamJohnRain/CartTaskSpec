@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-005",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "用户要求文字叠在图上、点跳app、日历能读、显示已完成。从截图看：事件已配置clickToDeeplink（含原uri/bundle/ability）、状态'已完成'与来源'日历读取'、跳转按钮'打开'均已正确呈现，size=2x4与catalogId/version/updateDataModel等硬约束也满足。但用户明确要求'文字叠在图上'，截图里主数值'已完成 5 天'的'成'字被秒表icon严重遮挡，'07月09日 · 全天'的'· 全天'部分被icon压住，主指标作为受保护文本无法清晰阅读，实际违背了'日历能读'这一核心诉求，需扣分。",
+    "aesthetic": "橙黄渐变背景色调温暖、整体层次有层次感，右侧状态面板（对勾图标+'已完成'+'日历读取'+'打开'按钮）排版整齐。但截图中左侧大号深色秒表icon置于hero_stack正中央，与主数值文字直接冲突，文字与icon颜色都偏深，视觉上形成'黑团糊'一团，受保护文字被压在icon之上/之下，清晰度严重下降；且标题'结婚纪念日'顶部出现截断感，整体观感生硬。",
+    "layout": "截图可见三处明显布局问题：1）hero_stack内96×96的秒表icon与主数值文字区域完全重叠在中央，导致主指标'已完成 5 天'的'成'字被icon深色实体遮挡，'· 全天'同样被压住——这属于Stack层叠覆盖受保护文本的严重违规；2）标题'结婚纪念日'的'日'字顶部被裁切，显示不完整；3）hero_content的width 188/height 104 减去padding 8 后实际内容区仅约172×88，但三个文本加itemMargin占满甚至溢出，标题在视觉上被截断。右侧status_panel布局合理。"
+  },
+  "issues": [
+    "hero_stack中秒表icon（96×96）直接覆盖在主数值文字'已完成 5 天'上，'成'字被遮挡",
+    "日期文字'07月09日 · 全天'后半段被秒表icon压住，无法完整阅读",
+    "标题'结婚纪念日'顶部被裁切，最后一字'日'显示不完整",
+    "hero_content高度不足（104减去padding后≈88）承载不了3行文字+2个itemMargin，导致溢出",
+    "Stack层级未让icon真正作为背景层，文字与icon互相打架，可读性被破坏"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_stack\",\"status_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#f5dc62\",1]]},\"alignItems\":\"center\"}},{\"id\":\"hero_stack\",\"component\":\"Stack\",\"styles\":{\"width\":188,\"height\":116,\"backgroundImage\":\"resources/base/media/stopwatch_fill.svg\",\"backgroundSize\":\"72\",\"backgroundPosition\":\"right bottom\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"hero_content\"]},{\"id\":\"hero_content\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"date_text\"],\"itemMargin\":4,\"styles\":{\"width\":184,\"height\":112,\"justifyContent\":\"center\",\"alignItems\":\"start\",\"padding\":8,\"backgroundColor\":\"#22000000\",\"borderRadius\":16}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":168,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":168,\"height\":40,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"date_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' · ' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":168,\"height\":20,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_icon\",\"status_text\",\"source_text\",\"action_button\"],\"styles\":{\"width\":80,\"height\":116,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\",\"padding\":4,\"backgroundColor\":\"#33000000\",\"borderRadius\":18}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"已完成\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"日历读取\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":72,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"anniv-2026-0709\",\"title\":\"结婚纪念日\",\"description\":\"已完成 5 天\",\"dtStart\":\"07月09日\",\"dtEnd\":\"全天\",\"importantEventType\":1}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

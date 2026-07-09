@@ -1,0 +1,151 @@
+{
+  "userQuery": "这周末两段行程一个高铁一个飞机,做一张能垂直列表显示的卡片,每段行程用分隔线分组,左边放个小卡片缩略,中间倒计时环形比如高铁还剩2小时15分航班还剩5天8小时,两段底色不同,飞机那段标红因为延误了,高铁那段标黄说快到检票时间,右上角动态显示手机电量68%,我要能直接点进每一段看详情,麻烦用文字图标,素净点别搞太复杂。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "周末票务行程日历事件列表，第一项为高铁，第二项为航班。",
+          "sampleValue": [
+            {
+              "entityId": "rail-ticket-001",
+              "title": "高铁 G88",
+              "eventLocation": "北京南",
+              "description": "快检票",
+              "dtStart": "18:30",
+              "dtEnd": "21:42"
+            },
+            {
+              "entityId": "flight-ticket-002",
+              "title": "航班 CA1234",
+              "eventLocation": "首都T3",
+              "description": "延误",
+              "dtStart": "09:10",
+              "dtEnd": "12:25"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单段票务行程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于点击查看详情。",
+                "sampleValue": "rail-ticket-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "行程标题，包含交通类型和车次或航班号。",
+                "sampleValue": "高铁 G88"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "出发站点、机场或航站楼。",
+                "sampleValue": "北京南"
+              },
+              "description": {
+                "type": "string",
+                "description": "行程当前状态提示。",
+                "sampleValue": "快检票"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "行程开始时间。",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "行程结束时间。",
+                "sampleValue": "21:42"
+              }
+            }
+          }
+        }
+      }
+    },
+    "device": {
+      "batteryText": {
+        "type": "string",
+        "description": "手机当前电量展示文本。",
+        "sampleValue": "电量 68%"
+      }
+    },
+    "ui": {
+      "trips": {
+        "type": "array",
+        "description": "卡片受控静态辅助字段，用于倒计时文案、进度环和文字图标。",
+        "sampleValue": [
+          {
+            "glyph": "高",
+            "subGlyph": "铁",
+            "countdown": "2小时15分",
+            "ringValue": 82
+          },
+          {
+            "glyph": "飞",
+            "subGlyph": "机",
+            "countdown": "5天8小时",
+            "ringValue": 34
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单段行程的受控静态辅助展示字段。",
+          "properties": {
+            "glyph": {
+              "type": "string",
+              "description": "左侧缩略文字图标主字。",
+              "sampleValue": "高"
+            },
+            "subGlyph": {
+              "type": "string",
+              "description": "左侧缩略文字图标辅字。",
+              "sampleValue": "铁"
+            },
+            "countdown": {
+              "type": "string",
+              "description": "倒计时展示文案。",
+              "sampleValue": "2小时15分"
+            },
+            "ringValue": {
+              "type": "number",
+              "description": "倒计时环形进度值，百分制。",
+              "sampleValue": 82
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞黑色线性图标，适合用于航班出发信息或旅行行程识别。"
+    },
+    {
+      "src": "resources/base/media/clock.svg",
+      "description": "时钟线框图标，适合用于倒计时或时间信息提示。"
+    }
+  ]
+}

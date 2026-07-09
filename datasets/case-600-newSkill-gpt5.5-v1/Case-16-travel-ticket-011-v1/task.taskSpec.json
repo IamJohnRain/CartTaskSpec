@@ -1,0 +1,96 @@
+{
+  "userQuery": "多趟行程的卡,横向排几个,每个小卡带环形显示倒计时数字和✈图标,搭配\"距离出发还有 X 天\"。简洁素净风格别花哨。读日历日程,点能进具体事件。不需要状态色。运动紧迫感那种渐变,别太亮。图标用文字字符。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "未来多趟票务行程日历项列表，按出发时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-trip-001",
+              "title": "香港飞东京",
+              "dtStart": "7/12 09:30",
+              "dtEnd": "7/12 14:10",
+              "countdownDays": 3,
+              "countdownDaysText": "3"
+            },
+            {
+              "entityId": "calendar-trip-002",
+              "title": "东京飞大阪",
+              "dtStart": "7/18 16:20",
+              "dtEnd": "7/18 17:40",
+              "countdownDays": 9,
+              "countdownDaysText": "9"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单趟票务行程日历项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于打开具体日程详情。",
+                "sampleValue": "calendar-trip-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "行程日历事件标题。",
+                "sampleValue": "香港飞东京"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "行程出发时间展示文本。",
+                "sampleValue": "7/12 09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "行程结束时间展示文本。",
+                "sampleValue": "7/12 14:10"
+              },
+              "countdownDays": {
+                "type": "number",
+                "description": "距离出发的剩余天数，用于环形倒计时进度。",
+                "sampleValue": 3
+              },
+              "countdownDaysText": {
+                "type": "string",
+                "description": "距离出发的剩余天数字符串，用于倒计时数字展示。",
+                "sampleValue": "3"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "countdownTotal": {
+        "type": "number",
+        "description": "环形倒计时的展示总量，用于统一多趟行程的进度范围。",
+        "sampleValue": 30
+      }
+    }
+  },
+  "assetCandidates": []
+}

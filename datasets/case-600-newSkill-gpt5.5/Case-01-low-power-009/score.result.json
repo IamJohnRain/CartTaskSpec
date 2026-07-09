@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-009",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "用户三条诉求（字叠背景图上、点跳充电应用、读日程）均在截图中得到落实：左侧深棕面板内有大尺寸充电图标作为底层图像、'18%'主数值叠在其上方、'去充电'按钮携带正确的 onClick 事件（call/args 与 eventCandidates 完全一致），右侧浅色面板展示'今日日程'完整字段（标题/时间/地点），数据通过 {{ }} 表达式正确绑定。catalogId/version/updateDataModel.path 等硬约束全部满足，事件与素材均按 TaskSpec 使用，无多余或缺失。扣分点：左下角充电图标过大导致与文字叠加略显生硬，弱化'字叠背景图'的精致感。",
+    "aesthetic": "截图中整体配色为暖橙渐变，契合'低电'语境，两侧圆角面板的明暗对比合理。字号层级清晰（32pt 主数值/12pt 标签/14pt 事件标题），无多重点权重叠。问题在于左侧背景充电图标在深棕面板下呈现为较亮的'光斑'，与'18%'主文本和深色叠加层共同形成稍显杂乱的视觉中心；右侧'14:00-15:00'与'3F会议室'在浅橙底上略偏灰白，存在感偏弱。整体可用但离精致观感还有距离。",
+    "layout": "截图显示卡片无元素溢出 300x140 边界，所有文本完整可读、未见截断或省略。左侧 hero_column 4 个子项纵向总高 112，装入 116 容器，余量合理；右侧 schedule_panel 4 个子项纵向总高 88，装入 96 容器，留白舒适。按钮宽 88 高 32，热区足够。Row 内 140+8+128=276 与 12 padding 之和正好 300，左右边界对齐精确。'去充电'按钮位于左面板底部，未触达卡片下边线。注意点：背景 hero_bg_icon（108x108）几乎填满左侧 Stack，与上层 hero_column 的深色面板形成层叠，但未遮挡关键文本，仅视觉略显厚重。"
+  },
+  "issues": [
+    "左侧充电背景图标过大（108x108 几乎填满 140x116 容器），导致视觉中心偏厚重，与文字叠加略显生硬",
+    "右侧 schedule_panel 中时间与地点文本使用 #99ffffff 配 #33ffffff 底色，对比偏弱、可读性略有损失",
+    "左面板深色叠加 #33000000 透明度偏低，未能很好统一背景图与文字层的视觉关系",
+    "schedule_header 整体宽度 108 与列容器 108 贴边无内边距，图标与文字起始位置紧贴容器左边"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"alignContent\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#9e644f\",0],[\"#ed6f21\",0.56],[\"#f9bc64\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_hero_stack\",\"schedule_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_hero_stack\",\"component\":\"Stack\",\"children\":[\"hero_bg_icon\",\"hero_column\"],\"styles\":{\"width\":140,\"height\":116,\"alignContent\":\"center\"}},{\"id\":\"hero_bg_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_charge.png\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\",\"opacity\":0.35}},{\"id\":\"hero_column\",\"component\":\"Column\",\"children\":[\"mode_label\",\"battery_value\",\"power_hint\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":132,\"height\":116,\"padding\":8,\"justifyContent\":\"center\",\"alignItems\":\"start\",\"borderRadius\":18,\"backgroundColor\":\"#66000000\"}},{\"id\":\"mode_label\",\"component\":\"Text\",\"content\":\"低电模式\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"18%\",\"styles\":{\"width\":116,\"height\":36,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"power_hint\",\"component\":\"Text\",\"content\":\"建议连接电源\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去充电\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":96,\"height\":30,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#cc0a59f7\",\"borderRadius\":15}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"schedule_header\",\"event_title\",\"event_time\",\"event_location\"],\"itemMargin\":6,\"styles\":{\"width\":128,\"height\":116,\"padding\":12,\"borderRadius\":18,\"backgroundColor\":\"#66ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"schedule_header\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"schedule_caption\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"schedule_caption\",\"component\":\"Text\",\"content\":\"今日日程\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_location\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":104,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"sample-calendar-001\",\"title\":\"产品评审\",\"dtStart\":\"14:00\",\"dtEnd\":\"15:00\",\"eventLocation\":\"3F会议室\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

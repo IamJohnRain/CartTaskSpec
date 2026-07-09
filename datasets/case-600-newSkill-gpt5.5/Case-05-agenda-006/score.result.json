@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-05-agenda-006",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "用户要求红色'快迟到'会议提醒卡片，本卡满足：背景有会议图、含大字号数字 8、从 calendar.items[0] 读取标题与时间区间、整体卡片绑定 onClick clickToDeeplink。但关键扣分：用户明确说'红色那种'，实际渲染底色是 #ed6f21（明显橙色），未命中'红色'语义；背景会议图偏暗灰，与白色文字混在一起，'快迟到'徽标、'8 分钟后'主指标与背景图标出现视觉冲突，'8 分钟后'整行被深色图标遮住一部分，信息虽然存在但可读性受影响。",
+    "aesthetic": "截图中可见：底色为暖橙色而非用户要求的红色，色彩语义偏差；背景会议图标为深灰/近黑色，过于抢眼，与浅色文字发生强烈对比冲突；卡片右半部分约 1/3 区域为空白橙色，没有元素填充或装饰，构图严重左重右轻；整体只有一个最强字重（700），层级倒也清晰，但视觉上因'暗图标+白字'压在一起显得脏、拥挤、欠克制。",
+    "layout": "截图中可观察到明显重叠与失衡：1) 背景图 bg_icon 尺寸 116x116 与 content_column 完全同位同大，会议图标深色区域正好压在 '快迟到' 徽标、'8 分钟后'、'产品评审' 等所有文字层上，尤其 '8' 与 '分钟后' 紧贴深色图标边缘，对比度差；2) 内容全部挤在左半区，右侧约 40px 宽的橙色区域完全空置，没有图标/装饰平衡；3) 虽未出现明显文字截断（maxLines:1 + ellipsis 未触发），但视觉堆叠造成的'暗底压字'等同于弱截断，可读性受损；4) 整张卡片缺乏呼吸感。"
+  },
+  "issues": [
+    "用户明确要求'红色'，实际渲染为 #ed6f21 橙色，未满足颜色语义",
+    "背景会议图 bg_icon 尺寸 116x116 与 content_column 完全重叠，深色图标压在白色文字层上，'快迟到'徽标和 '8 分钟后' 区域可读性严重受损",
+    "卡片右半区约 1/3 空间为纯橙色空白，无任何视觉元素，构图左重右轻",
+    "time_row 高度 44、fontSize 40 的 '8' 在 116 宽容器内占用过大，与 bg_icon 暗底叠加产生压迫感",
+    "缺乏分隔/留白/图标透明度处理，背景图层与信息层无层次区分"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_icon\",\"content_column\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#d32f2f\"}},{\"id\":\"bg_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_meeting.png\",\"styles\":{\"width\":72,\"height\":72,\"objectFit\":\"contain\",\"opacity\":0.22,\"position\":\"absolute\",\"right\":6,\"bottom\":6}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"status_text\",\"time_row\",\"title_text\",\"support_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/statusText} }}\",\"styles\":{\"width\":54,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#55000000\",\"borderRadius\":10}},{\"id\":\"time_row\",\"component\":\"Row\",\"children\":[\"minute_value\",\"minute_unit\"],\"itemMargin\":2,\"styles\":{\"width\":86,\"height\":38,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"minute_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/countdownNumber} }}\",\"styles\":{\"width\":30,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"minute_unit\",\"component\":\"Text\",\"content\":\"分钟后\",\"styles\":{\"width\":50,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":104,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":102,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"产品评审\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\"}]}},\"ui\":{\"statusText\":\"快迟到\",\"countdownNumber\":\"8\"}}}}"
+  ]
+}

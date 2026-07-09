@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-19-photo-album-006",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户三条核心诉求：①点一下跳应用——已通过 Button + clickToDeeplink 实现，deeplink 参数与 eventCandidates 完全一致，满足；②能读日历——dataModel 中 calendar.items 字段正确绑定，截图中能看到'同步会'标题与'14:00-14:30'时间，资源 icon_schedule.png 也正确使用，满足；③加个红色危险提示——截图中'危险提示'胶囊背景实际是橙色（#ed6f21），与卡片渐变同色系，'红色'这一明确诉求未落实，扣分较重。此外，标题文字写作'相册提醒'，与下方呈现的日历数据语境不一致（用户问题明确是'读日历'），属于文本语义偏差，再扣一点。",
+    "aesthetic": "橙色渐变整体协调，前景白字在橙色背景上可读性尚可，字号阶梯（12/14/16）层级清晰，'打开应用'白色按钮形成强对比，可点击区域（88×26）满足热区要求。但'危险提示'胶囊与背景同属橙色系，没有红色应有的警示感，视觉上更像装饰条而非危险标识，与'危险'语义脱节；标题'相册提醒'使用 #99ffffff 低对比度白字，在橙色背景上偏暗、不够醒目。整体可用但'危险提示'的视觉表达力不足。",
+    "layout": "截图显示各元素在 140×140 画布内整齐排布：日历图标+'相册提醒'头部居左、'同步会'居中、'14:00-14:30'大号加粗居中、'危险提示'胶囊居中、'打开应用'白底按钮居中。无元素堆叠、无文字截断、无组件溢出卡片边界；按公式核算 Column 纵向占用：12+18+4+18+4+20+4+18+4+26+12=140，正好填满 140 高度。按钮底边到卡片底边约 12vp，符合 2x2 的 8-12vp 区间。'危险提示'与'打开应用'之间有 4vp 间距，紧凑但无重叠。整体布局干净。"
+  },
+  "issues": [
+    "用户明确要求'红色危险提示'，但 alert_row 背景色为 #ffed6f21（橙色），与卡片渐变同色系，未满足红色诉求",
+    "标题文字'相册提醒'与下方展示的日历/日程数据语境不一致，应改为'日程提醒'或'日历提醒'以匹配数据语义",
+    "标题'相册提醒'使用 #99ffffff（60%不透明）在橙色背景上偏暗，可读性偏弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"event_title\",\"time_text\",\"alert_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed955f\",0],[\"#ed6f21\",0.58],[\"#f9bc64\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"日程提醒\",\"styles\":{\"width\":94,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_text\"],\"styles\":{\"width\":116,\"height\":18,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":9,\"backgroundColor\":\"#d32f2f\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"危险提示\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开应用\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":26,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-sample-001\",\"title\":\"同步会\",\"dtStart\":\"14:00\",\"dtEnd\":\"14:30\",\"eventLocation\":\"会议室A\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

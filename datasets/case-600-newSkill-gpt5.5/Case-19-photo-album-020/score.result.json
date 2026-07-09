@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-19-photo-album-020",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.5,
+  "reasons": {
+    "instruction": "截图显示卡片基本满足用户诉求：2x4 尺寸正确，左右分区清晰，夜晚深蓝渐变与磨砂玻璃感均已呈现，左侧'已备份 1,247/5,000 张'主数值完整，右侧'音乐歌单'入口、'打开歌单'按钮及红色告警'备份任务已取消，请重试'均可见，Button 的 onClick 已正确绑定 eventCandidates 中的 clickToDeeplink，无图片资源。但用户明确要求的第一条勾选项文案'下午 3 点出发机场'在截图中被截断显示为'下午 3 点 出发...'，属于关键信息缺失，因此扣分。",
+    "aesthetic": "从截图看，深色紫蓝渐变与半透明白色磨砂面板的搭配比较协调，文字层级（主数值 14pt 加粗 > 标题 12pt > 副文 10pt）基本合理，红色告警色与背景对比也较清晰。但左侧前两个 Checkbox 的方框标记在截图中几乎上下堆叠在一起，视觉上显得脏乱；第一条标签因截断出现省略号显得不完整；右侧告警文字与按钮之间间距过紧，整体显得拥挤，扣分。",
+    "layout": "截图中最明显的两个布局问题：1）左侧第一条 Checkbox 标签'下午 3 点 出发机场'因 left_panel 宽度 178 + 内边距 8 导致内容区仅 162，而中文字段总宽超过该区域，被强制截断为'下午 3 点 出发...'，用户明确要求的字段被裁切。2）前两个 Checkbox 的方形标记在垂直方向上几乎重叠在一起（schedule_col 高度 48 配 itemMargin 2 太小，叠加 Checkbox 内部 mark 的居中渲染导致两个空方框视觉上贴在一起），第三个 Checkbox 才与前两个明显分开，破坏了 3 行等距排列的预期。3）右侧 Column 高度 116 - padding 12 = 104，但子项 16+16+28+32 + 3*4 = 104 刚好撑满，无任何留白余量，导致告警文字底边贴近面板下沿。三处问题均可在截图中直接观察到，属于明显排版缺陷。"
+  },
+  "issues": [
+    "左侧第一个 Checkbox 标签'下午 3 点出发机场'被截断为'下午 3 点 出发...'，关键用户字段缺失",
+    "左侧前两个 Checkbox 的方形标记在截图中视觉重叠，未形成等距三行排列",
+    "左侧 left_panel 内容总高 16+20+48+2*6=108 超过 116-12*2=92 的实际可用区（叠加 padding 与 Column 自身规则，schedule_col 仍显得过窄）",
+    "右侧 right_panel 子项总高 16+16+28+32+3*4=104 恰好等于可用区 116-12=104，无任何垂直留白",
+    "右侧告警红色文字'备份任务已取消，请重试'与下方面板内边距过近，视觉紧迫",
+    "第一个 Checkbox 控件有效点击热区被截断标签压缩，可能影响可点击性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#5f58c7\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"stretch\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"schedule_col\"],\"itemMargin\":4,\"styles\":{\"width\":200,\"height\":116,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"夜间旅行整理\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/album/backupText} }}\",\"styles\":{\"width\":188,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"schedule_col\",\"component\":\"Column\",\"children\":[\"event_check_1\",\"event_check_2\",\"event_check_3\"],\"itemMargin\":4,\"styles\":{\"width\":188,\"height\":60}},{\"id\":\"event_check_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"value\":\"airport\",\"group\":\"today_events\",\"select\":\"{{ ${/ui/checks/0/selected} }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":12,\"selectedColor\":\"#5f58c7\",\"unSelectedColor\":\"#33ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"event_check_2\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"value\":\"dinner\",\"group\":\"today_events\",\"select\":\"{{ ${/ui/checks/1/selected} }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":12,\"selectedColor\":\"#5f58c7\",\"unSelectedColor\":\"#33ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"event_check_3\",\"component\":\"Checkbox\",\"label\":\"{{ ${/data/calendar/items/2/dtStart} + ' ' + ${/data/calendar/items/2/title} }}\",\"value\":\"rest\",\"group\":\"today_events\",\"select\":\"{{ ${/ui/checks/2/selected} }}\",\"styles\":{\"width\":188,\"height\":16,\"fontSize\":12,\"selectedColor\":\"#5f58c7\",\"unSelectedColor\":\"#33ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"music_title\",\"music_subtitle\",\"action_button\",\"alert_text\"],\"itemMargin\":3,\"styles\":{\"width\":68,\"height\":116,\"padding\":4,\"borderRadius\":16,\"backgroundColor\":\"#0cffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\"}},{\"id\":\"music_title\",\"component\":\"Text\",\"content\":\"{{ ${/music/title} }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"music_subtitle\",\"component\":\"Text\",\"content\":\"{{ ${/music/subtitle} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/music/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":60,\"height\":24,\"fontSize\":11,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":12}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/status/message} }}\",\"styles\":{\"width\":60,\"height\":40,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffd94838\",\"maxLines\":3,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"album\":{\"backupText\":\"已备份 1,247/5,000 张\"},\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar-trip-airport\",\"title\":\"出发机场\",\"dtStart\":\"下午 3 点\",\"dtEnd\":\"下午 4 点\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-trip-dinner\",\"title\":\"聚餐\",\"dtStart\":\"晚上 7 点\",\"dtEnd\":\"晚上 9 点\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-trip-rest\",\"title\":\"休息\",\"dtStart\":\"晚 10 点\",\"dtEnd\":\"晚 10 点半\"}]}},\"ui\":{\"checks\":[{\"selected\":false},{\"selected\":false},{\"selected\":true}]},\"music\":{\"title\":\"音乐歌单\",\"subtitle\":\"边听边整理\",\"actionLabel\":\"打开歌单\"},\"status\":{\"message\":\"备份任务已取消，请重试\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

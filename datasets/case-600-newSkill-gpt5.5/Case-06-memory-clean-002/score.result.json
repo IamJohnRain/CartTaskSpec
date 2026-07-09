@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-002",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求做一个内存清理卡片，显示数字32天没清理，点击跳到清理app。截图中可见标题'内存清理'、主数字'32'、单位'天'、说明'没清理'、状态'建议释放缓存'、辅助'临时文件'、CTA按钮'去清理'，字段齐全；onClick 使用 clickToDeeplink 跳转到 settings/storage_settings，符合 eventCandidates 协议。轻微扣分：左上的 icon 渲染为空白白色方块，未呈现 icon_clear.png 真实图形（素材虽绑定但视觉无内容），指令虽未点名要图标但 assetCandidates 提供了该素材，渲染失败属于素材/样式问题。",
+    "aesthetic": "整体配色为青绿渐变 + 白色侧栏 + 绿色 CTA，色调和谐、层次清晰。文字主色 #e5000000 在青绿底色上对比度足够、可读性良好。字重层级合理：32 用 40px/700，标题 16px/600，caption 14px/500，状态 16px/600。扣分点：1) 左上角 icon 区域为纯白圆角方块，未显示任何图标内容，视觉上显得空洞；2) 进度环的 progress 与 track 都用白色系（#33ffffff / #ffffffff），对比太弱，进度条位置（32/40）几乎不可辨；3) 状态文字'建议释放缓存'换行成'建议释放/缓存'，节奏稍碎。",
+    "layout": "截图无元素堆叠、无溢出卡片边界、无文字被裁切。Root 300x140 + padding12 → 内容 276x116；main_panel 176 + divider 1 + side_panel 79 + 两个 itemMargin 10 = 276，刚好对齐。main_panel 内部 header_row(24) + meter_row(60) + caption_text(16) + 两个 itemMargin 8 = 116 精准填满；side_panel status_text(36) + detail_text(16) + action_button(34) + 两个 itemMargin 8 = 102 留 14vp 底部空白舒适。右侧白底圆角面板 borderRadius 18 与卡片 22 形成层级。'去清理' 按钮底边距卡片底边约 12vp，落在合理区间。整体布局干净无问题。"
+  },
+  "issues": [
+    "左上角 icon_clean.png 渲染为空白白色圆角方块，未显示实际图标（白色 backgroundColor 屏蔽了缺图状态）",
+    "进度环 progress 与 track 都使用白色，视觉对比极弱，32/40 的进度位置几乎不可见",
+    "状态文字'建议释放缓存'因侧栏宽 67 而拆成两行，行节奏可优化",
+    "侧栏右侧 padding 6 让文字紧贴右缘，可考虑调整对齐或留白"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"section_divider\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#61cfbe\",0],[\"#92d6cc\",1]]}}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"meter_row\",\"caption_text\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"clean_icon\",\"title_text\"],\"itemMargin\":8,\"styles\":{\"width\":176,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"clean_icon\",\"component\":\"Image\",\"src\":\"{{ ${/memoryClean/iconSrc} }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\",\"borderRadius\":6}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/memoryClean/title} }}\",\"styles\":{\"width\":144,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"meter_stack\",\"value_group\"],\"itemMargin\":12,\"styles\":{\"width\":176,\"height\":60,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_progress\"],\"styles\":{\"width\":58,\"height\":58,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":40,\"total\":40,\"styles\":{\"type\":\"ring\",\"width\":58,\"height\":58,\"color\":\"#33000000\"}},{\"id\":\"meter_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/memoryClean/progressValue} }}\",\"total\":\"{{ ${/memoryClean/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"width\":58,\"height\":58,\"color\":\"#e5000000\"}},{\"id\":\"value_group\",\"component\":\"Row\",\"children\":[\"primary_value\",\"unit_text\"],\"itemMargin\":4,\"styles\":{\"width\":106,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/memoryClean/daysText} }}\",\"styles\":{\"width\":62,\"height\":46,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"unit_text\",\"component\":\"Text\",\"content\":\"{{ ${/memoryClean/unitText} }}\",\"styles\":{\"width\":24,\"height\":22,\"fontSize\":18,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"{{ ${/memoryClean/caption} }}\",\"styles\":{\"width\":176,\"height\":16,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"section_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":96,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33ffffff\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"detail_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":79,\"height\":116,\"padding\":{\"left\":4,\"right\":4,\"top\":8,\"bottom\":6},\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/memoryClean/statusText} }}\",\"styles\":{\"width\":71,\"height\":36,\"fontSize\":15,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"detail_text\",\"component\":\"Text\",\"content\":\"{{ ${/memoryClean/detailText} }}\",\"styles\":{\"width\":71,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/memoryClean/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":67,\"height\":34,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#64bb5c\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"memoryClean\":{\"title\":\"内存清理\",\"daysText\":\"32\",\"unitText\":\"天\",\"caption\":\"没清理\",\"statusText\":\"建议释放缓存\",\"detailText\":\"临时文件\",\"actionLabel\":\"去清理\",\"progressValue\":32,\"progressTotal\":40,\"iconSrc\":\"resources/base/media/icon_clear.png\"}}}}"
+  ]
+}

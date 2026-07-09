@@ -1,0 +1,144 @@
+{
+  "userQuery": "我想做一张今晚整理相册的提醒卡,深色舞台风那种。手机里照片堆了快 2000 张,再不清理就乱套了。最上面用大号 🖼️ 字符合主视觉,旁边写'今日待清理 28 张'。再下面横向排三个时间段,比如'21:00-21:30'、'21:30-22:00'、'22:00-22:30',每个前面有勾选框,我勾选哪个时段就定哪个,两边要双向绑定。每个时段右侧要能读到日历当天的日程事件摘要。点整张卡能跳到时钟应用去设闹钟。状态用红色告警'本月已超出清理配额 12%',纯文字色块,不要渐变,字符合图标就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "assets": {
+      "heroGlyph": {
+        "type": "string",
+        "description": "相册整理提醒的主视觉本地清理图标素材路径。",
+        "sampleValue": "resources/base/media/icon_clear.png"
+      }
+    },
+    "summary": {
+      "title": {
+        "type": "string",
+        "description": "今日相册待清理数量摘要。",
+        "sampleValue": "今日待清理 28 张"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "本月相册清理配额超出状态告警文案。",
+        "sampleValue": "本月已超出清理配额 12%"
+      }
+    },
+    "reminder": {
+      "selectedSlot": {
+        "type": "string",
+        "description": "用户当前选中的相册整理提醒时间段，用于与三个勾选框双向绑定。",
+        "sampleValue": "21:30-22:00"
+      }
+    },
+    "slots": [
+      {
+        "timeRange": {
+          "type": "string",
+          "description": "第一个可选相册整理提醒时间段。",
+          "sampleValue": "21:00-21:30"
+        }
+      },
+      {
+        "timeRange": {
+          "type": "string",
+          "description": "第二个可选相册整理提醒时间段。",
+          "sampleValue": "21:30-22:00"
+        }
+      },
+      {
+        "timeRange": {
+          "type": "string",
+          "description": "第三个可选相册整理提醒时间段。",
+          "sampleValue": "22:00-22:30"
+        }
+      }
+    ],
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条当天日程的唯一标识符。",
+              "sampleValue": "calendar-event-2100"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条当天日程的短摘要标题。",
+              "sampleValue": "会议"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条当天日程开始时间。",
+              "sampleValue": "21:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第一条当天日程结束时间。",
+              "sampleValue": "21:30"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条当天日程的唯一标识符。",
+              "sampleValue": "calendar-event-2130"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条当天日程的短摘要标题。",
+              "sampleValue": "空档"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条当天日程开始时间。",
+              "sampleValue": "21:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条当天日程结束时间。",
+              "sampleValue": "22:00"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第三条当天日程的唯一标识符。",
+              "sampleValue": "calendar-event-2200"
+            },
+            "title": {
+              "type": "string",
+              "description": "第三条当天日程的短摘要标题。",
+              "sampleValue": "备份"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第三条当天日程开始时间。",
+              "sampleValue": "22:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第三条当天日程结束时间。",
+              "sampleValue": "22:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标本地 PNG，适合表达相册整理、清理无忧和待处理照片堆积的主视觉。",
+      "bindTo": "/assets/heroGlyph"
+    }
+  ]
+}

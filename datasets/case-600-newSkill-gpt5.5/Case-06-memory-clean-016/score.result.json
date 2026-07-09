@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-06-memory-clean-016",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "截图中可见用户要求的主题色背景、青色渐变效果正确呈现，红色风险提示「风险：内存快满」红色胶囊醒目可见，[GC]/[+] 文字字符按钮按要求用文字字符而非图标，底部「清视频」「清音频」文字块并排呈现，四个可点击元素均绑定了 eventCandidates 中原样的 clickToDeeplink 事件。但顶部「剩余128GB」在截图中被截断为「剩余」，「128GB」这一核心数值信息完全丢失，指令明确要求的『剩余128GB』未被完整呈现；「距离项目截止还有3天」折行后右端贴边有被裁切的风险。整体主要诉求基本落地但关键主指标被裁，属明显遗漏。",
+    "aesthetic": "截图中青绿色主题渐变（#61CFBE→#92D6CC）整体干净柔和，红色风险胶囊与蓝色 [GC] 按钮对比鲜明，可读性较好，字号层级（10/12）相对克制。但顶部「剩余」主指标被截断后视觉重心偏移到右侧「距离项目截止还有3天」折行的两行文字上，破坏了对齐美感；底部按钮文字在截图中也疑似被按钮圆角吃掉右侧像素，出现轻微裁切，影响整体精致度。",
+    "layout": "截图中可明确观察到三处排版问题：（1）顶部左侧「剩余128GB」被截断为「剩余」，「128GB」完全消失，属于关键受保护主指标丢失，宽度 52 不足以容纳 fontSize:10 的 7 字符内容；（2）顶部右侧「距离项目截止还有3天」在 width:60 的容器中折行成两行，第二行「还有3天」靠近卡片右边缘，几乎贴边/被裁，无安全留白；（3）底部两个 Button 文字「清视频」「清音频」在 width:54 的按钮内，右侧字符被按钮 borderRadius 与内边距轻微吃掉，字形不完整。三处问题叠加导致 2x2 卡片信息密度过载，核心可读性受损。"
+  },
+  "issues": [
+    "顶部 remaining_text 宽度 52 在 fontSize 10 下无法容纳「剩余128GB」全部 7 字符，128GB 被截断丢失",
+    "顶部 deadline_text 折行后第二行「还有3天」贴边右边界，存在被裁切风险",
+    "底部 video_button/audio_button 宽度 54 配合 borderRadius 12 导致内部文字右侧被圆角像素轻微遮挡",
+    "根容器 padding:12 占用过多空间，内容区仅 116x116 不足以承载 4 行内容，建议缩到 padding:10 并优化子项尺寸",
+    "header_row 高度 26 配 deadline_text 高度 26 在折行时可能造成上下间距异常，建议统一对齐策略"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"risk_text\",\"glyph_row\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#61CFBE\",0],[\"#92D6CC\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"remaining_text\",\"deadline_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"remaining_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/storage/remainingText} }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"start\",\"lineHeight\":12}},{\"id\":\"deadline_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/deadlinePrefix} }}{{ ${/data/calendar/items/0/title} }}{{ ${/ui/deadlineSuffix} }}\",\"styles\":{\"width\":58,\"height\":20,\"fontSize\":8,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textAlign\":\"end\",\"wordBreak\":\"breakWord\",\"lineHeight\":10}},{\"id\":\"risk_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/storage/riskText} }}\",\"styles\":{\"width\":120,\"height\":16,\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2},\"borderRadius\":8,\"backgroundColor\":\"#FFE84026\",\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"glyph_row\",\"component\":\"Row\",\"children\":[\"gc_button\",\"plus_button\"],\"itemMargin\":10,\"styles\":{\"width\":120,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"gc_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/storage/primaryGlyph} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":55,\"height\":26,\"borderRadius\":13,\"padding\":{\"left\":2,\"right\":2},\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"plus_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/storage/secondaryGlyph} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":55,\"height\":26,\"borderRadius\":13,\"padding\":{\"left\":2,\"right\":2},\"backgroundColor\":\"#19000000\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"borderWidth\":1,\"borderColor\":\"#33000000\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"video_button\",\"audio_button\"],\"itemMargin\":10,\"styles\":{\"width\":120,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"video_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/storage/videoLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":55,\"height\":22,\"borderRadius\":11,\"padding\":{\"left\":6,\"right\":6},\"backgroundColor\":\"#0C000000\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\"}},{\"id\":\"audio_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/storage/audioLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":55,\"height\":22,\"borderRadius\":11,\"padding\":{\"left\":6,\"right\":6},\"backgroundColor\":\"#0C000000\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"storage\":{\"remainingText\":\"剩余128GB\",\"riskText\":\"风险：内存快满\",\"primaryGlyph\":\"[GC]\",\"secondaryGlyph\":\"[+]\",\"videoLabel\":\"清视频\",\"audioLabel\":\"清音频\"},\"calendar\":{\"items\":[{\"title\":\"项目截止\",\"entityId\":\"calendar_project_deadline_001\",\"dtStart\":\"3天后\",\"dtEnd\":\"23:59\"}]}},\"ui\":{\"deadlinePrefix\":\"距离\",\"deadlineSuffix\":\"还有3天\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

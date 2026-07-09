@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-07-sports-event-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户三大诉求均已落实：'点一下就能看'对应蓝色'看赛程'按钮，onClick 正确绑定到 eventCandidates 中的 clickToIntent/ViewCalendarEvent；'快开始了就提醒'对应左下橙色描边的白色'快开始了'状态徽章；赛事信息（标题'湖人 vs 勇士'、时间'今晚 19:30 - 21:30'、地点'主场馆 A 区'、倒计时'15分'）均完整展示。assetCandidates 中的 stopwatch_fill.svg 被正确用作赛事秒表图标。尺寸 2x4、catalogId、version、updateDataModel.path 全部合规。remindTime 数组未单独展示（仅靠 statusText 传达），扣 0.5 分；整体满足度很高。",
+    "aesthetic": "橙黄渐变背景与白色右卡形成清晰的左右分屏，视觉对比和谐且具有运动赛事氛围。字号层级清晰：32px 倒计时 > 16px 标题 > 14px 按钮 > 12px 辅助文字，主次分明。蓝色 CTA 与橙色背景互补，点睛效果好。主要扣分点：1）地点文字'主场馆 A 区'使用 #66000000（40% 透明度）显得过淡，可读性偏弱；2）右侧白色面板的右侧两个圆角被卡片 22px borderRadius 裁切，导致左右圆角不对称（左圆角完整、右圆角被切），视觉略显生硬。",
+    "layout": "整体布局在 300×140 内成立，无文字截断、无元素溢出主边界。左侧栏纵向排列 4 个元素总高 114px 放入 116px 高度容器，间距紧凑但未溢出；右侧栏 4 元素总高 102px 放入 116px（含 padding）也未溢出。主要问题：右面板宽度 151 + 8 间距让右边缘落在 x≈288，恰好处于卡片右上/右下 borderRadius(22) 的裁切弧线上，截图可见白色面板右上、右下两个圆角被卡片圆角剪掉，与左侧完整圆角形成不对称；状态徽章'快开始了'与上方'开赛倒计时'纵向间距略紧，但未发生重叠。Divider 竖线高度 96 在 116 内容区内居中合理。"
+  },
+  "issues": [
+    "右面板 width:151 紧贴右内容边缘，被卡片 borderRadius:22 裁切，导致右上、右下圆角不完整，与左圆角不对称",
+    "location_text 使用 #66000000（40% 透明度），在白底上对比度过低，可读性偏弱",
+    "remindTime 数组（'开赛前 15 分钟'）未在卡片中任何位置呈现，浪费了数据模型信息",
+    "左侧栏四个元素纵向总高 114/116，留白仅 1px，纵向排布偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"split_divider\",\"right_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"icon_box\",\"countdown_text\",\"caption_text\",\"status_badge\"],\"itemMargin\":4,\"styles\":{\"width\":108,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Stack\",\"children\":[\"event_icon\"],\"styles\":{\"width\":30,\"height\":30,\"backgroundColor\":\"#ffffffff\",\"borderRadius\":15,\"alignContent\":\"center\"}},{\"id\":\"event_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/stopwatch_fill.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"countdown_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/countdownText} }}\",\"styles\":{\"width\":108,\"height\":34,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"开赛倒计时\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/ui/statusText} }}\",\"styles\":{\"width\":70,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":10,\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"split_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":96,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"time_text\",\"location_text\",\"remind_text\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":141,\"height\":116,\"padding\":[6,8,6,8],\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"start\",\"justifyContent\":\"start\",\"marginRight\":10}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":125,\"height\":26,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' - ' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":125,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":125,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"remind_text\",\"component\":\"Text\",\"content\":\"提醒：{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":125,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffed6f21\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":125,\"height\":30,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日历事件\",\"entityId\":\"sports_event_001\",\"title\":\"湖人 vs 勇士\",\"eventLocation\":\"主场馆 A 区\",\"dtStart\":\"今晚 19:30\",\"dtEnd\":\"21:30\",\"remindTime\":[\"开赛前 15 分钟\"]}]}},\"ui\":{\"countdownText\":\"15分\",\"statusText\":\"快开始了\",\"actionLabel\":\"看赛程\"}}}}"
+  ]
+}

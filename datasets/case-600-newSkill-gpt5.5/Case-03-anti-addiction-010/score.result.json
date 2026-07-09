@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-anti-addiction-010",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.3,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户所有诉求：左侧大图（TikTok 图标）作为主体形象，'42' 数字与'分钟'单位共同展示可变化的已用时长，'剩余18分钟'状态、'60分钟上限'限制均已渲染；右侧面板显示 27°C / 多云 天气信息；底部'系统设置'按钮点击事件 clickToDeeplink 绑定到 com.huawei.hmos.settings 的 parent_control 页面，与 eventCandidates 完全一致。素材 icon_tiktok.png、cloudy.png 都来自 assetCandidates 并按语义使用，size 2x4、catalogId、version v0.9、updateDataModel.path='/' 均符合协议。扣 0.5 分是因为用户说'能读天气'，截图虽显示了温度和现象，但 districtName（'朝阳区'）未在 UI 呈现，略有信息遗漏。",
+    "aesthetic": "截图中卡片采用暖黄到白的渐变底色搭配白色主面板和半透明副面板，配色温暖和谐，蓝色 CTA 按钮与黄色背景形成有效对比，受保护文本在背景上均清晰可读。字号层级清晰：'42' 为 32 号粗体最强字重，'短视频'与'27°C'为 14 号次级字重，'剩余18分钟'/'多云'/'60分钟上限'为 10-12 号弱化信息层级合理。左右面板留白密度合适、对齐统一。整体偏 8-9 分水准，扣 0.5 分在于左侧大号'42'与单位'分钟'垂直基线对齐略不齐（'分钟'略低于'42'底部），且黄色渐变在左侧偏饱和，与极简白底主面板之间反差略大。",
+    "layout": "从截图观察，2x4 卡片内所有文字均完整显示：'短视频'标题、'42'主数值、'分钟'单位、'剩余18分钟'状态、'27°C'/'多云'天气、'60分钟上限'限制、'系统设置' CTA 全部可读，未出现截断、裁切或重叠。左侧主面板（白底圆角）与右侧副面板（半透明白）清晰分离，app 图标、文字区、天气区、按钮区均无溢出。按钮热区高度 32vp 充足，距卡片底边约 8-10vp 合规。扣 0.5 分是因为'42'与'分钟'之间的间距看起来略紧，且 primary_value(50)+itemMargin(2)+primary_unit(30)=82 刚好等于 main_text_col 宽度的极限，未来若数字变 3 位存在溢出风险。"
+  },
+  "issues": [
+    "districtName('朝阳区')虽在数据模型中存在但未在 UI 中呈现，与用户'能读天气'的诉求稍有信息遗漏",
+    "左侧'42'主数值与'分钟'单位之间间距过紧，单位紧贴数字边缘",
+    "primary_value 宽度 50vp 留给 32 号粗体仅能容纳 2-3 位数字，若 usedMinutesText 超过 99 会溢出",
+    "整体黄色渐变在卡片左侧略偏饱和，与主面板的纯白底之间冷暖反差略大"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff3d6\",0],[\"#ffffff\",1]]},\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Row\",\"children\":[\"app_icon\",\"main_text_col\"],\"itemMargin\":10,\"styles\":{\"width\":166,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"app_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_tiktok.png\",\"styles\":{\"width\":54,\"height\":54,\"objectFit\":\"contain\"}},{\"id\":\"main_text_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_row\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":96,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/antiAddiction/appName} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":82,\"height\":38,\"alignItems\":\"baseline\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/antiAddiction/usedMinutesText} }}\",\"styles\":{\"width\":56,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"分钟\",\"styles\":{\"width\":22,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/antiAddiction/statusText} }}\",\"styles\":{\"width\":82,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"weather_row\",\"limit_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":102,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"weather_text_col\"],\"itemMargin\":6,\"styles\":{\"width\":86,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":26,\"height\":26,\"objectFit\":\"contain\"}},{\"id\":\"weather_text_col\",\"component\":\"Column\",\"children\":[\"weather_temp\",\"weather_condition\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":32,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }} · {{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":86,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"limit_text\",\"component\":\"Text\",\"content\":\"{{ ${/antiAddiction/limitText} }}\",\"styles\":{\"width\":86,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"系统设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":86,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff0a59f7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"appName\":\"短视频\",\"usedMinutesText\":\"42\",\"limitText\":\"60分钟上限\",\"statusText\":\"剩余18分钟\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳区\"},\"current\":{\"temperatureText\":\"27°C\",\"condition\":\"多云\",\"airQuality\":\"良\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-30-pet-feeder-016",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.8,
+  "reasons": {
+    "instruction": "截图可见：标题'宠物睡前'配语义月亮图标呈现良好；两个嵌入式面板分别显示'喂食 距睡前还有2小时'和'提醒 距睡前还有2小时'，与用户要求的'内嵌面板显示距睡前还有2小时动态值'完全吻合；底部'播放白噪音'按钮已绑定正确的 clickToDeeplink 事件指向音乐歌单 uri；磨砂浅灰底 #f1f3f5 体现了'磨砂底'诉求；纵向多项目重复排版与2x2 尺寸、catalogId、version、updateDataModel 等硬约束均满足。唯一明确漏掉的是 dataModelSchema 中显式存在的 reminderText='临到点提醒' 在截图中完全未呈现，用户原文也明确点了'临到点提醒'，这是关键信息缺口，因此扣分。",
+    "aesthetic": "截图观感专业克制：浅磨砂灰底 #f1f3f5 营造柔光感，与深色 #e5000000 标题、按钮文字对比清晰可读；两个嵌入式面板使用 #0c000000 微透明叠加，形成层级但不过重；按钮 #19000000 半透明胶囊与底色协调；字重层级合理（仅标题 700，其他 500/默认），符合'只保留一个最强字重'原则；圆角统一 8/14/18，视觉一致；唯一微瑕是整体留白略偏紧、两个面板视觉权重过于接近主标题，但不影响整体美观。",
+    "layout": "截图显示所有元素均落在卡片边界内：标题行、两个内嵌面板、按钮垂直紧密堆叠，无堆叠遮挡；'距睡前还有2小时'在76宽 countdown 区域内完整可读，未见截断或省略号；按钮距卡片底边留白约 12vp，符合 2x2 的 8-12vp 规范；左右边距通过 12vp padding 保持统一对齐；唯一可提的小问题：标签 '喂食/提醒' 紧贴面板左 padding 内侧，与右侧 countdown 文字间距略小，但视觉上未出现任何裁剪或溢出。",
+    "issues": [
+      "dataModelSchema.reminderText '临到点提醒' 未在卡片任何位置渲染展示，用户原文与 schema 均明确要求，缺失关键状态文案",
+      "两个内嵌面板的左标签'喂食/提醒'与右倒计时文字间距偏小，视觉密度略高",
+      "卡片下半部留白偏紧，按钮到卡片底边仅约 12vp，处于规范下限，可适当增加下边距"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header\",\"ritual_panel_0\",\"ritual_panel_1\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header\",\"component\":\"Column\",\"children\":[\"title_row\",\"reminder_row\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_row\",\"component\":\"Row\",\"children\":[\"sleep_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/moon_z_fill_1.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ritual/title} }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"reminder_row\",\"component\":\"Row\",\"children\":[\"reminder_text\"],\"styles\":{\"width\":116,\"height\":12,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/ritual/reminderText} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"ritual_panel_0\",\"component\":\"Row\",\"children\":[\"panel0_label\",\"panel0_countdown\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"top\":4,\"right\":8,\"bottom\":4,\"left\":8},\"borderRadius\":8,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"panel0_label\",\"component\":\"Text\",\"content\":\"{{ ${/ritual/items/0/label} }}\",\"styles\":{\"width\":20,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"panel0_countdown\",\"component\":\"Text\",\"content\":\"{{ ${/ritual/items/0/countdownText} }}\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"ritual_panel_1\",\"component\":\"Row\",\"children\":[\"panel1_label\",\"panel1_countdown\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"top\":4,\"right\":8,\"bottom\":4,\"left\":8},\"borderRadius\":8,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"panel1_label\",\"component\":\"Text\",\"content\":\"{{ ${/ritual/items/1/label} }}\",\"styles\":{\"width\":20,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"panel1_countdown\",\"component\":\"Text\",\"content\":\"{{ ${/ritual/items/1/countdownText} }}\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ritual/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":28,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"ritual\":{\"title\":\"宠物睡前\",\"reminderText\":\"临到点提醒\",\"actionLabel\":\"播放白噪音\",\"items\":[{\"label\":\"喂食\",\"countdownText\":\"距睡前还有2小时\"},{\"label\":\"提醒\",\"countdownText\":\"距睡前还有2小时\"}]}}}}"
+  ]
+}

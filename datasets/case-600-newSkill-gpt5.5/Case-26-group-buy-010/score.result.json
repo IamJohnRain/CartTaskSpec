@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-26-group-buy-010",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见缺口人数'缺2人'作为主指标突出显示，满足'缺口人数实时变'；状态徽章'待成团'以胶囊形式显示在右上角，满足'已拼成有显示'；日程'19:30-20:00 可约'以副标题形式显示，满足'能读日程看时间'；底部白色胶囊按钮'找人拼单'承载 clickToDeeplink 事件（uri:groupbuy://find-people）满足'点进是找人页'。尺寸 2x2、catalogId、version、updateDataModel.path 均为 \"/\" 均符合协议；Image.src 来自 assetCandidates；onClick.call/args 原样来自 eventCandidates。综合下来指令落实完整，扣 0.5 分因为标题'拼单团购'字重层级与主指标 32px 相比偏弱、视觉权重略不均衡。",
+    "aesthetic": "截图整体观感良好：绿白渐变背景清新自然，胶囊形白色图标底、白色徽章与白色按钮在绿色背景上形成清晰可读的反差。'缺2人'用 32px 700 字重担当主视觉，下方'19:30-20:00 可约'为次级灰字，分层清晰。按钮文字绿色 #64bb5c 与背景主题色呼应，整体克制专业。仅扣 1.5 分因为标题'拼单团购'仅 12px 600，与 32px 主指标之间缺少 16px 中间档导致层级略跳；底部按钮 32px 高度在 140 卡内略显偏厚，密度感可再优化。",
+    "layout": "从截图观察，root Column 实际占用约 115vp(20+2+36+2+18+2+1+2+32)未超出 116vp 内容区，header_row 三个子项 20+2+52+2+40=116vp 恰好铺满 116 内容宽，所有文字均完整呈现、未见截断或省略号。'缺2人'完整无截断、'拼单团购'完整、'待成团'完整、'19:30-20:00 可约'完整、'找人拼单'按钮文字完整居中。Stack 背景在底层、信息在上层，无遮挡问题。按钮热区 32vp 满足 ≥24vp 要求；按钮底边距卡片底边约 12vp，符合 8-12vp 区间。无任何堆叠/溢出/裁剪。扣 1 分因为 header_row 中三个子项宽度合计 116 等于内容宽，若 dataModel 出现更长文本(如英文'Pending')会顶出边界，存在轻微脆性。"
+  },
+  "issues": [
+    "标题'拼单团购'12px 与主指标 32px 之间缺少 16px 中间档，字体阶梯略有跳跃",
+    "header_row 子项固定宽度合计恰好等于内容宽(116)，对动态数据容错差",
+    "底部按钮 32px 在 140 高的卡内密度感略偏厚，schedule_text 与 divider 之间垂直呼吸偏紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"schedule_text\",\"section_divider\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92c48d\",0],[\"#64bb5c\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"group_icon_box\",\"title_text\",\"status_badge\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"group_icon_box\",\"component\":\"Row\",\"children\":[\"group_icon\"],\"styles\":{\"width\":20,\"height\":20,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"group_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/person_3_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"拼单团购\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/statusText} }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":8,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/gapText} }}\",\"styles\":{\"width\":116,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} + ' 可约' }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"section_divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/groupBuy/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.groupbuy\",\"abilityName\":\"com.example.groupbuy.FindPeopleAbility\",\"uri\":\"groupbuy://find-people\"}}],\"styles\":{\"width\":116,\"height\":28,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"gapText\":\"缺2人\",\"statusText\":\"待成团\",\"actionText\":\"找人拼单\"},\"data\":{\"calendar\":{\"items\":[{\"dtStart\":\"19:30\",\"dtEnd\":\"20:00\"}]}}}}"
+  ]
+}

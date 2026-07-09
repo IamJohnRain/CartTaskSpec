@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-13-health-reminder-016",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "截图中可见卡片呈现喝水记录的整体结构：左侧有水滴图标+'900ml'+'已达成'、右侧标题'喝水记录'+3个绿色对勾勾选条目（08/12/20 300ml）+底部'喝够了达成'胶囊。3个杯子的纵向重复排列、毫升数展示、clickToDeeplink闹钟跳转的 onClick 事件都已落实，完成态'喝够了达成'感通过绿色对勾+胶囊传达。但用户明确要求'左侧放一张大图做主视觉'，而截图中水滴图实际仅 30x30 像素、夹在 40px 宽的白色药丸中，明显偏小、未达'大图'预期；'运动感渐变'在截图中呈现为偏清新的青蓝调，运动感不强；'图片延伸的视觉风格'也因 hero_panel 用了纯白药丸背景而与渐变主图脱节。",
+    "aesthetic": "截图整体配色（青蓝渐变+绿色对勾+白色文字）较为和谐，可读性良好：右侧白字在渐变上对比清晰，绿色对勾与背景色形成明确完成态暗示，底部'喝够了达成'半透明白色胶囊也较精致。扣分点：左侧 hero_panel 用纯白药丸把水滴图标和数字框住，形成'卡片中的卡片'效果，让本应是主视觉的水滴显得孤立、视觉层级混乱；字号阶梯基本合理但 30x30 图标相对整体偏小，主视觉没有充分撑起。",
+    "layout": "截图中无任何元素溢出 140x140 边界、无文字被裁切：无堆叠遮挡。3 个 cup_row 均匀竖排，'08 300ml/12 300ml/20 300ml' 文字在 48px 宽标签区内完整显示（恰好不溢出）。'喝水记录'标题在最上行高 14 内单行完整。底部'喝够了达成'胶囊居中且完整呈现。左侧白色药丸内部的水滴图标、'900ml'、'已达成'三元素在 40x116 的空间内垂直居中、未截断。整体布局干净。轻微扣分：勾选框视觉热区 18x18 略低于 24vp 建议值。"
+  },
+  "issues": [
+    "左侧水滴图实际尺寸 30x30，明显偏小，未满足'左侧放一张大图做主视觉'的诉求",
+    "hero_panel 使用纯白药丸背景与渐变主图脱节，未体现'图片延伸的视觉风格'",
+    "渐变色（#46b1e3→#92d6cc）偏清新感，未呈现'运动感渐变'的能量感",
+    "勾选框热区 18x18 略低于推荐 ≥24vp 的可点击元素热区",
+    "hero_panel 宽度仅 40px，相对右侧 70px 显得过窄，主次比例偏向列表"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"check_column\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#0d6fb8\",0],[\"#1ec8c0\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"hero_image\",\"total_text\",\"status_line1\"],\"itemMargin\":4,\"styles\":{\"width\":50,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"resources/base/media/drop_1.svg\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"total_text\",\"component\":\"Text\",\"content\":\"{{ ${/water/totalText} }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_line1\",\"component\":\"Text\",\"content\":\"{{ ${/water/statusLine1} }}\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"check_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"cup_row_0\",\"cup_row_1\",\"cup_row_2\",\"completion_text\"],\"itemMargin\":4,\"styles\":{\"width\":62,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/water/title} }}\",\"styles\":{\"width\":62,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"cup_row_0\",\"component\":\"Row\",\"children\":[\"cup_check_0\",\"cup_label_0\"],\"itemMargin\":4,\"styles\":{\"width\":62,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"cup_check_0\",\"component\":\"Checkbox\",\"value\":\"{{ ${/water/cups/0/value} }}\",\"group\":\"daily_water\",\"select\":\"{{ ${/water/cups/0/done} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":16,\"height\":16,\"shape\":\"circle\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"cup_label_0\",\"component\":\"Text\",\"content\":\"{{ ${/water/cups/0/time} + ' ' + ${/water/cups/0/amountText} }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"cup_row_1\",\"component\":\"Row\",\"children\":[\"cup_check_1\",\"cup_label_1\"],\"itemMargin\":4,\"styles\":{\"width\":62,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"cup_check_1\",\"component\":\"Checkbox\",\"value\":\"{{ ${/water/cups/1/value} }}\",\"group\":\"daily_water\",\"select\":\"{{ ${/water/cups/1/done} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":16,\"height\":16,\"shape\":\"circle\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"cup_label_1\",\"component\":\"Text\",\"content\":\"{{ ${/water/cups/1/time} + ' ' + ${/water/cups/1/amountText} }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"cup_row_2\",\"component\":\"Row\",\"children\":[\"cup_check_2\",\"cup_label_2\"],\"itemMargin\":4,\"styles\":{\"width\":62,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"cup_check_2\",\"component\":\"Checkbox\",\"value\":\"{{ ${/water/cups/2/value} }}\",\"group\":\"daily_water\",\"select\":\"{{ ${/water/cups/2/done} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":16,\"height\":16,\"shape\":\"circle\",\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#ffffffff\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":10,\"strokeWidth\":2}}},{\"id\":\"cup_label_2\",\"component\":\"Text\",\"content\":\"{{ ${/water/cups/2/time} + ' ' + ${/water/cups/2/amountText} }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"completion_text\",\"component\":\"Text\",\"content\":\"{{ ${/water/completionText} }}\",\"styles\":{\"width\":62,\"height\":16,\"padding\":3,\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"water\":{\"title\":\"喝水记录\",\"statusLine1\":\"已达成\",\"totalText\":\"900ml\",\"completionText\":\"喝够了达成\",\"cups\":[{\"time\":\"08\",\"amountText\":\"300ml\",\"done\":true,\"value\":\"morning\"},{\"time\":\"12\",\"amountText\":\"300ml\",\"done\":true,\"value\":\"noon\"},{\"time\":\"20\",\"amountText\":\"300ml\",\"done\":true,\"value\":\"night\"}]}}}}"
+  ]
+}

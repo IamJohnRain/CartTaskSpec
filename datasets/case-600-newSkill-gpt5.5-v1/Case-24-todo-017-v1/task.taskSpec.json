@@ -1,0 +1,149 @@
+{
+  "userQuery": "想要个主题色底的待办仪表盘,中间圆环显示完成率(仪表盘焦点),下面横排几个系统开关(勿扰、省电、夜间模式)能直接切换,完成的任务标绿色正向,勾选实时同步;顺便读下今天日历行程,文字字符图标,无渐变,示例数据。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.todos",
+        "abilityName": "com.huawei.hmos.todos.MainAbility",
+        "uri": "todo://sync-toggle?taskId=task-001"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.todos",
+        "abilityName": "com.huawei.hmos.todos.MainAbility",
+        "uri": "todo://sync-toggle?taskId=task-002"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "summary": {
+      "completionRate": {
+        "type": "number",
+        "description": "待办完成率数值，用于圆环进度。",
+        "sampleValue": 63
+      },
+      "completionTotal": {
+        "type": "number",
+        "description": "完成率总量基准。",
+        "sampleValue": 100
+      },
+      "completionText": {
+        "type": "string",
+        "description": "待办完成率展示文本。",
+        "sampleValue": "63%"
+      },
+      "countText": {
+        "type": "string",
+        "description": "已完成和总任务数摘要。",
+        "sampleValue": "5/8 已完成"
+      }
+    },
+    "tasks": {
+      "items": [
+        {
+          "id": {
+            "type": "string",
+            "description": "待办任务唯一标识。",
+            "sampleValue": "task-001"
+          },
+          "title": {
+            "type": "string",
+            "description": "待办任务标题。",
+            "sampleValue": "备份资料"
+          },
+          "done": {
+            "type": "boolean",
+            "description": "待办是否完成。",
+            "sampleValue": true
+          }
+        },
+        {
+          "id": {
+            "type": "string",
+            "description": "待办任务唯一标识。",
+            "sampleValue": "task-002"
+          },
+          "title": {
+            "type": "string",
+            "description": "待办任务标题。",
+            "sampleValue": "买早餐"
+          },
+          "done": {
+            "type": "boolean",
+            "description": "待办是否完成。",
+            "sampleValue": false
+          }
+        }
+      ]
+    },
+    "settings": {
+      "doNotDisturb": {
+        "type": "boolean",
+        "description": "勿扰模式是否开启。",
+        "sampleValue": false
+      },
+      "powerSave": {
+        "type": "boolean",
+        "description": "省电模式是否开启。",
+        "sampleValue": false
+      },
+      "nightMode": {
+        "type": "boolean",
+        "description": "夜间模式是否开启。",
+        "sampleValue": true
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历日程唯一标识符。",
+              "sampleValue": "cal-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "今日日程标题。",
+              "sampleValue": "产品评审"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程当天开始时间。",
+              "sampleValue": "10:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程当天结束时间。",
+              "sampleValue": "11:00"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

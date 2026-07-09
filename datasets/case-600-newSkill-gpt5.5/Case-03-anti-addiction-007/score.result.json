@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-anti-addiction-007",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "截图中可见倒计时进度条、'剩余 15分'、'天气 多云'、'看天气' 按钮及顶部 '快超时' 状态文字，主要信息已呈现。事件 clickToDeeplink 已正确绑定到 action_row，参数 uri 与 TaskSpec 完全一致。资源 icon_timing.png 和 cloudy.png 已被引用。但 '快超时' 的视觉提醒语义未完全落地：dataModel 中 progressColor=#ffe84026（红色提醒色）在截图中被渲染成蓝色，未形成紧迫感提示，'快超时了提醒我' 的核心诉求被弱化，故扣分。",
+    "aesthetic": "深色卡片整体观感简洁，文字白色在深色背景上清晰可读，对齐与居中处理良好。但进度条颜色为蓝色而非任务期望的提醒红/橙色 #ffe84026，与 '快超时' 状态语义冲突，色调不一致削弱了视觉警示效果；'快超时' 标题用 #99ffffff 半透明白，警示强度不足；进度条底色偏亮蓝与卡面深色对比较强但不协调，缺少克制的强调色。",
+    "layout": "截图中所有元素均在 140x140 卡片内，未见文字裁切、组件溢出或堆叠重叠：顶部图标+标题、进度条、双指标列、底部胶囊按钮四层排布整齐，padding 与 itemMargin 控制合理；左右两个 54 宽指标列等分 116 宽空间，无挤压；'看天气' 按钮底边距卡片底边约 10vp，满足 2x2 卡片底部动作区外框底边到卡片底边 ≤16vp 的要求；唯一可关注的是进度条颜色与意图不符，但不构成布局问题。"
+  },
+  "issues": [
+    "Progress.color 使用 {{ ${/usage/progressColor} }} 模板绑定后渲染为蓝色，未按 dataModel 中的 #ffe84026（红色提醒色）呈现，导致 '快超时' 提醒语义缺失。",
+    "title_text 使用 #99ffffff 半透明白色，警示强度不足，与 '快超时' 状态应有的紧迫感不匹配。",
+    "left_value（'15分'）使用纯白 #ffffffff，未与 '快超时' 状态做颜色联动，缺少提醒色呼应。",
+    "action_row 的 padding 仅设置 left/right 缺少 top/bottom，胶囊按钮热区垂直方向可能略紧（虽 26 高度尚可接受）。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"usage_bar\",\"metrics_row\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#ff202224\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"primary_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"primary_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":94,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffff6b6b\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"usage_bar\",\"component\":\"Row\",\"children\":[\"usage_progress\"],\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"usage_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/usage/usedMinutes} }}\",\"total\":\"{{ ${/usage/limitMinutes} }}\",\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":14,\"borderRadius\":8,\"color\":\"#ffe84026\",\"backgroundColor\":\"#33000000\"}},{\"id\":\"metrics_row\",\"component\":\"Row\",\"children\":[\"left_metric\",\"right_metric\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_metric\",\"component\":\"Column\",\"children\":[\"left_label\",\"left_value\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"left_label\",\"component\":\"Text\",\"content\":\"剩余\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"left_value\",\"component\":\"Text\",\"content\":\"{{ ${/usage/remainingText} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffff6b6b\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_metric\",\"component\":\"Column\",\"children\":[\"right_label\",\"right_value\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"right_label\",\"component\":\"Text\",\"content\":\"天气\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"action_icon\",\"action_label\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10,\"top\":5,\"bottom\":5},\"borderRadius\":13,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\"}},{\"id\":\"action_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"action_label\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":70,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"快超时\"},\"asset\":{\"primaryIcon\":\"resources/base/media/icon_timing.png\",\"actionIcon\":\"resources/base/media/cloudy.png\"},\"usage\":{\"remainingText\":\"15分\",\"usedMinutes\":45,\"limitMinutes\":60,\"progressColor\":\"#ffe84026\"},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"condition\":\"多云\",\"temperatureText\":\"29°C\"}}},\"action\":{\"label\":\"看天气\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

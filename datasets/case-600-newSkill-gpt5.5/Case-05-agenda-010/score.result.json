@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-010",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图中卡片包含日程标题'项目同步提醒'、时间'17:00'、时间区间与地点'17:00-17:30  会议室 A'、副信息'提前10分钟'，右下角'打开日历'按钮已绑定 clickToIntent/ViewCalendarEvent 事件，数据从 /data/calendar/items/0 正确读取，尺寸 300x140、catalogId、version、path:'/' 等硬约束均满足。但用户原话'上面有行字带5点那种'（5点即省略号'……'的俗称）要求一行带省略号的文字元素，截图中未见到任何带'...'的文本行，该诉求未落实，扣 2.5 分。",
+    "aesthetic": "截图中卡片整体观感良好：左右两栏分区清晰，左侧半透明蓝底卡片承载主信息，右侧承载'日历提醒'小标和蓝色'打开日历'胶囊按钮，蓝色 (#ff0a59f7) 主色与浅灰渐变背景搭配和谐，前景文字在背景上可读性强。字号层级为 32(主时间)/16(标题)/12(元信息)，主时间字重最强，标题与元信息为次级字重，层级合理。留白密度适中，无明显空洞或拥挤。扣 2 分是因为主面板内'17:00'下方元信息与右侧'提前10分钟'距离过近，视觉上有轻微黏连感。",
+    "layout": "截图整体布局干净，无元素堆叠或溢出。左栏主面板内的标题、时间、元信息三行垂直排列，字号 16/32/12 + itemMargin 6 实际纵向占用 22+6+38+6+24=96px，与内容区 96px 刚好对齐；右栏'日历提醒'+'提前10分钟'+'打开日历'按钮纵向 18+8+18+8+34=86px，内容区 96px 留有 10px 下边距。'打开日历'按钮高 34vp，热区达标，底边距卡片底约 12vp。左右栏总宽 180+10+86=276，与内容区 276 一致，无溢出。文字均完整可读，无截断。"
+  },
+  "issues": [
+    "缺少用户明确要求的'带5点(省略号)'文字行，截图中没有任何带'...'的文本",
+    "左栏主面板三行内容纵向占用 96px 与内容区 96px 完全贴边，无下边距缓冲，视觉上略拥挤",
+    "主面板内字号阶梯 16/32/12 与右侧 12/12/14 字号差异偏大，跨面板字号统一性可再优化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",1]]},\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"subtitle_text\",\"time_text\",\"meta_row\"],\"itemMargin\":4,\"styles\":{\"width\":180,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#190a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":160,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"subtitle_text\",\"component\":\"Text\",\"content\":\"点击查看完整日程...\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":160,\"height\":30,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"meta_row\",\"component\":\"Row\",\"children\":[\"range_text\",\"place_text\"],\"itemMargin\":8,\"styles\":{\"width\":160,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"range_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"place_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":82,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"caption_text\",\"remind_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":86,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"日历提醒\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"remind_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开日历\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":86,\"height\":34,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"项目同步提醒\",\"dtStart\":\"17:00\",\"dtEnd\":\"17:30\",\"eventLocation\":\"会议室 A\",\"remindTime\":[\"提前10分钟\"]}]}}}}}"
+  ]
+}

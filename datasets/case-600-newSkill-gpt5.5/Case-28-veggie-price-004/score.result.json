@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "截图中可见天气信息（今日天气/附近/26°C/多云/空气良）、右上角'已连接'状态徽标和右下角绿色'去买菜'按钮均完整呈现，按钮 onClick 正确引用 eventCandidates 的 clickToDeeplink（uri=maicai://home），尺寸 2x4、root shell、catalogId、version、updateDataModel.path='/data...' 等硬约束均满足。轻微扣分：用户说'显示已连接就行'，但卡片在右栏中部又额外加了'已连接买菜服务'胶囊，信息冗余，违背了'就行'的克制诉求。",
+    "aesthetic": "截图中深色背景与白色文字对比清晰，'26°C'大字主指标突出，'去买菜'绿色 CTA 与深底对比鲜明，层级（32/14/12/10）合理。但右栏从上到下出现'已连接'胶囊、'已连接买菜服务'胶囊、'去买菜'按钮三个元素，视觉密度偏重且语义重复，整体略显拥挤。",
+    "layout": "截图中所有文字与组件均在卡片边界内：左栏主信息（26°C/多云/空气 良）纵向排布整齐、字号大且未截断；右栏'已连接'胶囊锚定顶部、'去买菜'按钮锚定底部、底边到卡片底约 10vp 留白合规；左右两栏无堆叠遮挡，热区充足。唯一小瑕疵：'已连接买菜服务'胶囊占用中部空间，使右栏纵向略拥挤，但未造成截断或溢出。"
+  },
+  "issues": [
+    "右栏同时出现'已连接'和'已连接买菜服务'两个胶囊，与用户'显示已连接就行'的克制诉求不符，信息冗余",
+    "右栏纵向分布三个元素，视觉密度偏重，缺少呼吸感",
+    "左栏 location_text('附近')与 header 行底部 baseline 紧贴主指标列，间距略紧"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"content_row\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff191a1c\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"title_col\",\"status_pill\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"location_text\"],\"itemMargin\":2,\"styles\":{\"width\":168,\"height\":30,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日天气\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":168,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_dot\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":72,\"height\":26,\"padding\":[5,10,5,10],\"borderRadius\":13,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_dot\",\"component\":\"Row\",\"styles\":{\"width\":6,\"height\":6,\"borderRadius\":3,\"backgroundColor\":\"#ff5ba854\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"已连接\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"primary_col\",\"action_col\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"primary_col\",\"component\":\"Column\",\"children\":[\"primary_value\",\"condition_text\",\"air_quality_text\"],\"itemMargin\":4,\"styles\":{\"width\":168,\"height\":78,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":168,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"air_quality_text\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":168,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"action_button\"],\"itemMargin\":0,\"styles\":{\"width\":100,\"height\":78,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去买菜\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"maicai://home\"}}],\"styles\":{\"width\":100,\"height\":40,\"borderRadius\":20,\"backgroundColor\":\"#ff5ba854\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"附近\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"良\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

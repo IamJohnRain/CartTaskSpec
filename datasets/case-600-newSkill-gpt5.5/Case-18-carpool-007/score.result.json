@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-18-carpool-007",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "截图显示所有 6 个 dataModel 字段（title/connectionStatus/matchedCountText/matchedLabel/routeSummary/actionLabel）均真实呈现：左侧'拼车出行'标题、'已连接'胶囊徽章、'3人'主指标+''已拼到''辅助标签、''同路乘客已匹配'路线摘要齐全；右侧'进App看'按钮已绑定 clickToDeeplink 事件，args 原样来自 eventCandidates。size 2x4、root 300x140、catalogId/version/updateDataModel.path 与 value 均合规。轻微扣分：右侧 side_column 的 action_hint 又重复显示了'已连接'，与 header 徽章构成信息冗余。",
+    "aesthetic": "截图中绿色主题与拼车出行/连接语义契合，白色文字在绿底上对比清晰可读；字号阶梯（32/14/12）层次分明，主指标'3人'使用 700 字重作为唯一最强字重，标题 500/辅文 400 形成清晰梯度。留白与对齐整体舒适。但右侧'已连接'+'进App看'两行紧贴视觉略拥挤，action_hint 与 header 徽章颜色对比不明显，略有重复感。",
+    "layout": "从截图观察：卡片 300x140 内容全部位于边界内，无元素溢出；'3人'大字、''已拼到'小字、''同路乘客已匹配'左列三行清晰排列且未重叠；右侧'进App看'按钮文本完整显示、未被裁切；按钮热区 80x34 接近 40vp 建议值；底部 action 框底边到卡片底边约 10vp 满足 ≤16vp 硬约束。唯一可观察问题是右侧'已连接'与'进App看'垂直间距偏紧（10vp），但未发生实际堆叠或截断。整体布局干净、符合规范。"
+  },
+  "issues": [
+    "右侧 side_column 的 action_hint 与 header 的 status_badge 都显示'已连接'，构成信息冗余",
+    "action_hint 文字色 #ffffffff 与半透明底 #19000000 视觉对比不够突出，存在感弱化",
+    "侧栏 action_hint 与 action_button 之间的 itemMargin 10 偏紧，可视间距略显拥挤"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_column\",\"side_column\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff64bb5c\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_column\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_row\",\"route_text\"],\"itemMargin\":8,\"styles\":{\"width\":168,\"height\":116,\"padding\":0,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":8,\"styles\":{\"width\":168,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/title} }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/connectionStatus} }}\",\"styles\":{\"width\":60,\"height\":20,\"padding\":[2,10,2,10],\"borderRadius\":10,\"backgroundColor\":\"#33ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":8,\"styles\":{\"width\":168,\"height\":40,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/matchedCountText} }}\",\"styles\":{\"width\":72,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/matchedLabel} }}\",\"styles\":{\"width\":64,\"height\":22,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"route_text\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/routeSummary} }}\",\"styles\":{\"width\":168,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"side_column\",\"component\":\"Column\",\"children\":[\"action_hint\",\"action_button\"],\"itemMargin\":14,\"styles\":{\"width\":96,\"height\":92,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/connectionStatus} }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/carpool/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":80,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ff64bb5c\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"拼车出行\",\"connectionStatus\":\"已连接\",\"matchedCountText\":\"3人\",\"matchedLabel\":\"已拼到\",\"routeSummary\":\"同路乘客已匹配\",\"actionLabel\":\"进App看\"}}}}"
+  ]
+}

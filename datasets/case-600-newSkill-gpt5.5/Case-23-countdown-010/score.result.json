@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-23-countdown-010",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求期末考试倒计时卡片：从日历读取、显示倒计时数字/单位、显示日期、显示'快挂了'提醒、显示复习按钮。截图中可见'期末考试'标题、白色日历图标、红色大字'6'加'天'单位、'7月15日 09:00 开考'日期、白色气泡内'快挂了，赶紧复习'提醒语与'提前1天提醒'、蓝色'去复习'按钮，所有信息齐全。onClick 使用了 TaskSpec 唯一的 clickToDeeplink 事件，call/args 原样取自 eventCandidates（指向设置-家长控制，因 eventCandidates 限定，跳转目标与'复习'语义略有不匹配，非 DSL 责任）。calendarIcon 资源来自 assetCandidates 并已使用。size=2x4、catalogId、version、updateDataModel.path/value 均符合协议。扣分点：'弹提醒'被实现为常驻气泡而非弹窗，提醒的视觉张力略弱；按钮文案'去复习'与跳转目标（设置）语义错位。",
+    "aesthetic": "截图整体观感良好：右斜下方向的浅灰到暖橙渐变背景营造了紧迫但不刺眼的氛围；红色'6'主指标字重突出，作为最强字重合理；标题'期末考试'与日期/单位形成清晰的 16/14/12 字号阶梯；右侧白色圆角气泡+蓝色实心按钮的对比让 CTA 醒目；左右两栏留白均衡，配色和谐可读。轻微不足：渐变末端橙色稍重，与左侧白色图标底色形成冷暖冲突；右上角气泡内文字与日期的视觉重量略显接近。",
+    "layout": "截图未观察到任何文字截断、元素堆叠或溢出。左栏 166 宽内'期末考试'+日期均完整显示；大号'6'与'天'之间留有合理间距；'7月15日 09:00 开考'完整可读，未触发 ellipsis。右栏 100 宽内白色气泡'快挂了，赶紧复习'两行换行正常，'提前1天提醒'次行完整；'去复习'按钮 100x36 热区充足、底边到卡片底边约 8-10vp，在合理范围。卡片整体在 300x140 容器内无超出边界现象，clip 生效。"
+  },
+  "issues": [
+    "日历图标 Image 套了白色 backgroundColor+padding=4+borderRadius=8，使图标显示为白底方块，遮挡了 SVG 本身的色彩与轮廓，建议去掉外白底直接展示图标。",
+    "按钮文案'去复习'与 onClick 实际跳转的'设置-家长控制'在语义上不匹配（受 eventCandidates 限制），可考虑在按钮上方加一行更明确的小字提示跳转去向。",
+    "右上角白色气泡宽度 100 偏紧，'快挂了，赶紧复习'被迫两行换行，可通过缩短文案或微调气泡内边距让其在 1-2 行内更舒展。",
+    "渐变方向 RightBottom 在窄卡片上让左侧冷、右侧暖的过渡略显割裂；可改为 Top→Bottom 渐变使整体更柔和。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"TopToBottom\",\"colors\":[[\"#fffaf3e8\",0],[\"#fff3c278\",1]]},\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"countdown_row\",\"date_text\"],\"itemMargin\":6,\"styles\":{\"width\":166,\"height\":116,\"padding\":0,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"title_text\"],\"itemMargin\":8,\"styles\":{\"width\":166,\"height\":28,\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"{{ ${/assets/calendarIcon} }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":134,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e51a1a1a\",\"maxLines\":1}},{\"id\":\"countdown_row\",\"component\":\"Row\",\"children\":[\"days_value\",\"days_unit\"],\"itemMargin\":4,\"styles\":{\"width\":166,\"height\":44,\"alignItems\":\"bottom\"}},{\"id\":\"days_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/daysLeftText} }}\",\"styles\":{\"width\":58,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"days_unit\",\"component\":\"Text\",\"content\":\"{{ ${/ui/daysUnit} }}\",\"styles\":{\"width\":24,\"height\":22,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"date_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' 开考' }}\",\"styles\":{\"width\":166,\"height\":22,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"warning_panel\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":100,\"height\":116,\"padding\":0,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"warning_panel\",\"component\":\"Column\",\"children\":[\"warning_text\",\"remind_text\"],\"itemMargin\":4,\"styles\":{\"width\":100,\"height\":64,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/warningText} }}\",\"styles\":{\"width\":88,\"height\":32,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e51a1a1a\",\"maxLines\":2,\"lineHeight\":16}},{\"id\":\"remind_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/reviewTargetText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":100,\"height\":34,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"exam-final-001\",\"title\":\"期末考试\",\"dtStart\":\"7月15日 09:00\",\"dtEnd\":\"11:00\",\"importantEventType\":2,\"remindTime\":[\"提前1天提醒\"]}]}},\"ui\":{\"daysLeftText\":\"6\",\"daysUnit\":\"天\",\"warningText\":\"快挂了，赶紧复习\",\"reviewTargetText\":\"去复习\"},\"assets\":{\"calendarIcon\":\"resources/base/media/calendar_fill.svg\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

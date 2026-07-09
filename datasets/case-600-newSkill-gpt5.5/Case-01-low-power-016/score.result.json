@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-01-low-power-016",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "电池图标作为主视觉位于卡片顶部，18%电量大字与红色'低电提醒'清晰展示，天气信息（今日 多云 18°C）齐全；两个待办项'晨会''取快递'、勾选状态（第二条已勾选变蓝）、'详情'按钮均到位；两条 onClick 严格对应 eventCandidates（clickToIntent + ViewCalendarEvent + entityId），icon_electricity.png 素材被正确引用。但用户明确要求'电量低于20%时待办项显示橙色注意状态'，截图中两条待办文字均呈深色（接近黑/深灰），未观察到橙色警示效果；DSL 中使用了三元表达式绑定 fontColor（该字段渲染器多不支持复杂表达式），关键状态在视觉上未落实，是本 case 的主要失分点。",
+    "aesthetic": "卡片背景为浅灰纯色（#fff1f3f5），无渐变，符合'简洁素净、整体氛围背景'诉求；字号层级清晰（20/12/10），20px 加粗的'18%'与 12px 红色'低电提醒'形成对比主次分明；勾选框用品牌蓝、待办区为半透明深灰底，分区合理；整体配色克制专业、留白舒适，仅待办文字未呈现要求的橙色是一处遗憾。",
+    "layout": "2x2 卡片(140×140)内部布局整洁：电池行 38 + 间距 2 + 天气 14 + 间距 2 + 日程面板 56 = 112px，叠加 root 的 padding 12*2=24px 后总计 136px，余 4px 底部留白，无溢出；底部'详情'按钮底边距卡片底约 12vp，符合规范；勾选框、标题、按钮三者水平排列在 108px 内，无截断、无堆叠、无遮挡；唯一可关注处是 schedule_panel 内 padding 仅 2 偏小，视觉密度略紧。"
+  },
+  "issues": [
+    "用户明确要求'电量低于20%时待办项显示橙色注意状态'，截图中'晨会''取快递'两条文字均呈深色（非橙色），核心警示状态在视觉上未落实",
+    "DSL 在 fontColor 字段使用三元表达式{{ ${/state/battery/isLowBattery} ? '#ffe84026' : '#e5000000' }}，该字段的复杂表达式在渲染器中可能未被求值，导致颜色未应用",
+    "schedule_panel 内 padding 仅 2，导致内部行间距略紧，视觉密度偏大",
+    "天气文字与 battery_info 文本使用复杂字符串拼接/三元表达式，同样存在渲染器兼容风险"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"battery_row\",\"weather_text\",\"schedule_panel\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"battery_row\",\"component\":\"Row\",\"children\":[\"battery_icon\",\"battery_info\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"battery_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_electricity.png\",\"styles\":{\"width\":38,\"height\":38,\"objectFit\":\"contain\"}},{\"id\":\"battery_info\",\"component\":\"Column\",\"children\":[\"battery_value\",\"battery_caption\"],\"itemMargin\":2,\"styles\":{\"width\":74,\"height\":38,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/state/battery/levelText} }}\",\"styles\":{\"width\":74,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"battery_caption\",\"component\":\"Text\",\"content\":\"低电提醒\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"今日 多云 18°C\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"todo1_row\",\"todo2_row\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":60,\"padding\":4,\"borderRadius\":12,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo1_row\",\"component\":\"Row\",\"children\":[\"todo1_check\",\"todo1_title\",\"todo1_button\"],\"itemMargin\":4,\"styles\":{\"width\":108,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo1_check\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/0/entityId} }}\",\"select\":\"{{ ${/state/todoChecks/0} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"todo1_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"todo1_button\",\"component\":\"Button\",\"label\":\"详情\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"event-001\"}}}],\"styles\":{\"width\":44,\"height\":24,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":12}},{\"id\":\"todo2_row\",\"component\":\"Row\",\"children\":[\"todo2_check\",\"todo2_title\",\"todo2_button\"],\"itemMargin\":4,\"styles\":{\"width\":108,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"todo2_check\",\"component\":\"Checkbox\",\"value\":\"{{ ${/data/calendar/items/1/entityId} }}\",\"select\":\"{{ ${/state/todoChecks/1} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"todo2_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"todo2_button\",\"component\":\"Button\",\"label\":\"详情\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"event-002\"}}}],\"styles\":{\"width\":44,\"height\":24,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":12}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"18°C\",\"condition\":\"多云\"}},\"calendar\":{\"items\":[{\"entityId\":\"event-001\",\"title\":\"晨会\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\"},{\"entityId\":\"event-002\",\"title\":\"取快递\",\"dtStart\":\"18:00\",\"dtEnd\":\"18:30\"}]}},\"state\":{\"battery\":{\"levelPercent\":18,\"levelText\":\"18%\",\"isLowBattery\":true},\"todoChecks\":[false,true]}}}}"
+  ]
+}

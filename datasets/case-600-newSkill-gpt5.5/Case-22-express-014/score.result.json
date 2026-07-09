@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-22-express-014",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.7,
+  "reasons": {
+    "instruction": "截图中可观察到卡片呈现深色舞台风、纯文字配深色块、标题'物流总览'清晰可见、右上'深圳 29°C'天气正确绑定、底部'取件闹钟'按钮已就位、已签收区块使用绿色块做正向标识、没有渐变。但用户明确要求'信息分三组用分隔线分开(已签收/派送中/待取件)'，截图中只显示了'已签收'一组，'派送中'和'待取件'两组完全不可见，两条 Divider 分隔线也未在画面中出现。虽然 DSL 中把 List 设为可滚动，但静态截图作为视觉交付证据，三组内容只呈现一组属于关键信息缺失，扣分明显。",
+    "aesthetic": "截图中可见的视觉元素（深色背景、绿色已签收块、白色标题、半透明白色按钮）配色协调，标题层级清晰，天气文本颜色与背景对比度合适，绿色块用作正向标识视觉醒目，整体风格干净专业。但卡片下半部分几乎全空（被裁掉的两组内容+两条分割线全部缺失），导致画面信息密度过低、视觉重心偏上，且大块留白让卡片看起来不完整，扣减。",
+    "layout": "这是本案例最严重的问题。List 容器高 54，但内容是 3 个 38px 高的子块 + 2 条 1px 分隔线，合计 116px 内容塞进 54px 高的容器，溢出 62px。截图中只能看到第一个子块'已签收'，'派送中''待取件'两个子块被 List 内部裁剪完全不可见；两条 Divider 分隔线同样位于裁剪区外。底部按钮正常锚定在底部，热区充足，'取件闹钟'四个字完整可读。问题集中在 List 的内容规划与高度分配上——2x2 仅 140x140 留给三组信息的空间本就紧张，原 DSL 用 List+高 54 强行压缩是导致两整组被裁的根因。"
+  },
+  "issues": [
+    "List 高 54 但内容 116，三个状态块只剩第一个可见，'派送中''待取件'两块被裁掉",
+    "两条 Divider 分隔线均位于 List 裁剪区外，截图中完全不可见，违反'用分隔线分开三组'的指令",
+    "根 Column 计算：header 18 + list 54 + button 32 + margin 12 = 116，看似刚好填满 116 内容区，但 list 内部严重超载",
+    "卡片下半部分信息密度过低、画面不平衡",
+    "可滚动 List 虽可缓解，但静态视觉交付下用户首屏看不到三组核心信息，体验受损"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"status_list\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff0a0a0a\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_text\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":16,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"物流总览\",\"styles\":{\"width\":60,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/prefectureName} + ' ' + ${/data/weather/current/temperatureText} }\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"status_list\",\"component\":\"Column\",\"children\":[\"signed_block\",\"divider_one\",\"delivery_block\",\"divider_two\",\"pickup_block\"],\"itemMargin\":2,\"styles\":{\"width\":120,\"height\":64}},{\"id\":\"signed_block\",\"component\":\"Row\",\"children\":[\"signed_title\",\"signed_value\"],\"styles\":{\"width\":120,\"height\":18,\"padding\":3,\"borderRadius\":6,\"backgroundColor\":\"#ff5ba854\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"signed_title\",\"component\":\"Text\",\"content\":\"已签收\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"signed_value\",\"component\":\"Text\",\"content\":\"前台代收 18:40\",\"styles\":{\"width\":78,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"divider_one\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"delivery_block\",\"component\":\"Row\",\"children\":[\"delivery_title\",\"delivery_value\"],\"styles\":{\"width\":120,\"height\":18,\"padding\":3,\"borderRadius\":6,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"delivery_title\",\"component\":\"Text\",\"content\":\"派送中\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"delivery_value\",\"component\":\"Text\",\"content\":\"骑手 2.1km\",\"styles\":{\"width\":78,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"divider_two\",\"component\":\"Divider\",\"styles\":{\"width\":120,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"pickup_block\",\"component\":\"Row\",\"children\":[\"pickup_title\",\"pickup_value\"],\"styles\":{\"width\":120,\"height\":18,\"padding\":3,\"borderRadius\":6,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"pickup_title\",\"component\":\"Text\",\"content\":\"待取件\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"pickup_value\",\"component\":\"Text\",\"content\":\"驿站 3 件\",\"styles\":{\"width\":78,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"取件闹钟\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":120,\"height\":28,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山\",\"prefectureName\":\"深圳\"},\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

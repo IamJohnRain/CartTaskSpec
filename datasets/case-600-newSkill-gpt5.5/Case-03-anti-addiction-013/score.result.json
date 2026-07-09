@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-03-anti-addiction-013",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "整体基本满足用户诉求：左右分两个不同底色区域（白/灰）、左侧纵向三个勾选项（游戏/视频/短娱）、右侧顶部红色'超时违规'状态、勾选状态正确双向绑定（locked=true 时呈蓝色对勾、locked=false 时为空白方框）、日历文案'周末可调整'已读取、点击'加时'按钮的事件参数 clickToDeeplink 与 eventCandidates 完全一致。但用户特别要求'醒目的红色'状态在截图中被迫换行成'超时违'/'规'两行，削弱了状态强调效果；任务图标 icon_timing.png 几乎不可见；状态色 #ffed6f21 偏向橙红而非纯红，轻微偏离'红色'指令。",
+    "aesthetic": "截图中白色左面板与浅灰右面板形成清晰分区，配色总体协调。但右侧面板过窄（44vp）导致两个文本都换行，'超时违规'的 3+1 断行尤其突兀，影响整体观感；左面板内'管控'标题旁的计时图标（14x14）几乎不可见，标题孤立悬挂；按钮圆角 16vp 偏大，比例稍显笨重。整体可用但不够精致。",
+    "layout": "截图中最突出的问题：右侧面板内 status_badge 文字'超时违规'宽度 44vp 容纳不下 4 个 14px 汉字，被强制换行为'超时违'/'规'两行；calendar_text 同样被换行成'周末可调'/'整'。按公式核算：右面板内容区 44vp，4×14=56 > 44，确认溢出。右面板的 itemMargin 8 + 32+28+32 = 108/116 高度基本合适，但与文字溢出叠加显得拥挤。左面板布局正常，三个 app 行纵向排布整齐，勾选框对齐良好。底部'加时'按钮距卡底约 12vp，在合理范围。"
+  },
+  "issues": [
+    "右面板 status_badge '超时违规'在 44vp 宽 + fontSize 14 下溢出，被换行为两行，削弱用户要求的'醒目'效果",
+    "右面板 calendar_text '周末可调整'同样换行成两行",
+    "左面板 left_header 内 timing_icon 14×14 太小几乎不可见，标题'管控'孤立无图标",
+    "右面板 status 色 #ffed6f21 为橙红，非用户要求的纯红",
+    "右面板 padding=0 导致内容贴边，与左面板 padding=6 不对称",
+    "右侧面板 44vp 过窄是导致文字换行的根因，建议调整 split 比例"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"top\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"left_header\",\"app_row_0\",\"app_row_1\",\"app_row_2\"],\"itemMargin\":6,\"styles\":{\"width\":50,\"height\":116,\"padding\":6,\"borderRadius\":14,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"left_header\",\"component\":\"Row\",\"children\":[\"timing_icon\",\"title_text\"],\"itemMargin\":4,\"styles\":{\"width\":38,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"timing_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_timing.png\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/control/title} }}\",\"styles\":{\"width\":22,\"height\":16,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"app_row_0\",\"component\":\"Row\",\"children\":[\"app_check_0\",\"app_name_0\"],\"itemMargin\":4,\"styles\":{\"width\":38,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"app_check_0\",\"component\":\"Checkbox\",\"value\":\"app0\",\"select\":\"{{ ${/control/apps/0/locked} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"app_name_0\",\"component\":\"Text\",\"content\":\"{{ ${/control/apps/0/name} }}\",\"styles\":{\"width\":20,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"app_row_1\",\"component\":\"Row\",\"children\":[\"app_check_1\",\"app_name_1\"],\"itemMargin\":4,\"styles\":{\"width\":38,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"app_check_1\",\"component\":\"Checkbox\",\"value\":\"app1\",\"select\":\"{{ ${/control/apps/1/locked} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"app_name_1\",\"component\":\"Text\",\"content\":\"{{ ${/control/apps/1/name} }}\",\"styles\":{\"width\":20,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"app_row_2\",\"component\":\"Row\",\"children\":[\"app_check_2\",\"app_name_2\"],\"itemMargin\":4,\"styles\":{\"width\":38,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"app_check_2\",\"component\":\"Checkbox\",\"value\":\"app2\",\"select\":\"{{ ${/control/apps/2/locked} }}\",\"styles\":{\"width\":14,\"height\":14,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"app_name_2\",\"component\":\"Text\",\"content\":\"{{ ${/control/apps/2/name} }}\",\"styles\":{\"width\":20,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"status_badge\",\"calendar_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":58,\"height\":116,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#fff5eaea\",\"alignItems\":\"center\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/control/statusText} }}\",\"styles\":{\"width\":50,\"height\":32,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ ${/control/weekendText} }}\",\"styles\":{\"width\":50,\"height\":20,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/control/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":50,\"height\":32,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"control\":{\"title\":\"管控\",\"statusText\":\"超时违规\",\"weekendText\":\"周末可调整\",\"actionText\":\"加时\",\"apps\":[{\"name\":\"游戏\",\"locked\":true},{\"name\":\"视频\",\"locked\":true},{\"name\":\"短娱\",\"locked\":false}]},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-weekend-001\",\"title\":\"周末学习计划\",\"dtStart\":\"09:00\",\"dtEnd\":\"10:00\"}]}}}}}"
+  ]
+}

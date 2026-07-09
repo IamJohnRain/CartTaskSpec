@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-19-photo-album-002",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中清晰可见用户要求的全部信息：左侧以橙色渐变图标面板作为图为主的主视觉（含扫帚清除图标和'12,486张照片'文本），右侧主指标'92%'大字号醒目呈现，'空间快不行了'红色警告文案传达紧迫感，'可清理 6.8GB'辅助说明，'去清理'按钮承载点击进入清理操作；五个 dataModel 字段全部以 {{ ${/...} }} 形式绑定，onClick 的 call/args 与 eventCandidates 完全一致，Image.src 来自 assetCandidates，size=2x4、catalogId、version、updateDataModel.path/value 等硬约束均满足。",
+    "aesthetic": "截图观感专业、克制：浅灰底 (#fff1f3f5) 与橙色渐变 (#f9bc64→#ed6f21) 主体面板形成温暖但克制的对比，红色警告文字 (#ffe84026) 与橙色按钮颜色协调不刺眼；字号阶梯 32/14/12/14 清晰，'92%' 作为最强字重独占视觉中心，白色图标在橙底上对比鲜明、可读性高；左右两栏对齐统一，留白密度合理；唯一微瑕是按钮 fontWeight 使用字符串 'medium' 偏离数字字阶规范，且整体卡片色彩偏暖、灰白底色略显平淡，可考虑增加细微阴影或质感提升精致度。",
+    "layout": "截图布局干净：无任何元素堆叠重叠、无文字被裁切截断、无组件溢出卡片边界。左侧 hero_panel 112×116 容纳 68×68 图标和底部 '12,486张照片' 文本垂直居中排布，右侧 info_column 154×116 容纳四级文本+按钮纵向居中排列；按钮 '去清理' 底边距卡片底边约 10vp，在 10–14vp 合理区间；受保护文本（标题 '空间快不行了'、主指标 '92%'、CTA '去清理'、相片数 '12,486张照片'）均完整显示无 ellipsis；唯一观察是左图标面板与右侧信息块大小接近，'图为主' 的视觉权重可以再强化。"
+  },
+  "issues": [
+    "按钮 fontWeight 使用了字符串 'medium'，应使用数字字阶 500 以保持字号阶梯规范",
+    "左图标面板 112×116 中图标仅 68×68，'图为主' 的视觉主导感可再增强（如放大至 72–76）",
+    "卡片底色为纯浅灰 #fff1f3f5，可考虑加入细微阴影或渐变提升层次感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"info_column\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff5f6f7\",\"alignItems\":\"center\",\"justifyContent\":\"start\",\"shadow\":{\"color\":\"#22000000\",\"radius\":8,\"offsetY\":2}}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"hero_image\",\"photo_count_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#ed6f21\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\",\"shadow\":{\"color\":\"#33ed6f21\",\"radius\":6,\"offsetY\":2}}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":74,\"height\":74,\"objectFit\":\"contain\"}},{\"id\":\"photo_count_text\",\"component\":\"Text\",\"content\":\"{{ ${/album/photoCountText} }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"warning_text\",\"primary_value\",\"support_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":150,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/album/warningText} }}\",\"styles\":{\"width\":150,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/album/usedText} }}\",\"styles\":{\"width\":150,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"{{ ${/album/reclaimableText} }}\",\"styles\":{\"width\":150,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/album/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":92,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffed6f21\",\"borderRadius\":16,\"shadow\":{\"color\":\"#33ed6f21\",\"radius\":4,\"offsetY\":1}}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"album\":{\"photoCountText\":\"12,486张照片\",\"usedText\":\"92%\",\"reclaimableText\":\"可清理 6.8GB\",\"warningText\":\"空间快不行了\",\"actionText\":\"去清理\"}}}}"
+  ]
+}

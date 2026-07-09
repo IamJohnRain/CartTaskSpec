@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-12-finance-009",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求显示本月剩余金额（八百块）和已完成状态。截图中可见\"本月剩余\"标题、\"预算\"辅助标签、\"800元\"主数值、\"状态 已完成\"胶囊，所有用户点名信息均完整呈现。尺寸 2x2（140x140）符合规范，catalogId 与 version 正确，updateDataModel.path 为 \"/\" 且 value 与 TaskSpec 完全一致。eventCandidates 为空故无 onClick，合理。轻微扣分点：标题\"本月剩余\"中\"本月\"与\"剩余\"拼接为同一文本块，语义略冗余。",
+    "aesthetic": "截图整体观感清爽专业。绿色径向渐变（白→浅绿）和谐自然，与\"已完成\"的正面语义契合。字号层级清晰：32pt 主数值（唯一最强字重 700）、14pt 标题/状态值、12pt 辅助标签，符合\"一个最强字重\"原则。深色半透明胶囊包裹\"状态 已完成\"形成视觉聚焦点，对比度足够。配色克制，无多余装饰。轻微扣分：右上角\"预算\"标签颜色与背景对比度稍弱（#99000000 落在浅绿底上），且字重偏轻，存在感不够强。",
+    "layout": "截图中所有元素均在卡片边界内，未观察到文字截断、堆叠重叠或溢出。Column 纵向占用 = 12+20+6+42+6+1+6+28+12 = 133 ≤ 140，状态行底部距卡片底边约 7vp，处于合理范围。header_row 横向 = 72+8+36 = 116 = 内容宽度，无挤压。\"800元\"主数值在 116 宽度内（实际渲染约 90vp）舒适显示。状态行胶囊热区高度约 28vp，符合 ≥24vp 规范。Divider 准确分割主数值与状态区。无元素遮挡关键文本。整体布局干净。"
+  },
+  "issues": [
+    "标题\"本月剩余\"由 periodLabel 与 remainingLabel 拼接而成（\"本月\"+\"剩余\"），语义略显冗余，可改为更自然的短标签。",
+    "右上角\"预算\"辅助标签字重 500 + 颜色 #99000000，在浅绿渐变背景上对比度偏低，存在感不足。",
+    "状态行虽对齐居中，但\"状态\"（12pt）与\"已完成\"（14pt）字号差异在胶囊内造成轻微视觉不平衡。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"divider_line\",\"status_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#92c48d\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"object_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/budget/periodLabel} }}\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"object_text\",\"component\":\"Text\",\"content\":\"{{ ${/budget/remainingLabel} }}\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#80000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/budget/remainingAmount} + ${/budget/currencyUnit} }}\",\"styles\":{\"width\":116,\"height\":42,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"divider_line\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"status_row\",\"component\":\"Row\",\"children\":[\"status_label\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_label\",\"component\":\"Text\",\"content\":\"{{ ${/budget/statusLabel} }}\",\"styles\":{\"width\":32,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/budget/statusText} }}\",\"styles\":{\"width\":64,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"budget\":{\"periodLabel\":\"本月\",\"remainingLabel\":\"剩余\",\"objectLabel\":\"预算\",\"remainingAmount\":\"800\",\"currencyUnit\":\"元\",\"statusLabel\":\"状态\",\"statusText\":\"已完成\"}}}}"
+  ]
+}

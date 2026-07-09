@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-010",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "用户要求耳机卡、点击进系统操作、看到红色危险提示，截图中均已落实：标题'耳机'、'音乐播放中'、'请谨慎操作'(红色)与'危险提示'红色徽章、'处理'蓝色按钮均可见；onClick 正确绑定 clickToIntent 到 SetSettingSwitch(battery_saving_mode, switchFlag:0)，事件 call 与 args 原样来自 eventCandidates；尺寸 2x4、root 300x140、borderRadius 22、clip true、catalogId 'ohos.a2ui.extended.catalog'、每行 version v0.9、updateDataModel 路径为 '/' 且 value 与 TaskSpec.dataModel.value 一致。两个 assetCandidates(earphoneIcon / musicIcon)按语义被 hero_panel 引用，路径正确。轻微扣分：用户说'点一下能进系统操作'语义偏整卡可点击，目前仅 Button 上挂事件，整卡其余区域不可点；此外 alert_message 的红色提示并未配图标辅助，'红色危险提示'的感受稍弱。",
+    "aesthetic": "截图中三栏式布局工整：左侧浅灰圆角面板、居中信息文案、右侧徽章+按钮；红(#e84026)徽章与红字提示、蓝色(#0a59f7)主操作按钮形成清晰层级；卡片为白色到极浅灰的右下渐变，整体克制专业；字号阶梯 18/14/12 清晰，留白舒适。扣分点：hero_panel 中的耳機图标颜色极浅、近乎与背景同色，截图中只能看到两个非常淡的耳塞形状，识别度低；信息列中红色'请谨慎操作'与右侧红徽章用色重复，与蓝色 CTA 形成多色对抗，红色权重偏散。",
+    "layout": "截图无可见堆叠/截断/裁切：标题'耳机'完整显示、'音乐播放中'完整、'请谨慎操作'完整；右侧'危险提示'徽章与'处理'按钮均完整呈现、未被卡片边界 clip；底部'处理'按钮底边距卡片底有适度留白(目测约 12vp)，符合 10–14vp 区间；hero_panel 内耳機图标、分隔线、音乐图标三段垂直居中排列。公式交叉验证：root 内容区 276，三栏 86+110+64 + 2×8 = 276 恰好相等；action_column 内部 alert_badge 24 + itemMargin 12 + button 32 = 68，自身宽 64，存在 4vp 理论溢出，但截图未观察到明显裁切(可能由容器 alignItems:center 微调吸收)，仍按潜在溢出轻微扣分。"
+  },
+  "issues": [
+    "action_column 内部子项纵向占用(24+12+32=68)略大于容器高度 64，存在 4vp 理论溢出风险，虽截图未明显裁切仍建议收紧 itemMargin",
+    "hero_panel 中耳機图标渲染颜色极浅(几乎与背景同色)，识别度低，建议检查素材或加强对比",
+    "点击事件仅挂载在右侧'处理'按钮，整卡其余区域不可点，与用户'点一下能进系统操作'的整卡可点预期存在偏差(可在 root 上再叠一层透明可点击热区或扩大按钮覆盖范围)",
+    "信息列中红色'请谨慎操作'与右侧红色'危险提示'徽章同色重复，视觉权重略散，可考虑把徽章改为更深的告警红或增加图标辅助"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"info_column\",\"action_column\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#ffe5e5ea\",1]]},\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"earphone_icon\",\"divider_line\",\"music_icon\"],\"itemMargin\":4,\"styles\":{\"width\":86,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"earphone_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/earphoneIcon} }}\",\"styles\":{\"width\":48,\"height\":48,\"objectFit\":\"contain\"}},{\"id\":\"divider_line\",\"component\":\"Divider\",\"styles\":{\"width\":54,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/musicIcon} }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"mode_text\",\"alert_message\"],\"itemMargin\":8,\"styles\":{\"width\":110,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/device/name} }}\",\"styles\":{\"width\":110,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ ${/device/mode} }}\",\"styles\":{\"width\":110,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"alert_message\",\"component\":\"Text\",\"content\":\"{{ ${/alert/message} }}\",\"styles\":{\"width\":110,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"action_column\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":64,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"center\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/alert/level} }}\",\"styles\":{\"width\":64,\"height\":24,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":12,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":64,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"device\":{\"name\":\"耳机\",\"mode\":\"音乐播放中\"},\"alert\":{\"level\":\"危险提示\",\"message\":\"请谨慎操作\"},\"action\":{\"label\":\"处理\"},\"asset\":{\"earphoneIcon\":\"resources/base/media/icon_earphone.png\",\"musicIcon\":\"resources/base/media/icon_music.png\"}}}}"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "userQuery": "我想要个行程倒计时的卡,顶部大字号显示距离出发还有1天12小时,底下横向并列三个小块:第一个读天气,第二个是下一个航段,第三个是再下一个航段,每块都能点进日历看详情。卡片底色简洁素净,加夜间渐变,图标用文字画。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt-flight-1"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt-flight-2"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "ui": {
+      "countdownText": {
+        "type": "string",
+        "description": "距离出发行程的倒计时展示文本。",
+        "sampleValue": "1天12小时"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象的短展示文本。",
+            "sampleValue": "云"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "title": {
+              "type": "string",
+              "description": "下一个航段的日历标题或航班短标题。",
+              "sampleValue": "CA123"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "下一个航段日历事件唯一标识符。",
+              "sampleValue": "evt-flight-1"
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "再下一个航段的日历标题或航班短标题。",
+              "sampleValue": "MU456"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "再下一个航段日历事件唯一标识符。",
+              "sampleValue": "evt-flight-2"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -71,6 +71,8 @@ PNG_NAME = "card.dsl.png"
 OUTPUT_NAME = "score.request.json"
 SCORE_RESULT_NAME = "score.result.json"
 CARDSPEC_NAME = "card.cardspec.json"
+# MODEL_API = "MINIMAX"
+MODEL_API = "DOUBAO"
 
 CASE_REQUIRED_FILES = (QUERY_NAME, TASKSPEC_NAME, DSL_NAME, PNG_NAME)
 
@@ -318,10 +320,10 @@ def load_minimax_config(env_path: Path | None = None) -> dict:
     """从仓库根目录 .env 读取 MiniMax 凭据（已存在的系统环境变量优先）。"""
     resolved = env_path or (Path(__file__).resolve().parents[1] / ".env")
     env = _parse_env(resolved)
-    url = os.environ.get("MINIMAX_API_URL") or env.get("MINIMAX_API_URL")
-    key = os.environ.get("MINIMAX_API_KEY") or env.get("MINIMAX_API_KEY")
-    model = (os.environ.get("MINIMAX_MODEL") or env.get("MINIMAX_MODEL")
-             or "MiniMax-M3")
+    url = os.environ.get(MODEL_API + "_API_URL") or env.get(MODEL_API + "_API_URL")
+    key = os.environ.get(MODEL_API + "_API_KEY") or env.get(MODEL_API + "_API_KEY")
+    model = (os.environ.get(MODEL_API + "_MODEL") or env.get(MODEL_API + "_MODEL")
+             or MODEL_API + "-M3")
     if not url or not key:
         raise RuntimeError(
             "未配置 MINIMAX_API_URL / MINIMAX_API_KEY，请检查 .env"

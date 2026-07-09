@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-low-power-007",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.5,
+  "reasons": {
+    "instruction": "用户明确要求'红色提醒'，但截图中'低电'徽章为白底橙字（白底+橙字#ffed6f21），完全没有红色警示语义，与'红色提醒'诉求直接冲突。其余诉求（打勾省电、数字会变、点一下找充电宝、能读日程）均已落实：复选框已选中、18%由数据驱动、找充电宝按钮带 onClick clickToDeeplink、下一日程 18:30 晚间会议均显示。事件 call/args 原样来自 eventCandidates，素材 icon_save_power.png 使用正确，协议合规。",
+    "aesthetic": "截图中橙黄渐变整体协调，标题区白色字在橙底上可读。但'低电'徽章白底+橙字丢失了警示紧迫感，与低电语境不符；标题行四项元素（图标+复选框+'省电'+'低电'徽章）在 116px 内紧贴排列，密度偏高，留白不足；下半部分进度环与日程列对仗整齐，白色 CTA 按钮对比清晰。整体合格但因徽章配色和标题拥挤而失分。",
+    "layout": "从截图观察：标题行四个子项左对齐排布，最右的'低电'白底徽章几乎贴到卡片右内边缘，留白极小（实际宽度 16+4+20+4+28+4+32=108，剩余 8px 紧贴右边）；其余区域未出现文字截断或元素重叠，进度环完整，'18%' 居中且未被环遮挡，'下一日程/18:30/晚间会议' 三行可读完整，'找充电宝' 白色 CTA 完整显示、底边距卡片底部约 12vp，符合规范。Column 高度 12+20+4+56+4+32+12=140 刚好填满，无溢出。"
+  },
+  "issues": [
+    "'低电'徽章当前为白底橙字（#ffffffff+fontColor #ffed6f21），与用户明确要求的'红色提醒'不符，应改为红底白字以传达低电警示语义",
+    "标题行四项元素在 116px 内排得过满，最右徽章紧贴右内边缘，留白不足，视觉略显拥挤",
+    "复选框选中态的勾选色为橙色（#ed6f21），与橙底背景对比偏弱，勾选可读性可进一步加强"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"power_icon\",\"status_checkbox\",\"mode_text\",\"alert_badge\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"power_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_save_power.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"status_checkbox\",\"component\":\"Checkbox\",\"select\":\"{{ ${/power/savingEnabled} }}\",\"value\":\"powerSaving\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":20,\"height\":20,\"selectedColor\":\"#ffffffff\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ed6f21\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"mode_text\",\"component\":\"Text\",\"content\":\"{{ ${/power/modeText} }}\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/power/alertText} }}\",\"styles\":{\"width\":34,\"height\":18,\"borderRadius\":9,\"backgroundColor\":\"#ffe53935\",\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_stack\",\"schedule_column\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_progress\",\"battery_value\"],\"styles\":{\"width\":54,\"height\":54,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#33ffffff\",\"width\":54,\"height\":54}},{\"id\":\"meter_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/power/batteryPercent} }}\",\"total\":\"{{ ${/power/batteryTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":54,\"height\":54}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/power/batteryPercentText} }}\",\"styles\":{\"width\":54,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"schedule_column\",\"component\":\"Column\",\"children\":[\"schedule_label\",\"schedule_time\",\"schedule_title\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"下一日程\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":54,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":54,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"找充电宝\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"power\":{\"batteryPercent\":18,\"batteryTotal\":100,\"batteryPercentText\":\"18%\",\"savingEnabled\":true,\"modeText\":\"省电\",\"alertText\":\"低电\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-sample-001\",\"title\":\"晚间会议\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:00\"}]}}}}"
+  ]
+}

@@ -1,16 +1,41 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import argparse
 import json
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
+from typing import Any
 
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 DEFAULT_MODEL = "glm-5.2"
 DEFAULT_ENDPOINT = "http://127.0.0.1:4000/v1/chat/completions"
+
+ALLOWED_TOP_LEVEL = {
+    "userQuery",
+    "size",
+    "eventCandidates",
+    "dataModelSchema",
+    "assetCandidates",
+}
+FORBIDDEN_EVENT_FIELDS = {
+    "description",
+    "eventRef",
+    "id",
+    "label",
+    "note",
+    "onClick",
+    "required",
+}
+
 SYSTEM_PROMPT = """你是 A2UI 模型，负责依据 harmony-card-generation-datamodel-first 的当前 Form 协议、设计规范和 TaskSpec 约束生成 HarmonyOS A2UI Form 卡片 genui DSL。
-你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、DataModel、可点击事件候选和素材候选；它不是卡片布局方案，也不预先列出展示内容清单。具体信息取舍、组件组织、视觉设计、绑定写法和安全降级由你完成。
+你会收到一个 TaskSpec JSON。TaskSpec 只提供用户原始需求、目标尺寸、dataModelSchema、候选事件能力和候选素材白名单；它不是卡片布局方案，也不预先列出展示内容清单。具体信息取舍、组件组织、视觉设计、绑定写法和安全降级由你完成。
 
 本脚本只请求 genui 交付物：不要输出 cardspec。完整 skill 中关于 cardspec 的要求在本脚本场景下由外部流程处理。
 
@@ -20,21 +45,25 @@ SYSTEM_PROMPT = """你是 A2UI 模型，负责依据 harmony-card-generation-dat
 - 每行必须是单行合法 JSON 对象，并包含 "version":"v0.9"。
 - createSurface.catalogId 必须是 "ohos.a2ui.extended.catalog"。
 - 三行 surfaceId 必须一致；updateComponents.root 必须引用 components 中已存在的 root 组件。
-- updateDataModel.path 必须是 "/"，updateDataModel.value 必须原样等于 TaskSpec.dataModel.value，不能新增、删除或改写 DataModel 字段和值。
+- updateDataModel.path 必须是 "/"。
+- updateDataModel.value 不要求等于 TaskSpec.dataModelSchema；它必须是可直接渲染的示例 DataModel：把 TaskSpec.dataModelSchema 中各字段的 sampleValue 按同一路径结构填入，并且只允许额外加入 DSL 必需的受控静态辅助字段、加载态或空态字段。不得在动态数据能力输出路径下新增未授权字段。
 - components 必须是扁平组件数组；每个组件必须有 id 和 component。
 
 TaskSpec 使用边界：
-- 从 userQuery 和 dataModel.value 判断一个服务对象或主问题，再决定 mustKeep 与 shouldKeep。不要把 DataModel 中所有字段都塞进卡片。
-- size 只能是 2x2 或 2x4；若 TaskSpec 未指定或给出非法尺寸，按最接近可用尺寸处理，优先 2x2。
+- 顶层协议只允许 userQuery、size、eventCandidates、dataModelSchema、assetCandidates。
+- TaskSpec 不提供 displayCandidates 或 role；展示内容由你从 userQuery 和 dataModelSchema 中判断。不要把 dataModelSchema 中所有字段都塞进卡片。
+- dataModelSchema 是参考数据结构和动态绑定路径验证来源，不是真实运行时数据。字段节点的 type、description、sampleValue 用于判断展示形态；sampleValue 是渲染默认值，不得让你把动态绑定改写成静态文案。
+- DSL 动态展示值、样式动态值和事件参数绑定路径必须能从 TaskSpec.dataModelSchema、最终 CardSpec、能力 outputSchema 或微服务允许的展示字段中推导。
 - eventCandidates 只是候选事件能力列表，不是按钮、入口、文案、位置或样式说明。只有最终 DSL 组件上才生成 onClick。
 - 如果使用某个事件候选，onClick[].call 和 onClick[].args 必须原样来自 TaskSpec.eventCandidates；不要发明新 call、新 args 字段或新参数值。
 - 多个事件候选时，根据 userQuery 的自然语言意图、候选顺序和参数语义匹配；动作入口不确定时宁可不点击，把动作降级为非误导支撑信息。
-- assetCandidates 是素材约束或已声明素材来源，不是 DSL 组件候选。asset.description 只用于理解内容和适用场景，不要当作必须显示的 UI 文案。
+- assetCandidates 是素材候选白名单，不是 DSL 组件候选。assetCandidates[].description 只用于理解内容、视觉语义和适用场景，不要当作必须显示的 UI 文案。
 
 Surface、尺寸与 root shell：
+- size 只能是 2x2 或 2x4。
 - 2x2 逻辑画布按 140x140vp 预算，内容区约 116x116vp；root borderRadius 18，clip true。
 - 2x4 逻辑画布按 300x140vp 预算，内容区约 276x116vp；root borderRadius 22，clip true。
-- 为兼容当前 TaskSpec 评测输出，createSurface.width/height 与 root.styles.width/height 使用对应基准数值：2x2 为 140/140，2x4 为 300/140。内部布局仍按上述逻辑画布预算计算。
+- createSurface.width/height 与 root.styles.width/height 使用对应基准数值：2x2 为 140/140，2x4 为 300/140。不要写 "matchParent"。
 - root 是唯一卡片 shell，必须承载 width、height、padding、borderRadius、clip 和背景/表面样式；默认 padding 为 12。
 - 背景样式写在 root.styles 或 root 下真实背景组件；不要把 backgroundColor、linearGradient、backgroundImage 写进 createSurface.styles。
 - createSurface 默认只写 surfaceId、catalogId、width、height；不要写 theme。除 createSurface 和 root shell 外，普通组件不得使用 "matchParent" 作为 width/height。
@@ -58,13 +87,13 @@ DataModel 与表达式：
 - updateDataModel.path、CardSpec writeResultTo、模板 children.path 是结构 JSON Pointer，不属于值绑定；模板项内字段读取仍用表达式，例如 "{{ ${name} }}"。
 - 表达式必须是完整字符串；一个字符串中只能有一对 "{{ ... }}"；表达式内字符串使用单引号，内置函数仅使用 size()。
 - id、component、对象 key、EventHandler.call、EventHandler.as、updateDataModel.path、模板 children.path 和整个 styles 对象不能写表达式。
-- 可见表达式引用必须能从 TaskSpec.dataModel.value 或模板当前项推导；无法推导时删除该展示或改用 DataModel 中已有的预计算字段。
+- 可见表达式引用必须能从 TaskSpec.dataModelSchema 的路径或模板当前项推导；无法推导时删除该展示或改用 dataModelSchema 中已有的预计算字段。
 
 事件与点击：
 - Form 只支持 onClick，且 onClick 必须是 EventHandler 数组。
 - 可点击 UI 必须有真实 onClick；没有已声明事件能力时，不要做成按钮、链接或可点击行。
 - 每个 Button 或可点击视觉元素不小于 24vp，优先接近 40vp 热区目标；CTA 文案优先 2-6 个中文字并完整显示。
-- 事件 args 中如果候选已经包含表达式，保持原样；不要复制 schema 的 type、description 等元数据。
+- 事件 args 中如果候选已经包含表达式，保持原样；不要复制 schema 的 type、description、sampleValue 等元数据。
 
 素材与媒体：
 - Image.src 和 styles.backgroundImage 只使用 TaskSpec.assetCandidates 明确声明、用户明确提供、或已声明本地素材库中的资源路径。
@@ -74,10 +103,8 @@ DataModel 与表达式：
 
 颜色与表面：
 - 最终 DSL 颜色只输出 #RRGGBB 或 #AARRGGBB，不输出 token 名、ohos_id_color_*、multi_color_* 或 multi_color_aux_* 字符串。
-- 颜色需能回溯到 HarmonyOS 语义 token、多彩色或合规场景拓展色；无法说明来源和用途时改用中性 token 映射或删除该颜色。
 - 常用 light hex：font_primary #e5000000，font_secondary #99000000，font_tertiary #66000000，font_on_primary #ffffffff，background_primary #ffffffff，background_secondary #fff1f3f5，comp_background_secondary #19000000，comp_background_tertiary #0c000000，comp_divider #33000000，brand #ff0a59f7，confirm #ff64bb5c，warning #ffe84026，alert #ffed6f21。
-- 状态色只服务真实状态；普通提醒或轻建议不要自动用 warning/alert。按钮默认可使用中性或低强调材质，只有确认、连接、拨打、清理、导航、入会等明确动作才使用实色。
-- 2x2 最多一个场景色信号、一个状态/动作信号和中性文字；2x4 最多一个场景色信号、一个中性支撑表面和一个状态/动作信号。
+- 状态色只服务真实状态；普通提醒或轻建议不要自动用 warning/alert。
 - linearGradient 只能是线性渐变，写作 {"direction":"RightBottom","colors":[["#RRGGBB",0],["#RRGGBB",1]]}；不要使用径向装饰、orb、bokeh、无来源手调色或 color-mix。
 
 布局质量：
@@ -96,41 +123,177 @@ ID 与结构：
 - 非模板生成时使用稳定语义 id，例如 surface_card、root、header_row、title_text、primary_value、primary_caption、support_row、action_button、asset_image。
 - updateComponents.root 一般使用 "root"；components 中必须包含 id 为 "root" 的 root 组件。
 - 三行 JSONL 中不要把 surfaceId 放在消息顶层；只放在 createSurface/updateComponents/updateDataModel 对象内。
-
-TaskSpec内容：
-{{TASK_SPEC_JSON}}
-
-请基于上面的 TaskSpec 内容和用户输入，生成一个 ```genui``` 代码块，代码块内严格只有 3 行 JSONL。严格遵循上述契约和规则。
 """
 
 
-def read_task_spec(path: Path) -> str:
+def load_task_spec(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise ValueError(f"input path must be a TaskSpec JSON file: {path}")
+    data = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(data, dict):
+        raise ValueError("TaskSpec must be a JSON object")
+    validate_task_spec(data)
+    return data
 
-    text = path.read_text(encoding="utf-8")
-    spec = json.loads(text)
-    if "schema" in spec or "rulesVersion" in spec:
-        raise ValueError("TaskSpec must not contain top-level 'schema' or 'rulesVersion'")
-    if "task" in spec:
-        raise ValueError("TaskSpec must not contain top-level 'task'")
-    if "card" in spec:
-        raise ValueError("TaskSpec must use top-level 'size', not 'card'")
-    if "intent" in spec or "assets" in spec or "displayCandidates" in spec:
-        raise ValueError("TaskSpec must use size/eventCandidates/dataModel/assetCandidates")
-    if "target" in spec:
-        raise ValueError("TaskSpec must use top-level 'size', not 'target'")
-    for key in ["size", "eventCandidates", "dataModel", "assetCandidates"]:
-        if key not in spec:
-            raise ValueError(f"TaskSpec must contain top-level '{key}'")
-    return text.strip()
 
-def read_user_query(path: Path | None) -> str:
+def validate_task_spec(spec: dict[str, Any]) -> None:
+    extra = sorted(set(spec) - ALLOWED_TOP_LEVEL)
+    if extra:
+        raise ValueError(
+            "TaskSpec contains unsupported top-level field(s): "
+            + ", ".join(repr(key) for key in extra)
+        )
+
+    missing = sorted(ALLOWED_TOP_LEVEL - set(spec))
+    if missing:
+        raise ValueError(
+            "TaskSpec must contain top-level field(s): "
+            + ", ".join(repr(key) for key in missing)
+        )
+
+    if not isinstance(spec["userQuery"], str) or not spec["userQuery"].strip():
+        raise ValueError("TaskSpec.userQuery must be a non-empty string")
+    if spec["size"] not in {"2x2", "2x4"}:
+        raise ValueError("TaskSpec.size must be '2x2' or '2x4'")
+    if not isinstance(spec["dataModelSchema"], dict):
+        raise ValueError("TaskSpec.dataModelSchema must be an object")
+    validate_data_model_schema(spec["dataModelSchema"], "/dataModelSchema")
+    validate_event_candidates(spec["eventCandidates"])
+    validate_asset_candidates(spec["assetCandidates"], spec["dataModelSchema"])
+
+
+def validate_data_model_schema(value: Any, location: str) -> None:
+    if not isinstance(value, dict):
+        raise ValueError(f"{location} must be an object")
+
+    if "sampleValue" in value:
+        for key in ("type", "description", "sampleValue"):
+            if key not in value:
+                raise ValueError(f"{location} field schema must contain {key!r}")
+        if not isinstance(value["type"], str) or not value["type"].strip():
+            raise ValueError(f"{location}.type must be a non-empty string")
+        if not isinstance(value["description"], str) or not value["description"].strip():
+            raise ValueError(f"{location}.description must be a non-empty string")
+        return
+
+    if value.get("type") == "array" and isinstance(value.get("items"), dict):
+        validate_data_model_schema(value["items"], f"{location}/items")
+        return
+    if value.get("type") == "object" and isinstance(value.get("properties"), dict):
+        validate_data_model_schema(value["properties"], f"{location}/properties")
+        return
+    if is_field_schema(value):
+        raise ValueError(f"{location} field schema must contain 'sampleValue'")
+
+    for key, child in value.items():
+        if key in {"properties", "items"} and isinstance(child, dict):
+            validate_data_model_schema(child, f"{location}/{key}")
+        elif isinstance(child, dict):
+            validate_data_model_schema(child, f"{location}/{key}")
+
+
+def is_field_schema(value: dict[str, Any]) -> bool:
+    if "sampleValue" in value:
+        return True
+    if "type" in value and ("description" in value or "properties" in value or "items" in value):
+        return True
+    return False
+
+
+def validate_event_candidates(value: Any) -> None:
+    if not isinstance(value, list):
+        raise ValueError("TaskSpec.eventCandidates must be an array")
+    for index, candidate in enumerate(value):
+        location = f"TaskSpec.eventCandidates[{index}]"
+        if not isinstance(candidate, dict):
+            raise ValueError(f"{location} must be an object")
+        forbidden = sorted(FORBIDDEN_EVENT_FIELDS & set(candidate))
+        if forbidden:
+            raise ValueError(f"{location} contains removed field(s): {', '.join(forbidden)}")
+        call = candidate.get("call")
+        if not isinstance(call, str) or not call.strip():
+            raise ValueError(f"{location}.call must be a non-empty string")
+        args = candidate.get("args", {})
+        if args is not None and not isinstance(args, dict):
+            raise ValueError(f"{location}.args must be an object when present")
+
+
+def validate_asset_candidates(value: Any, data_model_schema: dict[str, Any]) -> None:
+    if not isinstance(value, list):
+        raise ValueError("TaskSpec.assetCandidates must be an array")
+    for index, asset in enumerate(value):
+        location = f"TaskSpec.assetCandidates[{index}]"
+        if not isinstance(asset, dict):
+            raise ValueError(f"{location} must be an object")
+        src = asset.get("src")
+        if not isinstance(src, str) or not src.strip():
+            raise ValueError(f"{location}.src must be a non-empty string")
+        description = asset.get("description")
+        if not isinstance(description, str) or not description.strip():
+            raise ValueError(f"{location}.description must be a non-empty string")
+        bind_to = asset.get("bindTo")
+        if bind_to is not None:
+            if not isinstance(bind_to, str) or not bind_to.startswith("/"):
+                raise ValueError(f"{location}.bindTo must be a JSON Pointer")
+            if read_schema_sample(data_model_schema, bind_to) != src:
+                raise ValueError(f"{location}.bindTo must resolve to the same src in dataModelSchema")
+
+
+def read_schema_sample(schema: Any, pointer: str) -> Any:
+    target = read_pointer(schema, pointer)
+    if isinstance(target, dict) and "sampleValue" in target:
+        return target["sampleValue"]
+    return target
+
+
+def read_pointer(root: Any, pointer: str) -> Any:
+    if pointer in {"", "/"}:
+        return root
+    if not isinstance(pointer, str) or not pointer.startswith("/"):
+        return None
+    current = root
+    for raw_part in pointer.strip("/").split("/"):
+        part = raw_part.replace("~1", "/").replace("~0", "~")
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+        elif isinstance(current, list) and part.isdigit() and int(part) < len(current):
+            current = current[int(part)]
+        else:
+            return None
+    return current
+
+
+def sample_data_model(schema: Any) -> Any:
+    if isinstance(schema, dict):
+        if "sampleValue" in schema:
+            return schema["sampleValue"]
+        if schema.get("type") == "array" and isinstance(schema.get("items"), dict):
+            return [sample_data_model(schema["items"])]
+        if isinstance(schema.get("properties"), dict):
+            return sample_data_model(schema["properties"])
+        result: dict[str, Any] = {}
+        for key, child in schema.items():
+            if key in {"type", "description", "items"}:
+                continue
+            result[key] = sample_data_model(child)
+        return result
+    if isinstance(schema, list):
+        return [sample_data_model(item) for item in schema]
+    return schema
+
+
+def canonical_task_spec_json(spec: dict[str, Any]) -> str:
+    return json.dumps(spec, ensure_ascii=False, indent=2)
+
+
+def read_user_query(path: Path | None, spec: dict[str, Any]) -> str:
     if path is None:
-        return ""
+        return str(spec["userQuery"]).strip()
     if not path.is_file():
         raise ValueError(f"user query path must be a text file: {path}")
-    return path.read_text(encoding="utf-8").strip()
+    text = path.read_text(encoding="utf-8").strip()
+    return text or str(spec["userQuery"]).strip()
+
 
 def read_genui_dsl(path: Path | None) -> str:
     if path is None:
@@ -139,49 +302,69 @@ def read_genui_dsl(path: Path | None) -> str:
         raise ValueError(f"genui DSL path must be a text file: {path}")
     return path.read_text(encoding="utf-8").strip()
 
-def build_content(task_spec_json: str, raw_content: bool) -> str:
-    if raw_content:
-        return task_spec_json
 
-    return (
-        "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。\n"
-        "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。\n"
-        "请从 userQuery 和 dataModel.value 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。\n"
-        "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。\n"
-        "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：\n"
-        "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":\"140或300，按size选择\",\"height\":140}}\n"
-        "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"card\",\"root\":\"root\",\"components\":[...]}}\n"
-        "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"card\",\"path\":\"/\",\"value\":{...}}}\n"
-        "不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。\n\n"
-        f"{task_spec_json}"
-    )
+def build_content(task_spec_json: str, user_query: str, sample_model_json: str) -> str:
+    parts = [
+        "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。",
+        "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。",
+        "请从 userQuery 和 dataModelSchema 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。",
+        "所有动态展示绑定路径必须能从 dataModelSchema 推导",
+        "updateDataModel.value 请使用 dataModelSchema.sampleValue 按路径结构构造默认渲染数据，参考样例如下：",
+        sample_model_json,
+        "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。",
+        "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：",
+        '{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140或300,"height":140}}',
+        '{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[...]}}',
+        '{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{...}}}',
+        "不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。",
+    ]
+    if user_query:
+        parts.extend(["", "原始用户输入：", user_query])
+    parts.extend(["", "TaskSpec JSON：", task_spec_json])
+    return "\n".join(parts)
 
 
-def build_request(task_spec_json: str, user_query: str, genui_dsl: str) -> dict:
-    return {
-        "messages": [
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT.replace("{{TASK_SPEC_JSON}}", task_spec_json),
-            },
-            {
-                "role": "user",
-                "content": user_query,
-            },
+def build_request(
+    spec: dict[str, Any],
+    user_query: str,
+    genui_dsl: str,
+    model: str,
+) -> dict[str, Any]:
+    task_spec_json = canonical_task_spec_json(spec)
+    sample_model_json = json.dumps(sample_data_model(spec["dataModelSchema"]), ensure_ascii=False, indent=2)
+    messages: list[dict[str, str]] = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        },
+        {
+            "role": "user",
+            "content": build_content(task_spec_json, user_query, sample_model_json),
+        },
+    ]
+    if genui_dsl:
+        messages.append(
             {
                 "role": "assistant",
-                "content": "<think>\n\n</think>\n\n" + genui_dsl,
-            },
-        ],
-    }
+                "content": ensure_genui_fence(genui_dsl),
+            }
+        )
+    return {"messages": messages}
 
 
-def write_json(path: Path, payload: dict | str) -> None:
+def ensure_genui_fence(genui_dsl: str) -> str:
+    stripped = genui_dsl.strip()
+    if stripped.startswith("```"):
+        return stripped
+    return "```genui\n" + stripped + "\n```"
+
+
+def write_json(path: Path, payload: dict[str, Any] | str) -> None:
     if isinstance(payload, str):
         text = payload
     else:
-        text = json.dumps(payload, ensure_ascii=False, indent=2)
-    path.write_text(text, encoding="utf-8")
+        text = json.dumps(payload, ensure_ascii=False)
+    path.write_text(text + ("\n" if not text.endswith("\n") else ""), encoding="utf-8")
 
 
 def invoke_with_curl(endpoint: str, request_path: Path) -> str:
@@ -219,13 +402,18 @@ def parse_args() -> argparse.Namespace:
         "-q",
         "--query",
         type=Path,
-        help="Path to a text file containing the user query. If not provided, the userQuery field in the TaskSpec will be used.",
+        help="Path to a text file containing the original user query. Defaults to TaskSpec.userQuery.",
     )
     parser.add_argument(
         "-d",
         "--genui_dsl",
         type=Path,
-        help="Path to a text file containing the Genui DSL. If not provided, the genuiDsl field in the TaskSpec will be used.",
+        help="Optional path to a GenUI DSL answer. When provided, it is appended as an assistant message.",
+    )
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        help=f"Chat completions model name. Default: {DEFAULT_MODEL}.",
     )
     return parser.parse_args()
 
@@ -234,10 +422,10 @@ def main() -> int:
     args = parse_args()
 
     try:
-        task_spec_json = read_task_spec(args.input_path)
-        user_query = read_user_query(args.query)
+        spec = load_task_spec(args.input_path)
+        user_query = read_user_query(args.query, spec)
         genui_dsl = read_genui_dsl(args.genui_dsl)
-        request_payload = build_request(task_spec_json, user_query, genui_dsl)
+        request_payload = build_request(spec, user_query, genui_dsl, args.model)
 
         if args.output:
             write_json(args.output, request_payload)

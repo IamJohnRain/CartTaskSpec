@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-007",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图中可见'等车中'标题、'已接单'状态、大号'8'+'分钟'等候时长、'约等候'说明、右侧天气胶囊显示'小雨/23°C/已连上'，底部绿色'打司机电话'按钮齐全。onClick 使用了 eventCandidates 中的 clickToCallPhone，参数通过 {{/data/taxi/driver/phoneNumber}} 从 DataModel 读取，符合'打司机电话能通'的诉求。size=2x2、root 140x140、borderRadius 18、clip true、catalogId 与 version 均符合协议硬约束。轻微扣分点：'已连上'提示字号过小(10pt)，'看天气连上就显示'的状态可见性偏弱。",
+    "aesthetic": "截图整体配色协调：蓝色渐变背景从深蓝过渡到浅蓝，白色文字清晰可读，绿色 CTA 按钮与蓝色背景形成强对比，突出可点击性。右侧天气胶囊的半透明白色背景做出'玻璃卡'质感，层次分明。字号层级有梯度(40/14/12/10)，主指标'8'为最强字重。不足之处：天气胶囊三行文字密度较高，行间留白偏小；'8'与'分钟'贴得过近，缺少呼吸感。",
+    "layout": "截图显示内容在 2x2 卡片内基本可容纳，未出现元素溢出卡片边界或被裁切的情况。标题'等车中'与状态'已接单'左右分置，主行'8 分钟/约等候'与天气胶囊并列，底部按钮居中。问题点：wait_row 高 38 容纳 fontSize 40 的'8'，'8'字顶部已贴近该行上沿，与右侧'分钟'视觉上几乎贴合；右侧天气胶囊宽 50 内塞入 3 行文字，行距仅 2vp，整体偏拥挤；'已连上'文字宽度 38 但内容更短，留白不均。底部按钮距卡片底约 10vp，符合规范。"
+  },
+  "issues": [
+    "wait_row 高度 38 容纳 fontSize 40 的'8'，数字顶部紧贴行上沿，与'分钟'之间间距偏小（itemMargin=2）",
+    "天气胶囊宽度 50 内容三行，行间距仅 2vp，'小雨/23°C/已连上'密度过高",
+    "'已连上'连接状态提示字号 10pt 偏小，作为关键状态指示可读性略弱",
+    "'分钟'单位与'8'字视觉上几乎相连，缺少呼吸空间",
+    "title_text 宽度 48 实际'等车中'三字更窄，存在少量无效留白（轻微）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"call_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#467794\",0],[\"#46b1e3\",0.58],[\"#86c5e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_text\"],\"itemMargin\":10,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"等车中\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/taxi/statusText} }}\",\"styles\":{\"width\":48,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"wait_group\",\"weather_card\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"wait_group\",\"component\":\"Column\",\"children\":[\"wait_row\",\"wait_caption\"],\"itemMargin\":2,\"styles\":{\"width\":58,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"wait_row\",\"component\":\"Row\",\"children\":[\"wait_number\",\"wait_unit\"],\"itemMargin\":4,\"styles\":{\"width\":58,\"height\":38,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"wait_number\",\"component\":\"Text\",\"content\":\"{{ ${/data/taxi/wait/minutesText} }}\",\"styles\":{\"width\":28,\"height\":38,\"fontSize\":36,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"wait_unit\",\"component\":\"Text\",\"content\":\"分钟\",\"styles\":{\"width\":26,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"wait_caption\",\"component\":\"Text\",\"content\":\"约等候\",\"styles\":{\"width\":58,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_card\",\"component\":\"Column\",\"children\":[\"weather_label\",\"weather_temp\",\"weather_hint\"],\"itemMargin\":3,\"styles\":{\"width\":52,\"height\":54,\"padding\":5,\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":42,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":42,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"weather_hint\",\"component\":\"Text\",\"content\":\"已连上\",\"styles\":{\"width\":42,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffd9b3\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"打司机电话\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/data/taxi/driver/phoneNumber} }}\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"taxi\":{\"statusText\":\"已接单\",\"wait\":{\"minutesText\":\"8\"},\"driver\":{\"phoneNumber\":\"13800138000\"}},\"weather\":{\"current\":{\"condition\":\"小雨\",\"temperatureText\":\"23°C\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

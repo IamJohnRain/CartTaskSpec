@@ -1,0 +1,105 @@
+{
+  "userQuery": "整一个,显示喝水量,点开跳app,能读日历,快超时提醒一下",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "hydration": {
+        "currentMl": {
+          "type": "number",
+          "description": "今日已饮水量，单位毫升，用于饮水进度展示。",
+          "sampleValue": 1250
+        },
+        "targetMl": {
+          "type": "number",
+          "description": "今日饮水目标，单位毫升，用于饮水进度总量。",
+          "sampleValue": 2000
+        },
+        "amountText": {
+          "type": "string",
+          "description": "今日已饮水量的可读展示文本。",
+          "sampleValue": "1250ml"
+        },
+        "targetText": {
+          "type": "string",
+          "description": "今日饮水目标的短文本。",
+          "sampleValue": "目标 2000ml"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天与喝水吃药提醒相关的日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-medicine-001",
+              "title": "服药提醒",
+              "dtStart": "21:20",
+              "dtEnd": "21:30",
+              "remindTime": [
+                "10分钟后"
+              ]
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识符。",
+                "sampleValue": "calendar-demo-medicine-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题。",
+                "sampleValue": "服药提醒"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历事件开始时间，今天事件使用 HH:MM。",
+                "sampleValue": "21:20"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日历事件结束时间，今天事件使用 HH:MM。",
+                "sampleValue": "21:30"
+              },
+              "remindTime": {
+                "type": "array",
+                "description": "日历事件提醒时间文本列表。",
+                "sampleValue": [
+                  "10分钟后"
+                ],
+                "items": {
+                  "type": "string",
+                  "description": "单条提醒时间文本。",
+                  "sampleValue": "10分钟后"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标，适合表示饮水提醒和喝水量。"
+    },
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "闹钟图标，适合表示快超时提醒和定时提醒入口。"
+    }
+  ]
+}

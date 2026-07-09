@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-sleep-004",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求'整个睡眠卡片 2x2'、'主图那种'、'点一下能跳到app里'、'要显示已连接'，四项诉求均在截图中得到落实：截图为 2x2（140×140）紫色渐变卡片、居中显示月亮 + Z 主视觉、整卡 onClick 绑定 clickToDeeplink 到 huaweischeme://healthapp/router/sleepDetail（事件原样来自 eventCandidates）、底部明确展示'已连接'。catalogId/version/updateDataModel.path/assetCandidates 等硬约束全部满足，仅'已连接'没有绿色对点等连接态视觉强化，属于指令语义覆盖完整。",
+    "aesthetic": "截图整体观感克制专业：黑→紫→淡紫的对角线渐变与白色月亮图标对比度强、主体突出；'睡眠'加粗白字与半透明白色 pill'已连接'层级清晰。但'已连接'状态 pill 颜色为 #19ffffff 偏淡，与渐变紫色背景区分度有限，作为'已连接'这一状态指示器视觉权重偏弱，缺少常见的状态色（如绿色对点）来强化'连接中'语义，因此美感略打折扣。",
+    "layout": "截图无任何堆叠/截断/溢出：月亮图标 64×64 居上、'睡眠'16px 粗体居中、'已连接' pill 居底，三者在 116×116 内容区内纵向合计 64+8+44=116 恰好填满，底部留白约 12vp 在合理区间；左右对称居中、文字无换行/省略号、pill 内部 '已连接' 完整可读；整卡未越出 140×140 边界，clip:18 圆角干净。唯一可挑剔处是状态 pill 距卡片下沿偏近，视觉上略压底，可微调以增加呼吸感。"
+  },
+  "issues": [
+    "状态 pill 背景色 #19ffffff 在紫色渐变上对比度偏弱，'已连接' 状态指示视觉权重不足",
+    "状态 pill 紧贴卡片底部，缺少呼吸感，建议底部预留 ≥14vp 留白",
+    "未使用任何连接态视觉强化（如绿色对点、状态点），'已连接' 仅靠文字传达"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_image\",\"title_text\",\"status_pill\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"left\":12,\"right\":12,\"top\":14,\"bottom\":16},\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#564af7\",0.62],[\"#8c55c2\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_sleep.png\",\"styles\":{\"width\":56,\"height\":56,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/title} }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":78,\"height\":22,\"padding\":{\"left\":12,\"right\":12},\"borderRadius\":11,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/connectionStatus} }}\",\"styles\":{\"width\":54,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠\",\"connectionStatus\":\"已连接\"}}}}"
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "userQuery": "睡眠卡片深色风格，从上往下纵向堆叠：标题\"今晚睡眠计划\"、目标睡眠时间、当前时间、最佳入睡时间。中间一个仪表盘环形显示今日睡眠得分，横向排几个睡眠阶段图标+数字（深睡、浅睡、REM、清醒）。读日历看看明天有没有早八，有就提醒早睡。底部按钮跳系统设置关掉那些费电的APP。深蓝到紫色夜晚渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "sleep": {
+      "title": {
+        "type": "string",
+        "description": "睡眠计划卡片标题",
+        "sampleValue": "今晚睡眠计划"
+      },
+      "targetTime": {
+        "type": "string",
+        "description": "目标睡眠时间展示文本",
+        "sampleValue": "23:00"
+      },
+      "currentTime": {
+        "type": "string",
+        "description": "当前时间展示文本",
+        "sampleValue": "21:42"
+      },
+      "bestBedTime": {
+        "type": "string",
+        "description": "推荐的最佳入睡时间展示文本",
+        "sampleValue": "22:30"
+      },
+      "score": {
+        "value": {
+          "type": "number",
+          "description": "今日睡眠得分数值",
+          "sampleValue": 86
+        },
+        "total": {
+          "type": "number",
+          "description": "睡眠得分总分",
+          "sampleValue": 100
+        },
+        "text": {
+          "type": "string",
+          "description": "今日睡眠得分展示文本",
+          "sampleValue": "86分"
+        },
+        "caption": {
+          "type": "string",
+          "description": "睡眠得分短标签",
+          "sampleValue": "今日得分"
+        }
+      },
+      "stageDeep": {
+        "type": "string",
+        "description": "深睡阶段时长展示文本",
+        "sampleValue": "深睡 1.8h"
+      },
+      "stageLight": {
+        "type": "string",
+        "description": "浅睡阶段时长展示文本",
+        "sampleValue": "浅睡 4.2h"
+      },
+      "stageRem": {
+        "type": "string",
+        "description": "REM 阶段时长展示文本",
+        "sampleValue": "REM 1.1h"
+      },
+      "stageAwake": {
+        "type": "string",
+        "description": "清醒阶段时长展示文本",
+        "sampleValue": "清醒 0.3h"
+      },
+      "reminderText": {
+        "type": "string",
+        "description": "结合明天日历早八情况生成的早睡提醒",
+        "sampleValue": "明早08:00早八，建议22:30睡"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "进入系统电池设置的按钮文案",
+        "sampleValue": "去电池设置"
+      }
+    },
+    "assets": {
+      "deepIcon": {
+        "type": "string",
+        "description": "深睡阶段睡眠图标素材路径",
+        "sampleValue": "resources/base/media/icon_sleep.png"
+      },
+      "lightIcon": {
+        "type": "string",
+        "description": "浅睡阶段提醒图标素材路径",
+        "sampleValue": "resources/base/media/icon_remind.png"
+      },
+      "remIcon": {
+        "type": "string",
+        "description": "REM 阶段闹钟图标素材路径",
+        "sampleValue": "resources/base/media/icon_alarm_clock1.png"
+      },
+      "awakeIcon": {
+        "type": "string",
+        "description": "清醒阶段计时图标素材路径",
+        "sampleValue": "resources/base/media/icon_timing.png"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "明日早八日程唯一标识符",
+              "sampleValue": "calendar-early-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "明日早八日程标题",
+              "sampleValue": "早八高数"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "明日早八开始时间",
+              "sampleValue": "08:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "明日早八结束时间",
+              "sampleValue": "09:40"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_sleep.png",
+      "description": "睡眠图标，适合表示深睡阶段或睡眠监督状态。",
+      "bindTo": "/assets/deepIcon"
+    },
+    {
+      "src": "resources/base/media/icon_remind.png",
+      "description": "提醒图标，适合表示浅睡阶段或早睡提醒。",
+      "bindTo": "/assets/lightIcon"
+    },
+    {
+      "src": "resources/base/media/icon_alarm_clock1.png",
+      "description": "闹钟图标，适合表示 REM、起床或睡眠监督相关时间点。",
+      "bindTo": "/assets/remIcon"
+    },
+    {
+      "src": "resources/base/media/icon_timing.png",
+      "description": "计时图标，适合表示清醒时长或阶段计时。",
+      "bindTo": "/assets/awakeIcon"
+    }
+  ]
+}

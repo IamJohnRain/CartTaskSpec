@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-16-travel-ticket-009",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户四项诉求在截图中均可见：倒计时数字'45分'居中显示（数据绑定 remindTime）；点击'改签'按钮触发 clickToIntent 事件，args 原样使用 eventCandidates；'严重延误'在顶部以偏红/橙红色显示作警告；size=2x2、catalogId/version/updateDataModel 等协议硬约束均合规。轻微扣分点是状态文字颜色 #ffed6f21 偏橙红而非纯红，对'红字警告'的语义还原可以更纯粹。",
+    "aesthetic": "截图整体观感干净专业：橙黄到白色的线性渐变与延误/警示主题契合；黑色大号'45分'与橙红状态、蓝白按钮形成清晰对比；字号/字重层级分明（40>12>14），且只有一个最强字重 700 落在主数值上，CTA 用 medium 区分合理。状态文字在浅橙底上虽可读，但红度略显不足，警示感可以再加强一档。",
+    "layout": "截图无可见堆叠/截断/溢出：header_row(20)+gap(8)+primary_value(48)+gap(8)+action_button(32)=116，恰好等于内容区 116；图标与状态文字水平居中，'45分'完整居中，'改签'按钮底部到卡片底边约 12vp，符合 2x2 8-12vp 区间；按钮热区 32vp 满足 ≥24vp 需求；卡片圆角与 clip 正常生效。整体布局干净。"
+  },
+  "issues": [
+    "状态文字颜色 #ffed6f21 偏橙红，对'红字警告'的语义可再纯化（如 #ffdc2626）以强化警示感",
+    "header_row 内部 status_text 写 textAlign:start 但父 Row 居中，两者无冲突但容易让人误解，居中对齐更一致",
+    "卡片下半部分渐变趋于纯白，警示氛围在中下部略有稀释，可考虑将渐变终点改为更暖的浅橙"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#f9bc64\",0],[\"#fffbe6cf\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"status_icon\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/airplane_departure.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffdc2626\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} + '分' }}\",\"styles\":{\"width\":116,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"改签\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":88,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"flight-delay-demo-001\",\"description\":\"严重延误\",\"remindTime\":[\"45\"]}]}}}}}"
+  ]
+}

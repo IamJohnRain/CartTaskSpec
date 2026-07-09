@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-08-sleep-003",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户明确要求做一份睡眠问卷、能勾选、点进入设置、睡眠不好显示红色警告。截图中：标题\"睡眠问卷\"正确呈现，红色\"睡眠不好\"警示徽章也正确出现，底部\"打开设置\"按钮及 clickToDeeplink 事件已落实，睡眠图标也按 assetCandidates 使用。但核心诉求\"能打勾选的问卷项\"在截图中两个 Checkbox 的 label（\"入睡难\"、\"夜醒多\"）完全没有显示出来，仅能看到一个橙色方框加白色对勾以及一段省略号\"…\"，等用户无法判断自己在勾什么，这是关键信息缺失。同时 primaryHint\"需关注\"虽在 DSL 中绑定，但截图中位置挤在月亮图标下方也显得多余。综合：标题/警告/设置/事件/素材 5 项达标，1 项核心内容缺失，扣 4.5 分。",
+    "aesthetic": "紫色到品红的对角渐变背景观感尚可，前景白色文字与背景对比清晰，红色徽章色彩对比强烈、警示感足够。整体留白密度尚可。但勾选行只显示橙色方块加省略号\"…\"，破坏卡片的信息完整性和专业感；月亮图标下方的\"需关注\"小字与图标共占 58px 高的色块略显拥挤。整体不丑但有明显不完整感，给 6.0。",
+    "layout": "截图中最关键的问题是 Checkbox 的 label \"入睡难\"、\"夜醒多\" 都被截断显示为\"…\"，这是布局溢出导致的可见截断。受影响的 Checkbox 容器宽 64，内部 mark 14 + 控件内边距 + 文字宽度合计已超出可用空间，label 段被强制省略。其次 body_row 高度 58，sleep_focus 48×58 内放 36×36 图标和 48×14 \"需关注\"文字，纵向用尽且与右侧 check_column 留白不平衡。其余部分（标题区、底部设置按钮）均未越界，底部动作区底边到卡片底边在 12vp 范围内。综合：1 处严重文字截断，给 5.0。"
+  },
+  "issues": [
+    "Checkbox 的 label 文案\"入睡难\"、\"夜醒多\" 在截图中显示为省略号\"…\"，核心问卷项标签不可见",
+    "check_column 宽度仅 64，对 Checkbox 内部 mark+padding+label 不够，造成 label 被裁断",
+    "sleep_focus 中 36×36 图标 + 12pt \"需关注\" 占用 48×58，纵向与右侧勾选区不均衡，信息冗余",
+    "原 DSL 中 body_row itemMargin=4 较为拥挤，sleep_focus 与 check_column 之间缺少呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\",\"settings_entry\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#ac49f5\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"alert_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleepQuestionnaire/title} }}\",\"styles\":{\"width\":56,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/sleepQuestionnaire/statusLabel} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":9}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"sleep_focus\",\"check_column\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":60,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"sleep_focus\",\"component\":\"Column\",\"children\":[\"sleep_icon\",\"primary_hint\"],\"itemMargin\":2,\"styles\":{\"width\":30,\"height\":60,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"sleep_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_sleep.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"primary_hint\",\"component\":\"Text\",\"content\":\"{{ ${/sleepQuestionnaire/primaryHint} }}\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"check_column\",\"component\":\"Column\",\"children\":[\"check_item_1\",\"check_item_2\"],\"itemMargin\":4,\"styles\":{\"width\":80,\"height\":60,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"check_item_1\",\"component\":\"Checkbox\",\"label\":\"{{ ${/sleepQuestionnaire/item1Label} }}\",\"value\":\"sleep_item_1\",\"group\":\"sleep_survey\",\"select\":\"{{ ${/sleepQuestionnaire/item1Selected} }}\",\"styles\":{\"width\":80,\"height\":24,\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"check_item_2\",\"component\":\"Checkbox\",\"label\":\"{{ ${/sleepQuestionnaire/item2Label} }}\",\"value\":\"sleep_item_2\",\"group\":\"sleep_survey\",\"select\":\"{{ ${/sleepQuestionnaire/item2Selected} }}\",\"styles\":{\"width\":80,\"height\":24,\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":14,\"strokeWidth\":2}}},{\"id\":\"settings_entry\",\"component\":\"Row\",\"children\":[\"settings_text\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":116,\"height\":24,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"settings_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleepQuestionnaire/actionLabel} }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"sleepQuestionnaire\":{\"title\":\"睡眠问卷\",\"statusLabel\":\"睡眠不好\",\"primaryHint\":\"需关注\",\"item1Label\":\"入睡难\",\"item1Selected\":true,\"item2Label\":\"夜醒多\",\"item2Selected\":true,\"actionLabel\":\"打开设置\"}}}}"
+  ]
+}

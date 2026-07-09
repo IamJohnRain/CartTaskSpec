@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-30-pet-feeder-020",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.7,
+  "reasons": {
+    "instruction": "用户要求的核心信息大部分已落实：左侧白色块放置宠物🐶做主视觉、浅粉底色+夜晚蓝渐变细节（截图右下角可见蓝紫色渐变）、右侧Divider分两块、上面绿色'今日三顿/已全部完成/✓✓✓'、下面Checkbox'加餐 50g'+Button'播放轻音乐歌单'且onClick使用正确的clickToDeeplink事件。但截图中Checkbox的label'加餐 50g'被严重截断为'加...'，属于用户明确点名要显示的字段被裁切，是关键诉求缺失；此外左侧白色块呈细长胶囊形而非'大块'视觉，宠物字符也没有以更大字号作为主视觉。size=2x2、catalogId、version、updateDataModel等硬约束均满足。",
+    "aesthetic": "整体配色温暖（粉底+蓝紫渐变+绿色状态+蓝色CTA按钮）观感尚可，夜间蓝渐变细节在右下角清晰可见，文字在粉色背景上可读性合格。但截图存在明显美观问题：1) 左侧白色块因宽38高116+borderRadius 16呈细长胶囊形，宠物🐶与'喂食'文字上下间距过大，中间留白空洞，不符合'大块主视觉'的预期；2) Checkbox标签'加餐 50g'被截断为'加...'，影响专业感；3) 右栏上下两块对齐方式不一致（状态块左对齐、动作块居中），视觉上不够统一。",
+    "layout": "截图中可观察到的主要排版问题：1) Checkbox标签'加餐 50g'被截断显示为'加...'，这是最严重的溢出/截断问题——CheckBox未指定label fontSize，渲染时按默认较大字号导致文字宽度超出69px的可用空间；2) 左侧hero_column宽38px、高116px，content仅60px居中放置，上下各留约28px空白，白色块呈胶囊状而非'大块'；3) 右栏status_column左对齐与action_column居中对齐不一致；4) 总体无元素堆叠重叠、按钮和状态文字未溢出，仅Checkbox label被截断——属于单点严重溢出+对齐不一致，扣中等分。"
+  },
+  "issues": [
+    "Checkbox标签'加餐 50g'被截断为'加...'，是用户明确要求显示的字段",
+    "左侧hero_column宽38px+高116px+borderRadius 16呈细长胶囊形，不符合'大块主视觉'",
+    "hero_column内宠物字符与标签之间留白过大（约56px），视觉空洞",
+    "右栏status_column左对齐与action_column居中对齐不一致",
+    "宠物字符🐶字号32偏小，未能成为视觉焦点"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_column\",\"main_divider\",\"right_column\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#e67c92\",0.72],[\"#564af7\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_column\",\"component\":\"Column\",\"children\":[\"pet_glyph\",\"pet_label\"],\"itemMargin\":6,\"styles\":{\"width\":40,\"height\":116,\"borderRadius\":10,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"pet_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/petGlyph} }}\",\"styles\":{\"width\":40,\"height\":52,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e64566\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"pet_label\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/petLabel} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":116,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"right_column\",\"component\":\"Column\",\"children\":[\"status_column\",\"section_divider\",\"action_column\"],\"itemMargin\":4,\"styles\":{\"width\":67,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_column\",\"component\":\"Column\",\"children\":[\"status_line1\",\"status_line2\",\"status_marks\"],\"itemMargin\":2,\"styles\":{\"width\":67,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_line1\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/statusLine1} }}\",\"styles\":{\"width\":67,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_line2\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/statusLine2} }}\",\"styles\":{\"width\":67,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#64bb5c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_marks\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/statusMarks} }}\",\"styles\":{\"width\":67,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#64bb5c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"section_divider\",\"component\":\"Divider\",\"styles\":{\"width\":67,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33000000\"}},{\"id\":\"action_column\",\"component\":\"Column\",\"children\":[\"snack_checkbox\",\"music_button\"],\"itemMargin\":4,\"styles\":{\"width\":67,\"height\":59,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"snack_checkbox\",\"component\":\"Checkbox\",\"label\":\"{{ ${/feeding/snackLabel} }}\",\"value\":\"snack_50g\",\"group\":\"feeding_extra\",\"select\":\"{{ ${/feeding/snackSelected} }}\",\"styles\":{\"width\":67,\"height\":18,\"fontSize\":10,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\"}},{\"id\":\"music_button\",\"component\":\"Column\",\"children\":[\"music_button_line1\",\"music_button_line2\"],\"itemMargin\":0,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":67,\"height\":36,\"borderRadius\":18,\"backgroundColor\":\"#0a59f7\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"music_button_line1\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/musicButtonLine1} }}\",\"styles\":{\"width\":67,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"music_button_line2\",\"component\":\"Text\",\"content\":\"{{ ${/feeding/musicButtonLine2} }}\",\"styles\":{\"width\":67,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"feeding\":{\"petGlyph\":\"🐶\",\"petLabel\":\"喂食\",\"statusLine1\":\"今日三顿\",\"statusLine2\":\"已全部完成\",\"statusMarks\":\"✓✓✓\",\"snackLabel\":\"加餐 50g\",\"snackSelected\":true,\"musicButtonLine1\":\"播放轻\",\"musicButtonLine2\":\"音乐歌单\"}}}}"
+  ]
+}

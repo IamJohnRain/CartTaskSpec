@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-27-utility-bill-014",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "截图中可见：红色渐变主题底色已落实、左侧⚡主视觉存在、'欠费128.5元'动态文本、分隔线、'距离缴费截止还有3天'动态话术、日程'20:00'读取、'轻音乐'按钮均齐全，按钮 onClick 正确使用 eventCandidates 中的 clickToDeeplink 与 hwmusic uri。尺寸 2x2（140x140）、catalogId/version/updateDataModel 协议合规。扣分点：'欠费128.5元'字重虽为700但相对卡片尺寸仍偏小，'大字'诉求不够突出；闪电图标外白底容器为 40x116 的细长药丸，与图标不成比例，削弱了'大号主视觉'的力度。",
+    "aesthetic": "红粉到橙的对角渐变和谐、按钮白底红字对比清晰。但截图中最显眼的美观问题是：左侧白底药丸被拉得又高又窄（40x116），闪电图标在白底中显得孤零零，下方大片空白明显。右下方'日程 20:00'使用 #99ffffff 的低对比色，在红色背景上几乎看不清。次级文本与图标容器之间的层级关系混乱，缺少最克制的视觉聚焦。",
+    "layout": "截图中最关键的排版问题是：右侧内容列宽度仅 68px，导致受保护的固定话术'距离缴费截止还有3天'被强制换行为两行（'距离缴费截止' / '还有3天'），信息传达节奏被打断，CTA 之前的紧迫感被削弱。左侧 icon_box 为 40x116 细长药丸，bolt 图标 32x32 居中后上下留白巨大、视觉上极不平衡。content_col 纵向堆叠 5 项（34+1+24+12+32+4×2=115h）几乎贴满 116h，无任何呼吸空间。"
+  },
+  "issues": [
+    "右侧'距离缴费截止还有3天'在 68px 宽列中被换行成两行，受保护文本被截断换行",
+    "左侧白色药丸 40x116 过高，与 32x32 闪电图标比例严重失调，产生大块空白",
+    "icon_box 与 content_col 高度都被迫拉满 116h，挤占分隔线、deadline、calendar 的可读性",
+    "'日程 20:00' 使用 #99ffffff 低对比度，在红色渐变上几乎不可读",
+    "主视觉闪电图标相对卡片而言体积偏小，'大号⚡主视觉'诉求被白底容器稀释"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"divider_line\",\"deadline_text\",\"calendar_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#e64566\",0],[\"#ed6f21\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_box\",\"primary_value\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":40,\"alignItems\":\"center\"}},{\"id\":\"icon_box\",\"component\":\"Stack\",\"children\":[\"bolt_icon\"],\"styles\":{\"width\":40,\"height\":40,\"borderRadius\":12,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"bolt_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bolt_fill.svg\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ '欠费' + ${/data/utilityBill/amountText} }}\",\"styles\":{\"width\":68,\"height\":38,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textAlign\":\"start\",\"lineHeight\":18}},{\"id\":\"divider_line\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#99ffffff\"}},{\"id\":\"deadline_text\",\"component\":\"Text\",\"content\":\"{{ '距离缴费截止还有' + ${/data/utilityBill/daysRemainingText} + '天' }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ '日程 ' + ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#dde2ff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"轻音乐\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412\"}}],\"styles\":{\"width\":76,\"height\":26,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#e64566\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"utilityBill\":{\"amountText\":\"128.5元\",\"daysRemainingText\":\"3\"},\"calendar\":{\"items\":[{\"entityId\":\"calendar-sample-001\",\"title\":\"晚间轻松安排\",\"dtStart\":\"20:00\",\"dtEnd\":\"20:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-003",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.0,
+  "reasons": {
+    "instruction": "截图中可清晰看到标题'青菜菜价'、主价格'¥3.28'、单位'/斤'、趋势'较昨日-0.22'、状态'已支付'以及底部绿色'付款'按钮，所有六个数据模型字段均通过表达式绑定到 UI 上呈现，数字会随 DataModel 变化。Button 的 onClick 正确引用了 eventCandidates 中唯一的 clickToDeeplink 事件，args 与契约完全一致。createSurface 的 catalogId/size/version、root 的尺寸/圆角/clip、updateDataModel 的 path='/' 与 value 全部符合协议。轻微扣分点：初始数据中 statusText='已支付' 与按钮 label='付款' 同时显示存在语义矛盾（已支付状态下仍展示付款入口），这是数据样本值带来的语义瑕疵，非协议违规。",
+    "aesthetic": "截图整体观感干净专业：深色标题与巨大价格字形成清晰的信息层级，'/斤'与'较昨日-0.22'作为次级灰度信息排布合理，绿色 CTA 按钮在橙色渐变背景上识别度高、对白色文字对比度好。轻微扣分点：1) 底部橙色渐变饱和度偏高，过渡略生硬，略显'菜场广告牌'气质；2) 状态文字'已支付'(#ff64bb5c) 与按钮底色使用同一绿色，视觉上形成轻微重复，削弱了'已支付'作为状态徽章的独立性；3) 价格 32pt 与趋势 10pt 之间的字号跨度略大，但层级清晰故不扣重。",
+    "layout": "截图中所有元素均落在卡片边界内，无任何堆叠、遮挡或文字截断现象。Column 总占用 = 12(顶 padding) + 18(标题) + 4 + 40(价格行) + 4 + 14(辅助行) + 4 + 32(按钮) + 12(底 padding) = 140，与卡片高度完全吻合，无溢出。价格行 primary_value(90) + itemMargin(4) + unit_text(22) = 116，辅助行 trend_text(68) + itemMargin(8) + status_text(40) = 116，均与可用宽度严格对齐。Button 高 32、宽 116，热区充足；底边距卡片底约 12vp，符合 2x2 规范。'/斤' 借助 alignItems:'bottom' 与价格基线对齐，未出现浮空或错位。"
+  },
+  "issues": [
+    "初始数据中 statusText='已支付' 与按钮 label='付款' 同时出现，存在轻微语义矛盾（受限于协议无 If 组件无法做条件渲染）",
+    "状态文字绿色 (#ff64bb5c) 与 CTA 按钮底色完全相同，视觉层级略有重复",
+    "底部橙色渐变饱和度偏高、过渡略硬，整体气质偏'菜场广告'而非克制专业"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"price_row\",\"support_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#fffafbfc\",0],[\"#ffe7c4\",1]]},\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/market/itemName} + '菜价' }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"price_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"unit_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":40,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/market/priceText} }}\",\"styles\":{\"width\":90,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"unit_text\",\"component\":\"Text\",\"content\":\"{{ ${/market/unitText} }}\",\"styles\":{\"width\":22,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"support_row\",\"component\":\"Row\",\"children\":[\"trend_text\",\"status_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"trend_text\",\"component\":\"Text\",\"content\":\"{{ ${/market/trendText} }}\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/payment/statusText} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff3d8b40\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/payment/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"veggiepay://checkout?sku=greens-001\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"market\":{\"itemName\":\"青菜\",\"priceText\":\"¥3.28\",\"unitText\":\"/斤\",\"trendText\":\"较昨日-0.22\"},\"payment\":{\"statusText\":\"已支付\",\"actionLabel\":\"付款\"}}}}"
+  ]
+}

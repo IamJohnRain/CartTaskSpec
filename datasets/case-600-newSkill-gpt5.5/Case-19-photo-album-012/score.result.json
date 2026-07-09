@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-19-photo-album-012",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图中可见三组面板纵向排列，分别使用黄(#F5DC62)、青绿(#92D6CC)、浅蓝(#86C5E3)三种色块，整体卡片使用深紫到靛蓝渐变背景，呼应用户'夜晚从深紫到靛蓝'的诉求；每个面板左侧放置勾选框、第二组正确呈现勾选状态(✓)、右侧显示重复组信息(8/3 公园 3张相似、8/5 海边 6张相似、8/9 聚餐12张)；第三组右侧红色'待处理'胶囊徽章(>10张规则)清晰可见；底部固定'自动整理 还有7天'白字与绿色'联系客服'按钮同行，拨打电话事件 clickToCallPhone/950800 已按 eventCandidates 落实。'紫'色通过卡片背景体现，黄绿蓝紫四色全部到位。信息绑定的 DataModel 路径与 TaskSpec schema 完全一致。轻微不足：用户原意'哪一组重复超过10张就用红色标待处理'，对前两组未做风险判定只对第三组显示，逻辑正确；面板未做悬停/可点击整体反馈(仅勾选框交互)，扣 0.5 分。",
+    "aesthetic": "截图整体配色和谐：深紫渐变背景沉稳，三色面板(黄/青绿/浅蓝)形成清爽的待办清单感，红色'待处理'徽章与白字对比强烈、警示作用到位；绿色 CTA 按钮在深紫底色上跳出度高。文字基本可读：面板上深色文字在亮色面板上清晰；底部白字在深紫底上也可读。字号层级(10pt 主体)在小卡片上偏小但属可接受范围。留白与对齐基本统一，三个面板圆角一致。轻微扣分：面板高度 20 略紧、面板内文字与勾选框垂直对齐视觉略偏下沿(因为 padding 4+边框导致文字下沉)；绿色按钮字号 10pt 略小，理想可上调至 12pt。",
+    "layout": "截图观察：根 Column 在 140×140 内三面板纵向排列，三个面板完整无溢出；每个面板的勾选框与文字左右排布，第三面板的'待处理'徽章贴右贴合在面板内、未被裁切。底部 footer_row(116×44)内左侧两行'自动整理/还有7天'与右侧绿色按钮同行并列，'联系客服'四字完整显示在按钮上，绿色按钮底边到卡片底边距离约 6-8vp，处于安全锚定区(2x2 标准 8-12vp、不得>16vp)。无文字截断、无元素堆叠遮挡、CTA 热区充足(64×28)。轻微问题：footer 内 padding 设为 0，使左侧'自动整理 还有7天'文字几乎贴到面板左边缘(略缺呼吸感)，建议补 4-6 横向内边距；第二个面板勾选框选中态(✓)与文字之间留白略大但不影响可读性。"
+  },
+  "issues": [
+    "footer_row 的 padding 设为 0，导致 '自动整理 还有7天' 文字贴边，建议补 padding.left/right:6 提升呼吸感",
+    "按钮字号 10pt 略小，建议上调至 11-12pt 提升可读性",
+    "第二面板的青绿色 (#92D6CC) 偏青色，与用户'绿'的预期稍有偏差，可微调更绿",
+    "面板高度 20 在 padding 4 后内容仅 12，行高偏紧，可微调到 22-24 让 10pt 文字垂直居中更自然",
+    "第三面板 checkbox 仍显示为未选态 (sample false)，但文案里有 '聚餐12张'，视觉合理；可考虑在风险徽章附近加细微分隔提升可扫读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"duplicate_panel_0\",\"duplicate_panel_1\",\"duplicate_panel_2\",\"footer_row\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#8C55C2\",0],[\"#3F4AAE\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"duplicate_panel_0\",\"component\":\"Row\",\"children\":[\"check_0\",\"group_0_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"padding\":4,\"borderRadius\":6,\"backgroundColor\":\"#F5DC62\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"check_0\",\"component\":\"Checkbox\",\"value\":\"group0\",\"select\":\"{{ ${/groups/group0/checked} }}\",\"styles\":{\"width\":12,\"height\":12,\"shape\":\"rounded_square\",\"selectedColor\":\"#564AF7\",\"unSelectedColor\":\"#99000000\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"group_0_text\",\"component\":\"Text\",\"content\":\"{{ ${/groups/group0/info} }}\",\"styles\":{\"width\":92,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"duplicate_panel_1\",\"component\":\"Row\",\"children\":[\"check_1\",\"group_1_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"padding\":4,\"borderRadius\":6,\"backgroundColor\":\"#A6D49A\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"check_1\",\"component\":\"Checkbox\",\"value\":\"group1\",\"select\":\"{{ ${/groups/group1/checked} }}\",\"styles\":{\"width\":12,\"height\":12,\"shape\":\"rounded_square\",\"selectedColor\":\"#564AF7\",\"unSelectedColor\":\"#99000000\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"group_1_text\",\"component\":\"Text\",\"content\":\"{{ ${/groups/group1/info} }}\",\"styles\":{\"width\":92,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"duplicate_panel_2\",\"component\":\"Row\",\"children\":[\"check_2\",\"group_2_text\",\"risk_badge\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":22,\"padding\":4,\"borderRadius\":6,\"backgroundColor\":\"#86C5E3\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"check_2\",\"component\":\"Checkbox\",\"value\":\"group2\",\"select\":\"{{ ${/groups/group2/checked} }}\",\"styles\":{\"width\":12,\"height\":12,\"shape\":\"rounded_square\",\"selectedColor\":\"#564AF7\",\"unSelectedColor\":\"#99000000\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":8,\"strokeWidth\":2}}},{\"id\":\"group_2_text\",\"component\":\"Text\",\"content\":\"{{ ${/groups/group2/info} }}\",\"styles\":{\"width\":62,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"risk_badge\",\"component\":\"Text\",\"content\":\"{{ ${/groups/group2/riskLabel} }}\",\"styles\":{\"width\":30,\"height\":14,\"borderRadius\":7,\"backgroundColor\":\"#FFE84026\",\"fontSize\":9,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"footer_row\",\"component\":\"Row\",\"children\":[\"footer_note\",\"contact_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":44,\"paddingLeft\":6,\"paddingRight\":6,\"paddingTop\":4,\"paddingBottom\":4,\"borderRadius\":8,\"backgroundColor\":\"#5A3F8C\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"footer_note\",\"component\":\"Text\",\"content\":\"{{ ${/footer/reminderText} }}\",\"styles\":{\"width\":50,\"height\":30,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":2}},{\"id\":\"contact_button\",\"component\":\"Button\",\"label\":\"{{ ${/contact/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"950800\"}}],\"styles\":{\"width\":62,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#FF64BB5C\",\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"groups\":{\"group0\":{\"checked\":false,\"info\":\"8/3 公园 3张相似\"},\"group1\":{\"checked\":true,\"info\":\"8/5 海边 6张相似\"},\"group2\":{\"checked\":false,\"info\":\"8/9 聚餐12张\",\"riskLabel\":\"待处理\"}},\"footer\":{\"reminderText\":\"自动整理\\n还有7天\"},\"contact\":{\"actionLabel\":\"联系客服\"}}}}"
+  ]
+}

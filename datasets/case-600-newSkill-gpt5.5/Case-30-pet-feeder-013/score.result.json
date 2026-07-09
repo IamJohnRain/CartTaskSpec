@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-30-pet-feeder-013",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.7,
+  "reasons": {
+    "instruction": "截图中可见:顶部大字\"今日已喂2/3次\"做主视觉(满足);黄色背景因foodPercent=18%<20%自动触发(满足);\"距下次还有1小时20分\"与\"余粮剩余18%\"固定文字+动态数值拼接均显示(满足);两只宠物\"猫猫/狗狗\"带勾选状态显示(满足);日历\"19:00遛狗\"已读到(满足);宠物店点击导航事件已绑定(满足)。但底部\"宠物店导\"中的\"航\"字被截断,导致完整导航文案\"宠物店导航\"无法完整呈现,核心点击元素的信息不完整,扣分。",
+    "aesthetic": "截图整体观感尚可:黄色警告背景与主题色块风格统一,无渐变无图片符合指令;主标题用粗体字重,次要文字用常规字重,层级清晰;勾选框绿底白勾视觉干净;底部药丸状色块形成自然分区。但support_text用#99000000(60%黑)在黄底上对比度略低,需凑近看才清晰;整体无明显空洞或拥挤问题。",
+    "layout": "截图中最显著的排版问题是底部Row中store_link的width仅46vp,而\"宠物店导航\"在fontSize=10下需约58vp宽度,导致末字\"航\"被裁切显示为\"宠物店导\"。其余布局成立:纵向12+20+4+24+4+34+4+24+12=140vp精确填满140高卡片;勾选列表、间距、对齐均无问题;但该截断直接削弱了底部可点击元素的完整可读性,是必须修复的D3级硬伤。",
+    "issues": [
+      "底部store_link文本\"宠物店导航\"被截断为\"宠物店导\",\"航\"字溢出不可见",
+      "bottom_row内calendar_text与store_link宽度分配(58+46)与实际内容宽度需求不匹配,后者明显偏小",
+      "support_text两行(#99000000)在黄色警告背景上对比度偏弱,可读性可再提升",
+      "calendar_text与store_link在同一行时,即使加itemMargin也无法同时容纳\"19:00遛狗\"和\"宠物店导航\"的完整宽度,空间估算偏低"
+    ]
+  },
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"primary_value\",\"support_column\",\"pet_list\",\"bottom_block\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"{{ ${/data/feeder/foodPercent} < 20 ? '#f5dc62' : '#92d6cc' }}\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/statusText} }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"support_column\",\"component\":\"Column\",\"children\":[\"next_feed_text\",\"food_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"next_feed_text\",\"component\":\"Text\",\"content\":\"{{ '距下次还有' + ${/data/feeder/nextFeedInText} }}\",\"styles\":{\"width\":116,\"height\":11,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"maxLines\":1}},{\"id\":\"food_text\",\"component\":\"Text\",\"content\":\"{{ '余粮剩余' + ${/data/feeder/foodPercentText} }}\",\"styles\":{\"width\":116,\"height\":11,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"maxLines\":1}},{\"id\":\"pet_list\",\"component\":\"List\",\"children\":[\"pet_row_0\",\"pet_row_1\"],\"space\":2,\"styles\":{\"width\":116,\"height\":34,\"listDirection\":\"vertical\",\"scrollBar\":\"auto\"}},{\"id\":\"pet_row_0\",\"component\":\"Row\",\"children\":[\"pet_check_0\",\"pet_name_0\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"pet_check_0\",\"component\":\"Checkbox\",\"value\":\"pet0\",\"group\":\"pets\",\"select\":\"{{ ${/data/feeder/pets/0/fed} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"pet_name_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/pets/0/name} }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"pet_row_1\",\"component\":\"Row\",\"children\":[\"pet_check_1\",\"pet_name_1\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"pet_check_1\",\"component\":\"Checkbox\",\"value\":\"pet1\",\"group\":\"pets\",\"select\":\"{{ ${/data/feeder/pets/1/fed} }}\",\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"pet_name_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/pets/1/name} }}\",\"styles\":{\"width\":96,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"bottom_block\",\"component\":\"Column\",\"children\":[\"calendar_text\",\"store_link\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":24,\"backgroundColor\":\"#0c000000\",\"borderRadius\":12,\"padding\":{\"top\":0,\"right\":4,\"bottom\":0,\"left\":4}}},{\"id\":\"calendar_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"store_link\",\"component\":\"Text\",\"content\":\"{{ ${/data/petStore/addressText} + '导航' }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/data/petStore/location/latitude} }}\",\"longitude\":\"{{ ${/data/petStore/location/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":108,\"height\":10,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"feeder\":{\"statusText\":\"今日已喂2/3次\",\"nextFeedInText\":\"1小时20分\",\"foodPercent\":18,\"foodPercentText\":\"18%\",\"pets\":[{\"name\":\"猫猫\",\"fed\":true},{\"name\":\"狗狗\",\"fed\":true}]},\"petStore\":{\"addressText\":\"宠物店\",\"location\":{\"latitude\":\"22.2800\",\"longitude\":\"114.1600\"}},\"calendar\":{\"items\":[{\"entityName\":\"日程\",\"entityId\":\"calendar-walk-dog-1900\",\"title\":\"遛狗\",\"eventLocation\":\"\",\"description\":\"\",\"dtStart\":\"19:00\",\"dtEnd\":\"20:00\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

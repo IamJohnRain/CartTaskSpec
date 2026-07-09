@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-16-travel-ticket-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "截图中航班卡完整呈现了用户诉求的所有关键信息：航班号 MU5123、起飞时间 18:40、登机口 T3 G18、提前 45 分钟提醒；'航班'标签与日历图标呼应'从日历读'语义，时间图标对应'快登机提醒'语义；底部'设提醒'按钮绑定 clickToDeeplink 事件，call/args 与 eventCandidates 完全一致。catalogId、version、updateDataModel.path/value 等协议硬约束均满足。轻微扣分点：未呈现完整日期（年月日），仅展示 HH:MM 起始时间，对'快登机'情境下的日期识别略有不足。",
+    "aesthetic": "截图观感专业克制：暖橙渐变（深棕→橘红→浅橙）契合出行/航班主题，白色主文字在深色背景上对比度高、清晰可读；字号层级清晰，'航班'标签 12px 次要、航班号/时间 14-16px 重点、提示行 10px 弱化，整体只有一个最强字重（800 在航班号/时间）。按钮采用半透明白色玻璃质感，与背景协调。扣分点：底部按钮紧贴卡片下边缘，留白略显局促；上方标题行距与主信息行距接近，纵向节奏感可以再拉开。",
+    "layout": "基于截图观察：所有元素均位于卡片内，文字未出现截断/裁切，无元素堆叠重叠。Column 纵向占用 = 12+18+4+16+4+20+4+16+4+30+12 = 140，恰好填满 140vp 高度，无溢出。底部'设提醒'按钮外框底边到卡片底边约 12vp，处于推荐范围 8-12vp 的上界，按钮热区 80x30 满足 ≥24vp 要求。但整体布局非常紧凑，按钮几乎贴底，按钮与上方'提示行'之间只剩 4vp 间距，视觉上略显拥挤，且无任何留白缓冲，纵向节奏稍显急促，因此扣分。左侧'航班'标签在 header_row 内左对齐，整张卡又是居中对齐，导致'航班'标签相对卡片中心略偏左，小幅视觉不对称。"
+  },
+  "issues": [
+    "Column 高度精确等于 140vp，底部按钮贴底无呼吸空间，纵向布局过于紧凑",
+    "header_row 在 Column 内左对齐，与卡片其他居中元素产生左右不对齐",
+    "航班号与时间均使用 fontWeight 800，违反'同一卡片只保留一个最强字重'的字号阶梯建议",
+    "未呈现完整出发日期（年月日），仅 HH:MM，对'快登机'日期辨识略有不足",
+    "按钮背景 #33ffffff 半透明叠加在橙色渐变上，玻璃质感偏弱，可适当提升对比"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"flight_text\",\"time_text\",\"alert_row\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#9e644f\",0],[\"#db6b42\",0.58],[\"#ed955f\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"flight_icon\",\"header_label\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":18,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"flight_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule2.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"header_label\",\"component\":\"Text\",\"content\":\"航班\",\"styles\":{\"width\":80,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"flight_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":14,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":120,\"height\":22,\"fontSize\":18,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":14,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_time.png\",\"styles\":{\"width\":12,\"height\":12,\"objectFit\":\"contain\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} + ' · ' + ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":100,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"设提醒\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":76,\"height\":26,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#4dffffff\",\"borderRadius\":13,\"borderWidth\":1,\"borderColor\":\"#80ffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"MU5123\",\"dtStart\":\"18:40\",\"eventLocation\":\"T3 G18\",\"remindTime\":[\"提前45分钟\"]}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

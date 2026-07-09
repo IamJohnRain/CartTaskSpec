@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-15-smart-home-013",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "截图中房屋大图标作为主视觉、深蓝渐变、回家/更多两枚按钮及事件绑定（intelligent_scene_entry/parent_control）均落实。但用户明确要求的'外面28度'温度数值在 hero 列的 weather_text 区域只显示'外面'三个字，'28°C'完全缺失（表达式使用了字面量字符串拼接 + 模板引用，导致取值未渲染）；右侧三个勾选项仅露出绿色对勾，方框内/旁的'灯/空/帘'标签因 Checkbox 宽度仅 18vp 容纳不下中文标签而不可见，与用户'横向并排的勾选项(灯/空调/窗帘)'诉求不符。districtName 等附加信息未呈现。",
+    "aesthetic": "深蓝→近黑的对角线渐变与绿色 CTA/对勾搭配，色调统一、对比清晰，白底圆角房屋图标在深色背景上读感强，CTA 与次级按钮区分合理，留白均衡，唯一的字重最强项是绿色'离家'，层级控制尚可。扣分点：温度数值缺失让左上信息不完整；勾选标签不可见使右上块视觉信息偏弱。",
+    "layout": "截图中各组件均位于卡片边界内，无元素堆叠重叠，主行(高 76) + itemMargin 8 + 底部行(高 32) = 116 正好填满 116 内容区。底部按钮底边距卡片底约 12vp，满足锚定区间。受保护文本(已勾选3项、多云、离家、更多)未发生截断。扣分点：左侧 weather_text 受 maxLines:1 + 宽 48vp 限制，导致'外面28°C'被裁掉只剩'外面'；右侧三个 Checkbox 各宽 18vp，几乎没有标签可绘制的空间，标签'灯/空/帘'被吞掉（按截图为'未渲染'而非显式截断）。"
+  },
+  "issues": [
+    "weather_text 使用 '{{ \\'外面\\' + ${/data/weather/current/temperatureText} }}' 拼接表达式未生效，截图中温度 28°C 完全缺失",
+    "hero_col 仅 48vp 宽，'外面28°C' 即使成功渲染也会因 maxLines:1 被截断为'外面'",
+    "右侧三个 Checkbox 宽度 18vp 不足以容纳 1 个中文 labelShort，'灯/空/帘' 标签在截图中不可见",
+    "status_col(60) 与 hero_col(48) 配比不够合理，状态信息列偏窄",
+    "districtName 字段未在卡片上呈现（可选，但温度与 district 是用户主要读取对象）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"bottom_actions\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#5F58C7\",0],[\"#191A1C\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"hero_col\",\"status_col\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":80,\"alignItems\":\"center\"}},{\"id\":\"hero_col\",\"component\":\"Column\",\"children\":[\"home_icon\",\"weather_text\"],\"itemMargin\":6,\"styles\":{\"width\":40,\"height\":80,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"home_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/house_fill.svg\",\"styles\":{\"width\":36,\"height\":36,\"borderRadius\":10,\"backgroundColor\":\"#FFFFFFFF\",\"objectFit\":\"contain\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":40,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_col\",\"component\":\"Column\",\"children\":[\"check_row\",\"summary_text\",\"condition_text\"],\"itemMargin\":4,\"styles\":{\"width\":68,\"height\":80,\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"check_row\",\"component\":\"Row\",\"children\":[\"check_lights\",\"check_air\",\"check_curtain\"],\"itemMargin\":0,\"styles\":{\"width\":68,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"spaceBetween\"}},{\"id\":\"check_lights\",\"component\":\"Checkbox\",\"label\":\"{{ ${/home/leaveMode/lights/labelShort} }}\",\"select\":\"{{ ${/home/leaveMode/lights/selected} }}\",\"styles\":{\"width\":22,\"height\":26,\"selectedColor\":\"#64BB5C\",\"unSelectedColor\":\"#66FFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"check_air\",\"component\":\"Checkbox\",\"label\":\"{{ ${/home/leaveMode/airConditioner/labelShort} }}\",\"select\":\"{{ ${/home/leaveMode/airConditioner/selected} }}\",\"styles\":{\"width\":22,\"height\":26,\"selectedColor\":\"#64BB5C\",\"unSelectedColor\":\"#66FFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"check_curtain\",\"component\":\"Checkbox\",\"label\":\"{{ ${/home/leaveMode/curtain/labelShort} }}\",\"select\":\"{{ ${/home/leaveMode/curtain/selected} }}\",\"styles\":{\"width\":22,\"height\":26,\"selectedColor\":\"#64BB5C\",\"unSelectedColor\":\"#66FFFFFF\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#FFFFFFFF\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/home/leaveMode/selectedSummary} }}\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"外面 {{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":68,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99FFFFFF\",\"maxLines\":1}},{\"id\":\"bottom_actions\",\"component\":\"Row\",\"children\":[\"action_button\",\"more_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":32,\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"离家\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":64,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#64BB5C\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}},{\"id\":\"more_button\",\"component\":\"Button\",\"label\":\"更多\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":48,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#19FFFFFF\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前地区\"},\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"多云\"}}},\"home\":{\"leaveMode\":{\"selectedSummary\":\"已勾选3项\",\"lights\":{\"labelShort\":\"灯\",\"selected\":true},\"airConditioner\":{\"labelShort\":\"空\",\"selected\":true},\"curtain\":{\"labelShort\":\"帘\",\"selected\":true}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

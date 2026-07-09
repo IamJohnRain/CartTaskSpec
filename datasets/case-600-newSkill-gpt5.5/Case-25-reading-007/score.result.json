@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-25-reading-007",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.4,
+  "reasons": {
+    "instruction": "用户三条诉求（点击跳app、读日历日程、显示已连接）在截图中均有可见呈现：'已连接'绿色徽章清晰、'产品评审'+'09:30-10:00'代表一条日程、'听书'按钮带 onClick 触发 clickToDeeplink 且 call/args 与 eventCandidates 完全一致；尺寸 2x2、catalogId、version、updateDataModel.path 均符合硬约束。扣分点：按钮文案为'听书'，与日历日程语境语义不符，eventCandidates 给的是 music 的 URI，文案至少应更通用（如'查看/打开'），属于指令语义贴合度的小瑕疵。",
+    "aesthetic": "截图整体配色克制：白底、灰色辅助文字、绿色连接徽章、蓝色 CTA 按钮，对比度好、字重层级清晰（主标题粗体、次级浅灰）。但卡片上半部密集、下半部约 50px 全空白，视觉重心明显偏上，留白分布严重失衡，给人'没填满'的廉价感，'听书'蓝按钮与'下一项'灰字并排也显得生硬。",
+    "layout": "截图内无文字截断、无元素堆叠、组件未溢出卡片边界，'已连接'徽章和'听书'按钮热区均完整可见，布局未崩溃。但 root Column 使用 justifyContent:'start'，使 4 个子项（header_row 20 + primary_title 34 + time_text 16 + footer_row 32 ≈ 102）紧贴顶部约 102px 区域，下方 ~38px 区域为纯空白，内容在垂直方向未合理分布，'下一项'文字与'听书'按钮之间的视觉关系也较松散，整体观感留白失衡。"
+  },
+  "issues": [
+    "卡片下半部约 38px 全空白，root Column 使用 justifyContent:'start' 导致内容全部紧贴顶部，垂直空间未合理利用",
+    "按钮文案'听书'与日历日程语境不符，建议改为'查看'或'打开'等中性动作词",
+    "footer_row 中'下一项'灰字与'听书'蓝色按钮排布松散，缺乏明确视觉关联",
+    "主标题'产品评审'fontSize=16 在 116 宽内容区虽未截断但视觉权重与上方'今日日程'差距不够大，层级感可强化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_title\",\"time_text\",\"footer_row\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日日程\",\"styles\":{\"width\":52,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/state/connection/statusText} }}\",\"styles\":{\"width\":58,\"height\":20,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ff2e7d32\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#1a2e7d32\",\"borderRadius\":10}},{\"id\":\"primary_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"wordBreak\":\"breakWord\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"footer_row\",\"component\":\"Row\",\"children\":[\"support_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"support_text\",\"component\":\"Text\",\"content\":\"下一项\",\"styles\":{\"width\":48,\"height\":32,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"查看\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":60,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-demo-001\",\"title\":\"产品评审\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\"}]}},\"state\":{\"connection\":{\"statusText\":\"已连接\"}}}}}"
+  ]
+}

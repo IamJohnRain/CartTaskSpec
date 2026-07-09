@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-009",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.0,
+  "reasons": {
+    "instruction": "截图能看到主要诉求已被落实：倒计时主值'3天'醒目显示，'明天 09:00 提醒'满足提醒诉求，'打开应用'按钮带 onClick（call/args 原样来自 eventCandidates），日历数据通过 {{ }} 表达式绑定到 dataModel。扣分点：1) 用户希望'日历的能读到'并提供语境，但截图中未呈现事件标题'纪念日'和目标日期'7月12日'，用户无法知道在倒计时什么；2) eventCandidates 的 uri 指向 totemweather 天气应用而非日历应用，这是 TaskSpec 提供的硬约束，模型无法修改故不扣分；3) 头部文案'倒计时'与下方大数字重复，信息密度不足。",
+    "aesthetic": "截图整体观感良好：橙红渐变背景契合'倒计时/紧迫'的语义氛围；'3天'主值用 32px 加粗白字，层级清晰；'打开应用'按钮使用半透明白底，与背景对比适中；图标尺寸合理（16/14px），与文字搭配协调。轻微不足：头部'倒计时'使用了 #99ffffff（60%白）显得偏暗，弱化了信息层级；闹钟图标偏黄与整体橙色调略冲突。",
+    "layout": "截图布局干净、无堆叠、无截断：header_row 顶部对齐、primary_value 居中、support_row 与 action_button 依次排列。逐项核验：Column 内容总高 116（header 18 + 4 + primary 36 + 4 + support 18 + 4 + button 32）= 116，padding 24 后恰好 140，无溢出。底部按钮到卡片底边约 12vp，符合规范。受保护文本'3天'、'明天 09:00 提醒'、'打开应用'均完整可读，未被裁切。轻微瑕疵：reminder_text 宽度 98 在 11px 字号下对'明天 09:00 提醒'虽够用但偏紧，理论存在截断风险。"
+  },
+  "issues": [
+    "未展示事件标题'纪念日'，用户无法得知在倒计时什么事件",
+    "未展示目标日期'7月12日'（dtEnd），倒计时缺乏终点参考",
+    "头部'倒计时'与下方'3天'信息重复，造成信息密度浪费",
+    "头部颜色 #99ffffff 透明度偏低，作为标题稍弱",
+    "reminder_text 宽度 98 对当前文案偏紧，无 buffer"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"target_date\",\"support_row\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#9e644f\",0],[\"#db6b42\",0.58],[\"#ed955f\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule2.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}倒计时\",\"styles\":{\"width\":96,\"height\":16,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":116,\"height\":30,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"target_date\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"support_row\",\"component\":\"Row\",\"children\":[\"reminder_icon\",\"reminder_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"reminder_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_alarm_clock.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":98,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开应用\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_demo_001\",\"title\":\"纪念日\",\"dtStart\":\"3天\",\"dtEnd\":\"7月12日\",\"remindTime\":[\"明天 09:00 提醒\"],\"importantEventType\":2}]}}}}}"
+  ]
+}

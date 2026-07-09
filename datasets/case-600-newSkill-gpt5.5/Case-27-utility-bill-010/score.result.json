@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-27-utility-bill-010",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户四点诉求逐项核对截图：①电费卡片身份——满足，可见¥-128.6、当前余额、家庭电费账户、欠费提醒等字段；②大字余额叠在图上——部分满足，'¥-128.6'用32px大字号且位于Hero区中心，但所谓的'图'是bolt_fill.svg黑色实心剪影，透过半透明遮罩呈现突兀黑块，并未真正成为'承载余额的图片'；③点导航去营业厅——满足，'去营业厅'按钮onClick绑定clickToIntent/StartNavigate，且hall/latitude、hall/longitude以表达式正确引用；④红色提醒欠费——部分满足，状态面板使用#ffed6f21实为橙红而非正红，与卡片橙色渐变背景同色系、警示感不足。事件参数、DataModel schema对应、catalogId/version/updateDataModel.path均合规。",
+    "aesthetic": "截图可观察到的视觉问题：① 黑色bolt剪影从半透明深色遮罩上下两端探出，比遮罩更高更深，在橙黄渐变卡片上极不和谐；② 状态面板偏橙红，与卡片主色同暖色系，缺乏红色应有的对比冲击力，未达成'红色提醒'的语义；③ Hero区'当前余额'与'家庭电费账户'使用#99ffffff（淡灰白），在#66000000半透明遮罩上对比度偏弱，可读性打折；④ 整张卡只有'¥-128.6'一个最强字重这一点做对了，但暖色一统天下缺少冷色点缀。",
+    "layout": "基于截图逐项排查：① bolt_fill.svg以104x104渲染在170x116的hero_stack中，深色遮罩hero_overlay仅158x92，截图清楚显示闪电上下尖端伸出遮罩外约5–8px，破坏Hero矩形轮廓——属于Stack子元素溢出/未对齐到父背景；② 闪电剪影与'当前余额''¥-128.6''家庭电费账户'三行文字在视觉上交错，黑色遮盖了'¥'与'128'部分字形，潜在影响主指标识别；③ 按钮热区高34vp、底边距卡片底约12vp，符合规范；④ 状态面板文字、营业厅提示、按钮三者纵向排布无截断、无溢出；⑤ 卡片左右边界、圆角均正常。"
+  },
+  "issues": [
+    "bolt_fill.svg在hero_stack中以104x104渲染，hero_overlay仅158x92，导致闪电上下尖端明显伸出深色遮罩外，破坏Hero区视觉",
+    "黑色闪电剪影与hero_overlay上方'当前余额'及下方'家庭电费账户'在截图上产生视觉交错，影响信息识别",
+    "状态面板#ffed6f21实际为橙红，与卡片橙色渐变同色系，未达成用户'红色提醒欠费'要求",
+    "副文本#99ffffff在#66000000半透明遮罩上对比度偏弱，可读性欠佳",
+    "Hero区叠层设计逻辑与'余额叠在图上'诉求不匹配：遮罩把图盖死，图沦为底色阴影"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_stack\",\"side_column\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9a01e\",0],[\"#f9bc64\",1]]}}},{\"id\":\"hero_stack\",\"component\":\"Column\",\"children\":[\"bolt_row\",\"primary_value\",\"account_text\"],\"itemMargin\":6,\"styles\":{\"width\":170,\"height\":116,\"padding\":14,\"borderRadius\":18,\"linearGradient\":{\"direction\":\"RightTop\",\"colors\":[[\"#a8201a\",0],[\"#7a1a1a\",1]]},\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"bolt_row\",\"component\":\"Row\",\"children\":[\"bolt_icon\",\"caption_text\"],\"itemMargin\":4,\"styles\":{\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"bolt_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/bolt_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"caption_text\",\"component\":\"Text\",\"content\":\"{{ ${/utility/balanceCaption} }}\",\"styles\":{\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe6e6\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/utility/balanceText} }}\",\"styles\":{\"width\":142,\"height\":40,\"fontSize\":36,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"account_text\",\"component\":\"Text\",\"content\":\"{{ ${/utility/accountName} }}\",\"styles\":{\"width\":142,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ffe6e6\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"side_column\",\"component\":\"Column\",\"children\":[\"status_panel\",\"hall_hint\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":94,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_title\",\"status_detail\"],\"itemMargin\":4,\"styles\":{\"width\":94,\"height\":54,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#d62828\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"status_title\",\"component\":\"Text\",\"content\":\"{{ ${/utility/statusTitle} }}\",\"styles\":{\"width\":78,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"status_detail\",\"component\":\"Text\",\"content\":\"{{ ${/utility/statusDetail} }}\",\"styles\":{\"width\":78,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ffe6e6\",\"maxLines\":1}},{\"id\":\"hall_hint\",\"component\":\"Text\",\"content\":\"{{ ${/hall/name} }}\",\"styles\":{\"width\":94,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/navigateLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/hall/latitude} }}\",\"longitude\":\"{{ ${/hall/longitude} }}\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":94,\"height\":34,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":17}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"utility\":{\"balanceCaption\":\"当前余额\",\"balanceText\":\"¥-128.6\",\"accountName\":\"家庭电费账户\",\"statusTitle\":\"欠费提醒\",\"statusDetail\":\"请及时处理\"},\"action\":{\"navigateLabel\":\"去营业厅\"},\"hall\":{\"name\":\"最近营业厅\",\"latitude\":\"22.543096\",\"longitude\":\"114.057865\"}}}}"
+  ]
+}

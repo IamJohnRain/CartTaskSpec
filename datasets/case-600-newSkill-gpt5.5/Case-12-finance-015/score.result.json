@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-015",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "用户要求的'距离发工资还有 12 天'大号倒计时、'早餐¥32'/'午餐¥45'纵向列表、信用卡提醒点进查看日程详情、半透明磨砂玻璃感、从深到浅渐变、单字字符作为图标等核心诉求基本都已落地，onClick 正确绑定到 eventCandidates 的 clickToIntent/ViewCalendarEvent。但截图中底部提醒文字只显示'信用卡还有3天到'，'期'字被截断（受保护文本缺失一字），属于明确指令未完整呈现，扣分。",
+    "aesthetic": "截图整体观感尚可：渐变从顶部深紫黑过渡到中段紫再到底部暖橙，色温从冷到暖、白字在深色渐变上对比清晰可读；倒计时主数值'12 天'字重最强、字阶分层合理；上半部分留白舒适。但底部'卡'字文字外侧出现一圈不预期的圆形浅色描边（DSL 并未设置），视觉上像套了个圆形徽章，与整体扁平方块风格略不统一，扣一点分。",
+    "layout": "截图中核心问题是底部提醒行文字'信用卡还有3天到期'被截断成'信用卡还有3天到'，'期'字被右侧裁掉，这是受保护文本被截断的硬伤。其余各模块（倒计时、divider、两行账目）布局紧凑无溢出，Column 总占用 42+1+30+1+26+4*4=116，正好等于内容区 116，无垂直溢出。但因底部 CTA/受保护文本被截断，必须重扣。底部 reminder_row 下边到卡片底边约 12vp，处在 8-12vp 的可接受上沿。'卡'字在视觉上呈现为带圆环的形态（疑似 Text 文字外框渲染），虽不影响排版但是视觉噪点。"
+  },
+  "issues": [
+    "底部提醒文本'信用卡还有3天到期'被截断为'信用卡还有3天到'，'期'字缺失，属受保护文本截断",
+    "reminder_glyph'卡'字在截图中出现意外圆形描边/徽章效果，DSL 中并未设置此样式，存在视觉噪点",
+    "reminder_text 的 fontSize:10 + width:86 实际无法容纳 8 个中文字符（实测溢出），布局公式校验需修正",
+    "整张卡片偏中下拥挤，reminder_row 距卡底 12vp 处于可接受上限，无更多呼吸空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"countdown_block\",\"divider_1\",\"expense_block\",\"divider_2\",\"reminder_row\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#aa1a1b22\",\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#ff202224\",0],[\"#634794\",0.55],[\"#f9bc64\",1]]}}},{\"id\":\"countdown_block\",\"component\":\"Column\",\"children\":[\"payday_prefix\",\"payday_value\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"payday_prefix\",\"component\":\"Text\",\"content\":\"{{ ${/finance/paydayPrefix} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"payday_value\",\"component\":\"Text\",\"content\":\"{{ ${/finance/paydayValue} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_1\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":\"1px\",\"vertical\":false,\"color\":\"#33ffffff\"}},{\"id\":\"expense_block\",\"component\":\"Column\",\"children\":[\"breakfast_row\",\"lunch_row\"],\"itemMargin\":3,\"styles\":{\"width\":116,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"breakfast_row\",\"component\":\"Row\",\"children\":[\"breakfast_glyph\",\"breakfast_label\",\"breakfast_amount\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"breakfast_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/expenses/breakfast/glyph} }}\",\"styles\":{\"width\":16,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#26ffffff\",\"borderRadius\":3}},{\"id\":\"breakfast_label\",\"component\":\"Text\",\"content\":\"{{ ${/expenses/breakfast/label} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"breakfast_amount\",\"component\":\"Text\",\"content\":\"{{ ${/expenses/breakfast/amountText} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\",\"textOverflow\":\"none\"}},{\"id\":\"lunch_row\",\"component\":\"Row\",\"children\":[\"lunch_glyph\",\"lunch_label\",\"lunch_amount\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"lunch_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/expenses/lunch/glyph} }}\",\"styles\":{\"width\":16,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#26ffffff\",\"borderRadius\":3}},{\"id\":\"lunch_label\",\"component\":\"Text\",\"content\":\"{{ ${/expenses/lunch/label} }}\",\"styles\":{\"width\":40,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"lunch_amount\",\"component\":\"Text\",\"content\":\"{{ ${/expenses/lunch/amountText} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\",\"textOverflow\":\"none\"}},{\"id\":\"divider_2\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":\"1px\",\"vertical\":false,\"color\":\"#33ffffff\"}},{\"id\":\"reminder_row\",\"component\":\"Row\",\"children\":[\"reminder_glyph\",\"reminder_text\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/calendarReminder/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":24,\"padding\":{\"left\":6,\"right\":6,\"top\":0,\"bottom\":0},\"borderRadius\":12,\"backgroundColor\":\"#26ffffff\",\"borderWidth\":1,\"borderColor\":\"#4dffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"reminder_glyph\",\"component\":\"Text\",\"content\":\"{{ ${/calendarReminder/glyph} }}\",\"styles\":{\"width\":14,\"height\":14,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/calendarReminder/title} + ${/calendarReminder/daysText} + '到期' }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"finance\":{\"paydayPrefix\":\"距离发工资还有\",\"paydayValue\":\"12 天\"},\"expenses\":{\"breakfast\":{\"glyph\":\"早\",\"label\":\"早餐\",\"amountText\":\"¥32\"},\"lunch\":{\"glyph\":\"午\",\"label\":\"午餐\",\"amountText\":\"¥45\"}},\"calendarReminder\":{\"glyph\":\"卡\",\"title\":\"信用卡还有\",\"daysText\":\"3天\",\"entityId\":\"credit-card-due-001\"}}}}"
+  ]
+}

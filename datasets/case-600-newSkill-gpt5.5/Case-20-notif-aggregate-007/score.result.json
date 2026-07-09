@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-20-notif-aggregate-007",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "用户原始诉求为'工作消息汇总卡,列一串通知,点一下跳到应用里,能读天气,危险的就给我标红色'。截图中可见：标题'工作通知'、天气信息（29°C 雷阵雨）、2 条通知（预警 黄色预警 / 空气）、'看详情'按钮（带 clickToDeeplink 事件）均正确呈现，危险项'预警/黄色预警'正确标红。协议层面 size=2x2、root shell、catalogId、version、updateDataModel.path='/'均符合。但'一串通知'仅展示 2 条，表达偏单薄；空气行文本通过拼接公式得到'空气良 通勤'，与左侧'空气'标签形成文字重复，属于内容质量问题。",
+    "aesthetic": "从截图看：浅蓝渐变背景与白色按钮搭配协调，红色徽章与红色预警行形成视觉强调，配色和谐。但整体卡片内容密度过高，140x140 内塞入 4 行（标题/天气/2 条通知/按钮）导致视觉略显拥挤。'29°C 雷阵雨'一行内字号跨度较大（20pt 对 12pt）造成轻微不均衡。'空气良 通勤'这行文字因重复'空气'前缀显得冗余不雅。缺少留白呼吸感。",
+    "layout": "截图显示所有元素均在卡片边界内，无文字被裁切、无元素溢出、无堆叠重叠现象：标题'工作通知'完整、'风险'徽章完整、'29°C 雷阵雨'完整、'预警 黄色预警'行完整、'空气 空气良 通勤'行完整、'看详情'按钮完整且未被裁切。底部按钮到卡片底边约 8-10vp 符合 2x2 规范。Row/Column 总高度 18+22+36+26+间距 12+padding 24=138 ≤ 140，未溢出。但密度偏高，留白不足。"
+  },
+  "issues": [
+    "air_text 拼接公式 '空气' + ${airQuality} + ' 通勤' 产生'空气良 通勤'，与左侧'空气'标签重复，应去掉前缀'空气'",
+    "2x2 卡片内塞入 4 行内容（标题/天气/2 条通知/按钮），整体偏拥挤，留白不足",
+    "'风险'徽章文本为静态'风险'，未与 alertLevel 数据绑定，信息价值有限",
+    "'一串通知'仅展示 2 条，'工作消息汇总'的丰富感不够"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"weather_row\",\"notification_list\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#86c5e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"risk_badge\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"工作通知\",\"styles\":{\"width\":70,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"risk_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":9,\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_row\",\"component\":\"Row\",\"children\":[\"weather_temp\",\"weather_condition\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":50,\"height\":22,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":62,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"notification_list\",\"component\":\"List\",\"children\":[\"alert_row\",\"air_row\"],\"space\":4,\"styles\":{\"width\":116,\"height\":36,\"listDirection\":\"vertical\",\"scrollBar\":\"off\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_label\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"alert_label\",\"component\":\"Text\",\"content\":\"预警\",\"styles\":{\"width\":28,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"air_row\",\"component\":\"Row\",\"children\":[\"air_label\",\"air_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"air_label\",\"component\":\"Text\",\"content\":\"空气\",\"styles\":{\"width\":28,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"air_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/airQuality} }} · 适宜通勤\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看详情\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":26,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"29°C\",\"condition\":\"雷阵雨\",\"airQuality\":\"良\",\"alertLevel\":\"黄色预警\"}}}}}}"
+  ]
+}

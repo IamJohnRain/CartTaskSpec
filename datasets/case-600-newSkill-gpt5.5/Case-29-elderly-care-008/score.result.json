@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-29-elderly-care-008",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.6,
+  "reasons": {
+    "instruction": "用户明确诉求是'整个卡片能点进APP'和'红色危险提示'。截图中可见：root 节点的 onClick 绑定 clickToDeeplink 实现了整卡可点击入口；右上角'危险提示'红色徽章与主状态文字'跌倒风险高'均为红色，红色危险提示语义已落实。dataModel 全部字段（title/status/summary/updatedAt/actionLabel）均正确绑定到 DataModel。catalogId/version/size=2x4/root 300x140 等硬约束满足。扣分点：assetCandidates 提供了 icon_high_temperature.png 应作为红色告警视觉锚点，但截图中该 Image 完全没有渲染出来，只剩一个空白的白色圆角方块，导致用户明确点名的'红色危险提示'在视觉上缺乏图像维度的强化（虽然仍依赖 onClick 整卡点击，但视觉锚点缺失属于素材落实不完整）。",
+    "aesthetic": "截图整体配色为浅灰到暖橙的线性渐变，配上红色徽章和红色主状态字，主题方向尚可但'危险'感被橙色背景和橙色 CTA 按钮（'打开查看'）稀释，显得更像普通温暖提示而非强警示。字体层级清晰（16 加粗标题/20 加粗红色主状态/12 灰色摘要/12 灰色时间/14 加粗白色按钮），最强字重基本统一在 700，留白与对齐也基本整齐。最大问题：主区域左侧的图标位呈现为一个孤立的空白色圆角方块（54x54），既没有图像内容也没有视觉填充，在红色告警主题卡片中显得空洞、违和，强烈拉低整体观感。",
+    "layout": "截图中所有文字均完整可读，未见标题、状态、摘要、CTA 或时间字段被截断或省略号隐藏。'老人看护'、'危险提示'徽章、'跌倒风险高'、'客厅活动异常，请及时查看'、'刚刚更新'、'打开查看'全部清晰呈现。元素未溢出 300x140 卡片边界，Stack 图标层、Row 头部分隔、底部 Row 均无相互遮挡。底部 Row 距离卡片底边适中（约 10vp 左右），符合规范。'打开查看'按钮底边距卡片下沿约 10vp，未越界。唯一布局相关瑕疵：左侧图标位 (icon_plate) 是一个 54x54 的空白白色圆角方块，内部期望的 Image (34x34) 未渲染出来，使该位置在视觉上像'占位空白'而非'有意义的图标'，属于'该位置的内容缺失'而非'溢出/裁切/重叠'，因此不严重扣分但仍需改进。"
+  },
+  "issues": [
+    "截图中 icon_plate（54x54 白色圆角方块）内部的 alert_icon (Image, resources/base/media/icon_high_temperature.png) 未渲染，导致左侧出现一个孤立的空白色方块，视觉上不完整。",
+    "素材使用不当：TaskSpec 提供了高温/温度计图标作为红色告警视觉锚点，但该资源在当前渲染环境下不可用或加载失败，应使用更稳健的视觉方案（如带警示字符的红色实心块）保证红色危险提示始终可见。",
+    "底部 CTA 按钮 '打开查看' 使用橙色 (#ffed6f21)，与红色危险主题有冲突，建议改用与'危险提示'徽章一致的红色 (#ffe84026) 强化警示一致性。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"divider_line\",\"bottom_row\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#f9bc64\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"alert_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/care/title} }}\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"危险提示\",\"styles\":{\"width\":72,\"height\":24,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":12,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"icon_plate\",\"main_col\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":54,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_plate\",\"component\":\"Column\",\"children\":[\"warning_mark\"],\"styles\":{\"width\":54,\"height\":54,\"backgroundColor\":\"#ffe84026\",\"borderRadius\":16,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"warning_mark\",\"component\":\"Text\",\"content\":\"警\",\"styles\":{\"width\":40,\"height\":40,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\"}},{\"id\":\"main_col\",\"component\":\"Column\",\"children\":[\"primary_status\",\"status_summary\"],\"itemMargin\":4,\"styles\":{\"width\":214,\"height\":54,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_status\",\"component\":\"Text\",\"content\":\"{{ ${/care/status} }}\",\"styles\":{\"width\":214,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_summary\",\"component\":\"Text\",\"content\":\"{{ ${/care/summary} }}\",\"styles\":{\"width\":214,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"divider_line\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"updated_text\",\"action_pill\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":25,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/care/updatedAt} }}\",\"styles\":{\"width\":134,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_pill\",\"component\":\"Text\",\"content\":\"{{ ${/care/actionLabel} }}\",\"styles\":{\"width\":88,\"height\":24,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":12,\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"care\":{\"title\":\"老人看护\",\"status\":\"跌倒风险高\",\"summary\":\"客厅活动异常，请及时查看\",\"updatedAt\":\"刚刚更新\",\"actionLabel\":\"打开查看\"}}}}"
+  ]
+}

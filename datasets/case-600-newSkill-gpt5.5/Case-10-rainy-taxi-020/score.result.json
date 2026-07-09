@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-10-rainy-taxi-020",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.7,
+  "reasons": {
+    "instruction": "用户要求的三个小圆环（47分钟/15分钟/8分钟）全部呈现，标签 会议开始/出门/上车 完整可读；标题'9点会议'、天气图标、'看雨停'按钮和 clickToDeeplink 事件均已落实；底色采用蓝青渐变，符合雨景色调诉求。无指令遗漏，但首个圆环内文字与进度弧发生视觉冲突，轻微影响信息传达完整度。",
+    "aesthetic": "蓝青渐变背景观感清爽、贴合雨景主题；白色前景文字在蓝底上对比度足够、可读性良好；三个圆环卡片采用半透明深色背景形成层次；按钮使用半透明白色胶囊样式克制。整体配色与字重层级清晰，但首个圆环中白色粗进度弧与中心'47分钟'文字发生视觉交叉，破坏了精致感。",
+    "layout": "截图中可清晰看到第一个圆环（47分钟/78.3% 进度）的白色粗弧从 12 点位置顺时针扫过近圆心处，与中心'47分钟'文字的'4'字发生重叠，'4'字左侧笔画被弧线穿过，主指标'47分钟'的可读性受损；这是 Stack 中 Progress 与 Text 子组件未预留足够内边距、圆环 52×52 直径偏大致内圈不足以容纳 4 字宽文本导致。其余两个圆环（15分钟、8分钟）进度较短，弧线未覆盖文字。其余元素（标题、按钮、卡片整体）未溢出 300×140 边界，按钮热区 76×28vp 满足 ≥24vp 规范。"
+  },
+  "issues": [
+    "第一个圆环（47分钟）白色进度弧穿过中心'4'字，Stack 层叠遮盖主指标",
+    "圆环组件直径 52 偏大，导致 stroke 内收不足，文本宽度逼近内圈边界",
+    "三个圆环卡片的半透明背景 #19000000 偏黑灰，与雨景蓝调稍有不协调",
+    "标题/按钮行高度 30 与下方圆环行高度 76 之间的视觉重心略偏下，header 可再克制"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"timer_row\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#3d6b8a\",0],[\"#9bd0e8\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"title_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"{{ ${/ui/weatherIcon} }}\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":168,\"height\":22,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":74,\"height\":26,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":13}},{\"id\":\"timer_row\",\"component\":\"Row\",\"children\":[\"meeting_timer\",\"leave_timer\",\"pickup_timer\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"meeting_timer\",\"component\":\"Column\",\"children\":[\"meeting_value\",\"meeting_ring\",\"meeting_label\"],\"itemMargin\":4,\"styles\":{\"width\":86,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"center\",\"backgroundColor\":\"#1e3a5570\",\"borderRadius\":18}},{\"id\":\"meeting_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timers/0/valueText} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meeting_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/ui/timers/0/value} }}\",\"total\":\"{{ ${/ui/timers/0/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":44,\"height\":44}},{\"id\":\"meeting_label\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timers/0/label} }}\",\"styles\":{\"width\":70,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#dceaf5\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"leave_timer\",\"component\":\"Column\",\"children\":[\"leave_value\",\"leave_ring\",\"leave_label\"],\"itemMargin\":4,\"styles\":{\"width\":86,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"center\",\"backgroundColor\":\"#1e3a5570\",\"borderRadius\":18}},{\"id\":\"leave_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timers/1/valueText} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"leave_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/ui/timers/1/value} }}\",\"total\":\"{{ ${/ui/timers/1/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":44,\"height\":44}},{\"id\":\"leave_label\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timers/1/label} }}\",\"styles\":{\"width\":70,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#dceaf5\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"pickup_timer\",\"component\":\"Column\",\"children\":[\"pickup_value\",\"pickup_ring\",\"pickup_label\"],\"itemMargin\":4,\"styles\":{\"width\":86,\"height\":78,\"alignItems\":\"center\",\"justifyContent\":\"center\",\"backgroundColor\":\"#1e3a5570\",\"borderRadius\":18}},{\"id\":\"pickup_value\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timers/2/valueText} }}\",\"styles\":{\"width\":60,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"pickup_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/ui/timers/2/value} }}\",\"total\":\"{{ ${/ui/timers/2/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":44,\"height\":44}},{\"id\":\"pickup_label\",\"component\":\"Text\",\"content\":\"{{ ${/ui/timers/2/label} }}\",\"styles\":{\"width\":70,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#dceaf5\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"9点会议\",\"dtStart\":\"09:00\",\"entityId\":\"calendar-meeting-0900\"}]}},\"ui\":{\"weatherIcon\":\"resources/base/media/rain.png\",\"actionLabel\":\"看雨停\",\"timers\":[{\"label\":\"会议开始\",\"valueText\":\"47分钟\",\"value\":47,\"total\":60},{\"label\":\"出门\",\"valueText\":\"15分钟\",\"value\":15,\"total\":60},{\"label\":\"上车\",\"valueText\":\"8分钟\",\"value\":8,\"total\":60}]}}}}"
+  ]
+}

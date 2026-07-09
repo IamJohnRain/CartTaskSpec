@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-25-reading-010",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见标题'阅读听书'、音乐图标、绿色'已连接'状态文本以及底部'点按打开'胶囊提示四项核心信息均完整呈现，用户诉求'显示已连接'精准落地；整卡 onClick 绑定 clickToDeeplink 与 TaskSpec eventCandidates 的 args 完全一致，deeplink 参数未被篡改；size=2x2、catalogId/version/updateDataModel.path 与 value 全部合规；唯一轻微不足是底部'点按打开'胶囊与主面板风格略分裂、视觉点击提示可再增强，但功能上已完整覆盖用户'整个点一下能跳到app的嘛'与'要显示已连接'两点诉求。",
+    "aesthetic": "截图整体观感干净克制：白→浅灰自上而下柔和渐变背景与灰色图标卡片底色协调，无突兀撞色；'已连接'使用品牌绿色(与已连接语义匹配)且在浅灰底上对比度足够；标题、状态、提示三层字号 14/14/12 形成清晰层级，字重仅标题与状态为 600，符合'一个最强字重'原则；留白密度合理，无过密或空洞；中央图标面板采用 16 圆角胶囊形态，对齐统一。整体偏沉稳、缺乏一点品牌色点缀与点击态的视觉暗示，美观良好但谈不上惊艳。",
+    "layout": "截图未观察到任何文字被裁切/截断/溢出边界：标题'阅读听书'完整显示在顶部居中；主面板内 32×32 音乐图标与'已连接'竖向居中且不超出面板 84×62 范围；底部'点按打开'胶囊底边距卡片底边约 12vp(满足 2x2 推荐 8-12vp 区间)；左右对称居中对齐；整卡内部无 Stack 堆叠遮挡受保护文本；纵向核算 12+18+6+62+6+24+12=140 完全贴合 140 高度，无挤压。整体布局干净、节奏稳定。"
+  },
+  "issues": [
+    "底部'点按打开'胶囊与上方主面板视觉风格略不一致(一个圆角矩形+轻背景、一个胶囊+更轻背景)，整体可统一为一个点击感更明确的胶囊或弱化胶囊以避免视觉割裂",
+    "缺少整卡可点击的视觉暗示(如更明显的按钮态/品牌色点缀/点击区域高亮)，对'整个点一下能跳到app'的隐含交互表达不够直接",
+    "主面板的图标与'已连接'之间间距偏小(icon 与 status 之间),'已连接'绿色在浅灰底上的对比度尚可但可适度加重字重或加背景徽标以提升主指标地位"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"main_panel\",\"hint_pill\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF1F3F5\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/audio/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"music_icon\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":68,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#19000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"music_icon\",\"component\":\"Image\",\"src\":\"{{ ${/audio/icon} }}\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/audio/status} }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\",\"borderRadius\":10,\"backgroundColor\":\"#FF64BB5C\",\"padding\":{\"left\":8,\"right\":8,\"top\":2,\"bottom\":2}}},{\"id\":\"hint_pill\",\"component\":\"Text\",\"content\":\"{{ ${/audio/hint} }}\",\"styles\":{\"width\":84,\"height\":22,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"borderRadius\":11,\"backgroundColor\":\"#0C000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"audio\":{\"title\":\"阅读听书\",\"status\":\"已连接\",\"hint\":\"点按打开\",\"icon\":\"resources/base/media/icon_music.png\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-28-veggie-price-012",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求的'菜场比价卡'各项元素基本全部落实：左侧'今日/菜价'主视觉分两行展示（标题上半/下半分别绑定 titleTop/titleBottom），右侧'西红柿 2.5 元/斤'价格区清晰呈现，分隔线（垂直 + 水平）明确划分信息块，绿色环境渐变到位（#92C48D→#BDDB69→#FFFFFF），磨砂质感由 #33FFFFFF 半透明白色面板实现，'已更新'安心状态以独立小面板呈现，去歌单按钮绑定 clickToDeeplink 事件 call/args 与 eventCandidates 完全一致。轻微扣分点：dataModel.sourceText='静态示例' 同时在 hero_hint 和 status_source 两处出现，信息略冗余。",
+    "aesthetic": "截图整体观感干净专业，绿色渐变自然柔和，半透明白色面板形成明确的'磨砂玻璃'层次。主数值 2.5 与'菜价'用 32px 700 字重构成唯一最强字重，其余文字 10/12/14/16 阶梯清晰。文字均为深色压在浅绿渐变上，可读性良好。主要瑕疵：'去歌单'按钮使用 #19000000 半透明黑叠加绿色渐变，呈现略偏暗偏灰的浑浊感，与左侧白色磨砂面板的轻盈调性不统一，扣 0.5 分。",
+    "layout": "截图中所有元素均位于 2x4 卡片边界内，无溢出。水平方向：root 12+12 padding + hero_panel(100) + itemMargin(10) + main_divider(1) + itemMargin(10) + info_column(155) = 12+100+10+1+10+155+12 = 300，精确铺满。垂直方向：info_column 内 price_panel(58) + 4 + section_divider(1) + 4 + bottom_row(45) = 112 ≤ 116，余 4vp 安全余量。'西红柿 · 菜场样例价'在 147 宽 caption 内单行显示完整，'去歌单'按钮 70x32 文字居中无截断。'已更新'与'静态示例'在 status_panel 77x40 内上下排版清晰，底部 12vp 边距合规。轻微扣分：status_panel 与 action_button 之间的 itemMargin=8 留白略紧，但截图未发现挤压或裁切。"
+  },
+  "issues": [
+    "dataModel.sourceText='静态示例' 在 hero_panel 和 status_panel 两处复用，信息表达略有冗余",
+    "'去歌单'按钮 backgroundColor='#19000000'（10% 黑）在绿色渐变上叠加后偏暗偏灰，与整体轻盈的磨砂调性不统一",
+    "信息块整体偏紧凑，bottom_row 内部 status_panel 与 action_button 之间留白略显局促"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"main_divider\",\"info_column\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92C48D\",0],[\"#BDDB69\",0.58],[\"#FFFFFFFF\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"hero_top_text\",\"hero_bottom_text\",\"hero_hint\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#33FFFFFF\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"hero_top_text\",\"component\":\"Text\",\"content\":\"{{ ${/market/titleTop} }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"hero_bottom_text\",\"component\":\"Text\",\"content\":\"{{ ${/market/titleBottom} }}\",\"styles\":{\"width\":80,\"height\":38,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"hero_hint\",\"component\":\"Text\",\"content\":\"{{ ${/status/sourceText} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":92,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"price_panel\",\"section_divider\",\"bottom_row\"],\"itemMargin\":6,\"styles\":{\"width\":155,\"height\":116,\"alignItems\":\"start\",\"justifyContent\":\"start\"}},{\"id\":\"price_panel\",\"component\":\"Column\",\"children\":[\"price_caption\",\"price_value_row\"],\"itemMargin\":2,\"styles\":{\"width\":155,\"height\":54,\"padding\":4,\"borderRadius\":16,\"backgroundColor\":\"#33FFFFFF\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"price_caption\",\"component\":\"Text\",\"content\":\"{{ ${/market/featured/name} + ' · ' + ${/market/featured/caption} }}\",\"styles\":{\"width\":147,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"price_value_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"price_unit\"],\"itemMargin\":4,\"styles\":{\"width\":147,\"height\":28,\"alignItems\":\"bottom\",\"justifyContent\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/market/featured/priceText} }}\",\"styles\":{\"width\":58,\"height\":28,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"price_unit\",\"component\":\"Text\",\"content\":\"{{ ${/market/featured/unitText} }}\",\"styles\":{\"width\":54,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"section_divider\",\"component\":\"Divider\",\"styles\":{\"width\":155,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"status_panel\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":155,\"height\":44,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"status_source\"],\"itemMargin\":2,\"styles\":{\"width\":73,\"height\":44,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#33FFFFFF\",\"alignItems\":\"start\",\"justifyContent\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/status/updateText} }}\",\"styles\":{\"width\":65,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"status_source\",\"component\":\"Text\",\"content\":\"{{ ${/status/sourceText} }}\",\"styles\":{\"width\":65,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/musicLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":70,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#22000000\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#E5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"market\":{\"titleTop\":\"今日\",\"titleBottom\":\"菜价\",\"featured\":{\"name\":\"西红柿\",\"priceText\":\"2.5\",\"unitText\":\"元/斤\",\"caption\":\"菜场样例价\"}},\"status\":{\"updateText\":\"已更新\",\"sourceText\":\"静态示例\"},\"action\":{\"musicLabel\":\"去歌单\"}}}}"
+  ]
+}

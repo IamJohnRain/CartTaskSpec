@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-06-memory-clean-011",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.8,
+  "reasons": {
+    "instruction": "用户要求的磨砂玻璃质感（浅灰渐变）、三个横向小方块、纯文字缓存大小（256M/128M/1.1G）、双向绑定勾选框（select 表达式指向 apps/0~2/selected）、一键拨号按钮（拨维修 + clickToCallPhone/4008001234）、假数据等均已落实，事件 call/args 与 TaskSpec 完全一致。但勾选框与文字在截图中明显互相压字，导致微信/QQ/相册名称和勾选状态视觉上读不清，信息被部分遮挡，指令传达打了折扣。",
+    "aesthetic": "截图整体配色淡雅（白色渐变 + 绿色高亮 + 深色文字）方向是对的，字号层级也基本成立（标题粗黑、缓存值浅灰）。但每个方块里绿色勾选框的色块比 10x10 的设定看起来明显更大，几乎盖满方块上半，文字被压在色块之下，呈现效果脏乱、不精致；QQ 块的空心勾选框边框同样侵占文字空间，让卡片整体显得粗糙。",
+    "layout": "截图中最突出的排版问题：三个方块内勾选框与名称文字严重重叠——微信方块中绿色勾选色块压住「信」字右半、相册方块中绿色色块压住「册」字右半、QQ 方块中空心勾选框压住「Q」字，说明 36px 宽的方块里把 10px 勾选框和 22px 名称横排根本放不下，checkbox 实际渲染尺寸超出声明并吃掉文本水平空间。其余部分：标题区 icon_clear 图标几乎不可见（被白底吞掉）、「缓存清理」与图标间距紧贴；底部「拨维修」按钮位置和大小 OK，没有溢出卡片边界。"
+  },
+  "issues": [
+    "三个方块中勾选框与名称文字水平重叠：微信/相册的绿色勾选色块盖住「信」「册」字右半，QQ 的空心勾选框盖住「Q」字",
+    "勾选框实际渲染尺寸明显大于声明的 10x10，占满 36px 方块上半宽度",
+    "header 区 icon_clear.png 几乎不可见，与「缓存清理」标题几乎贴在一起",
+    "QQ 与微信/相册视觉权重不一致：选中态绿块过大造成视觉凌乱",
+    "勾选框 + 名称 横排布局在 36px 宽的方块内空间不够，应改为竖排"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"cache_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"header_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"缓存清理\",\"styles\":{\"width\":90,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"cache_row\",\"component\":\"Row\",\"children\":[\"wechat_tile\",\"qq_tile\",\"album_tile\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":52,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"wechat_tile\",\"component\":\"Column\",\"children\":[\"wechat_checkbox\",\"wechat_name\",\"wechat_size\"],\"itemMargin\":4,\"styles\":{\"width\":36,\"height\":52,\"borderRadius\":10,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"wechat_checkbox\",\"component\":\"Checkbox\",\"value\":\"wechat\",\"group\":\"cache\",\"select\":\"{{ ${/data/memory/apps/0/selected} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":2}}},{\"id\":\"wechat_name\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/apps/0/name} }}\",\"styles\":{\"width\":32,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"wechat_size\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/apps/0/sizeText} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"qq_tile\",\"component\":\"Column\",\"children\":[\"qq_checkbox\",\"qq_name\",\"qq_size\"],\"itemMargin\":4,\"styles\":{\"width\":36,\"height\":52,\"borderRadius\":10,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"qq_checkbox\",\"component\":\"Checkbox\",\"value\":\"qq\",\"group\":\"cache\",\"select\":\"{{ ${/data/memory/apps/1/selected} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":2}}},{\"id\":\"qq_name\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/apps/1/name} }}\",\"styles\":{\"width\":32,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"qq_size\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/apps/1/sizeText} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"album_tile\",\"component\":\"Column\",\"children\":[\"album_checkbox\",\"album_name\",\"album_size\"],\"itemMargin\":4,\"styles\":{\"width\":36,\"height\":52,\"borderRadius\":10,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"album_checkbox\",\"component\":\"Checkbox\",\"value\":\"album\",\"group\":\"cache\",\"select\":\"{{ ${/data/memory/apps/2/selected} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":2}}},{\"id\":\"album_name\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/apps/2/name} }}\",\"styles\":{\"width\":32,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"album_size\",\"component\":\"Text\",\"content\":\"{{ ${/data/memory/apps/2/sizeText} }}\",\"styles\":{\"width\":32,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"拨维修\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"4008001234\"}}],\"styles\":{\"width\":92,\"height\":30,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"memory\":{\"apps\":{\"0\":{\"name\":\"微信\",\"sizeText\":\"256M\",\"selected\":true},\"1\":{\"name\":\"QQ\",\"sizeText\":\"128M\",\"selected\":false},\"2\":{\"name\":\"相册\",\"sizeText\":\"1.1G\",\"selected\":true}}}}}}}"
+  ]
+}

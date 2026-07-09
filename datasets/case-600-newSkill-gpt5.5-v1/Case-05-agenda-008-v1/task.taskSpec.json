@@ -1,0 +1,177 @@
+{
+  "userQuery": "整个背景图带文字那种会议提醒 从日历读日程的 点一下跳进去 快迟到那种嘛",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "卡片动态数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "calendar_event_demo_001",
+              "title": "项目周会",
+              "eventLocation": "18F 会议室 A",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "oneClickServiceType": "calendarDetail"
+            }
+          ]
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "本地日历查询结果。",
+        "sampleValue": {
+          "items": [
+            {
+              "entityId": "calendar_event_demo_001",
+              "title": "项目周会",
+              "eventLocation": "18F 会议室 A",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "oneClickServiceType": "calendarDetail"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "按时间排序的日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_event_demo_001",
+              "title": "项目周会",
+              "eventLocation": "18F 会议室 A",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "oneClickServiceType": "calendarDetail"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "sampleValue": {
+              "entityId": "calendar_event_demo_001",
+              "title": "项目周会",
+              "eventLocation": "18F 会议室 A",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "oneClickServiceType": "calendarDetail"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识，用于打开日程详情。",
+              "sampleValue": "calendar_event_demo_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "下一场会议或日程标题。",
+              "sampleValue": "项目周会"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程地点。",
+              "sampleValue": "18F 会议室 A"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间，当天日程为 HH:MM。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间，当天日程为 HH:MM。",
+              "sampleValue": "10:00"
+            },
+            "oneClickServiceType": {
+              "type": "string",
+              "description": "日程可用的一键服务类型。",
+              "sampleValue": "calendarDetail"
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "description": "卡片状态与受控辅助展示字段。",
+      "sampleValue": {
+        "statusText": "快迟到了",
+        "countdownText": "还有 8 分钟",
+        "hintText": "从日历读取下一场会议",
+        "actionLabel": "查看日程",
+        "loading": false,
+        "empty": false
+      },
+      "statusText": {
+        "type": "string",
+        "description": "会议临近或迟到风险提示。",
+        "sampleValue": "快迟到了"
+      },
+      "countdownText": {
+        "type": "string",
+        "description": "距离会议开始的倒计时展示文本。",
+        "sampleValue": "还有 8 分钟"
+      },
+      "hintText": {
+        "type": "string",
+        "description": "数据来源或提醒说明。",
+        "sampleValue": "从日历读取下一场会议"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "打开日程详情的短动作文案。",
+        "sampleValue": "查看日程"
+      },
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据加载状态。",
+        "sampleValue": false
+      },
+      "empty": {
+        "type": "boolean",
+        "description": "是否没有可展示的日程。",
+        "sampleValue": false
+      }
+    },
+    "asset": {
+      "type": "object",
+      "description": "卡片允许使用的本地视觉素材。",
+      "sampleValue": {
+        "watermark": "resources/base/media/icon_watermark.png",
+        "meetingIcon": "resources/base/media/icon_meeting.png"
+      },
+      "watermark": {
+        "type": "string",
+        "description": "日程场景水印素材路径。",
+        "sampleValue": "resources/base/media/icon_watermark.png"
+      },
+      "meetingIcon": {
+        "type": "string",
+        "description": "会议识别图标素材路径。",
+        "sampleValue": "resources/base/media/icon_meeting.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_watermark.png",
+      "description": "当下日程水印图标，适合作为会议提醒卡片的低对比背景视觉锚点。"
+    },
+    {
+      "src": "resources/base/media/icon_meeting.png",
+      "description": "会议图标，适合用于日历会议、下一场日程和会议提醒的识别。"
+    }
+  ]
+}

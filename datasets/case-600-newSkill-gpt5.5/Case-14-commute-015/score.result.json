@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-14-commute-015",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求通勤卡深色舞台风、氛围背景、分割线分组、纵向路况节点+风险等级、紧迫感渐变、注意提示、点击调起导航。截图中：深灰到紫色对角渐变背景呈现舞台氛围；标题'当前最优路线'配白色底盒中的导航箭头图标（来自assetCandidates的location_north_up_right_fill.svg）；两条分割线将信息分为header/路况列表/警告三组；三个路况节点纵向排列并配有红/橙/淡三色风险徽章体现紧迫感递减；底部'前方拥堵 点按导航'注意提示可见；root onClick绑定clickToIntent→StartNavigate，参数dstLocation与trafficpe原样来自eventCandidates。数据绑定路径、素材、事件均与TaskSpec一致。所有userQuery明确诉求均已落实。轻微不足：注意提示使用Text+边框模拟按钮，CTA语义略弱；'低风险'徽章底色#19ffffff透明度仅10%，截图几乎与暗紫背景融合。",
+    "aesthetic": "截图整体观感专业：深灰到紫色对角渐变营造舞台氛围；白色图标底盒与深色背景对比鲜明，导航箭头在白盒中清晰可读；红/橙/淡三色风险徽章层级清晰体现紧迫感递减；白色文字在深色背景上对比度良好可读性强；间距均匀，对齐工整。轻微扣分点：底部'前方拥堵 点按导航'容器（28高）相对单行文字略显厚重，且底色#19ffffff+边框#33ffffff视觉上偏弱；'低风险'徽章背景透明度太低，视觉上与背景几乎融合，略有缺憾。",
+    "layout": "截图显示所有元素均位于140x140卡片边界内，无溢出或裁切。纵向核算：header(22)+itemMargin(4)+divider(1)+itemMargin(4)+timeline(48)+itemMargin(4)+divider(1)+itemMargin(4)+warning(28)=116，加padding 12×2=140，正好填满无溢出。三个节点行每行14高+margin 2合计48，与设计一致。文字均无截断：标题'当前最优路线'完整、三个节点标签与徽章对齐整齐、警告文字'前方拥堵 点按导航'居中无溢出。底部警告容器底边到卡片底边约12vp，符合8-12vp锚定要求。整体排版干净，无堆叠/重叠/裁切问题。"
+  },
+  "issues": [
+    "底部'前方拥堵 点按导航'使用Text+边框模拟按钮，建议改为Button组件以强化CTA语义（但需权衡root onClick的全卡可点性）",
+    "'低风险'徽章背景色#19ffffff透明度仅10%，截图几乎与暗紫背景融合，建议提高至#33ffffff以增强可识别性",
+    "警告容器底色#19ffffff+边框#33ffffff视觉偏弱，建议提高底色或边框对比度以更好承担CTA视觉锚点",
+    "风险徽章字重500略轻，截图中小字号风险文字（10sp）可读性可进一步加强（建议600）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"divider_top\",\"timeline_col\",\"divider_bottom\",\"warning_text\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/commute/destination/latitude} }}\",\"longitude\":\"{{ ${/commute/destination/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff202224\",0],[\"#634794\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_box\",\"title_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"icon_box\",\"component\":\"Row\",\"children\":[\"route_icon\"],\"styles\":{\"width\":22,\"height\":22,\"backgroundColor\":\"#ffffffff\",\"borderRadius\":8,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"route_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/location_north_up_right_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/title} }}\",\"styles\":{\"width\":90,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"timeline_col\",\"component\":\"Column\",\"children\":[\"node_row_0\",\"node_row_1\",\"node_row_2\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"node_row_0\",\"component\":\"Row\",\"children\":[\"node_label_0\",\"risk_label_0\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"node_label_0\",\"component\":\"Text\",\"content\":\"{{ ${/commute/nodes/0/label} }}\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"risk_label_0\",\"component\":\"Text\",\"content\":\"{{ ${/commute/nodes/0/risk} }}\",\"styles\":{\"width\":38,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffd94838\",\"borderRadius\":7,\"maxLines\":1}},{\"id\":\"node_row_1\",\"component\":\"Row\",\"children\":[\"node_label_1\",\"risk_label_1\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"node_label_1\",\"component\":\"Text\",\"content\":\"{{ ${/commute/nodes/1/label} }}\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"risk_label_1\",\"component\":\"Text\",\"content\":\"{{ ${/commute/nodes/1/risk} }}\",\"styles\":{\"width\":38,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#ffdb6b42\",\"borderRadius\":7,\"maxLines\":1}},{\"id\":\"node_row_2\",\"component\":\"Row\",\"children\":[\"node_label_2\",\"risk_label_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":14,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"node_label_2\",\"component\":\"Text\",\"content\":\"{{ ${/commute/nodes/2/label} }}\",\"styles\":{\"width\":74,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"risk_label_2\",\"component\":\"Text\",\"content\":\"{{ ${/commute/nodes/2/risk} }}\",\"styles\":{\"width\":38,\"height\":14,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":7,\"maxLines\":1}},{\"id\":\"divider_bottom\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/warning} }}\",\"styles\":{\"width\":116,\"height\":28,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"borderRadius\":14,\"maxLines\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"commute\":{\"title\":\"当前最优路线\",\"nodes\":[{\"label\":\"高架拥堵\",\"risk\":\"高风险\"},{\"label\":\"主路缓行\",\"risk\":\"中风险\"},{\"label\":\"辅路畅通\",\"risk\":\"低风险\"}],\"warning\":\"前方拥堵 点按导航\",\"destination\":{\"latitude\":\"22.2800\",\"longitude\":\"114.1588\"}}}}}"
+  ]
+}

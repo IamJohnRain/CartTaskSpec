@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-14-commute-007",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户四项诉求均在截图中可见：①通勤卡片主题明确（标题'通勤日程'）；②带数字行已呈现为右侧'12分钟'大号加粗主指标；③底部'去地图'蓝色按钮挂载 clickToDeeplink 事件，args.uri 来自 /data/calendar/items/0/oneClickServiceLink，与 eventCandidates 完全一致；④日历日程（标题'到公司晨会'、时间'08:45-09:30'、地点'华为园区 A 座'、提醒'08:15'）均从 /data/calendar/items 正确读取；⑤'快迟到了'红色徽章+红色'提醒 08:15'形成迟到风险提示。assetCandidates.icon_schedule.png 已挂到 header_row。轻微扣分点：header_row 左侧的 schedule_icon 在截图中几乎不可见（疑似被渲染得过小或与浅色背景对比度太低），未达到强化识别的效果。",
+    "aesthetic": "截图整体观感专业、克制：白→浅灰 linearGradient 底色干净，红蓝双色作为强调色（红用于风险提示、蓝用于行动 CTA）形成清晰语义对照；字号层级有梯度——'12分钟' 20pt 加粗最强、'到公司晨会' 16pt 次之、辅助信息 12pt 灰；圆角徽章和胶囊按钮形态统一；留白舒适无明显拥挤。扣分点：header_row 左侧的日程图标在浅渐变背景上几乎隐形，未形成有效视觉锚点，header 行略显得左侧空荡。",
+    "layout": "截图中各模块分层清晰：头部 24vp 行（标题+徽章）+ 1vp 分割线 + 83vp 内容行（左侧 4 行事件信息 + 右侧主指标/建议/CTA），整体在 300×140 容器内完整呈现，未观察到文字截断、元素堆叠或越界。'快迟到了'徽章、'12分钟'主指标、'去地图'按钮三个受保护文本/CTA 均完整居中显示；按钮热区 90×32（约 32vp 高）满足 ≥24vp 要求；卡片底边到按钮底边约 12vp 左右，处于 10-14vp 理想区间。布局数学校验通过（Column 纵向占用 12+24+4+1+4+83+12=140，Row 横向占用 20+6+164+6+80=276，main_info_col 20+4+17+4+17+4+17=83，action_col 24+4+17+4+32=81，均无溢出）。"
+  },
+  "issues": [
+    "header_row 中 schedule_icon 实际渲染效果在浅渐变背景上几乎不可见，图标识别度低",
+    "用户原话'有行带数字的话,点一下跳到地图'语义上偏向数字行可点击，但当前仅'去地图'按钮承载 onClick，'12分钟'主指标行未独立承载点击事件，略有歧义",
+    "action_col 右侧文字/按钮均为 center 对齐，与左侧 main_info_col 的 start 对齐在视觉上形成左右两套基线，缺少统一的纵向基准感（可接受但不完美）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"section_divider\",\"body_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#FFFFFFFF\",0],[\"#FFF1F3F5\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"title_text\",\"spacer\",\"warning_badge\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\",\"backgroundColor\":\"#0D0A59F7\",\"borderRadius\":6}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/objectLabel} }}\",\"styles\":{\"width\":160,\"height\":24,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"spacer\",\"component\":\"Row\",\"styles\":{\"width\":1,\"height\":1,\"layoutWeight\":1}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/ui/warningText} }}\",\"styles\":{\"width\":76,\"height\":26,\"padding\":{\"left\":10,\"right\":10,\"top\":5,\"bottom\":5},\"borderRadius\":13,\"backgroundColor\":\"#FFE84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"section_divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"main_info_col\",\"action_col\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":80,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"main_info_col\",\"component\":\"Column\",\"children\":[\"event_title\",\"event_time\",\"event_location\",\"reminder_text\"],\"itemMargin\":3,\"styles\":{\"width\":178,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":178,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"event_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":178,\"height\":17,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"event_location\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":178,\"height\":17,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/reminderPrefix} + ${/data/calendar/items/0/remindTime/0} }}\",\"styles\":{\"width\":178,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFE84026\",\"maxLines\":1}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"route_minutes\",\"route_hint\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":90,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"route_minutes\",\"component\":\"Text\",\"content\":\"{{ ${/ui/routeMinutesText} }}\",\"styles\":{\"width\":90,\"height\":24,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#E5000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"route_hint\",\"component\":\"Text\",\"content\":\"{{ ${/ui/routeHint} }}\",\"styles\":{\"width\":90,\"height\":17,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"{{ ${/data/calendar/items/0/oneClickServiceLink} }}\"}}],\"styles\":{\"width\":90,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#FF0A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-commute-001\",\"title\":\"到公司晨会\",\"eventLocation\":\"华为园区 A 座\",\"dtStart\":\"08:45\",\"dtEnd\":\"09:30\",\"remindTime\":[\"08:15\"],\"oneClickServiceLink\":\"mapapp://navigate?destination=office\",\"isServiceValid\":2}]}},\"ui\":{\"objectLabel\":\"通勤日程\",\"warningText\":\"快迟到了\",\"routeMinutesText\":\"12分钟\",\"routeHint\":\"建议现在出发\",\"actionLabel\":\"去地图\",\"reminderPrefix\":\"提醒 \"},\"state\":{\"loading\":false,\"empty\":false}}}}"
+  ]
+}

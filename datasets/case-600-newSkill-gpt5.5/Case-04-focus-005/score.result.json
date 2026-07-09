@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求'数字会变'、'点一下能进app'、'红色提醒我撑不住了'。截图中可见：左侧大字号倒计时 08:42、底部红色进度条（胶囊型）、右侧红色加粗的'快撑不住了'状态文案、红色'进入专注'CTA 按钮，且 onClick 原样绑定了 TaskSpec 中的 clickToDeeplink 事件，bundleName/abilityName/uri 与契约一致。标题、状态、辅助说明、进度、动作文案均完整呈现。协议硬约束（2x4=300x140、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/、value 与 TaskSpec.dataModel.value 一致）全部满足。略扣 1 分因任务规范要求的'红色提醒'在视觉张力上仍可更强（右侧面板底色偏冷灰而非带红色调）。",
+    "aesthetic": "截图观感整体克制专业：浅灰渐变底搭配白色左卡+浅灰右卡，层次清晰；红色仅作用于状态文案、按钮、进度条三处重点，色彩克制而有重点。40px 倒计时与 16px 状态文案形成清晰字号阶梯；16px 标题与 12px 辅助/标签字重分明。无多余装饰。扣分点：右侧'提醒'面板底色 #0c000000 偏冷灰，与'红色提醒'语义略有错位，若换成极淡红色调会更贴合用户原话。",
+    "layout": "截图中所有元素均落在卡片 300x140 边界内，无溢出、无堆叠、无文字截断：左侧 Column 内 title(18) + primary_value(42) + hint_text(16) + progress(8) 加 itemMargin 4 与上下 padding 8，合计 92，未超过 116 高度；右侧 status_label(16) + status_text(36) + action_button(32) 加 itemMargin 6 与 padding 8，合计 110，留 6vp 余量，按钮未贴边。左右两面板 168+10+98=276 恰好等于内容区宽度。底部按钮底边到卡片底边约 10-12vp，符合 2x4 卡片 10-14vp 要求，按钮热区 82x32 满足 ≥24vp。布局干净无问题。"
+  },
+  "issues": [
+    "右侧'提醒'面板底色 #0c000000 偏冷灰，与用户'红色提醒我撑不住了'的语义强调略有错位",
+    "右侧面板高度合计 110/116，留白仅 6vp，稍显紧凑",
+    "进度条仅显示进度，未在视觉上突出百分比数值"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffe5e5ea\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"focus_panel\",\"status_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"focus_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"hint_text\",\"progress_bar\"],\"itemMargin\":4,\"styles\":{\"width\":168,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/title} }}\",\"styles\":{\"width\":152,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/remainingTime} }}\",\"styles\":{\"width\":152,\"height\":42,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/hintText} }}\",\"styles\":{\"width\":152,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/data/focus/progressValue} }}\",\"total\":\"{{ ${/data/focus/progressTotal} }}\",\"styles\":{\"width\":152,\"height\":8,\"type\":\"capsule\",\"color\":\"#ffe84026\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_label\",\"status_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":98,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_label\",\"component\":\"Text\",\"content\":\"提醒\",\"styles\":{\"width\":82,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/statusText} }}\",\"styles\":{\"width\":82,\"height\":34,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":2,\"textAlign\":\"center\",\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/focus/actionText} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":82,\"height\":30,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"focus\":{\"title\":\"专注计时\",\"remainingTime\":\"08:42\",\"statusText\":\"快撑不住了\",\"hintText\":\"还差一点就完成本轮\",\"progressValue\":82,\"progressTotal\":100,\"actionText\":\"进入专注\"}}}}}"
+  ]
+}

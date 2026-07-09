@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-014",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.4,
+  "reasons": {
+    "instruction": "用户明确要求浅色底、环形显示预算、嵌入'距离还款日还有 3 天'面板、渐变强调紧迫感、跳天气和日历应用、文字图标、纵向排列、带'已达成'绿色状态。从截图看：浅色底✓、环形预算✓（76%）、渐变面板✓、天气/日历按钮✓、纵向排列✓、文字图标✓。但'已达成'绿色状态文字被橙色渐变面板严重遮挡，仅能看到顶部笔画，下半部分完全被覆盖，用户无法清晰读取该状态信息，属于关键诉求落实不完整。",
+    "aesthetic": "整体配色和谐：白色卡底+绿色环形+橙色渐变面板，绿色'76%'作为最强字重形成清晰视觉焦点，橙色渐变有效传达紧迫感。但截图中'已达成'绿色文字与橙色面板发生明显堆叠/穿插，绿色文字碎片出现在橙色面板顶部，视觉上非常凌乱，严重破坏了画面的整洁度和专业感。按钮样式简洁但偏小，留白尚可。",
+    "layout": "截图中存在明显布局问题：'已达成'状态文字（绿色）位于环形下方，其下半部分被'距离还款日还有 3 天'橙色渐变面板的顶部边缘直接覆盖/裁切，仅能辨认出顶部横画。这是由于 progress_stack 内的 ring_center Column 包含 3 个子项（预算/76%/已达成）总高 46px，Stack 仅 54px 高，导致 status_text 被推到 Stack 底部并溢出到 due_panel 区域。底部两个按钮（天气/日历）大小、间距正常，未越界。受保护文本'已达成'被截断是核心扣分项。"
+  },
+  "issues": [
+    "progress_stack 内的 ring_center Column 高度 46px 包含三个子项（预算 label 12 + 76% 22 + 已达成 12），与 54px 高的 Stack 叠加后，status_text 被推到 Stack 底部并与下方 due_panel 发生堆叠",
+    "截图中'已达成'绿色文字下半部分被橙色渐变面板顶部裁切/覆盖，仅顶部笔画可见，状态信息无法完整呈现",
+    "环形尺寸 54x54 在 116 内容区中偏大，挤压了 status_text 的安全空间",
+    "due_panel 高度 30 偏大，可适当压缩以释放空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"progress_stack\",\"status_text\",\"due_panel\",\"action_row\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"progress_stack\",\"component\":\"Stack\",\"children\":[\"budget_ring\",\"ring_center\"],\"styles\":{\"width\":44,\"height\":44,\"alignContent\":\"center\"}},{\"id\":\"budget_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/budget/percent} }}\",\"total\":\"{{ ${/budget/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ff64bb5c\",\"width\":44,\"height\":44}},{\"id\":\"ring_center\",\"component\":\"Column\",\"children\":[\"budget_label\",\"budget_value\"],\"styles\":{\"width\":44,\"height\":32,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"budget_label\",\"component\":\"Text\",\"content\":\"预算\",\"styles\":{\"width\":44,\"height\":10,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"budget_value\",\"component\":\"Text\",\"content\":\"{{ ${/budget/percentText} }}\",\"styles\":{\"width\":44,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/budget/statusText} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"due_panel\",\"component\":\"Row\",\"children\":[\"due_text\"],\"styles\":{\"width\":116,\"height\":24,\"padding\":2,\"borderRadius\":12,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffed6f21\",0],[\"#f9a01e\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"due_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":112,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"weather_button\",\"calendar_button\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":54,\"height\":24,\"borderRadius\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#0c000000\"}},{\"id\":\"calendar_button\",\"component\":\"Button\",\"label\":\"日历\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":54,\"height\":24,\"borderRadius\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#0c000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"budget\":{\"percent\":76,\"total\":100,\"percentText\":\"76%\",\"statusText\":\"已达成\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"repay-20260712\",\"description\":\"距离还款日还有 3 天\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

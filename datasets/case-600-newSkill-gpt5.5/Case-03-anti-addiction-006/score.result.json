@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-03-anti-addiction-006",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户明确要求'红色那种危险提示'，但截图中底部的危险提示胶囊（'危险 超时风险'）使用的是与上方按钮相同的橙色 #ffed6f21，并非红色，语义和指令都不符合；按钮 onClick 已正确绑定到 TaskSpec 提供的 clickToDeeplink，中间的 '今日已用 42 分钟' 数字 42 完整呈现，icon_timing.png 资源正确使用；dataModel 中的 title 字段未被绑定显示（用户未明确要求，所以仅作轻微扣分项）。",
+    "aesthetic": "截图整体布局尚算干净，浅灰渐变背景与中间灰色胶囊搭配协调，但存在两个明显问题：1) 危险提示使用橙色而非红色，色系与上方按钮完全一致，弱化了'危险'的视觉警示性；2) '危险' 二字在截图中出现明显的横线贯穿效果，疑似字形被部分裁切，视觉上不专业。",
+    "layout": "截图中三行内容垂直排布紧凑，140x140 卡片内容（12+32+6+48+6+24+12=140）刚好填满，无溢出无截断；按钮居中显示、'今日已用 42 分钟' 正确换行成两行、底部红/橙胶囊完整可见；但 alert_title 容器 width:28 height:16 容纳 12pt 中文字过紧，导致'危险'二字在截图中出现贯穿横线（疑似上下被裁切后中文字的横画被强调），属于明显的文字渲染问题，需扩容修复。"
+  },
+  "issues": [
+    "用户明确要求红色危险提示，实际渲染为橙色 (#ffed6f21)，指令遵从缺失",
+    "alert_title 高度 16 在 12pt 字体下过紧，截图中 '危险' 出现疑似裁切的贯穿横线",
+    "action_button 与 alert_row 使用同一橙色，颜色层级冲突，弱化危险警示",
+    "dataModel 中 title 字段未被使用（轻微）",
+    "action_button 文字与背景色对比尚可，但橙色按钮在浅灰背景上偏跳跃，可考虑更柔和色"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"action_button\",\"main_row\",\"alert_row\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#ffffffff\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/antiAddiction/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff007dff\",\"fontColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"status_icon\",\"primary_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":48,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#0c000000\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_timing.png\",\"styles\":{\"width\":28,\"height\":28,\"objectFit\":\"contain\"}},{\"id\":\"primary_text\",\"component\":\"Text\",\"content\":\"{{ ${/antiAddiction/primaryText} }}\",\"styles\":{\"width\":64,\"height\":32,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"textAlign\":\"start\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_title\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":3,\"bottom\":3},\"borderRadius\":12,\"backgroundColor\":\"#ffe53935\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"alert_title\",\"component\":\"Text\",\"content\":\"危险\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/antiAddiction/riskText} }}\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"antiAddiction\":{\"title\":\"防沉迷\",\"actionLabel\":\"去设置\",\"primaryText\":\"今日已用 42 分钟\",\"riskText\":\"超时风险\"}}}}"
+  ]
+}

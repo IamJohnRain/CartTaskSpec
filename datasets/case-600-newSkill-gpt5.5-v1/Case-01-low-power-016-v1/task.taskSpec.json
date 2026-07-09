@@ -1,0 +1,127 @@
+{
+  "userQuery": "我每天出门前都要检查手机还有多少电和今天要办的事,老是忘。做个卡片,上面放电池图标做主视觉,下面纵向排列几个待办日程项,每项能勾选绑定。卡片读取天气预报显示今天天气,也要能点击进入具体的日程事件详情。简洁素净的卡片表面,整体氛围背景,不要渐变。电量低于20%时待办项显示橙色注意状态。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "event-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "event-002"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "18°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "今日天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条日程的唯一标识符",
+              "sampleValue": "event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条今日待办日程标题",
+              "sampleValue": "晨会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条日程开始时间",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第一条日程结束时间",
+              "sampleValue": "10:00"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条日程的唯一标识符",
+              "sampleValue": "event-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条今日待办日程标题",
+              "sampleValue": "取快递"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条日程开始时间",
+              "sampleValue": "18:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条日程结束时间",
+              "sampleValue": "18:30"
+            }
+          }
+        ]
+      }
+    },
+    "state": {
+      "battery": {
+        "levelPercent": {
+          "type": "number",
+          "description": "手机当前电量百分比数值",
+          "sampleValue": 18
+        },
+        "levelText": {
+          "type": "string",
+          "description": "手机当前电量展示文本",
+          "sampleValue": "18%"
+        },
+        "isLowBattery": {
+          "type": "boolean",
+          "description": "电量是否低于20%",
+          "sampleValue": true
+        }
+      },
+      "todoChecks": [
+        {
+          "type": "boolean",
+          "description": "第一条待办日程是否已勾选",
+          "sampleValue": false
+        },
+        {
+          "type": "boolean",
+          "description": "第二条待办日程是否已勾选",
+          "sampleValue": true
+        }
+      ]
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标素材，适合作为手机电量和低电提醒的主视觉。"
+    }
+  ]
+}

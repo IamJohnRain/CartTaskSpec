@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-27-utility-bill-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图中可见用户三项诉求均被落实：动态数字'128.6元'以大字号数据绑定呈现；'已欠费'白色胶囊徽标 + '逾期可能停供'副文 + '7月12日前'构成完整欠费提醒；'去缴费'红色按钮绑定 clickToDeeplink 事件，call/args 与 eventCandidates 完全一致。DataModel 8 个字段全部消费、renderDataModel 路径/值与契约一致；createSurface 尺寸 300x140、catalogId、version、borderRadius、clip 等硬约束均满足。assetCandidates 为空故未涉及网络图。唯一微瑕：主金额'128.6元'与状态徽标'已欠费'虽同属左侧主面板但视觉上分离感略强，徽标更靠近卡片中心而非紧贴标题。",
+    "aesthetic": "截图整体观感专业克制：暖橙渐变背景与'已欠费/逾期'语义高度契合，不刺眼；前景黑/深灰文字在浅渐变上对比清晰可读；字号阶梯 40/16/14/12/10 层级清晰，主金额字重 800 为唯一最强字重；右侧白色卡片与左侧暖色形成材质对比，去缴费红色 CTA 在白底上突出；留白密度适中，对齐统一。微扣分点：渐变在卡片右下角略偏黄，视觉上略不均匀。",
+    "layout": "截图中未观察到文字截断、元素堆叠或溢出：标题'水电账单'完整显示，徽标'已欠费'在白底胶囊内完整居中，主金额'128.6元'独占一行未与上方元素重叠，'本月水电待缴'与'10:24更新'分行清晰，右侧'6月账单/7月12日前/逾期可能停供/去缴费'四元素在白色卡片内纵向排列，底部按钮距卡片底边约 8-10vp，合规。垂直分割线高度 92 居中对齐。仅'已欠费'徽标在水平方向上距主金额较近、与标题距离稍远，视觉节奏略有跳跃，但未造成遮挡或裁切。"
+  },
+  "issues": [
+    "状态徽标'已欠费'水平位置偏向卡片中线，与左侧标题'水电账单'的视觉关联较弱",
+    "主金额'128.6元'(height:44,fontSize:40)与下方 caption 行距偏紧，caption 紧贴大字底部",
+    "渐变方向 RightBottom 使右下角偏黄，与左侧暖橙过渡略不均匀"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff5f0ec\",0],[\"#fff0b46a\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"main_panel\",\"center_divider\",\"side_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"primary_caption\",\"updated_text\"],\"itemMargin\":6,\"styles\":{\"width\":174,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_pill\"],\"itemMargin\":6,\"styles\":{\"width\":174,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/title} }}\",\"styles\":{\"width\":96,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_pill\",\"component\":\"Row\",\"children\":[\"status_text\"],\"styles\":{\"width\":72,\"height\":22,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":11,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/statusText} }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/bill/amountText} }}\",\"styles\":{\"width\":174,\"height\":42,\"fontSize\":38,\"fontWeight\":800,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/bill/caption} }}\",\"styles\":{\"width\":174,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/updatedText} }}\",\"styles\":{\"width\":174,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"center_divider\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":92,\"strokeWidth\":2,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"side_title\",\"due_date_text\",\"reminder_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":84,\"height\":116,\"padding\":{\"left\":8,\"right\":8,\"top\":8,\"bottom\":8},\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"borderWidth\":1,\"borderColor\":\"#33000000\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"side_title\",\"component\":\"Text\",\"content\":\"{{ ${/bill/periodText} }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"due_date_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/dueDateText} }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/bill/reminderText} }}\",\"styles\":{\"width\":68,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去缴费\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"storage_settings\"}}],\"styles\":{\"width\":68,\"height\":32,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"bill\":{\"title\":\"水电账单\",\"amountText\":\"128.6元\",\"statusText\":\"已欠费\",\"caption\":\"本月水电待缴\",\"periodText\":\"6月账单\",\"dueDateText\":\"7月12日前\",\"reminderText\":\"逾期可能停供\",\"updatedText\":\"10:24更新\"}}}}"
+  ]
+}

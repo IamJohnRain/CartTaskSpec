@@ -1,0 +1,87 @@
+{
+  "userQuery": "给我弄个雨天打车的小卡片，点一下能导航去公司，还能读天气看看雨多大",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.543096",
+            "longitude": "114.057865"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "当前天气查询的区县或当前位置短名称。",
+            "sampleValue": "本地"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "24℃"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于提示雨势和出行场景。",
+            "sampleValue": "小雨"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始的天气预报列表。",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "当天白天降雨概率百分比，用于判断雨下得多不多。",
+                "sampleValue": "80%"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "rainProbabilityPercent": "80%"
+            }
+          ]
+        }
+      }
+    },
+    "destination": {
+      "company": {
+        "latitude": {
+          "type": "string",
+          "description": "用户已配置的公司目的地纬度，用于发起驾车导航。",
+          "sampleValue": "22.543096"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "用户已配置的公司目的地经度，用于发起驾车导航。",
+          "sampleValue": "114.057865"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合表达雨天、降雨和出行天气状态。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "指向右上方的导航箭头图标，适合地图导航、方向指引和路线规划动作。"
+    }
+  ]
+}

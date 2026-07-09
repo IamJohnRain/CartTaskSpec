@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-014",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.7,
+  "reasons": {
+    "instruction": "用户明确要求上方左右并排展示'剩余空间15%'和当前电量，但截图中左侧面板只显示了'剩余空间'四个字，'15%'被截断/丢失，与用户指令不符，属于关键信息缺失。电量22%显示完整。点击卡片开启超级省电模式的 onClick 事件正确绑定到 root。四个 App 图标在下方横向排列，使用了 4 个 assetCandidates 素材，语义正确。卡片尺寸 2x4 正确。渐变色为黑→紫→橙，色调偏'日落'，与用户要求的'深夜倒计时'暗夜紧张感不够吻合，深夜主题通常应是黑/深蓝/暗红。",
+    "aesthetic": "整体观感中规中矩。深色→紫色→橙色的渐变有层次感，但末端橙色偏亮偏暖，更像日落而非用户期待的'深夜告警'色调，危险超限的视觉压迫感不够强烈。两个顶部药丸面板有磨砂玻璃质感，文字白色清晰可读。App 图标和底部提示排版整齐。但左右两个面板视觉分量一致，无法凸显'剩余空间15%'这个告警焦点；底部'超限告警'字色为白色，告警感被削弱。",
+    "layout": "截图中左侧 storage_panel 内的文字'剩余空间15%'只显示了'剩余空间'，'15%'被截掉，这是核心可读性问题。底部 action_hint 的'轻触开启超级省电'文字底边紧贴卡片下边距，几乎与底部圆角相切，留白不足。整体三段布局（顶部指标 / App 条 / 底部提示）纵向计算为 24+50+8+30+8+20=140，刚好塞满无空隙，是底部贴近卡片边缘的根本原因。App 单元格排列整齐无重叠。"
+  },
+  "issues": [
+    "左侧 storage_value 文本'剩余空间15%'在 116 宽度内容区中按 fontSize 20 渲染时被截断，'15%'丢失（截图实证）",
+    "底部 action_hint 距卡片底边过近（接近 0vp），底部'轻触开启超级省电'底边几乎贴着卡片圆角下沿",
+    "渐变方向黑→紫→橙偏日落感，未体现'深夜倒计时'的暗夜压迫与'危险超限告警'的红/暗红警告色",
+    "底部'超限告警'字色为白色，未用告警色强调，'告警'语义被视觉弱化"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_metrics\",\"app_strip\",\"action_hint\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff0a0a18\",0],[\"#ff3b1a4a\",0.55],[\"#ffdc0a1f\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"top_metrics\",\"component\":\"Row\",\"children\":[\"storage_panel\",\"battery_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"storage_panel\",\"component\":\"Column\",\"children\":[\"storage_value\"],\"styles\":{\"width\":132,\"height\":44,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"storage_value\",\"component\":\"Text\",\"content\":\"{{ ${/storage/remainingText} }}\",\"styles\":{\"width\":120,\"height\":28,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"battery_panel\",\"component\":\"Column\",\"children\":[\"battery_value\"],\"styles\":{\"width\":132,\"height\":44,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/battery/currentText} }}\",\"styles\":{\"width\":120,\"height\":28,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"app_strip\",\"component\":\"Row\",\"children\":[\"app_cell_1\",\"app_cell_2\",\"app_cell_3\",\"app_cell_4\"],\"itemMargin\":6,\"styles\":{\"width\":276,\"height\":30,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"app_cell_1\",\"component\":\"Row\",\"children\":[\"app_icon_1\",\"app_label_1\"],\"itemMargin\":4,\"styles\":{\"width\":64,\"height\":30,\"padding\":4,\"borderRadius\":15,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"app_icon_1\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_tiktok.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"app_label_1\",\"component\":\"Text\",\"content\":\"视频\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"app_cell_2\",\"component\":\"Row\",\"children\":[\"app_icon_2\",\"app_label_2\"],\"itemMargin\":4,\"styles\":{\"width\":64,\"height\":30,\"padding\":4,\"borderRadius\":15,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"app_icon_2\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_music.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"app_label_2\",\"component\":\"Text\",\"content\":\"音乐\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"app_cell_3\",\"component\":\"Row\",\"children\":[\"app_icon_3\",\"app_label_3\"],\"itemMargin\":4,\"styles\":{\"width\":64,\"height\":30,\"padding\":4,\"borderRadius\":15,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"app_icon_3\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_clear.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"app_label_3\",\"component\":\"Text\",\"content\":\"缓存\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"app_cell_4\",\"component\":\"Row\",\"children\":[\"app_icon_4\",\"app_label_4\"],\"itemMargin\":4,\"styles\":{\"width\":64,\"height\":30,\"padding\":4,\"borderRadius\":15,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"app_icon_4\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_phone.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"app_label_4\",\"component\":\"Text\",\"content\":\"系统\",\"styles\":{\"width\":24,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_hint\",\"component\":\"Row\",\"children\":[\"alert_text\",\"power_text\"],\"styles\":{\"width\":276,\"height\":22,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"超限告警\",\"styles\":{\"width\":56,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffff3838\",\"maxLines\":1}},{\"id\":\"power_text\",\"component\":\"Text\",\"content\":\"轻触开启超级省电\",\"styles\":{\"width\":112,\"height\":20,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"storage\":{\"remainingText\":\"剩余空间15%\"},\"battery\":{\"currentText\":\"电量22%\"}}}}"
+  ]
+}

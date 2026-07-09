@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-01-low-power-002",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户三项核心诉求在截图中均清晰呈现：标题'低电提醒'+ 大号红字'快没电了'落实低电量提示；'多云 28°C' 落实天气信息；蓝色'找充电宝' 按钮落实一键导航。onClick 事件 clickToIntent/StartNavigate 与 eventCandidates 原样一致，dataModel 路径与 schema 全部对齐，根壳 140x140、catalogId、version 等硬约束均满足。",
+    "aesthetic": "截图采用深色 (#191a1c) 卡片背景，与白色标题、红色告警、浅灰天气、蓝色 CTA 形成清晰的视觉层级，配色克制和谐；字号阶梯 14/20/12/14 区分明显，红色告警为主视觉重点，字重层级合理；卡片内部留白适中、对齐统一，整体观感专业。",
+    "layout": "截图未发现任何堆叠、截断或溢出：标题、告警主值、天气、按钮均完整可见且未被裁切；Column 内容总占用 12+18+6+24+6+18+6+32+12=134，小于 140，无溢出；按钮高 32vp、热区充足；按钮底边距卡片底边约 12vp，符合 2x2 锚定范围。仅按钮宽度 92 相对 116 内容区略偏窄，视觉上右侧留白稍多，但不构成布局问题。"
+  },
+  "issues": [
+    "按钮宽度 92 相对内容区 116 偏窄，视觉占比不够饱满，可加宽至 100~108 提升 CTA 存在感",
+    "Column justifyContent 为 start，底部按钮与卡片底边之间存在约 6vp 多余空白（叠加 12vp 底 padding 共 18vp），略多于推荐 8~12vp 下边距"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"weather_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"低电提醒\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/state/battery/alertText} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"找充电宝\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"31.2304\",\"longitude\":\"121.4737\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":108,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff317af7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"state\":{\"battery\":{\"alertText\":\"快没电了\"},\"loading\":false},\"data\":{\"weather\":{\"location\":{\"districtName\":\"当前位置\"},\"current\":{\"temperatureText\":\"28°C\",\"condition\":\"多云\"},\"daily\":[],\"updatedAt\":\"\"}}}}}"
+  ]
+}

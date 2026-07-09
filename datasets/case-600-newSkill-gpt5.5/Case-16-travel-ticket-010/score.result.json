@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-16-travel-ticket-010",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求出行卡片，截图实际呈现了：1) 出行票务标题与飞机图标对应'整个出行卡片'诉求；2) 16:40、G1234高铁、延误18分均使用 {{ ${/...} }} 数据绑定，对应'数字会变'；3) 底部'看行程'Button 携带 clickToIntent/ViewCalendarEvent 事件，entityId 取自 dataModel，对应'点一下能操作/读日历'；4) '延误18分'通过三元表达式在 description 不为'准点'时使用红色字 #ffe84026，对应'延误就标红'。协议层 size=2x2、catalogId/version/updateDataModel 全部正确。无遗漏主要诉求。",
+    "aesthetic": "截图中橙色径向渐变与白色文字的对比清晰温暖，红色延误状态在橙底上突出，整体配色和谐统一。字号层级合理：16:40（20pt 800）> G1234 高铁（14pt 700）> 出行票务/延误18分（12pt 600/700）> 看行程（14pt 700）。左侧出行票务使用 #99ffffff 半透明白，略有偏淡，但仍在可读范围；按钮采用半透明白底 + 细白边的轻玻璃质感，专业克制。无明显空洞或拥挤，对齐统一。",
+    "layout": "截图显示 2x2 卡片内五层内容垂直排布：header_row(20) + primary_time(24) + trip_title(16) + alert_row(16) + action_button(32) = 108，配合 4 段 itemMargin=2 共 8，加 padding 12×2 = 24，合计 140，恰好填满无溢出。横向看 header_row(20+90+6=116) 与 alert_row(16+96+4=116) 也精确对齐到 116 内容宽度，截图未见文字截断、组件溢出或元素堆叠。Button 底边距卡片底 12vp，符合 2x2 规范。"
+  },
+  "issues": [
+    "header_row 中 title_text 使用 #99ffffff 半透明白色 + fontSize 12，对比度略低，可视性一般（截图能看见但偏淡）",
+    "trip_title 紧贴 primary_time 时间 16:40 下方且字号 14，视觉密度略高，缺乏呼吸感",
+    "未使用 divider 区隔主信息区与状态/操作区，信息层次依赖纯排版，不够显式"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"divider\",\"primary_time\",\"trip_title\",\"alert_row\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#9e644f\",0],[\"#db6b42\",0.58],[\"#ed955f\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"travel_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"travel_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/airplane_departure.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":10}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/view/cardTitle} }}\",\"styles\":{\"width\":90,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"primary_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":20,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"trip_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_row\",\"component\":\"Row\",\"children\":[\"alert_icon\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/clock.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":7}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":92,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ ${/data/calendar/items/0/description} == '准点' ? '#ffffffff' : '#ffe84026' }}\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/view/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":28,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":14,\"borderWidth\":1,\"borderColor\":\"#33ffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"view\":{\"cardTitle\":\"出行票务\",\"actionLabel\":\"看行程\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"cal_trip_001\",\"title\":\"G1234 高铁\",\"dtStart\":\"16:40\",\"dtEnd\":\"18:12\",\"eventLocation\":\"深圳北站\",\"description\":\"延误18分\"}]}}}}}"
+  ]
+}

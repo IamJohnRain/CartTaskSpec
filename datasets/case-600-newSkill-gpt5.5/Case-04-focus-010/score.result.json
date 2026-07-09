@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-04-focus-010",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户要求做一个今日专注时长卡片，小时数会变，点进去能看每日明细。截图中可见：标题'今日专注'配月亮图标、动态绑定的'3.3'主数值、'小时'单位、进度条（白填充约 83%，与 focusedMinutes 200/goalMinutes 240 吻合）、'离目标还差 40 分钟'提示、右侧'每日明细'入口面板含'按天查看趋势'提示和'看明细'按钮。Button 的 onClick 原样使用 TaskSpec 中的 clickToDeeplink，args 与 eventCandidates 完全一致。资源 icon_focus.png 已用于头部图标。dataModel 路径全部从 schema 推导。size 2x4、catalogId、version、updateDataModel.path='/' 等硬约束全部满足。唯一轻微不足：deeplink 指向 settings 应用而非专注明细应用，但这属于 TaskSpec 本身，模型正确遵循。",
+    "aesthetic": "截图整体观感良好：紫蓝到品红的对角渐变自然协调，白色主文字在深色背景上清晰可读，'#99ffffff' 用于次要文字（'小时'、'今日 18:20'、'按天查看趋势'、'离目标还差 40 分钟'）层级得当。字号阶梯 40/16/14/12 明确，且仅'3.3'为最强字重 700，视觉锚点突出。右侧半透明白色'每日明细'面板形成柔和分区。不足：'看明细'按钮使用 '#19ffffff' 底色搭配白色文字，与面板底色和卡片背景区分度不足，作为唯一 CTA 视觉重量偏弱；进度条 track 颜色与背景接近，仅靠 fill 区分，略显平淡。",
+    "layout": "截图显示布局完整无溢出：卡片 300x140 边界内全部内容居中呈现。头部 Row 左'今日专注'+月亮图标、右'今日 18:20'，两端对齐正确。主体 Row 左侧主列 160 宽，'3.3'底部与'小时'基线对齐自然；进度条 8 高度胶囊样式横贯；'离目标还差 40 分钟'完整显示。右侧 104 宽面板内'每日明细'/'按天查看趋势'/'看明细'三件按 itemMargin 4 纵向排布，padding 6 后内高 72 容纳 16+14+32+8=70，刚好收下。根 Column 24+8+84=116 等于内容区高度 116，无空白无溢出。Button 热区 92x32 约 32vp，底部到卡片底边约 12vp，均在安全范围。未见文字截断或堆叠遮挡。"
+  },
+  "issues": [
+    "右侧'看明细'按钮背景色 '#19ffffff' 与外层面板底色相同，CTA 视觉重量不足，作为唯一可点击元素应当更突出",
+    "Progress 组件未设置 backgroundColor（track 色），进度条轨道与卡片背景区分度低",
+    "deeplink 指向 settings 的 MainAbility/uri 而非专注明细页（这是 TaskSpec 给定值，非模型可改）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#ac49f5\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"header_left\",\"updated_text\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"header_left\",\"component\":\"Row\",\"children\":[\"focus_icon\",\"title_text\"],\"itemMargin\":8,\"styles\":{\"width\":160,\"height\":24,\"alignItems\":\"center\"}},{\"id\":\"focus_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_focus.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"今日专注\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"updated_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/today/updatedText} }}\",\"styles\":{\"width\":108,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\",\"textOverflow\":\"none\"}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"primary_col\",\"detail_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":84,\"alignItems\":\"center\"}},{\"id\":\"primary_col\",\"component\":\"Column\",\"children\":[\"metric_row\",\"progress_bar\",\"remain_text\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"unit_text\"],\"itemMargin\":6,\"styles\":{\"width\":160,\"height\":48,\"alignItems\":\"bottom\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/today/hoursText} }}\",\"styles\":{\"width\":94,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"unit_text\",\"component\":\"Text\",\"content\":\"小时\",\"styles\":{\"width\":42,\"height\":24,\"fontSize\":16,\"fontWeight\":600,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/data/focus/today/focusedMinutes} }}\",\"total\":\"{{ ${/data/focus/today/goalMinutes} }}\",\"styles\":{\"width\":160,\"height\":8,\"type\":\"capsule\",\"color\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"remain_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/today/remainText} }}\",\"styles\":{\"width\":160,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_panel\",\"component\":\"Column\",\"children\":[\"detail_title\",\"detail_hint\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":104,\"height\":84,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"detail_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/detail/entryTitleText} }}\",\"styles\":{\"width\":92,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"detail_hint\",\"component\":\"Text\",\"content\":\"{{ ${/data/focus/detail/entryHintText} }}\",\"styles\":{\"width\":92,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看明细\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"intelligent_scene_entry\"}}],\"styles\":{\"width\":92,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#564af7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"focus\":{\"today\":{\"hoursText\":\"3.3\",\"updatedText\":\"今日 18:20\",\"focusedMinutes\":200,\"goalMinutes\":240,\"remainText\":\"离目标还差 40 分钟\"},\"detail\":{\"entryTitleText\":\"每日明细\",\"entryHintText\":\"按天查看趋势\"}}}}}}"
+  ]
+}

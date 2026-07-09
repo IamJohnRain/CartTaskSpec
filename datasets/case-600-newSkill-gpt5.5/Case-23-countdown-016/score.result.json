@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-23-countdown-016",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.9,
+  "reasons": {
+    "instruction": "用户要求的高考倒计时元素在截图中均有体现：顶部'距离高考215天'动态标题已渲染，中间小橙色环形仪表盘带绿色✓、100%与'已达成'绿色字也已显示，下面两条'✓数学100%'/'✓英语100%'任务以字符✓作为图标完成，'天气'按钮带正确的clickToDeeplink事件跳转天气uri，整体信息基本齐全。轻微扣分：1) 任务项只有两条（数学、英语），用户说'几条'，2-3条勉强算'几条'但略显单薄；2) '已达成'虽在绿色但字号偏小，作为强状态视觉权重不足；3) 没有为日历相关项（如点击任务项）提供额外交互，仅满足展示层面的'读日历'。",
+    "aesthetic": "整体配色为白底+橙环+绿字+黑标题，简洁干净，方向正确。但截图中可观察到两个明显问题：1) '天气'按钮内的'天气'二字中间出现一条横向贯穿的线（疑似按钮默认下划线/中划线渲染），观感上像被划掉，破坏按钮识别度；2) 卡片内全部内容集中在上方约40%区域，下方约60%为纯白空区，留白严重失衡，缺乏视觉重心的合理分布；3) 标题字重为700、100%字重也是700，仪表盘右侧两行（100%/已达成）字重接近，导致次级信息'已达成'与主指标'100%'层级感被削弱。",
+    "layout": "布局为纵向Column堆叠，从截图看：title(18)+meter_row(38)+task_column(24)+weather_button(24)+3*4=116，按计算应填满116内容区。但实际渲染中内容整体上移并留下大面积空白区，原因可能是字体实际行高小于声明height或Stack/Progress组件实际占位不同，导致视觉上内容只占卡片上半部。截图中元素无重叠、无文字截断（标题'距离高考215天'完整呈现，'100%'、'已达成'、两条任务项与'天气'均完整显示），底部动作区按钮未越过卡片下边界。'天气'按钮文字中间出现一条横线（视觉上看似中划线），属于按钮样式渲染瑕疵，扣分。"
+  },
+  "issues": [
+    "卡片下方约60%区域为空白，内容全部堆在顶部，纵向分布不均",
+    "'天气'按钮内的'天气'二字中间出现横线（疑似默认下划线/中划线），影响按钮可读性",
+    "任务列表只显示2条（数学/英语），用户说'几条'略显单薄",
+    "'已达成'字号偏小，与'100%'视觉层级接近，未形成清晰次级状态",
+    "仪表盘右侧Column'100%'和'已达成'两行行距过密，影响可读性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"meter_row\",\"task_column\",\"weather_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"space_evenly\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":120,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"meter_row\",\"component\":\"Row\",\"children\":[\"meter_stack\",\"meter_status_column\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":38,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"meter_stack\",\"component\":\"Stack\",\"children\":[\"progress_ring\",\"progress_glyph\"],\"styles\":{\"width\":38,\"height\":38,\"alignContent\":\"center\"}},{\"id\":\"progress_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/ui/progressValue} }}\",\"total\":\"{{ ${/ui/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"width\":38,\"height\":38,\"color\":\"#f9a01e\"}},{\"id\":\"progress_glyph\",\"component\":\"Text\",\"content\":\"✓\",\"styles\":{\"width\":20,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"meter_status_column\",\"component\":\"Column\",\"children\":[\"progress_label\",\"achieved_text\"],\"itemMargin\":3,\"styles\":{\"width\":62,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"progress_label\",\"component\":\"Text\",\"content\":\"{{ ${/ui/progressLabel} }}\",\"styles\":{\"width\":62,\"height\":18,\"fontSize\":15,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"achieved_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/achievedLabel} }}\",\"styles\":{\"width\":62,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1}},{\"id\":\"task_column\",\"component\":\"Column\",\"children\":[\"task_text_1\",\"task_text_2\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":26,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"task_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"task_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/2/title} }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/weatherActionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":58,\"height\":24,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#b56500\",\"backgroundColor\":\"#fff3e0\",\"borderRadius\":12,\"borderColor\":\"#f9a01e\",\"borderWidth\":1}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"gaokao-countdown\",\"title\":\"距离高考215天\",\"dtStart\":\"2027-06-07\",\"dtEnd\":\"2027-06-09\"},{\"entityId\":\"task-math\",\"title\":\"✓数学100%\",\"dtStart\":\"08:00\",\"dtEnd\":\"09:00\"},{\"entityId\":\"task-english\",\"title\":\"✓英语100%\",\"dtStart\":\"09:10\",\"dtEnd\":\"10:10\"}]}},\"ui\":{\"progressValue\":100,\"progressTotal\":100,\"progressLabel\":\"100%\",\"achievedLabel\":\"已达成\",\"weatherActionLabel\":\"天气\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

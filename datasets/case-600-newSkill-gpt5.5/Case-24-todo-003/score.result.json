@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-24-todo-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.5,
+  "reasons": {
+    "instruction": "用户要求四点均已落实：带数字的一行字（'3 项已完成' 主数值）✓、点跳到应用里（'打开' 按钮带 onClick clickToDeeplink）✓、能读日历日程（底部展示 '09:30 产品评审'）✓、显示已完成（右上'已完成'绿色状态文案 + 主数值后缀'已完成'）✓。size=2x4、catalogId、version、updateDataModel.path=/、value 等硬约束均满足；事件 onClick 的 call/args 原样取自 eventCandidates；asset 正确使用 checkmark_calendar_fill.svg。轻微扣分：主数值 '3 项已完成' 用 size(calendar.items) 计数，但语义上'已完成'与'总数'在原 schema 中无 completed 字段支撑，存在一定语义歧义（不能区分已完成/总数）。",
+    "aesthetic": "截图中浅黄到白的渐变背景与白色卡片块搭配协调，绿色'已完成'状态文字作为点缀色与日历图标语义贴合，主数值'3 项已完成'字重 700 黑色与上方 500 字重灰色标题形成清晰层级。整体配色和谐、留白舒适、对齐统一。扣分点：'打开'按钮仅使用 #19000000 半透明灰底，未与卡片整体风格形成足够 CTA 视觉锚定，按钮相对整体略偏弱；面板内边距与圆角一致性好，但顶部主面板与右侧面板高度均为 72，视觉上稍显呆板，缺少更强的主次强调。",
+    "layout": "截图显示无任何元素堆叠重叠、无文字截断、无组件溢出卡片边界：左侧 188 宽 + 8 间距 + 右侧 80 宽 = 276 恰好填满 top_row；底部 support_row 内部 38+6+216=260 适配 276 减 padding，'09:30' 与'产品评审'两段均完整显示。Column 总高 12+72+8+36=128 ≤ 140，底部按钮到卡片下边距充足（约 12vp）。顶部主面板内图标 40×40 + 主文本区 124 宽，title_text 与 primary_value 在 124 宽内显示完整无省略。轻微扣分：support_row 的 event_text 宽度 216 较为紧绷，若日程标题更长易出现截断风险；action_panel 内部 status_text(16)+margin(6)+button(32)=54 占用 56 可用高度，间距略紧。"
+  },
+  "issues": [
+    "主数值 '3 项已完成' 用 size(${/data/calendar/items}) 计数所有日程，但数据中无 completed 字段，语义上无法区分已完成/总数，存在歧义",
+    "'打开'按钮仅半透明灰底，作为主 CTA 视觉锚定不足，与卡片整体亮色调反差偏弱",
+    "support_row 中 event_text 宽度 216 较为紧绷，遇到长标题有截断风险",
+    "action_panel 内部 status_text 与 action_button 间距 6 略紧，垂直空间利用率饱和"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"support_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f5dc62\",0],[\"#ffffffff\",1]]}}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"main_panel\",\"action_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":72,\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Row\",\"children\":[\"status_icon\",\"main_copy\"],\"itemMargin\":10,\"styles\":{\"width\":180,\"height\":72,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":36,\"height\":36,\"objectFit\":\"contain\"}},{\"id\":\"main_copy\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\"],\"itemMargin\":4,\"styles\":{\"width\":114,\"height\":52,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/title} }}\",\"styles\":{\"width\":114,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ size(${/data/calendar/items}) + ' 项已完成' }}\",\"styles\":{\"width\":114,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":80,\"height\":72,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/ui/statusText} }}\",\"styles\":{\"width\":64,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/ui/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":64,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}},{\"id\":\"support_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"event_text\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":36,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"event_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":208,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"calendar-event-001\",\"title\":\"产品评审\",\"dtStart\":\"09:30\",\"dtEnd\":\"10:00\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-event-002\",\"title\":\"需求同步\",\"dtStart\":\"11:00\",\"dtEnd\":\"11:30\"},{\"entityName\":\"calendar\",\"entityId\":\"calendar-event-003\",\"title\":\"周报整理\",\"dtStart\":\"16:00\",\"dtEnd\":\"16:30\"}]}},\"ui\":{\"title\":\"待办清单\",\"statusText\":\"已完成\",\"actionLabel\":\"打开\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

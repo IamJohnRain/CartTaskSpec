@@ -1,0 +1,101 @@
+{
+  "userQuery": "帮我做个白底简洁风格的会议时间轴卡片，左边竖着放一条带夜间深色渐变的主轴线和小星月的语义图标。右边纵向把今天接下来的几场夜会挨个堆叠排开，中间用细线分隔开分组。主要就显示日历里的固定时间文字和会议室号，点一下能直接跳进日程事件详情就行，啥动态数值都不用加。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天接下来几场日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "dtStart": "19:30",
+              "dtEnd": "20:00",
+              "eventLocation": "会议室 3A"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "dtStart": "20:15",
+              "dtEnd": "20:45",
+              "eventLocation": "会议室 5B"
+            },
+            {
+              "entityId": "calendar-event-003",
+              "dtStart": "21:00",
+              "dtEnd": "21:30",
+              "eventLocation": "会议室 8C"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日历事件。",
+            "sampleValue": {
+              "entityId": "calendar-event-001",
+              "dtStart": "19:30",
+              "dtEnd": "20:00",
+              "eventLocation": "会议室 3A"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识符，用于打开事件详情。",
+                "sampleValue": "calendar-event-001"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内事件为 HH:MM 格式。",
+                "sampleValue": "19:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今天内事件为 HH:MM 格式。",
+                "sampleValue": "20:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "会议室号或日程地点。",
+                "sampleValue": "会议室 3A"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "月亮圆形实心图标，黑白双色，适合用于夜间、晚间会议或勿扰语义的视觉锚点。"
+    }
+  ]
+}

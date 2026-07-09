@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-26-group-buy-007",
+  "scores": {
+    "instruction": {
+      "score": 5.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.1,
+  "reasons": {
+    "instruction": "用户明确要求'几个口味能勾选'，截图里虽然呈现了两个 Checkbox（一个已选中橙色实心、一个未选中灰色空心），但口味名称'芝士'和'草莓'在两个 Checkbox 旁都仅渲染成三个省略号点 '...'，完全无法辨认。CTA 按钮'去下单'与 onClick 事件 clickToDeeplink 已正确落实，标题、状态徽章、提醒文案均可见，但核心的可勾选口味语义因标签不可读而严重受损，属于关键诉求未真正落实。",
+    "aesthetic": "整体配色采用左下到右上的浅灰到暖橙渐变，CTA 按钮用纯橙色 #ed6f21 配白字，标题用深黑主字重，徽章用淡红描底+红字，色系一致、整体观感干净。但 Checkbox 旁出现的 '...' 省略号让面板区显得破碎、不专业，是美观上最明显瑕疵。",
+    "layout": "截图中可清晰看到两个 Checkbox 右侧均出现 '...'，即口味文字 '芝士'/'草莓' 被容器截断/省略。根本原因是 flavor_panel 横向 Row 布局下，padding 8 + itemMargin 8 + 两个 46 宽的 Checkbox 把每个 Checkbox 压得过窄，无法容纳 Checkbox 图形（约 18-20px）+ 间距 + 中文标签 28px。flavor_panel 高度 40 也偏紧。底边到卡片底边距离符合 ≤16vp 要求，无元素超出卡片边界，但水平方向的内容截断属于受保护文本被裁切。"
+  },
+  "issues": [
+    "两个 Checkbox 的标签 '芝士' 和 '草莓' 在截图中被截断为 '...'，完全不可见",
+    "flavor_panel 的 Row 布局下，padding 8 + itemMargin 8 加上两个 width 46 的 Checkbox 空间过窄",
+    "标题与按钮字重偏多（标题 700 + 按钮 500 文本 + 徽章 500），字重层级可再克制",
+    "reminder_text 颜色 #99000000 在橙色渐变背景上对比度偏低"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"flavor_panel\",\"reminder_text\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fff1f3f5\",0],[\"#f9bc64\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/title} }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/statusBadge} }}\",\"styles\":{\"width\":42,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffe84026\",\"textAlign\":\"center\",\"maxLines\":1,\"textOverflow\":\"none\",\"backgroundColor\":\"#0c000000\",\"borderRadius\":9}},{\"id\":\"flavor_panel\",\"component\":\"Column\",\"children\":[\"flavor_one\",\"flavor_two\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"flavor_one\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/flavorOneLabel} }}\",\"value\":\"flavor_one\",\"group\":\"flavors\",\"select\":\"{{ ${/groupBuy/flavorOneSelected} }}\",\"styles\":{\"width\":108,\"height\":18,\"selectedColor\":\"#ed6f21\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"flavor_two\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/flavorTwoLabel} }}\",\"value\":\"flavor_two\",\"group\":\"flavors\",\"select\":\"{{ ${/groupBuy/flavorTwoSelected} }}\",\"styles\":{\"width\":108,\"height\":18,\"selectedColor\":\"#ed6f21\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"reminder_text\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/reminderText} }}\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#cc5a3a1c\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/groupBuy/actionLabel} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":116,\"height\":29,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ed6f21\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"title\":\"拼单卡\",\"flavorOneLabel\":\"芝士\",\"flavorOneSelected\":true,\"flavorTwoLabel\":\"草莓\",\"flavorTwoSelected\":false,\"statusBadge\":\"差1人\",\"reminderText\":\"凑不齐提醒\",\"actionLabel\":\"去下单\"}}}}"
+  ]
+}

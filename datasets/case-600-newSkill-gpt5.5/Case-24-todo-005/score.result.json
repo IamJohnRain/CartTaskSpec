@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-24-todo-005",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 9.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.4,
+  "reasons": {
+    "instruction": "截图中清晰呈现了图标、日历对勾 icon、标题'待办'、状态'3项未完成'以及蓝色 CTA 按钮'点开查看完成'，三个 dataModel 字段均正确绑定并可见。Button 的 onClick 完整引用了 eventCandidates 中的 clickToDeeplink 参数，Image.src 使用了任务提供的 checkmark_calendar_fill.svg 资源，createSurface 尺寸 140x140（2x2）、catalogId/version/updateDataModel.path 等硬约束均满足。",
+    "aesthetic": "截图整体观感专业克制：白色到淡灰的微渐变背景干净不喧宾夺主，浅蓝 icon 底板与下方饱和度更高的蓝色按钮形成主次色搭配，前景深色文字在浅底上对比度清晰可读。字号阶梯 16/12/12 层级合理，仅有一个最强字重（标题 700）。可略改进之处：icon 底板颜色与主蓝 CTA 属同色系，icon 视觉张力稍弱，可考虑加一点深色阴影或描边以拉开层次。",
+    "layout": "截图中各元素垂直居中、左右对齐，无堆叠重叠、无文字截断。icon_panel 56x42、title 18h、status 16h、button 28h，itemMargin=4，加上 root padding 12，总高 12+42+4+18+4+16+4+28=128，距卡片底 12vp（在 2x2 推荐 8-12vp 范围内）。button 宽 116 在 116 宽内容区中正好对齐，文字'点开查看完成'在按钮内完整居中显示，热区高度 28 接近 40vp 理想值，受保护文字无被裁切。唯一微瑕是 root 使用 justifyContent:start，content 总高 116=内高 116 完全填满，icon 与 title 之间空白稍多但未溢出。"
+  },
+  "issues": [
+    "icon_panel 浅蓝底板与主 CTA 蓝色同色系，对比层次略显平淡",
+    "icon 与 title 之间存在较大视觉空白，icon 视觉重量略轻",
+    "无其他截断、溢出或堆叠问题"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"icon_panel\",\"title_text\",\"status_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"icon_panel\",\"component\":\"Column\",\"children\":[\"todo_icon\"],\"styles\":{\"width\":56,\"height\":48,\"borderRadius\":16,\"backgroundColor\":\"#260a59f7\",\"alignItems\":\"center\",\"justifyContent\":\"center\",\"shadowColor\":\"#330a59f7\",\"shadowRadius\":8,\"shadowOffset\":{\"x\":0,\"y\":2}}},{\"id\":\"todo_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":34,\"height\":34,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/todo/title} }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/todo/statusText} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/todo/hint} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":116,\"height\":28,\"borderRadius\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"todo\":{\"title\":\"待办\",\"statusText\":\"3项未完成\",\"hint\":\"点开查看完成\"}}}}"
+  ]
+}

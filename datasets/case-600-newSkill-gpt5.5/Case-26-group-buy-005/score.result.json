@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-26-group-buy-005",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户四条诉求均被截图证实：1)口味勾选——截图中红色方框带白色对勾并配椰椰拿铁文本；2)显示还差几杯——'还差2杯'大号红字醒目；3)点一下能下单——'去下单'红色圆角按钮具显著点击视觉；4)提醒还差多少——'再拉2杯成团'副文案配合进度条4/6可视化。事件 clickToDeeplink 与 TaskSpec 一致；updateDataModel 路径/值与契约相符；尺寸 2x2、root 140x140、borderRadius 18、padding 12、catalogId/version 全部满足硬约束。扣分点：assetCandidates 中的 music_fill.svg 资产未使用，但该资产与拼团语义无关，可接受，但因契约要求评估，未做任何素材利用故扣 0.3；底部 CTA 文字字号 14 在 32 高按钮内偏小，热区虽达 24 但视觉上不饱满，扣 0.2。",
+    "aesthetic": "截图整体观感干净专业：浅灰底 #fff1f3f5 配红色 #e84026 强对比，文字层级清晰（20pt 主值→14pt 口味名→12pt 副文案→14pt CTA），仅一个最强字重（700 主值），其余 600/500/400 形成递减梯度，留白与对齐统一。略有不足：底色偏冷灰，与红色强对比产生轻微割裂感；底部按钮在 140 高的卡片内略显窄高比例 116x32，视觉上不够圆润饱满；进度条颜色与 CTA 同色但无渐变，可再做层级。整体属良好区间。",
+    "layout": "从截图逐项排查：无文字被裁切/截断（口味名、还差2杯、再拉2杯成团、去下单均完整呈现）；无元素堆叠重叠；无组件溢出卡片边界；Checkbox 与文字行内对齐居中；进度条两端未越界；底部按钮底边距卡片底边约 2-3vp，贴近硬约束下界但仍在可接受范围（< 16vp）。栈叠无遮盖受保护文本。左侧内容区与卡片左内边距对齐良好。总体布局干净，仅底部留白略显紧迫。"
+  },
+  "issues": [
+    "底部按钮底边距卡片底边仅约 2-3vp，紧贴 16vp 约束下界，建议微调以增加呼吸感",
+    "assetCandidates 中的 music_fill.svg 未被利用（虽语义关联弱，可不扣但可补一个装饰元素）",
+    "Checkbox value 字段绑定了 flavorName 字符串，语义上不太标准（value 多用于选项标识），但渲染效果正确",
+    "进度条与 CTA 同色 #e84026 缺少层次区分，可考虑进度条使用稍浅的红色"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"primary_caption\",\"progress_bar\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"top\":10,\"right\":12,\"bottom\":10,\"left\":12},\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"flavor_checkbox\",\"flavor_text\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"flavor_checkbox\",\"component\":\"Checkbox\",\"value\":\"{{ ${/groupBuy/flavorName} }}\",\"group\":\"flavor\",\"select\":\"{{ ${/groupBuy/flavorSelected} }}\",\"styles\":{\"width\":18,\"height\":18,\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"flavor_text\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/flavorName} }}\",\"styles\":{\"width\":90,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/missingText} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/reminderText} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/groupBuy/joinedCups} }}\",\"total\":\"{{ ${/groupBuy/targetCups} }}\",\"styles\":{\"width\":116,\"height\":8,\"type\":\"linear\",\"color\":\"#fff37b7b\",\"backgroundColor\":\"#22000000\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去下单\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ffe84026\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"flavorName\":\"椰椰拿铁\",\"flavorSelected\":true,\"missingText\":\"还差2杯\",\"reminderText\":\"再拉2杯成团\",\"joinedCups\":4,\"targetCups\":6}}}}"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-30-pet-feeder-003",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "用户要求的五个要素在截图中均可见：①有按钮（底部白色'打开'按钮）；②一行字带数字（'18:30 喂食 1次'单行展示时间+标题+次数）；③点进app（onClick.call/args 完整复用 clickToDeeplink 至 com.huawei.hmos.clock）；④日历读日程（dataModel 正确绑定 /data/calendar/items/0 各字段）；⑤红色提示（'红色提示'作为胶囊标签出现，整体橙色渐变背景呼应'红'）。素材 calendar_fill.svg 也按语义使用为头部图标。轻微扣分点：'红色提示'胶囊的视觉警示感不够强烈，更像普通标签而非告警状态。",
+    "aesthetic": "截图整体配色和谐：橙红渐变（#ffed6f21→#e64566）温暖统一，标题与正文白色文字在深色渐变上对比度足够、清晰可读；'打开'按钮白底橙字形成强对比，CTA 突出。唯一不足：'红色提示'胶囊使用 #33ffffff 半透明白色背景，白色文字落在淡红上对比度偏弱，警示意味被稀释；'宠物喂食'与事件行同用 14/700 字重，缺少主次区分。整体观感干净克制、专业。",
+    "layout": "截图中无任何元素堆叠或溢出：根容器 140x140、内边距 12，四列子项（header 22+event 24+alert 24+button 32=102+12 间距=114）完全落在 116 内容区内。标题、事件行、提示胶囊、按钮四行排列整齐，左右均居中对齐，文字未被裁切；按钮热区约 32vp，达标；底部按钮底边到卡片底边约 8-10vp，落在合理范围。仅小瑕疵：'红色提示'胶囊与按钮视觉间距偏小，可再加 2vp 呼吸感。"
+  },
+  "issues": [
+    "'红色提示'胶囊用 #33ffffff 半透明白底承载白色文字，对比度偏弱，警示感不足",
+    "标题'宠物喂食'与事件行'18:30 喂食 1次'同为 14/700 字重，缺少主次层级",
+    "事件行中描述字段'1次'直接拼接在标题后语义略生硬，可考虑突出数字",
+    "按钮底边距卡片底边约 8vp，padding 12+按钮 32+上方三行后实际几乎贴底，建议预留 10-12vp 视觉缓冲"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"event_line\",\"alert_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffed6f21\",0],[\"#e64566\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"icon_plate\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_plate\",\"component\":\"Stack\",\"children\":[\"calendar_icon\"],\"styles\":{\"width\":22,\"height\":22,\"borderRadius\":8,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/calendar_fill.svg\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"宠物喂食\",\"styles\":{\"width\":88,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"event_line\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} + ' ' + ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"● {{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ccff2d2d\",\"borderRadius\":10,\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开日历\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":100,\"height\":30,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":15,\"marginTop\":2}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"喂食\",\"dtStart\":\"18:30\",\"dtEnd\":\"18:35\",\"eventLocation\":\"红色提示\",\"description\":\"1次\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

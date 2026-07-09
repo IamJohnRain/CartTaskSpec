@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-29-elderly-care-002",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "用户四项诉求逐项对照截图：1)「文字压在背景图上」已实现——截图中可见 Stack 底层为天气背景图，太阳+云图形横贯卡片右半区，文字与红/白徽章叠在背景之上；2)「点进系统操作」已实现——底部'去设置'按钮绑定 clickToIntent，参数与 TaskSpec.eventCandidates 一致；3)「能读天气」已实现——截图清晰呈现'朝阳 雷阵雨'和'35°C'主指标；4)「红色危险提示」已实现——红色圆角徽章'高温红色预警'颜色醒目。扣分点：素材描述为'雨伞图标'但截图中背景是太阳+云，与'雷阵雨'语义偏差（虽属 asset 本身问题，但语义匹配度仍受影响）。",
+    "aesthetic": "截图整体配色协调——蓝底、白字主指标、红色徽章形成清晰层次，scrim 半透明遮罩使左半区文字更可读。但有两处减分：1)'35°C'中°C 与数字 '5' 发生明显字符碰撞，度符号叠在 '5' 右上、C 又部分压住 '5'，显得粗糙不专业；2)背景图太阳+云的暖色调与卡片冷蓝底色略冲突，主图与'雷阵雨'语义不符。整体观感可用但未达精致。",
+    "layout": "截图中可观察到的关键布局问题：1)温度主指标 '35°C' 中'°'符号和'C'明显与'5'发生堆叠重叠，肉眼可见字符相互压字，违反核心排查项'文字被裁切/截断'——虽未截断但发生碰撞仍属布局缺陷；2)红色徽章 '高温红色预警' 在 116px 内容宽度下几乎顶到右边缘，左对齐起点在 12px 处的内边距，右侧余白偏小；3)主指标在 32pt 大字下让出空间不足，导致'°C'被挤到与数字重叠；4)背景太阳图右上角的光线伸入红徽章区域，对红色视觉形成轻度干扰。其余元素对齐、按钮热区、底部锚定尚可。"
+  },
+  "issues": [
+    "温度主指标 '35°C' 中度符号 ° 和 C 与数字 5 发生字符堆叠碰撞",
+    "红色预警徽章右侧留白过窄，几乎贴近卡片右边缘",
+    "背景图（太阳+云）与'雷阵雨'语义不匹配，冷蓝底色与暖色太阳视觉略冲突",
+    "32pt 字号在 116px 宽度下承载 4 字符偏紧，建议拆分主数与单位"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"bg_image\",\"scrim\",\"content_column\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#1f5d8c\",\"alignContent\":\"center\"}},{\"id\":\"bg_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_weather1.png\",\"styles\":{\"width\":140,\"height\":140,\"objectFit\":\"contain\"}},{\"id\":\"scrim\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":140,\"height\":140,\"backgroundColor\":\"#7a0a1a3a\",\"maxLines\":1}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"temp_row\",\"alert_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"temp_row\",\"component\":\"Row\",\"children\":[\"temp_main\",\"temp_unit\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":34,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"temp_main\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"height\":34,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\"}},{\"id\":\"temp_unit\",\"component\":\"Text\",\"content\":\"°C\",\"styles\":{\"height\":34,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffe6c77a\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":108,\"height\":22,\"padding\":{\"left\":8,\"right\":8},\"margin\":{\"left\":4},\"borderRadius\":11,\"backgroundColor\":\"#ffe84026\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去设置\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":68,\"height\":28,\"margin\":{\"left\":4},\"borderRadius\":14,\"backgroundColor\":\"#e5ffffff\",\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"朝阳\"},\"current\":{\"temperatureText\":\"35°C\",\"condition\":\"雷阵雨\",\"alertLevel\":\"高温红色预警\"}}}}}}"
+  ]
+}

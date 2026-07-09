@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-23-countdown-007",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.5,
+  "reasons": {
+    "instruction": "用户要求倒计时、点击跳app、读日历、显示已连接、背景图叠字五项诉求。截图中：'07 天'主倒计时清晰、'已连接'绿色状态可见、'来自日历'表明数据源、'打开应用'按钮带 clickToDeeplink 事件（bundleName/abilityName/uri 原样来自 eventCandidates），硬约束（size=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path=/）全部满足。但用户明确要求'背景图叠字那种'，截图中 backgroundImage=calendar_fill.svg 几乎不可见，整体呈纯橙黄色，'叠图'视觉效果未达成，扣分。",
+    "aesthetic": "整体配色和谐：橙黄底+深色主文本+绿色'已连接'+蓝色 CTA，层次分明。'07'用 40px 粗体作最强字重突出，'天'为次级字重，'已连接'绿色语义积极；右侧半透明状态面板有效区分主次。但'天'字符在截图中位于'07'右侧视觉中部而非字基线对齐，垂直略错位；背景图未呈现，视觉层次略单薄。整体观感专业、克制，良好。",
+    "layout": "截图中所有元素均位于 300x140 卡片边界内，无文字截断、无组件溢出、无堆叠遮挡。左侧主列纵向占用 18+4+48+4+18+4+16=112≤116；右侧次列 76+8+32=116 填满高度；content_row 横向 164+12+100=276=可用宽度。'打开应用'按钮 100x32 热区充足，底边距卡片底约 10vp。Stack 仅作根容器承载背景，未遮挡受保护文本/CTA。布局干净、对齐统一。"
+  },
+  "issues": [
+    "backgroundImage=calendar_fill.svg 在截图中几乎不可见，未能实现用户要求的'背景图叠字'效果；建议将 backgroundImageSizeWithStyle 改为 'cover' 让图标铺满更显眼",
+    "primary_row 中 alignItems:'bottom' 导致'天'字符在'07'右侧中部悬浮，字基线未对齐；建议改为 'baseline' 并将 primary_unit 字号调到 22、高度 28 以与 '07' 字基线对齐"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#f9bc64\",\"backgroundImage\":\"resources/base/media/calendar_fill.svg\",\"backgroundImageSizeWithStyle\":\"cover\",\"alignContent\":\"topStart\"}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"hero_col\",\"side_col\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_row\",\"target_text\",\"source_text\"],\"itemMargin\":4,\"styles\":{\"width\":164,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"primary_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"primary_unit\"],\"itemMargin\":4,\"styles\":{\"width\":164,\"height\":48,\"justifyContent\":\"start\",\"alignItems\":\"baseline\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/state/countdownDays} }}\",\"styles\":{\"width\":92,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"{{ ${/state/countdownUnit} }}\",\"styles\":{\"width\":24,\"height\":28,\"fontSize\":22,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"target_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' 到期' }}\",\"styles\":{\"width\":164,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"{{ ${/state/sourceText} }}\",\"styles\":{\"width\":164,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"side_col\",\"component\":\"Column\",\"children\":[\"status_panel\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":100,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_text\",\"next_time_text\"],\"itemMargin\":6,\"styles\":{\"width\":100,\"height\":76,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/state/connectionText} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"next_time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开应用\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":100,\"height\":32,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"anniversary-001\",\"title\":\"结婚纪念日\",\"dtStart\":\"07月16日\",\"dtEnd\":\"全天\",\"importantEventType\":2}]}},\"state\":{\"countdownDays\":\"07\",\"countdownUnit\":\"天\",\"sourceText\":\"来自日历\",\"connectionText\":\"已连接\",\"loading\":false}}}}"
+  ]
+}

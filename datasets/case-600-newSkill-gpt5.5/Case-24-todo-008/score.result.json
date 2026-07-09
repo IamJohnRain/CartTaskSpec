@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-24-todo-008",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "截图可见卡片完整呈现了用户要求的待办核心诉求：绿色对勾的 Checkbox 表达'已完成'，'今日待办'标题与'已勾选，点开同步'说明清晰，'已完成'状态文字与日历对勾图标同步呈现，'打开'按钮作为跳转入口。Checkbox 与 Button 均绑定了 clickToDeeplink 事件且参数原样来自 eventCandidates，协议合规。但用户说'能打勾点一下能跳app就行'，本质只要一个交互入口即可，当前同时在 Checkbox 和 Button 上挂同事件属于轻微冗余，且 hint_text 是硬编码引导文案而非数据字段。素材仅使用了 assetCandidates 中的 checkmark_calendar_fill.svg，Image.src 来自合法候选。尺寸 2x4、root 300x140、borderRadius 22、clip、catalogId、version、updateDataModel.path 均合规。",
+    "aesthetic": "截图整体观感良好：绿到黄的线性渐变背景柔和有活力，外层圆角与内嵌白卡形成层次。两个白色子面板对比清晰，文字层级分明：'待办清单'与'今日待办'使用 700 字重作为最强字重一致，caption/hint 使用 400 灰阶 #99000000 形成次级层级。绿色对勾方块与'打开'按钮的 #ff64bb5c 形成色彩呼应。不足：右侧 status_panel 内 Icon+'已完成'+Button 三件之间间距略松，状态文字与按钮之间留白偏大显得空；渐变方向 RightBottom 导致右下角黄色过亮，与底部按钮色彩稍有冲撞。",
+    "layout": "截图未观察到文字截断、组件溢出或堆叠重叠。Root 300x140 减去 padding 12 两侧后内容区 276，main_panel 176 + itemMargin 12 + status_panel 88 = 276 恰好铺满，无横向溢出。左侧 Column 内容总高 20+6+36+6+24=92，落在 116-20=96 的可用区内，底部留 4vp 空白合理。右侧 Column 内容 34+6+20+6+34=100，正好填满 116-16=100 的可用区。'打开'按钮底边到卡片底边约 12vp，符合 10-14vp 推荐区间；按钮热区 72x34 满足 ≥24vp 要求；Checkbox 热区 30x30 也达标。所有受保护文本（标题、状态、CTA、主标题）在截图中完整可见，无 ellipsis 触发。"
+  },
+  "issues": [
+    "右侧 status_panel 内'已完成'文字与'打开'按钮之间留白偏大（itemMargin 6 + 状态文字 20 实际占据空间），视觉略显松散",
+    "Checkbox 与 Button 同时绑定同一 clickToDeeplink 事件，交互冗余；用户原话只要求'打勾点一下'，可考虑去掉独立 Button 或仅保留其作为显式 CTA",
+    "hint_text'打勾后点一下进入应用查看'是硬编码引导文案，与 DataModel 字段无绑定，与'简单'诉求稍违",
+    "todo_row 高度 36 与 todo_text_group 高度 36 一致，但内部 todo_title(20) + itemMargin 2 + todo_caption(14) = 36 精确填满，title 缺少呼吸感",
+    "右下方按钮绿色与背景渐变黄色在右下区域形成轻微撞色，可考虑加深按钮或加白色描边以提升对比"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"status_panel\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#92c48d\",0],[\"#e8c948\",1]]},\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"todo_row\",\"divider\",\"hint_text\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"待办清单\",\"styles\":{\"width\":156,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"todo_row\",\"component\":\"Row\",\"children\":[\"todo_checkbox\",\"todo_text_group\"],\"itemMargin\":10,\"styles\":{\"width\":156,\"height\":40,\"alignItems\":\"center\"}},{\"id\":\"todo_checkbox\",\"component\":\"Checkbox\",\"value\":\"{{ ${/todo/id} }}\",\"select\":\"{{ ${/todo/completed} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":32,\"height\":32,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":18,\"strokeWidth\":2}}},{\"id\":\"todo_text_group\",\"component\":\"Column\",\"children\":[\"todo_title\",\"todo_caption\"],\"itemMargin\":4,\"styles\":{\"width\":114,\"height\":40,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"todo_title\",\"component\":\"Text\",\"content\":\"{{ ${/todo/title} }}\",\"styles\":{\"width\":114,\"height\":20,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"todo_caption\",\"component\":\"Text\",\"content\":\"{{ ${/todo/caption} }}\",\"styles\":{\"width\":114,\"height\":14,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"divider\",\"component\":\"Divider\",\"styles\":{\"width\":156,\"height\":1,\"lineColor\":\"#1a000000\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ ${/todo/completed} ? '已完成·点此跳转应用' : '点击打勾并跳转应用' }}\",\"styles\":{\"width\":156,\"height\":18,\"fontSize\":11,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"status_panel\",\"component\":\"Column\",\"children\":[\"status_icon\",\"status_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":88,\"height\":116,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"space_between\",\"alignItems\":\"center\"}},{\"id\":\"status_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":32,\"height\":32,\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/todo/statusText} }}\",\"styles\":{\"width\":72,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ff4a8a3c\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":72,\"height\":36,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff4a8a3c\",\"borderRadius\":18}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"todo\":{\"id\":\"today-todo\",\"title\":\"今日待办\",\"caption\":\"已勾选，点开同步\",\"statusText\":\"已完成\",\"completed\":true},\"action\":{\"label\":\"打开\"}}}}"
+  ]
+}

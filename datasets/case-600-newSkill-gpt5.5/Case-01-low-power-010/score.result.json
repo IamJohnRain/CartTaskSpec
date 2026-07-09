@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-01-low-power-010",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.6,
+  "reasons": {
+    "instruction": "用户明确要求'文字叠在图上'，但截图中左侧 Stack 面板完全看不到 icon_save_power.png 资源图，整体只剩一个白底圆角矩形 + 三行文字，'文字叠在图上'的核心诉求未在视觉上呈现。剩余电量 18% 已正确显示，跳转设置应用的 onClick 事件也已正确配置，尺寸/catalogId/version/updateDataModel 等硬约束均符合，因此给中等分数。",
+    "aesthetic": "配色（绿色 18%、蓝色按钮、灰色说明文字）整体和谐，文字在白底上可读性好；但因为 hero_image 资源未在截图中显现，左侧面板失去'省电主视觉'的层次感与设计意图，主次层级靠字号勉强建立，画面显得平淡单薄。",
+    "layout": "从截图看无元素溢出或文字被裁切：左侧'省电模式/18%/低电量，已建议省电'三行紧凑但未重叠；右侧'预计可多用 2 小时'换行正常，Progress 条与 Button 均完整呈现，未见 Stack 叠层遮挡受保护文本或 CTA 的情况，问题主要出在设计意图未达成而非几何溢出。"
+  },
+  "issues": [
+    "用户明确要求'文字叠在图上'，但 hero_image 在截图中完全不可见，省电图标资源未在视觉上呈现",
+    "hero_overlay 设置 backgroundColor #99ffffff（60% 白色）且尺寸 168x116 完全覆盖 104x104 的 image，导致图标被白底完全遮挡",
+    "hero_image 使用 objectFit contain 且尺寸过小，即使加载成功也不够突出，无法成为'主视觉背景'",
+    "action_button 的 fontWeight 使用字符串 'medium'，应改为数值（如 500/600）以符合规范",
+    "若继续用半透明白底叠加，深色图上文字对比度尚可，但当前白底叠加在白底卡片上已完全失去层次"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_stack\",\"side_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"alignItems\":\"center\"}},{\"id\":\"hero_stack\",\"component\":\"Stack\",\"children\":[\"hero_image\",\"hero_overlay\"],\"styles\":{\"width\":168,\"height\":116,\"borderRadius\":18,\"clip\":true,\"alignContent\":\"center\"}},{\"id\":\"hero_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_save_power.png\",\"styles\":{\"width\":168,\"height\":116,\"objectFit\":\"cover\"}},{\"id\":\"hero_overlay\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"status_text\"],\"itemMargin\":4,\"styles\":{\"width\":168,\"height\":116,\"padding\":12,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"start\",\"backgroundColor\":\"#66000000\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/power/title} }}\",\"styles\":{\"width\":144,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/power/batteryPercentText} }}\",\"styles\":{\"width\":144,\"height\":40,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ff7ee07a\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/power/statusText} }}\",\"styles\":{\"width\":144,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"estimate_text\",\"battery_progress\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":98,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"estimate_text\",\"component\":\"Text\",\"content\":\"{{ ${/power/estimateText} }}\",\"styles\":{\"width\":82,\"height\":32,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":2,\"textAlign\":\"center\"}},{\"id\":\"battery_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/power/batteryPercentValue} }}\",\"total\":\"{{ ${/power/batteryTotal} }}\",\"styles\":{\"width\":82,\"height\":8,\"type\":\"linear\",\"color\":\"#ff64bb5c\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/power/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":82,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"power\":{\"title\":\"省电模式\",\"batteryPercentText\":\"18%\",\"batteryPercentValue\":18,\"batteryTotal\":100,\"statusText\":\"低电量，已建议省电\",\"estimateText\":\"预计可多用 2 小时\",\"actionLabel\":\"查看电池\"}}}}"
+  ]
+}

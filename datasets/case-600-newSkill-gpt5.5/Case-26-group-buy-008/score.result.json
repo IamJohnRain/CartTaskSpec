@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-26-group-buy-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图清晰呈现了用户要求的三件事：① 标题'拼单口味' + 状态徽标'完成'显示拼单完成状态；② 两个可勾选口味（草莓、芒果）均显示为已选中态（绿色对勾），让用户能直观看到口味勾选结果；③ 底部绿色'查看日历'按钮承接 clickToIntent/ViewCalendarEvent 事件，entityId 来自 dataModel。所用素材 checkmark_calendar_fill.svg 来自 assetCandidates 并用作头部图标，事件参数与 eventCandidates 完全一致。size=2x2、catalogId、version、updateDataModel 全部合规。唯一轻微不足是用户原话'点开能加到日历'语义上更像是把日程加入日历的动作，而卡片目前是'查看日历'，措辞与意图略有偏差。",
+    "aesthetic": "截图中暖黄色线性渐变（#f5dc62→白）背景与绿色对勾/CTA 形成清新的'完成/确认'配色语言，色彩和谐且具备食欲感（贴合拼单语境）。标题 14/700 与按钮 14/600 同为最强字重，状态徽标 12/600 次之，构成清晰的两级字重阶梯。对齐方面，头部行内三元素（图标+标题+徽标）水平基线统一，两个 Checkbox 垂直对齐良好。但日历图标在 18×18 尺寸下视觉上更像一个勾选方块而非'带勾的日历'，图形语义稍弱，影响整体精致感。",
+    "layout": "截图未观察到任何元素堆叠重叠或文字裁切：header_row(24)+itemMargin(4)+flavor_panel(50)+itemMargin(4)+action_button(32)+上下 padding(24)=140，恰填满 140 高度，无溢出。头部行宽度 116，icon(18)+margin(6)+title(58)+margin(6)+badge(28)=116，无溢出。flavor_panel 内两个 106 宽 Checkbox 整齐排列。底部绿色按钮 116×32，热区充足，底边距卡片下沿约 12vp（处于 2x2 推荐 8-12vp 区间内）。受保护文本（标题、口味名、CTA）均完整可读，未触发 ellipsis。整体留白舒适，元素层级清晰。唯一可改进点：日历图标视觉辨识度不高，但未造成遮挡或截断。"
+  },
+  "issues": [
+    "头部 18×18 的日历+勾选 SVG 在小尺寸下视觉上更接近'勾选方块'，图形语义模糊",
+    "按钮文案'查看日历'与用户原意'加到日历'存在轻微语义偏差（受 eventCandidates 限制仅能跳转查看）",
+    "root Column 使用了 width:140/height:140 但同时通过 padding:12 让内容区为 116×116，header_row 显式 width:116 与之匹配，flavor_panel 也为 116，但 action_button 显式 width:116——整体尺寸声明正确但显式宽度有冗余，渲染上无问题"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"flavor_panel\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f5dc62\",0],[\"#ffffffff\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"calendar_icon\",\"title_text\",\"status_badge\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"calendar_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":18,\"height\":18,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/title} }}\",\"styles\":{\"width\":58,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_badge\",\"component\":\"Text\",\"content\":\"{{ ${/groupBuy/statusText} }}\",\"styles\":{\"width\":28,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\",\"backgroundColor\":\"#19000000\",\"borderRadius\":9}},{\"id\":\"flavor_panel\",\"component\":\"Column\",\"children\":[\"flavor_one\",\"flavor_two\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"padding\":4,\"justifyContent\":\"center\",\"alignItems\":\"start\",\"backgroundColor\":\"#0c000000\",\"borderRadius\":12}},{\"id\":\"flavor_one\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/flavorOneName} }}\",\"value\":\"{{ ${/groupBuy/flavorOneName} }}\",\"group\":\"flavors\",\"select\":\"{{ ${/groupBuy/flavorOneSelected} }}\",\"styles\":{\"width\":106,\"height\":18,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"flavor_two\",\"component\":\"Checkbox\",\"label\":\"{{ ${/groupBuy/flavorTwoName} }}\",\"value\":\"{{ ${/groupBuy/flavorTwoName} }}\",\"group\":\"flavors\",\"select\":\"{{ ${/groupBuy/flavorTwoSelected} }}\",\"styles\":{\"width\":106,\"height\":18,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/groupBuy/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/groupBuy/calendarEntityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"groupBuy\":{\"title\":\"拼单口味\",\"statusText\":\"完成\",\"flavorOneName\":\"草莓\",\"flavorOneSelected\":true,\"flavorTwoName\":\"芒果\",\"flavorTwoSelected\":true,\"calendarEntityId\":\"group_buy_done_001\",\"actionLabel\":\"查看日历\"}}}}"
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "userQuery": "帮我设计个清理卡片，背景要那种运动风的紧迫渐变色，带点磨砂质感，中间放个环形图显示存储空间，竖着排几项待清理的文件，比如视频、图片，每项前面配个对应的图标，能勾选清理，点击还能跳到系统存储设置，结合日历看看明天有没有拍会议照的空间，提示一下空间不足的风险。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "storage": {
+      "usedPercent": {
+        "type": "number",
+        "description": "手机存储空间已使用百分比，用于环形图进度。",
+        "sampleValue": 82
+      },
+      "usedPercentText": {
+        "type": "string",
+        "description": "手机存储空间已使用百分比展示文本。",
+        "sampleValue": "82%"
+      },
+      "availableText": {
+        "type": "string",
+        "description": "当前剩余可用存储空间的短文本。",
+        "sampleValue": "18GB 可用"
+      }
+    },
+    "cleanup": {
+      "items": [
+        {
+          "name": {
+            "type": "string",
+            "description": "第一项待清理文件类型名称。",
+            "sampleValue": "视频"
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "第一项待清理文件是否已勾选。",
+            "sampleValue": true
+          }
+        },
+        {
+          "name": {
+            "type": "string",
+            "description": "第二项待清理文件类型名称。",
+            "sampleValue": "图片"
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "第二项待清理文件是否已勾选。",
+            "sampleValue": true
+          }
+        }
+      ],
+      "cleanableText": {
+        "type": "string",
+        "description": "已选待清理文件预计可释放空间。",
+        "sampleValue": "可清 3.8GB"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityName": {
+              "type": "string",
+              "description": "日程实体类别。",
+              "sampleValue": "日程"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程索引项唯一标识符。",
+              "sampleValue": "calendar_meeting_photo_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "明天与拍会议照相关的日程标题。",
+              "sampleValue": "会议拍照"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "明天日程开始时间。",
+              "sampleValue": "10:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "明天日程结束时间。",
+              "sampleValue": "11:00"
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "settingsLabel": {
+        "type": "string",
+        "description": "跳转系统存储设置的短动作文本。",
+        "sampleValue": "存储设置"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/play_fill.svg",
+      "description": "播放实心图标，适合表示视频类待清理文件，黑色图形需放在浅色图标底板上使用。"
+    },
+    {
+      "src": "resources/base/media/icon_watermark.png",
+      "description": "水印图片类图标，适合表示图片或拍照相关文件清理项。"
+    }
+  ]
+}

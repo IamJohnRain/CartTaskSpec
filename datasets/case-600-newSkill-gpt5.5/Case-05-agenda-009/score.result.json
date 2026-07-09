@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-009",
+  "scores": {
+    "instruction": {
+      "score": 9.2,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.8,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "用户提出的全部诉求在截图中均有真实呈现：标题'下午议程'、'18 分钟'倒计时（蓝色大数字+单位）、'14:30 项目评审会'与'16:00 同步例会'两场下午会议清单、红色'快来不及了'紧急提醒、以及蓝色'进日历'按钮全部可见。事件绑定 onClick[0].call='clickToIntent'、intentName='ViewCalendarEvent'、entityId 来自 {{ /data/calendar/items/0/entityId }}，与 eventCandidates 完全一致。尺寸 2x2、root 140x140、borderRadius 18、clip true、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 与 value 等硬约束均满足。唯一极轻微不足是第二场会议用浅灰（#99000000）显示，在 2x2 小卡上略显次要，但这是设计取舍，不算违反指令。",
+    "aesthetic": "截图整体配色克制和谐：浅灰卡片底（#fff1f3f5）干净不刺眼，黑色加粗标题、红色紧急提醒、蓝色倒计时与蓝色按钮形成清晰的'警示—主指标—行动'三段式语义层级，前景文字在背景上对比度良好、可读性强。倒计时'18'字号 20 加粗为最强字重，其他文本字号 10/12/14 阶梯合理。两场议程用灰底胶囊包裹（#19000000）形成视觉聚合。留白密度舒适，无明显空洞或拥挤。整体观感专业、克制，符合 HarmonyOS 服务卡片的设计语言。",
+    "layout": "截图显示所有元素均落在 140x140 卡片边界内，无堆叠、无文字截断、无溢出。垂直空间核算：root padding 12+12 + itemMargin 2×3=6 + header 16 + countdown 28 + agenda 30 + button 32 = 24+6+106 = 136 ≤ 140，留 4vp 安全余量。水平空间：所有子项 width 116 ≤ 父 116，对齐统一。header_row 中'下午议程'与'快来不及了'使用 spaceBetween 双向锚定，未挤压。countdown_value(36)+itemMargin(4)+countdown_unit(34)=74 ≤ 116，居左。agenda_panel 圆角胶囊内含两行议程，padding 4 让两行 10px 文字上下留有透气感。Button 宽 116、高 32，热区充足，底边距卡片底约 8-10vp，符合 ≤16vp 锚定规范。唯一可改进点：第二行议程字体颜色与背景对比度偏低（#99000000 落在 #19000000 上），在小尺寸下略显模糊。"
+  },
+  "issues": [
+    "第二行议程'16:00 同步例会'使用 #99000000 灰，叠加在 agenda_panel 的 #19000000 灰底上，对比度偏弱，建议提升到 #cc000000 或同等深灰以保证可读性",
+    "warning_text 字号 10 偏小，红色虽醒目但在 2x2 卡片中与主标题并列时可考虑 11-12 提升存在感",
+    "countdown_value 宽度 36 仅够两位数字，若未来出现 100+ 分钟会截断（不过当前业务场景两位数已足够）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"countdown_row\",\"agenda_panel\",\"action_button\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"warning_text\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":16,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/summaryTitle} }}\",\"styles\":{\"width\":58,\"height\":16,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/warningText} }}\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"countdown_row\",\"component\":\"Row\",\"children\":[\"countdown_value\",\"countdown_unit\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"bottom\"}},{\"id\":\"countdown_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/countdownText} }}\",\"styles\":{\"width\":36,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ff0a59f7\",\"maxLines\":1}},{\"id\":\"countdown_unit\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/countdownUnit} }}\",\"styles\":{\"width\":34,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"agenda_panel\",\"component\":\"Column\",\"children\":[\"agenda_item_0\",\"agenda_item_1\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":30,\"padding\":4,\"borderRadius\":10,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"agenda_item_0\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"agenda_item_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":108,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#cc000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进日历\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"{{ ${/data/calendar/items/0/entityId} }}\"}}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\",\"backgroundColor\":\"#330a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"summaryTitle\":\"下午议程\",\"countdownText\":\"18\",\"countdownUnit\":\"分钟\",\"warningText\":\"快来不及了\",\"items\":[{\"entityId\":\"calendar-event-001\",\"title\":\"项目评审会\",\"dtStart\":\"14:30\",\"dtEnd\":\"15:00\"},{\"entityId\":\"calendar-event-002\",\"title\":\"同步例会\",\"dtStart\":\"16:00\",\"dtEnd\":\"16:30\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

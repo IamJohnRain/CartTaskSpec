@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-03-anti-addiction-005",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了用户要求的四大要素：'防沉迷'标题、'剩余 15分'剩余时间展示、'进应用'动作按钮（对应 clickToDeeplink 事件）、'警告 超时'警示文字。事件 call/args 与 eventCandidates 完全一致，assetCandidates 的 icon_timing.png 被用作标题图标语义正确。数据绑定路径均能正确解析。轻微扣分：用户明确要求'红字警告'，截图中'超时'实际渲染为橙色（#ffed6f21）而非正红，语义传达略偏；limitText '60分'字段在 dataModel 中已提供但未在画面中展示，属于可选项未充分利用。",
+    "aesthetic": "截图整体观感良好：深色背景与白色主文对比清晰，'15分'与'超时'两列采用等宽对称布局，主指标字重 700 形成视觉焦点，进度条橙色填充与背景透明灰形成层次。轻微问题：'超时'警示色为橙色而非用户要求的'红'色，警示张力稍弱；标题'防沉迷'因 #99ffffff 透明度处理略显暗淡；'进应用'按钮的描边 + 半透白填充质感偏弱，可考虑使用更实心的高亮底色提升可点击感。整体留白合理，层级清晰，色彩克制。",
+    "layout": "从截图观察：标题行、进度条、双指标行、底部按钮四层依次堆叠，无任何元素溢出卡片边界。文字'防沉迷'、'剩余 15分'、'警告 超时'、'进应用'均完整呈现无截断。'15分'与'超时'左右两列等宽对齐良好，间距适中。进度条宽度与下方双列指标宽度一致（116），左右边界对齐。'进应用'按钮底边到卡片底边约 10-12vp，符合规范。Stack 仅作为 root Column，无层叠遮挡问题。唯一可优化点：进度条上方缺少'已使用 45/60'类文字标注，单独看进度条语义略模糊。"
+  },
+  "issues": [
+    "用户明确要求'红字警告'，但'超时'实际颜色为 #ffed6f21（橙色），与'红'字要求存在偏差",
+    "dataModel 中提供 limitText '60分' 字段未在画面任何位置呈现，信息利用率不足",
+    "进度条上方缺少文字标注（如'已使用 45/60'），单独看进度条用户难以理解其含义",
+    "标题文字'防沉迷'使用 #99ffffff 60% 透明色，在深色背景上略偏暗，可读性可进一步提升",
+    "底部'进应用'按钮采用半透明白底+白描边，视觉上不够突出，可考虑使用实心橙色高亮以强化 CTA 引导"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"usage_bar\",\"usage_caption\",\"metrics_row\",\"control_action\"],\"itemMargin\":2,\"styles\":{\"width\":140,\"height\":140,\"padding\":{\"top\":10,\"bottom\":8,\"left\":12,\"right\":12},\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#ff202224\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"app_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"app_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_timing.png\",\"styles\":{\"width\":14,\"height\":14,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/antiAddiction/title} }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"usage_bar\",\"component\":\"Row\",\"children\":[\"usage_progress\"],\"styles\":{\"width\":116,\"height\":12,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"usage_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/antiAddiction/progressValue} }}\",\"total\":\"{{ ${/data/antiAddiction/progressTotal} }}\",\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":8,\"borderRadius\":4,\"color\":\"#ffed6f21\",\"backgroundColor\":\"#26ffffff\"}},{\"id\":\"usage_caption\",\"component\":\"Text\",\"content\":\"已使用 {{ ${/data/antiAddiction/progressValue} }}/{{ ${/data/antiAddiction/progressTotal} }} 分\",\"styles\":{\"width\":116,\"height\":12,\"fontSize\":9,\"fontColor\":\"#80ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"metrics_row\",\"component\":\"Row\",\"children\":[\"left_metric\",\"right_metric\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":34,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"left_metric\",\"component\":\"Column\",\"children\":[\"left_label\",\"left_value\"],\"itemMargin\":1,\"styles\":{\"width\":54,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"left_label\",\"component\":\"Text\",\"content\":\"剩余 {{ ${/data/antiAddiction/limitText} }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"left_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/antiAddiction/remainingTimeText} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_metric\",\"component\":\"Column\",\"children\":[\"right_label\",\"right_value\"],\"itemMargin\":1,\"styles\":{\"width\":54,\"height\":34,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"right_label\",\"component\":\"Text\",\"content\":\"警告\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"right_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/antiAddiction/warningText} }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffe53935\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"control_action\",\"component\":\"Row\",\"children\":[\"action_label\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"parent_control\"}}],\"styles\":{\"width\":116,\"height\":28,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":14,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#ffed6f21\"}},{\"id\":\"action_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/antiAddiction/actionLabel} }}\",\"styles\":{\"width\":96,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"antiAddiction\":{\"title\":\"防沉迷\",\"remainingTimeText\":\"15分\",\"progressValue\":45,\"progressTotal\":60,\"limitText\":\"60分\",\"warningText\":\"超时\",\"actionLabel\":\"进应用\"}}}}}"
+  ]
+}

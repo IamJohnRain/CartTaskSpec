@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-06-memory-clean-013",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中可见用户所有明确诉求均被落实：纯文字与色块构成卡片（无图片）；蓝色渐变（紫蓝→天蓝）形成雨天氛围；'微信缓存 2GB'、'照片重复 500MB' 纵向排列在左侧玻璃面板中；'电量 45%' 胶囊显示在右上角；底部绿色'开始清理'按钮；onClick 事件原样使用 eventCandidates 中的 clickToDeeplink 与天气 URI。无协议违规：size=2x4，root 300x140，borderRadius 22，clip true，catalogId 与 version 正确，updateDataModel.path='/' 且 value 与 TaskSpec 完全一致。轻微扣分点：右上的'电量'小标签在低对比度下偏暗；额外展示'可清理 2.5GB'虽与 schema 一致但非用户明确诉求，占用空间略多。",
+    "aesthetic": "截图中蓝色渐变和谐、富有雨天沉浸感；白色文字在深色玻璃面板上对比清晰、层级合理（标题粗体、电量数值加粗、垃圾尺寸加粗作为信息锚点）；绿底按钮在蓝调背景中跳脱、CTA 视觉突出；两个玻璃面板留白与圆角处理舒适。扣分点：右上的'电量'小字 99ffffff 透明度较低，读起来略费劲；body 区双面板并列略拥挤，'可清理 2.5GB' 与左侧两行垃圾视觉权重接近，让主指标'开始清理'的视觉引导略有竞争。",
+    "layout": "截图整体无堆叠、无文字截断、无组件溢出。竖向核算：root padding 12+12=24，header 24 + margin 6 + body 48 + margin 6 + button 32 = 116，合计 140 精确填满。横向核算：body_row 内 trash_panel 180 + itemMargin 8 + summary_panel 88 = 276，恰好填满内容区。受保护文本（标题、电量值、垃圾尺寸、CTA '开始清理'、汇总 2.5GB）均完整可见，无 ellipsis/clip 触发。底部按钮下沿距卡片底约 12vp，符合 2x4 区间约束。轻微扣分点：trash_panel 内两行文字几乎贴边，行间区分仅靠 itemMargin 4，缺乏明显分隔线，视觉分组略弱。"
+  },
+  "issues": [
+    "右上'电量'标签色 #99ffffff 在蓝色玻璃背景上对比度偏低，可读性略差",
+    "左侧垃圾面板内'微信缓存/照片重复'两行之间缺少视觉分隔（无 Divider），信息分组略弱",
+    "body_row 高度 48 与 button 高度 32 几乎相等，垂直节奏上 CTA 与垃圾列表视觉权重接近，主次引导略有竞争",
+    "可清理 2.5GB 面板与左侧垃圾面板视觉权重相当，但用户未明确要求展示汇总，可能挤占关键信息空间"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"body_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#4a5fd1\",0],[\"#5cb0e8\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"battery_pill\"],\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"battery_pill\",\"component\":\"Row\",\"children\":[\"battery_value\",\"battery_label\"],\"itemMargin\":4,\"styles\":{\"width\":72,\"height\":24,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"battery_value\",\"component\":\"Text\",\"content\":\"{{ ${/battery/value} }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"battery_label\",\"component\":\"Text\",\"content\":\"{{ ${/battery/label} }}\",\"styles\":{\"width\":24,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1}},{\"id\":\"body_row\",\"component\":\"Row\",\"children\":[\"trash_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":56,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"trash_panel\",\"component\":\"Column\",\"children\":[\"wechat_row\",\"trash_divider\",\"photo_row\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":56,\"padding\":8,\"borderRadius\":14,\"backgroundColor\":\"#22ffffff\",\"justifyContent\":\"center\"}},{\"id\":\"wechat_row\",\"component\":\"Row\",\"children\":[\"wechat_label\",\"wechat_size\"],\"styles\":{\"width\":260,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"wechat_label\",\"component\":\"Text\",\"content\":\"{{ ${/garbage/wechat/label} }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"wechat_size\",\"component\":\"Text\",\"content\":\"{{ ${/garbage/wechat/size} }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"trash_divider\",\"component\":\"Divider\",\"styles\":{\"width\":260,\"height\":1,\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"photo_row\",\"component\":\"Row\",\"children\":[\"photo_label\",\"photo_size\"],\"styles\":{\"width\":260,\"height\":18,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"photo_label\",\"component\":\"Text\",\"content\":\"{{ ${/garbage/photos/label} }}\",\"styles\":{\"width\":160,\"height\":18,\"fontSize\":13,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"photo_size\",\"component\":\"Text\",\"content\":\"{{ ${/garbage/photos/size} }}\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/action/label} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":276,\"height\":30,\"borderRadius\":15,\"backgroundColor\":\"#ff5cbf6a\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"手机清理\",\"totalLabel\":\"可清理\",\"totalSize\":\"2.5GB\"},\"garbage\":{\"wechat\":{\"label\":\"微信缓存\",\"size\":\"2GB\"},\"photos\":{\"label\":\"照片重复\",\"size\":\"500MB\"}},\"battery\":{\"label\":\"电量\",\"value\":\"45%\"},\"action\":{\"label\":\"开始清理\"}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-17-queue-001",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "截图中用户四项诉求全部落实：'比例'以'28/36'呈现于卡片右侧、'数字会变'通过DataModel表达式绑定currentNumber/progressValue/progressTotal/ratioText、'点能跳到店'由action_button上的onClick clickToDeeplink承担（call/args与eventCandidates完全一致）、'已到号'显式显示为statusText。尺寸2x2、root 140x140、catalogId/version/updateDataModel.path与value均符合协议。",
+    "aesthetic": "截图观感：绿色斜向渐变背景柔和自然，白色前景文字在绿色背景上对比度足够可读；按钮为白色胶囊+深色文字，与绿色背景形成清晰层级；字号阶梯14/20/14/12分明，A28为唯一最强字重(20+700)，留白密度合理、对齐统一。轻微扣分：'已到号'使用半透明白(#99ffffff)在绿色背景上略偏淡，与'比例'层级反差不够。",
+    "layout": "截图布局干净：标题'翠湖小馆'完整显示无截断，环形进度A28居中清晰，右侧'比例/28/36/已到号'三行竖排未出现裁切，'进店查看'按钮完整居中显示。底部动作区底边距卡片底约12vp，在2x2允许范围内。布局公式交叉验证：Column纵向116=header(20)+margin(6)+main(58)+margin(6)+action(26)，Row横向116=meter(58)+margin(8)+fact(50)，均未溢出。轻微扣分：右侧fact_column文字与左侧环之间视觉间距略紧，meter_gauge的Stack中primary_value字号20在58×58环内稍偏大但未遮挡。"
+  },
+  "issues": [
+    "fact_column中'已到号'使用#99ffffff半透明白色，在绿色渐变背景上视觉权重偏弱，建议提高不透明度或加底色突出'已到号'状态语义",
+    "meter_gauge内A28字号20+fontWeight 700在58×58环内稍偏紧凑，与环形进度条贴得太近",
+    "标题'翠湖小馆'与下方主区域之间itemMargin=6略显局促，可适当加大呼吸感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#64bb5c\",0],[\"#92c48d\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\"],\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/card/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"meter_gauge\",\"fact_column\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":56,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"meter_gauge\",\"component\":\"Stack\",\"children\":[\"meter_track\",\"meter_ring\",\"primary_value\"],\"styles\":{\"width\":56,\"height\":56,\"alignContent\":\"center\"}},{\"id\":\"meter_track\",\"component\":\"Progress\",\"value\":100,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#33ffffff\",\"width\":56,\"height\":56}},{\"id\":\"meter_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/queue/progressValue} }}\",\"total\":\"{{ ${/queue/progressTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"width\":56,\"height\":56}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/queue/currentNumber} }}\",\"styles\":{\"width\":56,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"fact_column\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"ratio_text\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":52,\"height\":56,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"比例\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#b3ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"ratio_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/ratioText} }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/queue/statusText} }}\",\"styles\":{\"width\":52,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Row\",\"children\":[\"action_text\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":16,\"right\":16},\"borderRadius\":13,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_text\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":84,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"card\":{\"title\":\"翠湖小馆\"},\"queue\":{\"currentNumber\":\"A28\",\"progressValue\":28,\"progressTotal\":36,\"ratioText\":\"28/36\",\"statusText\":\"已到号\"},\"action\":{\"label\":\"进店查看\"}}}}"
+  ]
+}

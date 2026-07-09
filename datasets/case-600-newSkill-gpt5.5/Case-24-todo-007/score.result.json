@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-24-todo-007",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图显示卡片完整呈现了三项待办（整理收件箱/回客户消息/晚间复盘），首项已用绿色实心勾选框标记并显示'已完成'绿色文案，其余两项为未选灰色勾选框配'待完成'浅灰文案；右上角显示'已完成 1/3'摘要；右侧'打开'按钮接 clickToDeeplink 事件，args 与 eventCandidates 完全一致；资源使用 checkmark_calendar_fill.svg 作为头部图标。size=2x4，root 300x140、borderRadius 22、catalogId 与 version 均合规。唯一轻微不足是'进App查看'提示与'打开'按钮分别用浅灰文字+浅灰背景，对引导跳转的强调略弱。",
+    "aesthetic": "截图整体观感清爽：白底搭配绿色（#64bb5c）作为完成态主色，和谐且对比度足够；标题'今日待办'用 18px/700 作为最强字重，状态/摘要/提示为 12px/500 或 400 灰，层级清晰。已完成项的勾选框绿色填充+白色对勾，视觉识别度好。留白密度适中，对齐统一。略可提升之处：右侧'打开'按钮背景为 #19000000（极浅灰），与已完成的绿色主色关联偏弱，跳转 CTA 视觉锚定可以更强。",
+    "layout": "截图未观察到任何堆叠、重叠或文字截断：头部图标、标题、摘要横向排列在 276 宽度内自然分布；三个任务行纵向等距排列在 task_column 内；右侧 action_panel 包含提示文字与按钮，整体居中、未越界；按钮高度 32vp，热区充足；按钮底边到卡片底边约 12vp，符合锚定规范；卡片右侧 300/140 边距合理。无任何 Stack 遮挡。唯一微瑕是'进App查看'与'打开'之间间距 8vp 在该面板中略松散，但不构成截断或重叠。"
+  },
+  "issues": [
+    "右侧'打开'按钮背景色 #19000000 极淡，CTA 视觉锚定偏弱，建议用品牌绿色或更明确的按钮色",
+    "action_panel 内'进App查看'与'打开'之间留白偏松，CTA 引导层次可以更紧凑",
+    "已完成状态的勾选框与状态文字均为同一种绿色，缺少对已完成任务标题的删除线/淡化处理，视觉完成态可更明确"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"content_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"todo_icon\",\"title_text\",\"summary_text\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"todo_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/checkmark_calendar_fill.svg\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/todo/title} }}\",\"styles\":{\"width\":136,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/todo/completedSummary} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"textAlign\":\"end\",\"maxLines\":1}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"task_column\",\"action_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":80,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"task_column\",\"component\":\"Column\",\"children\":[\"task1_row\",\"task2_row\",\"task3_row\"],\"itemMargin\":6,\"styles\":{\"width\":184,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"task1_row\",\"component\":\"Row\",\"children\":[\"task1_check\",\"task1_status\"],\"itemMargin\":8,\"styles\":{\"width\":184,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"task1_check\",\"component\":\"Checkbox\",\"label\":\"{{ ${/todo/item1/title} }}\",\"value\":\"task1\",\"select\":\"{{ ${/todo/item1/done} }}\",\"styles\":{\"width\":132,\"height\":22,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"task1_status\",\"component\":\"Text\",\"content\":\"{{ ${/todo/item1/status} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1}},{\"id\":\"task2_row\",\"component\":\"Row\",\"children\":[\"task2_check\",\"task2_status\"],\"itemMargin\":8,\"styles\":{\"width\":184,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"task2_check\",\"component\":\"Checkbox\",\"label\":\"{{ ${/todo/item2/title} }}\",\"value\":\"task2\",\"select\":\"{{ ${/todo/item2/done} }}\",\"styles\":{\"width\":132,\"height\":22,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"task2_status\",\"component\":\"Text\",\"content\":\"{{ ${/todo/item2/status} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"task3_row\",\"component\":\"Row\",\"children\":[\"task3_check\",\"task3_status\"],\"itemMargin\":8,\"styles\":{\"width\":184,\"height\":22,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"task3_check\",\"component\":\"Checkbox\",\"label\":\"{{ ${/todo/item3/title} }}\",\"value\":\"task3\",\"select\":\"{{ ${/todo/item3/done} }}\",\"styles\":{\"width\":132,\"height\":22,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"task3_status\",\"component\":\"Text\",\"content\":\"{{ ${/todo/item3/status} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"open_hint\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":84,\"height\":80,\"padding\":8,\"borderRadius\":16,\"backgroundColor\":\"#0c000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"open_hint\",\"component\":\"Text\",\"content\":\"{{ ${/todo/openHint} }}\",\"styles\":{\"width\":68,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":68,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"todo\":{\"title\":\"今日待办\",\"completedSummary\":\"已完成 1/3\",\"openHint\":\"进App查看\",\"item1\":{\"title\":\"整理收件箱\",\"done\":true,\"status\":\"已完成\"},\"item2\":{\"title\":\"回客户消息\",\"done\":false,\"status\":\"待完成\"},\"item3\":{\"title\":\"晚间复盘\",\"done\":false,\"status\":\"待完成\"}}}}}"
+  ]
+}

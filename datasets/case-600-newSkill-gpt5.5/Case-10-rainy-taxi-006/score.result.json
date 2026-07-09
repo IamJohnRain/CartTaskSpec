@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-10-rainy-taxi-006",
+  "scores": {
+    "instruction": {
+      "score": 8.8,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.7,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "用户要求：整卡可点击跳到打车软件、能读日历行程。截图中可见：(1) 整张卡片已挂载 onClick clickToDeeplink，uri 为 taxi://home，事件落实到位；(2) 日历数据正确绑定：标题\"机场接人\"、地点\"T3航站楼\"、时间\"18:30\"均完整呈现；(3) icon_car.png 资源被用作场景图标，使用合规；(4) 尺寸 2x2 (140x140)、catalogId/version/updateDataModel.path 全部合规。轻微扣分：dataModel 中携带了 dtEnd (19:20) 字段但截图中未展示，损失了一点信息完整度；除此之外协议与诉求均满足。",
+    "aesthetic": "截图整体观感良好：紫到天蓝的渐变（#564af7→#86c5e3）契合\"雨天\"语义，过渡自然不刺眼；白色文字在渐变背景上对比度足够，可读性良好。字号层级为 16/14/12/10，强字重只保留在\"雨天打车\"和\"机场接人\"上，分级合理。底部的\"点按打开打车\"使用 19ffffff 半透明胶囊作为行动暗示，质感统一。轻微不足：场景标签与主标题视觉量感接近，分割线略弱，整体偏\"信息卡片\"而缺少一点品牌氛围感。",
+    "layout": "截图中所有关键文本均完整可见：\"雨天打车\"未被裁切，\"机场接人\"主标题独占一行无截断，时间与地点分两段整齐排列，\"点按打开打车\"胶囊完整显示、未越出卡片边界。Stack 仅作为渐变背景，无元素遮挡。底部 action_hint 底边距卡片底边约 8-10vp，处于 2x2 推荐范围（8-12vp）内。轻微扣分：卡片整体内容偏上，导致中下部留白稍多、视觉重心略偏高；meta_row 中 time_text 与 place_text 之间的 6vp 间距相对 116 宽容器偏紧，但仍清晰可分。整体无溢出、无堆叠、无文字截断。"
+  },
+  "issues": [
+    "dataModel 中 dtEnd=19:20 未在卡片上展示，信息利用不完整",
+    "action_hint 底边距卡片底边约 8-10vp，虽合规但视觉重心略偏上",
+    "scene_label 与 event_title 同为 fontWeight:700 的强字重，第二强字重不够克制"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"event_title\",\"split_line\",\"meta_row\",\"action_hint\"],\"itemMargin\":4,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"taxi://home\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#564af7\",0],[\"#86c5e3\",1]]},\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"taxi_icon\",\"scene_label\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":28,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"taxi_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"scene_label\",\"component\":\"Text\",\"content\":\"雨天打车\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"event_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":116,\"height\":32,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"wordBreak\":\"breakWord\"}},{\"id\":\"split_line\",\"component\":\"Divider\",\"styles\":{\"width\":116,\"height\":1,\"strokeWidth\":1,\"vertical\":false,\"color\":\"#33ffffff\"}},{\"id\":\"meta_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"place_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":16,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}-{{ ${/data/calendar/items/0/dtEnd} }}\",\"styles\":{\"width\":64,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"place_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":46,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"点按打开打车\",\"styles\":{\"width\":116,\"height\":20,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#26ffffff\",\"borderRadius\":10}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"机场接人\",\"eventLocation\":\"T3航站楼\",\"dtStart\":\"18:30\",\"dtEnd\":\"19:20\",\"entityId\":\"calendar_sample_001\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

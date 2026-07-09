@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-25-reading-006",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.1,
+  "reasons": {
+    "instruction": "用户要求一个阅读进度卡，要有看完百分之多少的数字，一行布局，点击跳进应用。截图中可见：标题'阅读进度'、主数值'64'、进度条、'打开'入口文字，单行布局满足，onClick 使用了 clickToDeeplink 事件且参数与 eventCandidates 一致，size=2x4 协议合规。但用户明确要求'看完百分之多少的数字'，截图中央大号粗体只显示了'64'，百分号'%'疑似被裁掉未呈现，'percentage' 信息不完整，扣分。",
+    "aesthetic": "截图中可见卡片采用淡灰到鹅黄的横向渐变底，套一个白色圆角面板，色彩明亮、层次清晰；字号梯度也较好（32/14/12），仅一个最强字重（粗体 64）。但因为主数值 '%' 被裁，前景信息的完整度受损，整体观感受到影响。",
+    "layout": "截图中可观察到：中央大号 '64' 文字几乎贴满其 64px 宽容器右沿，'%' 符号在渲染中未可见，怀疑因容器宽度过窄被裁切（'64%' 在 fontSize=32 粗体下实际宽度约 55-60px，紧贴边界容易触发裁剪）。content_panel 内部横向排布虽通过公式（252≤252）刚好不溢出，但 primary_value 宽度 64 留给 '64%' 余量不足。其余元素（标题、进度条、'打开'）位置与对齐正常，无明显溢出或堆叠。"
+  },
+  "issues": [
+    "主数值 '64%' 中的 '%' 符号在截图中不可见，疑似因 primary_value 宽度 64 在 fontSize=32 粗体下不够而被裁切，导致用户最关心的'百分之多少'信息显示不完整",
+    "primary_value 宽度（64）与内容 '64%' 在 fontSize=32 fontWeight=700 下过紧，存在文本截断风险",
+    "content_panel 横向总占用 252px 正好等于内宽 252px，没有任何缓冲余量，建议适当缩小某项或减小内边距以增加弹性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"content_panel\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"Right\",\"colors\":[[\"#fff1f3f5\",0],[\"#f5dc62\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"content_panel\",\"component\":\"Row\",\"children\":[\"title_text\",\"primary_value\",\"progress_bar\",\"action_hint\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":276,\"height\":84,\"padding\":12,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/reading/title} }}\",\"styles\":{\"width\":48,\"height\":22,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/reading/progressText} }}\",\"styles\":{\"width\":80,\"height\":40,\"fontSize\":30,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"progress_bar\",\"component\":\"Progress\",\"value\":\"{{ ${/reading/progressValue} }}\",\"total\":\"{{ ${/reading/progressTotal} }}\",\"styles\":{\"width\":64,\"height\":8,\"type\":\"linear\",\"color\":\"#f9a01e\"}},{\"id\":\"action_hint\",\"component\":\"Text\",\"content\":\"{{ ${/reading/entryText} }}\",\"styles\":{\"width\":32,\"height\":22,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"reading\":{\"title\":\"阅读进度\",\"progressText\":\"64%\",\"progressValue\":64,\"progressTotal\":100,\"entryText\":\"打开\"}}}}"
+  ]
+}

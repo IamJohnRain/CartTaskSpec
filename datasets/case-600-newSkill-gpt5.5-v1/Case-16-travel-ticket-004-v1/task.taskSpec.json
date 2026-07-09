@@ -1,0 +1,83 @@
+{
+  "userQuery": "给我整个行程详情呗,中间放个图,数字会变,点一下能操作,读日历,延误就标红",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从日历读取的票务行程列表，卡片展示第一条即将发生的行程。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "travel-ticket-001",
+              "title": "CA1234",
+              "dtStart": "16:45",
+              "dtEnd": "18:55",
+              "eventLocation": "T3登机口",
+              "description": "延误15分"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条票务行程日历事件。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日历事件所属类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于打开行程详情。",
+                "sampleValue": "travel-ticket-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "票务行程标题或班次号。",
+                "sampleValue": "CA1234"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "票务行程开始时间，当天事件为 HH:MM。",
+                "sampleValue": "16:45"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "票务行程结束时间，当天事件为 HH:MM。",
+                "sampleValue": "18:55"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "票务行程地点、站台或登机口。",
+                "sampleValue": "T3登机口"
+              },
+              "description": {
+                "type": "string",
+                "description": "票务行程状态说明，延误时用于触发告警展示。",
+                "sampleValue": "延误15分"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞本地 SVG 图标，适合旅行票务、航班出发和行程状态的主视觉锚点。"
+    }
+  ]
+}

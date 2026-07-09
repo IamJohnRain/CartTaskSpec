@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-10-rainy-taxi-001",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.2,
+  "reasons": {
+    "instruction": "用户要求：① 卡片主体是个图 ② 数字会跳的那种 ③ 点一下打开打车app ④ 显示天气。截图中左侧 hero_panel 区域以云朵+雨滴彩色图标为主体图像，右侧突出显示 23°C 主数值，并完整呈现'青浦区天气 / 小雨 · 湿度86%'等天气字段，onClick 已正确绑定到 eventCandidates 中的 clickToDeeplink，size=2x4、catalogId、version、updateDataModel.path 均合规，assetCandidates 引用正确。扣分点：① '数字会跳的那种'暗示数字翻滚动效，静态截图无法体现模型是否做了过渡动效（DSL 中也没有体现），主数值仅作普通大字号处理；② CTA 文案是泛化的'打开'，与用户'打开打车app'的诉求对应不够直接；③ eventCandidates 的 uri 指向 totemweather 而非打车 app，这是 TaskSpec 自带不一致，模型按规照搬因此未再扣分。",
+    "aesthetic": "截图整体观感整洁专业：浅蓝渐变背景呼应雨天主题，前景黑色/灰色文字在浅蓝与半透明白色面板上对比度良好、清晰可读；字号阶梯 32(温度)/14(地名)/12(条件)层次清晰、最强字重唯一；左右两栏对齐统一、留白舒适。扣分点：① 底部 '打开' 按钮使用 #19000000 半透明灰底，视觉权重偏弱，作为主 CTA 缺乏强引导感，与左侧 '雨天叫车' 白色 pill 在视觉层级上不够区分；② '雨天叫车' pill 内的 icon_car.png 仅有 20x20 视觉占比过小，截图里几乎看不清。",
+    "layout": "从截图观察：300x140 卡片内容完整无溢出；左侧 hero_panel(128) + itemMargin 12 + 右侧 info_col(136) = 276，恰在 root 12 padding 内；info_col 内部 18+4+36+4+18+4+32 = 116 与父高对齐；标题'青浦区天气'、主数值'23°C'、条件'小雨 · 湿度86%'、按钮'打开'均完整渲染，无文字截断、无元素堆叠、无边界溢出；底部动作按钮下沿到卡片底边约 12vp，符合 2x4 规范(10-14vp)。唯一微瑕：'打开' 按钮视觉上略小(72x32)且偏灰，作为唯一交互热区可更突出。"
+  },
+  "issues": [
+    "主 CTA '打开' 使用 #19000000 灰底，作为唯一可点击入口视觉权重不足，与左侧白色 pill 在视觉层级上未拉开差距",
+    "hero_panel 内 icon_car.png 实际仅 20x20，截图中车标几乎不可见，未能强化'打车'语义",
+    "用户'数字会跳的那种'暗示数字翻滚动效，DSL 中仅以普通大字号呈现，缺乏动效表达",
+    "CTA 文案 '打开' 过于泛化，与'打开打车app'的指令诉求对应不够直接（受 eventCandidates.uri 限制难以命名）",
+    "rain_image 72x58 在 128x116 容器中视觉占比略小，可略微放大以更好充当'卡片主体是个图'的角色"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"hero_panel\",\"info_col\"],\"itemMargin\":12,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#7ec0e0\",0],[\"#e8f3fb\",1]]},\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"rain_image\",\"taxi_row\"],\"itemMargin\":10,\"styles\":{\"width\":128,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#80ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"rain_image\",\"component\":\"Image\",\"src\":\"resources/base/media/rain.png\",\"styles\":{\"width\":84,\"height\":68,\"objectFit\":\"contain\"}},{\"id\":\"taxi_row\",\"component\":\"Row\",\"children\":[\"car_icon\",\"taxi_text\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":30,\"padding\":{\"left\":10,\"right\":10,\"top\":4,\"bottom\":4},\"borderRadius\":15,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"car_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"taxi_text\",\"component\":\"Text\",\"content\":\"雨天叫车\",\"styles\":{\"width\":60,\"height\":20,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"location_text\",\"primary_value\",\"condition_text\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":136,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} + '天气' }}\",\"styles\":{\"width\":136,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":136,\"height\":36,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"condition_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · 湿度' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":136,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"立即打车\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":96,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff1f6feb\",\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦区\"},\"current\":{\"temperatureText\":\"23°C\",\"condition\":\"小雨\",\"humidityPercent\":86},\"daily\":[{\"rainProbabilityPercent\":\"83%\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

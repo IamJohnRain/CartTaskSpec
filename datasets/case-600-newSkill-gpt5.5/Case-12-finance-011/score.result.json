@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-12-finance-011",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 5.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.0,
+  "reasons": {
+    "instruction": "用户明确要求'接近阈值的要黄标提示'，但截图中'黄标'徽章背景色为红色（#e84026）而非黄色，与指令和标签文案'黄标'均不符，扣分明显。中间环形图82%正确呈现，左侧消费/右侧收入结余分区完整，事件clickToDeeplink已绑定天气跳转。文案与示例数据均正确，尺寸/协议合规。",
+    "aesthetic": "截图中'看天气'按钮文字出现明显的删除线/下划线效果，视觉上像被划掉，严重影响美观，怀疑是Button组件与Text样式冲突或下划线穿透。配色方面红色警示与'黄标'文案语义矛盾，环形图红色与警告色重复使用，缺少层次。整体留白尚可，但按钮文字的异常渲染是最突出的美观问题。",
+    "layout": "右侧Column包含4个文本项（收入label/8.2k/结余label/2.6k），按公式计算需12+14+12+14+3×2=66px，超过main_row分配的64px，存在纵向溢出风险，截图中右侧文字虽勉强可见但已与上下边界非常接近。'黄标'徽章设置了padding top/bottom=2但height仅16，实际内容高度约20px，截图中徽章几乎贴近环形图边缘。按钮'看天气'文字被划线且位置贴近卡片下沿，底部锚定空间不足。左侧3项与右侧4项不对称，导致左右视觉重量失衡。"
+  },
+  "issues": [
+    "截图中'黄标'徽章为红色而非黄色，与用户明确要求的'黄标提示'不符",
+    "'看天气'按钮文字出现删除线/异常下划线，渲染异常",
+    "右侧Column(4项)所需高度66px超过main_row分配的64px，存在纵向溢出",
+    "'黄标'徽章padding+height=20px超出设定的16px，与环形图几乎相切",
+    "左右两列子项数量不对称(3 vs 4)，视觉重心不均衡",
+    "按钮高度仅24vp，作为CTA热区偏小，理想应接近40vp",
+    "环形图红色与警告徽章红色配色重复，缺少色彩层次"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"main_row\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/title} }}\",\"styles\":{\"width\":116,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_col\",\"ring_stack\",\"right_col\"],\"itemMargin\":2,\"wrap\":\"noWrap\",\"styles\":{\"width\":116,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"expense_label\",\"expense_value\",\"warning_badge\"],\"itemMargin\":2,\"styles\":{\"width\":30,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"expense_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/expenseLabel} }}\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"expense_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/expenseValue} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"warning_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/warningLabel} }}\",\"styles\":{\"width\":30,\"height\":14,\"borderRadius\":7,\"backgroundColor\":\"#fffde047\",\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff7a5c00\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"ring_stack\",\"component\":\"Stack\",\"children\":[\"budget_ring\",\"progress_text\"],\"styles\":{\"width\":50,\"height\":50,\"alignContent\":\"center\"}},{\"id\":\"budget_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/data/budget/progressValue} }}\",\"total\":\"{{ ${/data/budget/progressTotal} }}\",\"styles\":{\"width\":50,\"height\":50,\"type\":\"ring\",\"color\":\"#ffe84026\"}},{\"id\":\"progress_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/progressText} }}\",\"styles\":{\"width\":40,\"height\":16,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"right_col\",\"component\":\"Column\",\"children\":[\"income_label\",\"income_value\",\"balance_label\",\"balance_value\"],\"itemMargin\":1,\"styles\":{\"width\":30,\"height\":64,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"income_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/incomeLabel} }}\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"income_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/incomeValue} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"balance_label\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/balanceLabel} }}\",\"styles\":{\"width\":30,\"height\":12,\"fontSize\":10,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"balance_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/budget/balanceValue} }}\",\"styles\":{\"width\":30,\"height\":14,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/budget/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":72,\"height\":24,\"borderRadius\":12,\"backgroundColor\":\"#190a59f7\",\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"textDecoration\":\"none\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"budget\":{\"title\":\"预算仪表盘\",\"progressValue\":82,\"progressTotal\":100,\"progressText\":\"82%\",\"expenseLabel\":\"消费\",\"expenseValue\":\"5.6k\",\"warningLabel\":\"黄标\",\"incomeLabel\":\"收入\",\"incomeValue\":\"8.2k\",\"balanceLabel\":\"结余\",\"balanceValue\":\"2.6k\",\"actionLabel\":\"看天气\"}}}}}"
+  ]
+}

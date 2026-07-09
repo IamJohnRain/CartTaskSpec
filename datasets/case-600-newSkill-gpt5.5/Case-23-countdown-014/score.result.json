@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-23-countdown-014",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 4.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.8,
+  "reasons": {
+    "instruction": "截图能看到：左侧灰色胶囊里有运动小人 Image（替代了用户要求的💪，但协议禁止 emoji，替换可接受）；中央大数字'28'清晰；右上方三个红橙色圆环+下方'蹲 跑 拉'标签与'72 64 86'数值齐全；onClick 已正确指向 healthapp 深链接；背景为纯黑色无渐变。主要扣分：1) 用户要求的语义 emoji 全部被 Image 替代，缺少'💪🏃‍♂️🤸'视觉；2) '已坚持健身天'标题在 40px 窄列中被迫拆成'已坚持 / 健身 / 天'三行展示，可读性差；3) 圆环只有 12x12，过小难以辨识进度含义。",
+    "aesthetic": "截图整体配色为黑底+白字+橙红点缀，方向正确，但视觉质量较差：1) '已坚持健身天'被拆成'已坚持 / 健身 / 天'三行竖排，文本断裂、丑陋；2) 中央大数字'28'字号 32 与右侧 12x12 圆环尺寸悬殊，层级反差过强，构图不平衡；3) 右侧'蹲 跑 拉 72 64 86'六组文字挤在 44px 宽区域，行高过密，缺乏呼吸感；4) 左侧灰色胶囊(24x40)相比卡片显得突兀，胶囊本身没有信息价值。",
+    "layout": "截图存在明显排版问题：1) 中央 primary_column 宽 40px，无法容纳'已坚持健身'四个 12pt 汉字（4×12=48px>40px），被迫换行为'已坚持'+'健身'两行，再加独立的'天'行，呈现三行竖排的破碎效果；2) 数字'28'右边缘与第一个'蹲'圆环视觉上几乎相切/部分重叠（'28'溢出至 metrics_row 区域）；3) 右侧三组 12px 宽 column 内的'蹲/跑/拉'(10pt 字符=10px)和'72/64/86'(10pt=12px 略宽)出现拥挤、对齐不齐；4) 圆环直径 12px 在 116px 内容区中仅占 10%，视觉权重过低；5) icon_panel 的灰色背景胶囊与卡片黑色背景对比强烈但没有功能价值，反而抢占左部视觉焦点。"
+  },
+  "issues": [
+    "primary_caption 宽 40px、字号 12pt，'已坚持健身'四字 48px 宽无法单行显示，渲染成三行竖排",
+    "primary_value 数字'28'(fontSize 32)与右侧 metrics_row 起始位置过近，存在视觉重叠/挤压",
+    "Progress 圆环 12x12 过小，弱化进度信息表达",
+    "三个 metric column 宽 12px，10pt 数值如'72'宽 12px 紧贴边界，对齐不美观",
+    "icon_panel 使用 24x40 灰色胶囊作为图标容器，样式多余且与黑色卡片不协调",
+    "metrics_row 宽 44px 中塞入三组(环+标签+数值)信息，密度过高留白不足",
+    "缺少用户要求的语义 emoji（协议禁止 emoji，故用 Image 替代可接受，但应至少用不同图标区分蹲/跑/拉）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"main_row\"],\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff000000\",\"alignContent\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"icon_panel\",\"primary_column\",\"metrics_row\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":120,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"icon_panel\",\"component\":\"Stack\",\"children\":[\"sport_icon\"],\"styles\":{\"width\":22,\"height\":48,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"sport_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_run.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"primary_column\",\"component\":\"Column\",\"children\":[\"primary_caption\",\"primary_value\",\"primary_unit\"],\"itemMargin\":2,\"styles\":{\"width\":56,\"height\":80,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"已坚持健身\",\"styles\":{\"width\":56,\"height\":14,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":56,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"primary_unit\",\"component\":\"Text\",\"content\":\"天\",\"styles\":{\"width\":56,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"metrics_row\",\"component\":\"Row\",\"children\":[\"squat_col\",\"run_col\",\"stretch_col\"],\"itemMargin\":4,\"styles\":{\"width\":42,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"squat_col\",\"component\":\"Column\",\"children\":[\"squat_ring\",\"squat_label\"],\"itemMargin\":4,\"styles\":{\"width\":14,\"height\":60,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"squat_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/fitness/squat/value} }}\",\"total\":\"{{ ${/fitness/squat/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#db6b42\",\"width\":14,\"height\":14}},{\"id\":\"squat_label\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/squat/label} }}{{ ${/fitness/squat/value} }}\",\"styles\":{\"width\":14,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"run_col\",\"component\":\"Column\",\"children\":[\"run_ring\",\"run_label\"],\"itemMargin\":4,\"styles\":{\"width\":14,\"height\":60,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"run_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/fitness/run/value} }}\",\"total\":\"{{ ${/fitness/run/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#db6b42\",\"width\":14,\"height\":14}},{\"id\":\"run_label\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/run/label} }}{{ ${/fitness/run/value} }}\",\"styles\":{\"width\":14,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"stretch_col\",\"component\":\"Column\",\"children\":[\"stretch_ring\",\"stretch_label\"],\"itemMargin\":4,\"styles\":{\"width\":14,\"height\":60,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"stretch_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/fitness/stretch/value} }}\",\"total\":\"{{ ${/fitness/stretch/total} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#db6b42\",\"width\":14,\"height\":14}},{\"id\":\"stretch_label\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/stretch/label} }}{{ ${/fitness/stretch/value} }}\",\"styles\":{\"width\":14,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"fitness-checkin-001\",\"title\":\"健身打卡\",\"description\":\"28\",\"dtStart\":\"2026-06-11\",\"dtEnd\":\"2026-07-09\"}]}},\"fitness\":{\"squat\":{\"label\":\"蹲\",\"value\":72,\"total\":100},\"run\":{\"label\":\"跑\",\"value\":64,\"total\":100},\"stretch\":{\"label\":\"拉\",\"value\":86,\"total\":100}},\"state\":{\"loading\":false}}}}"
+  ]
+}

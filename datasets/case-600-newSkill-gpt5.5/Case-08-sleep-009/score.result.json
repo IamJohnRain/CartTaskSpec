@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-08-sleep-009",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.6,
+  "reasons": {
+    "instruction": "截图中可见用户全部诉求均已落实：左上角月亮图标+'睡眠作息'标题，红色主状态'睡眠差'，白色建议语'建议提前30分钟放松'，右下角日历作息时间'23:40-07:15 作息'从DataModel正确读取，右上角红色'红色警告'徽标，底部'看详情'Button的onClick使用clickToDeeplink且args原样来自eventCandidates。尺寸300x140=2x4、catalogId=ohos.a2ui.extended.catalog、version=v0.9、updateDataModel.path='/'、value与TaskSpec一致，协议完全合规。",
+    "aesthetic": "深紫渐变背景与红色警告色搭配协调，'睡眠差'作为唯一最强字重（20pt粗体红色）层级清晰，标题14pt、副信息12pt字阶合理。左右分区通过半透明白色边框区分信息层级。略扣分：'看详情'按钮采用与面板同色系的浅紫半透明背景，与面板边框视觉对比不足，按钮的CTA感不够强烈；'日历作息'等次要文字在深色背景上虽然可读但偏暗淡。",
+    "layout": "截图无任何元素堆叠重叠或文字截断。左侧Column(178x116)内4行文本（24+28+18+20+间距12=102）低于116，右侧Column(88x116)内3行（24+18+34+间距16=92）低于116，均未溢出。'看详情'按钮文字完整显示在按钮内，底部与卡片底边有合理留白。左侧标题'睡眠作息'4个字与图标合计约82宽，未超150宽度。整体排版干净，无明显挤压感。"
+  },
+  "issues": [
+    "'看详情'按钮背景使用#19ffffff（白色10%透明）与面板背景色#19ffffff相同，视觉上按钮与面板区分度不足，CTA点击暗示偏弱",
+    "右侧'日历作息'等次要文字使用#99ffffff（60%白）字号12pt，在深色背景上偏暗淡，可读性可进一步加强",
+    "左下角'23:40-07:15 作息'与上方'建议提前30分钟放松'间距仅4vp略显紧凑，可考虑增加至6-8vp"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff191a1c\",0],[\"#634794\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_status\",\"advice_text\",\"calendar_line\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"sleep_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":24,\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"sleep_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_sleep.png\",\"styles\":{\"width\":22,\"height\":22,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":150,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"primary_status\",\"component\":\"Text\",\"content\":\"睡眠差\",\"styles\":{\"width\":178,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffd94838\",\"maxLines\":1}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"建议提前30分钟放松\",\"styles\":{\"width\":178,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"calendar_line\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} + ' 作息' }}\",\"styles\":{\"width\":178,\"height\":20,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"alert_badge\",\"source_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":88,\"height\":116,\"padding\":0,\"backgroundColor\":\"#19ffffff\",\"borderColor\":\"#33ffffff\",\"borderWidth\":1,\"borderRadius\":16,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"红色警告\",\"styles\":{\"width\":72,\"height\":24,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffd94838\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"source_text\",\"component\":\"Text\",\"content\":\"日历作息\",\"styles\":{\"width\":72,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#b3ffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看详情\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/router/sleepDetail\"}}],\"styles\":{\"width\":72,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff7c4dff\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar_sleep_001\",\"title\":\"睡眠作息\",\"dtStart\":\"23:40\",\"dtEnd\":\"07:15\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "userQuery": "给我做个主题色铺满背景的日程专注卡片，要适合夜晚的深色渐变。整体左右排版，用`历`字做图标，每一条日程事件都要纵向重复排列下来，比如左边写'距离项目交付还有3天'，右边放个圆环显示专注进度。还要读取一下明天的天气情况放上去，点一下能直接进那个日程事件的详情页。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "未来日程事件列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "距离项目交付还有3天",
+              "dtStart": "20:00",
+              "dtEnd": "21:00"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "方案复盘",
+              "dtStart": "21:30",
+              "dtEnd": "22:00"
+            },
+            {
+              "entityId": "calendar-event-003",
+              "title": "交付检查",
+              "dtStart": "明日 09:30",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识，用于打开日程详情。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题或倒计时摘要。",
+                "sampleValue": "距离项目交付还有3天"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间展示文本。",
+                "sampleValue": "20:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间展示文本。",
+                "sampleValue": "21:00"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日天气预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "26° / 32°"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨",
+              "temperatureRangeText": "24° / 29°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或相对日期文本。",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "小雨"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "24° / 29°"
+              }
+            }
+          }
+        }
+      }
+    },
+    "focus": {
+      "progressPercent": {
+        "type": "number",
+        "description": "当前专注进度百分比，用于圆环进度值。",
+        "sampleValue": 68
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "专注进度总量百分比基准。",
+        "sampleValue": 100
+      },
+      "progressText": {
+        "type": "string",
+        "description": "专注进度展示文本。",
+        "sampleValue": "专注 68%"
+      }
+    }
+  },
+  "assetCandidates": []
+}

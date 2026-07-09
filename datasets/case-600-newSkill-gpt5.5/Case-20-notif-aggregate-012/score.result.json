@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-20-notif-aggregate-012",
+  "scores": {
+    "instruction": {
+      "score": 7.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.4,
+  "reasons": {
+    "instruction": "用户要求'超大号标题今日新消息47条'已落实（32pt加粗居中），三段分隔结构完整呈现，三块内容（待办/日程/群消息）齐全，日程从日历读取并显示'10:00 风险会'，拨号按钮和clickToCallPhone事件已绑定。但截图中日程行的'已处理'复选框标签被截断成'...'，与用户明确要求'每条后面能勾选已处理'的可见性诉求不符，扣分。",
+    "aesthetic": "截图整体观感良好：橙红到深紫的对角线渐变自然且具运动感，白色文字在渐变背景上清晰可读，色块（淡白半透明背景条+彩色徽章）层次分明，标题用32pt黑色加粗形成唯一最强字重。但日程行4个元素挤在一起，复选框和拨号按钮都偏小，整体观感略显拥挤。",
+    "layout": "截图最突出的问题是日程行布局：复选框宽度仅60，'已处理'标签被截断显示为'...'，这是明显的文字截断。拨号按钮宽48紧贴右边缘，文字'拨号'虽勉强可见但与下方'较急'徽章在视觉上紧贴，热区偏小。日程行高度28内塞入4个元素（标签36+文本120+复选框60+按钮48+3个4px间距=276）虽算式上刚好填满276，但实际渲染中复选框标签被裁切。卡片整体无元素溢出边界、无Stack层叠遮挡。底边到卡片下沿约13vp，在合理范围内。"
+  },
+  "issues": [
+    "日程行复选框宽度60不足以显示'已处理'标签，截图中文本被截断为'...'",
+    "日程行4个元素横向排布过于紧凑，复选框与拨号按钮热区偏小",
+    "拨号按钮宽48、'拨号'二字(约24px)加内边距后偏紧，建议加大按钮宽度",
+    "日程文本宽度120在中文标点'10:00 风险会'下尚可，但与复选框、按钮争抢空间",
+    "复选框mark尺寸12配shape rounded_square在小尺寸下视觉略糊"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_block\",\"divider_top\",\"todo_row\",\"divider_todo\",\"schedule_row\",\"divider_schedule\",\"group_row\"],\"itemMargin\":0,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#db6b42\",0],[\"#8c55c2\",1]]},\"alignItems\":\"start\"}},{\"id\":\"hero_block\",\"component\":\"Row\",\"children\":[\"title_text\"],\"itemMargin\":0,\"styles\":{\"width\":276,\"height\":36,\"padding\":[0,0,0,0],\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/headline/title} }}\",\"styles\":{\"width\":256,\"height\":36,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"divider_top\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"todo_row\",\"component\":\"Row\",\"children\":[\"todo_label\",\"todo_summary\",\"todo_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":22,\"padding\":[0,0,0,0],\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"todo_label\",\"component\":\"Text\",\"content\":\"待办\",\"styles\":{\"width\":36,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"todo_summary\",\"component\":\"Text\",\"content\":\"{{ ${/todo/summaryText} }}\",\"styles\":{\"width\":172,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"todo_badge\",\"component\":\"Text\",\"content\":\"{{ ${/todo/priorityText} }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#db6b42\",\"borderRadius\":8}},{\"id\":\"divider_todo\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"schedule_row\",\"component\":\"Row\",\"children\":[\"schedule_label\",\"schedule_text\",\"schedule_done\",\"call_button\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":28,\"padding\":[0,0,0,0],\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"schedule_label\",\"component\":\"Text\",\"content\":\"日程\",\"styles\":{\"width\":32,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"schedule_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"schedule_done\",\"component\":\"Checkbox\",\"label\":\"已处理\",\"select\":\"{{ ${/schedule/firstProcessed} }}\",\"value\":\"first_calendar_event\",\"styles\":{\"width\":96,\"height\":24,\"selectedColor\":\"#ff5ba854\",\"unSelectedColor\":\"#33ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"call_button\",\"component\":\"Button\",\"label\":\"拨号\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/urgentOwnerPhone} }}\"}}],\"styles\":{\"width\":48,\"height\":24,\"fontSize\":12,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#db6b42\",\"borderRadius\":12}},{\"id\":\"divider_schedule\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"group_row\",\"component\":\"Row\",\"children\":[\"group_label\",\"group_summary\",\"group_badge\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"padding\":[0,0,0,0],\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"group_label\",\"component\":\"Text\",\"content\":\"群消息\",\"styles\":{\"width\":48,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"group_summary\",\"component\":\"Text\",\"content\":\"{{ ${/messages/groupSummary} }}\",\"styles\":{\"width\":168,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"group_badge\",\"component\":\"Text\",\"content\":\"{{ ${/messages/urgencyText} }}\",\"styles\":{\"width\":44,\"height\":18,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#8c55c2\",\"borderRadius\":8}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"headline\":{\"title\":\"今日新消息47条\"},\"todo\":{\"summaryText\":\"3项待确认\",\"priorityText\":\"优先2\"},\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-event-001\",\"dtStart\":\"10:00\",\"dtEnd\":\"11:00\",\"title\":\"风险会\",\"entityName\":\"日程\"}]}},\"schedule\":{\"firstProcessed\":false},\"messages\":{\"groupSummary\":\"18个话题待扫\",\"urgencyText\":\"较急\"},\"contact\":{\"urgentOwnerPhone\":\"13800138000\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

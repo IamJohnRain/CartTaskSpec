@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-03-anti-addiction-020",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.7,
+  "reasons": {
+    "instruction": "截图中可见：渐变紫黄氛围背景、三色分区（黄/蓝/绿）、'- - -' 分隔线、★ 文字图标、学习/娱乐/运动 三项、待办风险状态均已落实；尺寸 2x2=140x140、catalogId、eventCandidates 也都正确调用。但用户明确要求拼接的'距离睡觉还有2小时15分'在截图中被截断为'距离睡觉还有2小'，后段'时15分'丢失，是指令执行的关键遗漏；另状态文字采用 #F9A01E 偏橙，与用户要求'黄色'略有偏差。",
+    "aesthetic": "截图中卡片整体观感尚可：渐变背景柔和有氛围感、白色内嵌面板与三色横条形成清晰层级、圆角统一、左右对齐工整；前景深色字在浅色背景上可读。扣分点：① 头部黑体加粗文字在头部位置明显被右侧截断，露出'…2小'，视觉上很突兀；② 第一行（黄色底）上的黄色 ★ 图标几乎与背景同色，黄色 待办风险文字虽可辨但对比度偏弱；③ 整体右侧有较多留白感但头部又挤，密度不均。",
+    "layout": "截图中最严重的排版问题就是头部受保护文本被截断：用户明确指定的'距离睡觉还有2小时15分'（12 字符），在 fontSize 14、width 116 容器中只能容纳约 8 字符，maxLines:1 直接把'时15分'切掉，是核心信息丢失式截断。其余部分三项 Row 完整显示在白色面板内，未见溢出卡片边界、未见元素堆叠、未见 CTA 不可达；底部行距与卡片底边保留合理。但头部截断属于'受保护主指标文字被裁切'的硬伤，必须重扣。"
+  },
+  "issues": [
+    "头部 '距离睡觉还有2小时15分' 在截图中被截断为 '距离睡觉还有2小'，'时15分' 缺失（受保护主指标文字被裁切）",
+    "第一行（黄色底）上 ★ 图标使用 #F7CE00 与底色 #F5DC62 对比度极低，几乎不可见",
+    "状态文字使用 #F9A01E（橙色）而非用户要求的纯黄色",
+    "header 字号 14 在 116 宽度的容器内不足以容纳 12 字符的中文+数字串，但保留 maxLines:1 导致截断"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_text\",\"separator_text\",\"schedule_panel\"],\"itemMargin\":3,\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"ViewCalendarEvent\",\"params\":{\"entityId\":\"study-plan\"}}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#C386F0\",0],[\"#F5DC62\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_text\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/countdownPrefix} + ${/schedule/sleepRemaining} }}\",\"styles\":{\"width\":120,\"height\":18,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"separator_text\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/separator} }}\",\"styles\":{\"width\":120,\"height\":10,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"item_row_0\",\"item_row_1\",\"item_row_2\"],\"itemMargin\":3,\"styles\":{\"width\":120,\"height\":84,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_row_0\",\"component\":\"Row\",\"children\":[\"item_icon_0\",\"item_name_0\",\"item_status_0\"],\"itemMargin\":2,\"styles\":{\"width\":112,\"height\":22,\"padding\":2,\"borderRadius\":8,\"backgroundColor\":\"#F5DC62\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_icon_0\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/iconGlyph} }}\",\"styles\":{\"width\":14,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#D89000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"item_name_0\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/items/0/name} }}\",\"styles\":{\"width\":32,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"item_status_0\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/items/0/status} }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#D89000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"item_row_1\",\"component\":\"Row\",\"children\":[\"item_icon_1\",\"item_name_1\",\"item_status_1\"],\"itemMargin\":2,\"styles\":{\"width\":112,\"height\":22,\"padding\":2,\"borderRadius\":8,\"backgroundColor\":\"#86C5E3\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_icon_1\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/iconGlyph} }}\",\"styles\":{\"width\":14,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#D89000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"item_name_1\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/items/1/name} }}\",\"styles\":{\"width\":32,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"item_status_1\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/items/1/status} }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#D89000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"item_row_2\",\"component\":\"Row\",\"children\":[\"item_icon_2\",\"item_name_2\",\"item_status_2\"],\"itemMargin\":2,\"styles\":{\"width\":112,\"height\":22,\"padding\":2,\"borderRadius\":8,\"backgroundColor\":\"#92D6CC\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"item_icon_2\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/iconGlyph} }}\",\"styles\":{\"width\":14,\"height\":16,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#D89000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"item_name_2\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/items/2/name} }}\",\"styles\":{\"width\":32,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#E5000000\",\"maxLines\":1}},{\"id\":\"item_status_2\",\"component\":\"Text\",\"content\":\"{{ ${/schedule/items/2/status} }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#D89000\",\"maxLines\":1,\"textAlign\":\"end\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"schedule\":{\"countdownPrefix\":\"距离睡觉还有\",\"sleepRemaining\":\"2小时15分\",\"separator\":\"- - -\",\"iconGlyph\":\"★\",\"items\":[{\"entityId\":\"study-plan\",\"name\":\"学习\",\"status\":\"待办风险\"},{\"entityId\":\"entertainment-plan\",\"name\":\"娱乐\",\"status\":\"待办风险\"},{\"entityId\":\"sport-plan\",\"name\":\"运动\",\"status\":\"待办风险\"}]}}}}"
+  ]
+}

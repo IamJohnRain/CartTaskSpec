@@ -1,0 +1,36 @@
+{
+  "case_id": "Case-29-elderly-care-019",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.2,
+  "reasons": {
+    "instruction": "截图中☀字符、'晴 18°C 适宜外出'、'湿度 45%'、'查看7天天气'按钮、'呼叫家人'按钮、底部'今日建议:多喝水,适当活动'静态文案均能识别；两个 onClick 事件按 eventCandidates 正确配置；尺寸/root shell/catalogId/version/updateDataModel 协议均满足。但 '查看7天天气' 按钮文本因宽度不足被截断成 '查看7天天'，丢掉了最后一个 '气' 字，CTA 信息不完整；'异常时用红色告警' 在 DSL 中使用了 #ffed6f21 深橙色而非真正的红色；整体渐变更接近中午的橙黄而非'晨曦柔和'的米桃/浅粉调，与 userQuery 描述有偏差。",
+    "aesthetic": "截图中渐变为饱和度较高的橙黄到金黄，与 userQuery 要求的'晨曦柔和氛围'相比偏浓偏暖，缺少粉/米调的柔和感。文字层级尚可：☀ 字符是主视觉、'晴 18°C…' 是主信息、按钮和提示文字为次级，层级基本成立。'晴 18°C 适宜外出' 折成 2 行、'今日建议…' 折成 2 行，密度偏紧、留白不足，文本行高紧凑显得拥挤。绿色 '呼叫家人' 按钮与橙色背景的撞色对老人卡偏刺激，缺少柔和感。",
+    "layout": "截图中最严重的问题是右上角 '查看7天天气' 按钮文字被截断为 '查看7天天'，最后一个 '气' 字完全不可见。按钮宽 58、padding 左右各 2，可用文本宽 54，但 6 个汉字在 fontSize 10 下约 60px，明显超出，是受保护 CTA 文字被裁切，必须重扣分。'晴 18°C 适宜外出' 在 54 宽的列里被强制折成 '晴 18°C 适' / '宜外出' 两行，行高偏紧；底部 '今日建议:多喝水,适当活动' 在 116 宽内也折成 2 行 '…适当' / '活动'，行高被压缩。卡片整体没有 Stack 遮挡关键内容，但右侧底部相对左侧留白略不均衡。"
+  },
+  "issues": [
+    "右上角 '查看7天天气' 按钮文字被裁断，最后一字 '气' 不可见（按钮宽 58 / 文本 ~60px + padding 4）",
+    "'晴 18°C 适宜外出' 在 54 宽列中折成 2 行，挤压空间",
+    "'今日建议:多喝水,适当活动' 折成 2 行，行高紧凑影响老人可读性",
+    "背景渐变 #f9bc64→#f5dc62 偏浓橙黄，与 '晨曦柔和' 描述有偏差",
+    "告警颜色 #ffed6f21 为深橙而非 userQuery 要求的 '红色'",
+    "绿色 '呼叫家人' 按钮在橙黄背景上撞色偏强，对老人卡视觉不够柔和"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\",\"advice_text\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#fde2c0\",0],[\"#f5c08a\",1]]}}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"weather_info\",\"action_col\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_info\",\"component\":\"Column\",\"children\":[\"sun_glyph\",\"weather_summary\",\"humidity_text\"],\"itemMargin\":2,\"styles\":{\"width\":50,\"height\":80,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"sun_glyph\",\"component\":\"Text\",\"content\":\"☀\",\"styles\":{\"width\":50,\"height\":30,\"fontSize\":28,\"fontWeight\":700,\"fontColor\":\"#f59410\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_summary\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' ' + ${/data/weather/current/temperatureText} + ' 适宜外出' }}\",\"styles\":{\"width\":50,\"height\":30,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":2,\"lineHeight\":12,\"textAlign\":\"start\"}},{\"id\":\"humidity_text\",\"component\":\"Text\",\"content\":\"{{ '湿度 ' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":50,\"height\":12,\"fontSize\":9,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"weather_action\",\"call_action\"],\"itemMargin\":6,\"styles\":{\"width\":62,\"height\":80,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_action\",\"component\":\"Text\",\"content\":\"查看7天天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":62,\"height\":24,\"padding\":{\"left\":2,\"right\":2,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#1a000000\",\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"call_action\",\"component\":\"Text\",\"content\":\"呼叫家人\",\"onClick\":[{\"call\":\"clickToCallPhone\",\"args\":{\"phoneNumber\":\"{{ ${/contact/familyPhoneNumber} }}\"}}],\"styles\":{\"width\":62,\"height\":24,\"padding\":{\"left\":4,\"right\":4,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"advice_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/alertLevel} == '无' ? '今日建议:多喝水,适当活动' : ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":116,\"height\":22,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":11,\"backgroundColor\":\"#0c000000\",\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"{{ ${/data/weather/current/alertLevel} == '无' ? '#99000000' : '#ffe84026' }}\",\"maxLines\":2,\"lineHeight\":11,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"condition\":\"晴\",\"temperatureText\":\"18°C\",\"humidityPercent\":45,\"alertLevel\":\"无\"}}},\"contact\":{\"familyPhoneNumber\":\"13800138000\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

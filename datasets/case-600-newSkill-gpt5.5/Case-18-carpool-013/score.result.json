@@ -1,0 +1,35 @@
+{
+  "case_id": "Case-18-carpool-013",
+  "scores": {
+    "instruction": {
+      "score": 5.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 3.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 4.9,
+  "reasons": {
+    "instruction": "截图中顶部标题'张师傅正在赶来 京A·88888'完整呈现，'3.2km'距离和'晴19℃ 晚间微凉'天气（含'夜'前缀文字图标）也正确显示，底部'导航去上车点'按钮和 onClick 事件符合 eventCandidates。但用户明确要求的'距接驾还有12分'信息在左 ETA 卡片中严重残缺：截图中只看到'时 距接'与被截断的'驾'，关键的'还有12分'完全消失，属于核心诉求信息丢失，严重扣分。深蓝主题和渐变方向符合'深夜到凌晨'的语义。",
+    "aesthetic": "截图整体配色为深蓝到中蓝的对角渐变，夜晚质感尚可；标题字重最强、白色对比清晰；两个半透明毛玻璃风格的指标卡片设计统一、留白合理。但左侧 ETA 卡片因文字截断导致视觉残缺，破坏整体美感；按钮的描边与背景区分度一般但可接受。整体属于'可用但不精致'水平。",
+    "layout": "截图最显著的排版问题是左 ETA 卡片文字溢出/截断：原始内容'时 距接驾\\n还有12分'在 fontSize 10、宽度 54 像素的容器中，'时 距接驾'被强制换行为'时 距接'+'驾'两行，加上'\n还有12分'本应再占一行，卡片高度 28 不足以容纳三行，导致'还有12分'被完全切掉——这是用户最关心的接驾倒计时信息。右距离卡片因字符较少（'距 距离\\n3.2km'）刚好显示完整。底部按钮与天气行间距尚可，标题行无截断，但 ETA 卡片的截断是致命的布局错误。"
+  },
+  "issues": [
+    "左 ETA 卡片文字'还有12分'被卡片高度截断，关键接驾倒计时信息丢失",
+    "ETA 卡片在 fontSize 10 下宽度 54 不够容纳'时 距接驾'一行，导致首行也被强制换行",
+    "两个指标卡片在视觉上明显不平衡（左侧三行文字被切，右侧两行完整显示）",
+    "根 Column 总占用略超 116 像素内容区，天气行与按钮行间距偏紧",
+    "渐变虽为深蓝但中间过渡色（#467794）偏蓝绿，与'深夜→凌晨'的夜色调语义略有偏离"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title_text\",\"metric_row\",\"weather_text\",\"action_row\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":10,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ff0a1428\",0],[\"#ff1f3a5f\",0.45],[\"#ff4796c4\",1]]}}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/trip/title} }}\",\"styles\":{\"width\":120,\"height\":32,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"start\",\"lineHeight\":16}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"eta_tile\",\"distance_tile\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":34,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"eta_tile\",\"component\":\"Text\",\"content\":\"{{ ${/trip/etaDisplay} }}\",\"styles\":{\"width\":57,\"height\":34,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"start\",\"lineHeight\":13}},{\"id\":\"distance_tile\",\"component\":\"Text\",\"content\":\"{{ ${/trip/distanceDisplay} }}\",\"styles\":{\"width\":57,\"height\":34,\"padding\":{\"left\":6,\"right\":6,\"top\":4,\"bottom\":4},\"borderRadius\":10,\"backgroundColor\":\"#19ffffff\",\"borderWidth\":1,\"borderColor\":\"#33ffffff\",\"fontSize\":9,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":2,\"textOverflow\":\"none\",\"textAlign\":\"start\",\"lineHeight\":13}},{\"id\":\"weather_text\",\"component\":\"Text\",\"content\":\"{{ '夜 ' + ${/data/weather/current/condition} + ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/coldLevel} }}\",\"styles\":{\"width\":120,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_row\",\"component\":\"Row\",\"children\":[\"action_button\"],\"styles\":{\"width\":120,\"height\":26,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"导航去上车点\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"{{ ${/trip/pickup/latitude} }}\",\"longitude\":\"{{ ${/trip/pickup/longitude} }}\"},\"trafficpe\":\"Drive\"}}}],\"styles\":{\"width\":110,\"height\":26,\"fontSize\":11,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#33ffffff\",\"borderRadius\":13,\"borderWidth\":1,\"borderColor\":\"#66ffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"trip\":{\"title\":\"张师傅正在赶来\\n京A·88888\",\"etaDisplay\":\"时 距接驾\\n还有12分\",\"distanceDisplay\":\"距 距离\\n3.2km\",\"pickup\":{\"latitude\":\"39.908823\",\"longitude\":\"116.397470\"}},\"data\":{\"weather\":{\"current\":{\"condition\":\"晴\",\"temperatureText\":\"19℃\",\"coldLevel\":\"晚间微凉\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}

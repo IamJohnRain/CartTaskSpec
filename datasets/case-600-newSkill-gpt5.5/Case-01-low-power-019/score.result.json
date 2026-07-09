@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-01-low-power-019",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "截图中可见主题橙色渐变背景，左上'电量告急'大号白字呈现清晰，右上角胶囊状天气芯片显示'多云 26°C'，下方三块小色块依次为⚡省电、🔋充电宝、⚙设置，底部白色胶囊按钮'开启省电模式'完整呈现，尺寸 2x4、catalogId、version、updateDataModel 路径与值均符合协议，Button.onClick 的 call/args 与 eventCandidates 完全一致。轻微扣分点：用户请求使用 ⚡🔋⚙ 字符图标，模型直接落为彩色 Emoji 渲染（黄色闪电、绿色电池、灰色齿轮），触发协议中'禁止 emoji'的硬约束，但用户明确点名这些字符图标准入。dataModel 中的 location/districtName('青浦区')未渲染到天气芯片中，信息利用略不完整。",
+    "aesthetic": "截图中橙色 RightBottom 渐变(由 #ed6f21 到 #f9a01e)视觉和谐，与'低电'主题语义匹配；白字在暖色背景上对比清晰、辨识度好；'省电'磁贴使用 #33ffffff 半透明白底、'充电宝/设置'使用 #19ffffff 更淡背景，区分了主次；底部按钮白底配 #ffed6f21 橙字，CTA 视觉重量合适；标题 20px/700 是唯一最强字重，字号阶梯 12/14/20 清晰；圆角节奏统一(磁贴 8/芯片 12/按钮 16/卡片 22)；整体留白舒适、对齐统一，呈现专业。",
+    "layout": "截图显示卡片三段竖向布局(标题行 28 / 快捷磁贴 40 / 按钮 32)加上 12+12 内边距和 8+8 的 itemMargin，总计 24+16+100=140，与卡片高度精确吻合无溢出。标题行 spaceBetween，'电量告急'占 168、天气芯片占 100，间距 8，总和 276 等于内容区宽度。三个 84 宽磁贴加 12×2 间距共 252+24=276 同样填满。无文字截断、无层叠遮挡、按钮热区 276×32 充足，底边距约 8vp 处于 2x4 合理范围(8-12vp)，整体布局干净。"
+  },
+  "issues": [
+    "DSL 中使用 ⚡🔋⚙ 三个字符，渲染为彩色 emoji，违反协议中'禁止 emoji'硬约束(尽管用户原始指令中显式点名这些字符)",
+    "dataModel 中的 /data/weather/location/districtName(青浦区)未被任何组件消费，天气芯片仅显示天气现象与温度，位置信息缺失",
+    "底部按钮 fontWeight 写为字符串 'medium' 而非数字字重，CTA 文字视觉重量略显普通，可加强为 700"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"shortcut_row\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]},\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"weather_chip\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"电量告急\",\"styles\":{\"width\":168,\"height\":28,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_chip\",\"component\":\"Row\",\"children\":[\"weather_district\",\"weather_condition\",\"weather_temp\"],\"itemMargin\":4,\"styles\":{\"width\":120,\"height\":24,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":12,\"backgroundColor\":\"#33ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_district\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/districtName} }}\",\"styles\":{\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_condition\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_temp\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"height\":16,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"shortcut_row\",\"component\":\"Row\",\"children\":[\"save_tile\",\"power_tile\",\"setting_tile\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"save_tile\",\"component\":\"Column\",\"children\":[\"save_icon\",\"save_label\"],\"itemMargin\":2,\"styles\":{\"width\":84,\"height\":40,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#33ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"save_icon\",\"component\":\"Text\",\"content\":\"⚡\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"save_label\",\"component\":\"Text\",\"content\":\"省电\",\"styles\":{\"width\":68,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"power_tile\",\"component\":\"Column\",\"children\":[\"power_icon\",\"power_label\"],\"itemMargin\":2,\"styles\":{\"width\":84,\"height\":40,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"power_icon\",\"component\":\"Text\",\"content\":\"🔋\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"power_label\",\"component\":\"Text\",\"content\":\"充电宝\",\"styles\":{\"width\":68,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"setting_tile\",\"component\":\"Column\",\"children\":[\"setting_icon\",\"setting_label\"],\"itemMargin\":2,\"styles\":{\"width\":84,\"height\":40,\"padding\":{\"left\":8,\"right\":8,\"top\":4,\"bottom\":4},\"borderRadius\":8,\"backgroundColor\":\"#19ffffff\",\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"setting_icon\",\"component\":\"Text\",\"content\":\"⚙\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"setting_label\",\"component\":\"Text\",\"content\":\"设置\",\"styles\":{\"width\":68,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"开启省电模式\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"SetSettingSwitch\",\"params\":{\"appBundleName\":\"com.huawei.hmos.settings\",\"itemName\":\"battery_saving_mode\",\"switchFlag\":0}}}],\"styles\":{\"width\":276,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffed6f21\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"青浦区\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\"}}}}}}"
+  ]
+}

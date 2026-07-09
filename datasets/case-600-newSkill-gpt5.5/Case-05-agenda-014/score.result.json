@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-05-agenda-014",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图显示卡片完整落实了用户全部明确诉求：尺寸 2x4（300×140）正确；左侧三块不同底色（橙/蓝/绿）纵向堆叠展示时间 08:10 出门、天气 多云 24℃、路况 畅通 32分钟；右侧动作区含标题'通勤参考'、提示'出门前看'、'查看详情'按钮；无任何图片或渐变；事件 clickToDeeplink 携带的 uri 原样来自 eventCandidates；未使用禁止组件；updateDataModel.value 与 TaskSpec 完全一致。轻微扣分：right action_column 灰底 #19000000 透明度仅 10%，与左侧信息区视觉分界感偏弱，与用户'左右分信息区和动作区'的明确诉求在视觉强化上略有折扣。",
+    "aesthetic": "截图中三块色块使用了语义化配色：橙色暖意对应时间、蓝色对应天气、绿色对应路况，配色和谐且有意义；文字层级清晰，label 使用半透黑 #99000000 + 500 字重、value 使用近黑 #E5000000 + 700 字重，主次分明；卡片整体留白舒适、对齐统一。轻微不足：右侧动作区底色 #19000000（10% 黑色）在白底卡片上几乎不可见，'信息区/动作区'的视觉分块效果不够明显；按钮文字 #FF0A59F7 在 #190A59F7 浅蓝底上对比度偏弱，但仍在可读范围内。",
+    "layout": "截图无任何堆叠/遮挡/截断现象：info_column 三个 36 高色块加 4px itemMargin 总高 116，刚好填满左侧内容区，未溢出；右侧 action_column 三元素（title 18+hint 16+button 34+8*2=84）以 justifyContent:center 居中分布，整体居中于 116 高的列内；所有受保护文本（标题、标签、主数值、按钮文案）均完整呈现无截断；按钮热区 88×34 远大于 24vp 下限；卡片底边与按钮底边距离合理；Stack 叠层未出现，未遮挡关键信息。"
+  },
+  "issues": [
+    "右侧 action_column 背景色 #19000000（10% 黑）透明度太低，在白底卡片上几乎不可见，弱化了'左右分信息区和动作区'的视觉分块",
+    "action_button 背景色 #190A59F7（10% 蓝）透明度偏低，蓝色文字 #FF0A59F7 在其上对比度偏弱",
+    "info_column 中每个 panel 的 label 宽度固定为 38，但中文 label 仅占 24px 左右，导致 label 与 value 之间的视觉留白（itemMargin 6 + 14 ≈ 20px）显得略宽"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#FFFFFFFF\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"info_column\",\"action_column\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"info_column\",\"component\":\"Column\",\"children\":[\"time_panel\",\"weather_panel\",\"traffic_panel\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"time_panel\",\"component\":\"Row\",\"children\":[\"time_label\",\"time_value\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":36,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#F9BC64\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"time_label\",\"component\":\"Text\",\"content\":\"{{ ${/commute/time/label} }}\",\"styles\":{\"width\":38,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"time_value\",\"component\":\"Text\",\"content\":\"{{ ${/commute/time/value} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_panel\",\"component\":\"Row\",\"children\":[\"weather_label\",\"weather_value\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":36,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#86C5E3\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_label\",\"component\":\"Text\",\"content\":\"{{ ${/commute/weather/label} }}\",\"styles\":{\"width\":38,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"weather_value\",\"component\":\"Text\",\"content\":\"{{ ${/commute/weather/value} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"traffic_panel\",\"component\":\"Row\",\"children\":[\"traffic_label\",\"traffic_value\"],\"itemMargin\":6,\"styles\":{\"width\":176,\"height\":36,\"padding\":{\"left\":8,\"right\":8,\"top\":6,\"bottom\":6},\"borderRadius\":12,\"backgroundColor\":\"#92C48D\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"traffic_label\",\"component\":\"Text\",\"content\":\"{{ ${/commute/traffic/label} }}\",\"styles\":{\"width\":38,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"traffic_value\",\"component\":\"Text\",\"content\":\"{{ ${/commute/traffic/value} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"action_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"hint_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":88,\"height\":116,\"borderRadius\":18,\"backgroundColor\":\"#26000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/title} }}\",\"styles\":{\"width\":88,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#E5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"hint_text\",\"component\":\"Text\",\"content\":\"{{ ${/commute/hint} }}\",\"styles\":{\"width\":88,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/commute/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":34,\"borderRadius\":17,\"backgroundColor\":\"#330A59F7\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#FF0A59F7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"commute\":{\"title\":\"通勤参考\",\"hint\":\"出门前看\",\"time\":{\"label\":\"时间\",\"value\":\"08:10 出门\"},\"weather\":{\"label\":\"天气\",\"value\":\"多云 24℃\"},\"traffic\":{\"label\":\"路况\",\"value\":\"畅通 32分钟\"},\"actionLabel\":\"查看详情\"}}}}"
+  ]
+}

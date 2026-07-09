@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-02-earphone-music-001",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.8,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.3,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "截图中清晰呈现了耳机图标（主体为图）、'音乐'标签以及底部日程信息（10:30 与项目同步会），用户的'耳机卡+主体是图+点进app读日程'三项明确诉求均得到落实。onClick 事件已挂载到 root，call=clickToDeeplink、args.uri 与 TaskSpec.eventCandidates 完全一致，资产也使用了 icon_earphone.png。轻微扣分：用户语义上希望点进 app 读日程，但 TaskSpec 提供的 deeplink 指向音乐 app 而非日历/日程 app，模型只能遵循 spec，但呈现与用户原始意图存在小幅错位；另外数据模型只展示了第一条日程，dtEnd 未呈现。",
+    "aesthetic": "截图整体采用深色底（#191a1c）配两个不同透明度的白色圆角面板，视觉层级清晰：上方面板略亮承载主视觉耳机图与'音乐'标签，下方面板略暗承载日程信息，前景白色文字在深色面板上对比度良好、可读性高。'项目同步会'（14/600）与 '10:30'（12/500）形成清晰的字号字重层级，主信息突出。略有不足：耳机图标 40px 相对面板 116x70 偏小，未充分体现用户'主体是图'的强调；两个面板背景色差较小，区分感可再加强。",
+    "layout": "截图显示所有元素均在 140x140 卡片边界内，无任何溢出或裁切。上方面板（hero_panel，116x70）与下方面板（schedule_panel，116x38）之间留有 8px 间距，整体高度 12+70+8+38+12=140 正好填满。'10:30' 完整显示在 schedule_time 容器（108 宽）内，'项目同步会' 5 个汉字在 108 宽 14 号字下也无截断。底部 schedule_panel 下沿距卡片底约 12vp，在 8-12vp 合理范围内。两个面板水平居中对齐统一，无堆叠遮挡。唯一可优化点：耳机图标视觉占比略小。"
+  },
+  "issues": [
+    "耳机图标 40x40 在 116x70 面板中占比偏小，未充分体现用户'主体是图'的诉求",
+    "两个面板背景透明度差异较小（19 vs 0c），视觉区分度可加强",
+    "deeplink uri 指向音乐 app（hwmusic://），与用户'点进app读日程'语义存在错位（受 TaskSpec 约束）",
+    "日程数据仅展示 dtStart 与 title，dtEnd 字段未在 UI 中体现（TaskSpec 要求不强，但可补充）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_panel\",\"schedule_panel\"],\"itemMargin\":8,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4\"}}],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ff191a1c\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_panel\",\"component\":\"Column\",\"children\":[\"earphone_image\",\"music_label\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":70,\"padding\":6,\"borderRadius\":16,\"backgroundColor\":\"#1affffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"earphone_image\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_earphone.png\",\"styles\":{\"width\":44,\"height\":44,\"objectFit\":\"contain\"}},{\"id\":\"music_label\",\"component\":\"Text\",\"content\":\"音乐\",\"styles\":{\"width\":76,\"height\":14,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"schedule_panel\",\"component\":\"Column\",\"children\":[\"schedule_time\",\"schedule_title\"],\"itemMargin\":2,\"styles\":{\"width\":116,\"height\":38,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#10ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"schedule_time\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} }}\",\"styles\":{\"width\":108,\"height\":12,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"schedule_title\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":108,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityId\":\"calendar-sample-001\",\"title\":\"项目同步会\",\"dtStart\":\"10:30\",\"dtEnd\":\"11:00\"}]}}}}"
+  ]
+}

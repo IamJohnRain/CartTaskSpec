@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-13-health-reminder-003",
+  "scores": {
+    "instruction": {
+      "score": 6.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "截图中可见：顶部闹钟图标+用药标题+绿色'已连接'状态，满足'看到已连接'的诉求；底部蓝色'打开'按钮带有 clickToDeeplink 事件，满足'点开跳app'的诉求；两个 Checkbox 组件存在并按 calendar.items 数据渲染时间 08:30 / 20:30，体现'吃药几项能勾'+'读日历'。但 Checkbox 的 label 中用药名称（晨间用药、晚间用药）被截断为'…'，用户想看到的'吃药几项'关键信息丢失，属于指令落实不完整，扣分。",
+    "aesthetic": "截图整体观感良好：暖橙渐变背景柔和，绿色'已连接'在底色上清晰可读，蓝色 CTA 按钮'打开'对比突出，标题'用药'加粗有力，字号层级（14/10）合理，仅有唯一强字重 700。不足之处是 Checkbox 区域较拥挤、勾选框小、label 截断影响可读性，整体仍属良好水平。",
+    "layout": "截图中 Checkbox 标签文字出现明显省略号：两行均显示为'08:30 …'和'20:30 …'，用药名称'晨间用药''晚间用药'被 ellipsis 截掉，这是受保护的'用户明确要求字段'被截断，违反布局硬约束。其余元素（图标、标题、状态、按钮）均无溢出或堆叠。底部'打开'按钮到卡片底边约 12vp，合规。整体扣分主要因 Checkbox label 截断。"
+  },
+  "issues": [
+    "Checkbox label 文字截断：'08:30 …' 与 '20:30 …' 的用药名称被省略号隐藏，丢失关键信息。",
+    "Checkbox 内嵌 label 难以控制字号，原始默认字号偏大导致中文标题在 108px 宽度内放不下。",
+    "两个 Checkbox 之间没有视觉分组信息（如 dtStart 与 title 分行展示），可读性受影响。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"reminder_panel\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#f9bc64\",0],[\"#ffffffff\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"reminder_icon\",\"title_text\",\"connection_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"reminder_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/alarm_fill_1.svg\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"用药\",\"styles\":{\"width\":36,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"connection_text\",\"component\":\"Text\",\"content\":\"{{ ${/status/connectionText} }}\",\"styles\":{\"width\":56,\"height\":16,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"reminder_panel\",\"component\":\"Column\",\"children\":[\"medicine_row_1\",\"medicine_row_2\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":48,\"padding\":4,\"borderRadius\":14,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"medicine_row_1\",\"component\":\"Row\",\"children\":[\"check_1\",\"label_1\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"check_1\",\"component\":\"Checkbox\",\"value\":\"medicine_1\",\"group\":\"medicine_today\",\"select\":false,\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"label_1\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' ' + ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":10,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"medicine_row_2\",\"component\":\"Row\",\"children\":[\"check_2\",\"label_2\"],\"itemMargin\":6,\"styles\":{\"width\":108,\"height\":18,\"alignItems\":\"center\"}},{\"id\":\"check_2\",\"component\":\"Checkbox\",\"value\":\"medicine_2\",\"group\":\"medicine_today\",\"select\":false,\"styles\":{\"width\":16,\"height\":16,\"selectedColor\":\"#ff64bb5c\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":9,\"strokeWidth\":1.5}}},{\"id\":\"label_2\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/dtStart} + ' ' + ${/data/calendar/items/1/title} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":10,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"ellipsis\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"打开\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":116,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"日历\",\"entityId\":\"calendar-medicine-001\",\"title\":\"晨间用药\",\"dtStart\":\"08:30\",\"dtEnd\":\"08:35\",\"isServiceValid\":2},{\"entityName\":\"日历\",\"entityId\":\"calendar-medicine-002\",\"title\":\"晚间用药\",\"dtStart\":\"20:30\",\"dtEnd\":\"20:35\",\"isServiceValid\":2}]}},\"status\":{\"connectionText\":\"已连接\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "userQuery": "整一个吃药喝水的,能点进去操作的,要有那种很急的提醒",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "card": {
+      "title": {
+        "type": "string",
+        "description": "卡片服务对象标题",
+        "sampleValue": "吃药喝水"
+      }
+    },
+    "status": {
+      "label": {
+        "type": "string",
+        "description": "紧急提醒状态标签",
+        "sampleValue": "紧急"
+      }
+    },
+    "action": {
+      "label": {
+        "type": "string",
+        "description": "进入日历事件详情的操作文案",
+        "sampleValue": "进入日历"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日吃药喝水提醒日程列表",
+          "sampleValue": [
+            {
+              "entityId": "medicine-water-001",
+              "title": "立即吃药",
+              "dtStart": "08:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "吃药喝水提醒日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于进入事件详情",
+                "sampleValue": "medicine-water-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "当前需要执行的服药提醒标题",
+                "sampleValue": "立即吃药"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "提醒开始时间，今日事件为 HH:MM 格式",
+                "sampleValue": "08:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "闹钟实心图标，适合用于紧急服药喝水提醒的识别和状态提示。"
+    }
+  ]
+}

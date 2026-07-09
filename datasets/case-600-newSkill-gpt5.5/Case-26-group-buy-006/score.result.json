@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-26-group-buy-006",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户要求做一个'拼单成功'的可点击按钮跳转App。截图中清晰显示顶部'邻里拼单'小标签、'拼单成功'主标题、'2人成团 已锁价'摘要、底部绿色'去App查看'按钮，四个数据字段（title/statusText/summary/actionText）均完整呈现。Button 的 onClick 原样使用 TaskSpec.eventCandidates 中的 clickToDeeplink 事件（bundleName/abilityName/uri 全部对齐），符合硬约束。dataModel 路径与 updateDataModel.value 一致，size=2x2、root 140x140、borderRadius 18、clip true 等 root shell 全部正确。",
+    "aesthetic": "截图整体观感干净专业：白底搭配右下角极淡的浅绿色渐变，过渡自然不刺眼；绿色按钮 #ff64bb5c 与渐变色相呼应，视觉一致。'拼单成功' 20px 700 字重作为最强字重凸显主信息，'邻里拼单' 与摘要 12px 弱化字重配合，层级清晰；文字颜色 #e5000000/99000000 在浅底上对比度足够，可读性好。轻微不足是顶部 chip 占了较大横向宽度且未居中贴左，与下方内容列对齐略不一致，但不影响整体美观。",
+    "layout": "截图中所有元素均落在 140x140 卡片内，未观察到文字被裁切或组件溢出。'邻里拼单' chip 完整显示在顶部，'拼单成功' 单行无截断，'2人成团 已锁价' 单行完整，'去App查看' 按钮绿色胶囊完整居中显示，热区 116x32 远超 24vp 下限。Button 底边距卡片底约 12vp（在 8-12vp 允许范围内），未越界。Stack/堆叠未出现遮挡问题。唯一可优化点是顶部 chip 文字略显偏左（justifyContent start），与下方 content_column 起始位置稍有错位，但视觉上不构成扣分项。"
+  },
+  "issues": [
+    "顶部 '邻里拼单' chip 宽度设了 116（撑满整行）但内容仅 4 字，视觉上显宽且与下方内容起始位置不对齐",
+    "root Column 的 itemMargin=6 在 24+48+32 元素下刚好把按钮压到容器最底，chip 与状态之间留白偏紧",
+    "线性渐变中间停点 0.62 使浅灰过渡区偏大，绿色仅在右下角小三角呈现，主题色存在感稍弱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_band\",\"content_column\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ffffffff\",0],[\"#fff1f3f5\",0.5],[\"#b6dab2\",1]]}}},{\"id\":\"top_band\",\"component\":\"Row\",\"children\":[\"title_text\"],\"styles\":{\"width\":72,\"height\":22,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":11,\"backgroundColor\":\"#19000000\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/groupBuy/title} }}\",\"styles\":{\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"status_text\",\"summary_text\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":50,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/groupBuy/statusText} }}\",\"styles\":{\"width\":116,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"summary_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/groupBuy/summary} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/data/groupBuy/actionText} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.groupbuy\",\"abilityName\":\"EntryAbility\",\"uri\":\"groupbuy://order/success\"}}],\"styles\":{\"width\":116,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ff64bb5c\",\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"groupBuy\":{\"title\":\"邻里拼单\",\"statusText\":\"拼单成功\",\"summary\":\"2人成团 已锁价\",\"actionText\":\"去App查看\"}}}}}"
+  ]
+}

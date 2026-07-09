@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-07-sports-event-002",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.3,
+  "reasons": {
+    "instruction": "用户四项明确诉求在截图中均有真实呈现：左侧半透明白色面板内可见两个 Checkbox 勾选清单（'城市夜跑报名'、'装备确认'），时间'18:30 开始'与地点'体育中心南门'显示自日历数据；标题'城市夜跑报名'也读取自首条日程；主提示'来不及了'以 20 号大字体呈现，语义直白；右下角白色'进健康'按钮承接点击事件并跳转到 huaweischeme://healthapp/home/sport?sportType=2，eventCandidates 原样使用。尺寸 2x4（300x140）、catalogId、version、updateDataModel.path 均符合硬约束。不足之处是：右侧 Progress 环的 78% 数值没有同步以文字/数字形式呈现，用户从截图中很难读出'紧迫度'这一关键信息；日程仅取了第 0 条作主信息（次条仅作清单项），但首条信息密度本身已被较好表达。",
+    "aesthetic": "截图整体配色协调：橙→金的右下方渐变与'来不及了'的紧迫语义贴切，白色文字在橙色渐变上对比度足够、清晰可读；左侧半透明白色卡片增加了信息层次。字号层级合理：'来不及了' 20px/700 为唯一最强字重，其余 14/12 阶梯有序。但视觉上有明显瑕疵：右侧 Progress 环仅呈现为一圈较细的白色描边圆弧，'78% 紧迫'信息完全没有数字/文字辅佐，环内留白显得空旷；'赛事提醒'小灰白字与下方白色实心按钮之间色彩跨度大但缺少中间过渡，右侧整体有些单薄。",
+    "layout": "截图中 2x4 卡片整体无溢出、无截断、无堆叠：左面板 178×116 内 4 个子项纵向总高约 114vp，恰好装入；右面板 88×116 内 Ring、caption、Button 三段堆叠居中，按钮底边距卡片底边约 8-10vp，在可接受区间。'来不及了'主文本 170×24 单行未截断；'18:30 开始'与'体育中心南门'两段文字并排未挤占；'城市夜跑报名'、'装备确认'两个 Checkbox 标签完整可读。仅观察到右侧 Progress 环视觉权重偏弱、未传达 78% 紧迫度，其余布局均干净。"
+  },
+  "issues": [
+    "右侧 Progress 环渲染为较细白色描边圆弧，截图里几乎看不出 78% 进度，需增粗 strokeWidth 或增加 trackColor/百分比文字以传达紧迫度。",
+    "'赛事提醒' caption 与 '78% 时间紧迫' 这种紧迫性数字未在截图中体现，右侧紧迫感传达不足。",
+    "左面板内 Checklist 用了与主标题相同的'城市夜跑报名'文本做 checkbox label，信息存在重复（主标题也是日程首条标题），可考虑用更短文案如'夜跑报名'/'装备确认'以提升辨识度。",
+    "place_text 颜色 #99ffffff 在白色半透明面板上对比度偏低（截图里'体育中心南门'略偏灰），可微调字色。"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9bc64\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"left_panel\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"left_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"primary_value\",\"meta_row\",\"checklist_col\"],\"itemMargin\":2,\"styles\":{\"width\":178,\"height\":116,\"padding\":6,\"borderRadius\":18,\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"schedule_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":166,\"height\":20,\"alignItems\":\"center\"}},{\"id\":\"schedule_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_schedule.png\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/title} }}\",\"styles\":{\"width\":140,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"来不及了\",\"styles\":{\"width\":166,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"meta_row\",\"component\":\"Row\",\"children\":[\"time_text\",\"sep_dot\",\"place_text\"],\"itemMargin\":4,\"styles\":{\"width\":166,\"height\":16,\"alignItems\":\"center\"}},{\"id\":\"time_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' 开始' }}\",\"styles\":{\"width\":68,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"sep_dot\",\"component\":\"Text\",\"content\":\"•\",\"styles\":{\"width\":8,\"height\":16,\"fontSize\":12,\"fontColor\":\"#ccffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"place_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":84,\"height\":16,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"checklist_col\",\"component\":\"Column\",\"children\":[\"check_item_0\",\"check_item_1\"],\"itemMargin\":2,\"styles\":{\"width\":166,\"height\":40}},{\"id\":\"check_item_0\",\"component\":\"Checkbox\",\"label\":\"夜跑报名\",\"value\":\"{{ ${/data/calendar/items/0/entityId} }}\",\"select\":false,\"styles\":{\"width\":166,\"height\":19,\"fontSize\":12,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"check_item_1\",\"component\":\"Checkbox\",\"label\":\"装备确认\",\"value\":\"{{ ${/data/calendar/items/1/entityId} }}\",\"select\":false,\"styles\":{\"width\":166,\"height\":19,\"fontSize\":12,\"fontColor\":\"#ffffffff\",\"selectedColor\":\"#ffe84026\",\"unSelectedColor\":\"#66ffffff\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":12,\"strokeWidth\":2}}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"urgency_ring\",\"status_caption\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":116,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"urgency_ring\",\"component\":\"Progress\",\"value\":78,\"total\":100,\"styles\":{\"type\":\"ring\",\"color\":\"#ffffffff\",\"trackColor\":\"#55ffffff\",\"width\":50,\"height\":50,\"strokeWidth\":6}},{\"id\":\"status_caption\",\"component\":\"Text\",\"content\":\"78% 紧迫\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"进健康\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":88,\"height\":32,\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"entityName\":\"calendar\",\"entityId\":\"event_run_001\",\"title\":\"城市夜跑报名\",\"eventLocation\":\"体育中心南门\",\"dtStart\":\"18:30\",\"dtEnd\":\"20:00\"},{\"entityName\":\"calendar\",\"entityId\":\"event_pack_002\",\"title\":\"装备确认\",\"eventLocation\":\"家中\",\"dtStart\":\"17:50\",\"dtEnd\":\"18:10\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

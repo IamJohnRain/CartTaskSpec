@@ -1,0 +1,156 @@
+{
+  "userQuery": "帮媳妇做个花粉过敏关怀卡片，背景是从黄到绿的渐变色，加上磨砂质感。横向排开这周几天的天气数据，每个格子用个花朵语义图标，旁边加个打勾的交互项确认带没带口罩。卡里嵌个小块显示天气数据，有个“管理定位”的按钮能跳系统设置，再放个“查看防护”的主按钮。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "卡片动态数据根对象。",
+      "sampleValue": {
+        "weather": {
+          "location": {
+            "districtName": "朝阳区"
+          },
+          "current": {
+            "temperatureText": "26℃",
+            "condition": "多云"
+          },
+          "daily": [
+            {
+              "weekday": "今天",
+              "temperatureRangeText": "21/28℃"
+            },
+            {
+              "weekday": "明天",
+              "temperatureRangeText": "22/29℃"
+            },
+            {
+              "weekday": "周六",
+              "temperatureRangeText": "20/27℃"
+            }
+          ]
+        }
+      },
+      "weather": {
+        "type": "object",
+        "description": "天气能力返回的当前位置天气与预报。",
+        "sampleValue": {
+          "location": {
+            "districtName": "朝阳区"
+          },
+          "current": {
+            "temperatureText": "26℃",
+            "condition": "多云"
+          },
+          "daily": [
+            {
+              "weekday": "今天",
+              "temperatureRangeText": "21/28℃"
+            },
+            {
+              "weekday": "明天",
+              "temperatureRangeText": "22/29℃"
+            },
+            {
+              "weekday": "周六",
+              "temperatureRangeText": "20/27℃"
+            }
+          ]
+        },
+        "location": {
+          "type": "object",
+          "description": "实际查询成功的地区。",
+          "sampleValue": {
+            "districtName": "朝阳区"
+          },
+          "districtName": {
+            "type": "string",
+            "description": "区或县名称。",
+            "sampleValue": "朝阳区"
+          }
+        },
+        "current": {
+          "type": "object",
+          "description": "当日天气实况。",
+          "sampleValue": {
+            "temperatureText": "26℃",
+            "condition": "多云"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "适合直接显示的当前温度文本。",
+            "sampleValue": "26℃"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "temperatureRangeText": "21/28℃"
+            },
+            {
+              "weekday": "明天",
+              "temperatureRangeText": "22/29℃"
+            },
+            {
+              "weekday": "周六",
+              "temperatureRangeText": "20/27℃"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "sampleValue": {
+              "weekday": "今天",
+              "temperatureRangeText": "21/28℃"
+            },
+            "weekday": {
+              "type": "string",
+              "description": "星期或相对日期文本。",
+              "sampleValue": "今天"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "适合直接显示的温度范围。",
+              "sampleValue": "21/28℃"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_allergy.png",
+      "description": "过敏源图标，适合表达花粉、过敏提醒和亲人关怀场景。"
+    },
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "天气雨伞图标，适合用于当前天气小块或天气关怀提示。"
+    }
+  ]
+}

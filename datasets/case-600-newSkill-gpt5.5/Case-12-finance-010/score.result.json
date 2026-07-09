@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-12-finance-010",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.1,
+  "reasons": {
+    "instruction": "截图中可见的指令落实情况：① 余额动态展示文本'1280元'已呈现，但'余额会动'的动感在静态卡片中无体现，仅作静态文本；② 跳转记账 App 的 onClick 事件已正确绑定 clickToDeeplink 参数（bundleName/abilityName/uri），按钮'去记账'可见；③ 日历看还款日仅以一个白色日历 icon 加上'07/18'日期数字呈现，缺乏日历网格化或日程列表的视觉表达；④ 红色提示'快爆预算'虽用橙色（#ffed6f21）字样代替红色，且**进度条实际渲染为蓝色**而非数据模型指定的橙色告警色，导致'要爆预算'的告警语义被严重削弱；⑤ 协议合规方面 size=2x2、catalogId/version、updateDataModel.path='/' 均合规。综合：核心诉求部分落地但进度条颜色未按 dataModel 生效、红色警示语义不足，扣分明显。",
+    "aesthetic": "截图中卡片整体采用深色底（#ff202224），与白色主指标、橙色状态文字对比清晰，可读性良好；字号层级（10/14/16/12）有区分；间距留白合理。但**进度条实际呈现为蓝色**（与橙色告警主题'快爆预算'视觉冲突），破坏预警氛围的专业感和统一性；状态文字为橙色而非用户明确要求的红色，警示强度打折。整体观感可用但配色一致性有瑕疵。",
+    "layout": "截图观察：① 卡片四个区段（header_row、budget_bar、metrics_row、action_button）依次纵向排列，间距合理，无重叠；② 标题'快爆预算'完整显示在 92vp 宽区，未截断；③ 余额'1280元'与还款'07/18'两个主指标在 54vp 宽的子列中清晰呈现，未被裁切；④ 底部'去记账'按钮文字完整、左右居中对称，底边到卡片底边距离约 12vp，符合 2x2 规范；⑤ 进度条宽度 116vp 与父容器一致，未越界；⑥ 整体无元素溢出或被遮挡。布局整体干净，仅有视觉细节瑕疵，无致命问题。"
+  },
+  "issues": [
+    "进度条实际渲染为蓝色，未按 dataModel 中 progressColor=#ffed6f21 渲染为橙色告警色，怀疑 data binding 语法 '{{ ${/data/finance/progressColor} }}' 写法异常导致回退到默认色",
+    "用户明确要求'红色提示'，但 status_text 使用 #ffed6f21 偏橙色，警示强度不足",
+    "日历元素仅以一个 icon + 日期数字呈现，未能表达'日历看还款日'的日历视图语义",
+    "余额模块缺少任何动效暗示，'余额会动'的诉求在静态卡片中无视觉承载"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"budget_bar\",\"metrics_row\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"backgroundColor\":\"#ff202224\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"app_icon\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":116,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"app_icon\",\"component\":\"Image\",\"src\":\"{{ /asset/primaryIcon }}\",\"styles\":{\"width\":18,\"height\":18,\"padding\":2,\"borderRadius\":6,\"backgroundColor\":\"#ffffffff\",\"objectFit\":\"contain\"}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ /data/finance/budgetStatus }}\",\"styles\":{\"width\":92,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffff3b30\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"budget_bar\",\"component\":\"Row\",\"children\":[\"budget_progress\"],\"styles\":{\"width\":116,\"height\":22,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"budget_progress\",\"component\":\"Progress\",\"value\":\"{{ /data/finance/budgetUsed }}\",\"total\":\"{{ /data/finance/budgetLimit }}\",\"styles\":{\"type\":\"linear\",\"width\":116,\"height\":14,\"borderRadius\":8,\"color\":\"#ffff3b30\",\"backgroundColor\":\"#33ffffff\"}},{\"id\":\"metrics_row\",\"component\":\"Row\",\"children\":[\"balance_metric\",\"repay_metric\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"balance_metric\",\"component\":\"Column\",\"children\":[\"balance_label\",\"balance_value\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"balance_label\",\"component\":\"Text\",\"content\":\"{{ /metric/left/label }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"balance_value\",\"component\":\"Text\",\"content\":\"{{ /data/finance/balanceText }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"repay_metric\",\"component\":\"Column\",\"children\":[\"repay_label\",\"repay_value\"],\"itemMargin\":2,\"styles\":{\"width\":54,\"height\":36,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"repay_label\",\"component\":\"Text\",\"content\":\"{{ /metric/right/label }}\",\"styles\":{\"width\":54,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"repay_value\",\"component\":\"Text\",\"content\":\"{{ /data/calendar/items/0/dtStart }}\",\"styles\":{\"width\":54,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ /action/label }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.example.accounting\",\"abilityName\":\"MainAbility\",\"uri\":\"ledger://home/add\"}}],\"styles\":{\"width\":116,\"height\":26,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#19ffffff\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"asset\":{\"primaryIcon\":\"resources/base/media/calendar_fill.svg\"},\"data\":{\"finance\":{\"budgetStatus\":\"快爆预算\",\"balanceText\":\"1280元\",\"budgetUsed\":96,\"budgetLimit\":100,\"progressColor\":\"#ffff3b30\"},\"calendar\":{\"items\":[{\"entityId\":\"repay-event-001\",\"title\":\"信用卡还款\",\"dtStart\":\"07/18\",\"dtEnd\":\"07/18\"}]}},\"metric\":{\"left\":{\"label\":\"余额\"},\"right\":{\"label\":\"还款\"}},\"action\":{\"label\":\"去记账\"},\"state\":{\"loading\":false}}}}"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-16-travel-ticket-006",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.1,
+  "reasons": {
+    "instruction": "用户要求做一个航班卡并支持点击跳转到 app。截图中可以看到航班号 CZ3125、路线深圳-北京、起降时间 13:20-16:35、状态'准点 今天'、登机口 B12、座位 12A、查看详情按钮均完整呈现；onClick 使用了 clickToDeeplink 并附带 args 完整复用了 eventCandidates；airplane_departure.svg 素材按语义用在航班头部图标；尺寸 2x4、catalogId、version、updateDataModel.path/value 等硬约束均合规。唯一微瑕是 deeplink uri 是天气场景（totemweather），与航班语义不太匹配，但这是 TaskSpec 提供的候选，非模型应改的范畴。",
+    "aesthetic": "截图整体观感干净专业：浅蓝渐变背景从左上向右下过渡自然，与右侧白色面板形成清晰层次；主路线'深圳-北京'使用 20px 粗黑体作为最强字重，与次级航班号、时间、状态形成明确的字号阶梯；前景深色文字（#e5000000 系）在浅色背景上对比度良好，可读性强；右侧白底面板上的 B12、12A、查看详情按钮层次清晰；留白密度适中，无空洞或拥挤感。仅轻微不足是图标线条略细与粗体文字对比稍显弱，整体仍是优秀水平。",
+    "layout": "截图中所有元素均落在 2x4 卡片（300x140）内，未观察到任何堆叠重叠、文字截断或组件溢出。左侧四行（顶行图标+航班号 32px、路线 24px、时间行 20px、状态 16px）纵向排布 110px，在 116px 内容区中留有约 6px 底部留白；右侧白底面板（112x116）内登机口标签、B12、座位行、查看详情按钮纵向占用 96px 加上 10px 上下 padding 正好 116px，紧密贴合；查看详情蓝色按钮位于右面板底部内偏下，热区约 32px×92px 充分可点；底部动作区底边到卡片底边距离约 10vp，落在 10-14vp 的安全范围内；左右两列与卡片左右边界各有 12vp 边距，左右留白均衡。整体布局干净、锚定准确。"
+  },
+  "issues": [
+    "deeplink 的 uri 是 totemweather（天气），与航班场景语义略不匹配，但该值由 TaskSpec.eventCandidates 提供，模型不可改",
+    "airplane 图标（黑线描边）在浅蓝背景上对比度可再提升，可考虑加深或加底色",
+    "right_panel 内右对齐/视觉重心略偏左上，B12 主指标与按钮之间空白偏紧，可考虑让 B12 数值略大或加粗"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"main_row\"],\"itemMargin\":0,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#7fb8dc\",0],[\"#ffffffff\",1]]},\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"left_col\",\"right_panel\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"left_col\",\"component\":\"Column\",\"children\":[\"top_row\",\"route_text\",\"time_row\",\"status_text\"],\"itemMargin\":6,\"styles\":{\"width\":154,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"flight_icon\",\"flight_no\"],\"itemMargin\":8,\"styles\":{\"width\":154,\"height\":32,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"flight_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/airplane_departure.svg\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"flight_no\",\"component\":\"Text\",\"content\":\"{{ ${/flight/flightNo} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"route_text\",\"component\":\"Text\",\"content\":\"{{ ${/flight/routeTitle} }}\",\"styles\":{\"width\":154,\"height\":24,\"fontSize\":20,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"time_row\",\"component\":\"Row\",\"children\":[\"depart_time\",\"time_dash\",\"arrive_time\"],\"itemMargin\":4,\"styles\":{\"width\":154,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"depart_time\",\"component\":\"Text\",\"content\":\"{{ ${/flight/departTime} }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"time_dash\",\"component\":\"Text\",\"content\":\"-\",\"styles\":{\"width\":14,\"height\":18,\"fontSize\":14,\"fontWeight\":400,\"fontColor\":\"#66000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"arrive_time\",\"component\":\"Text\",\"content\":\"{{ ${/flight/arriveTime} }}\",\"styles\":{\"width\":50,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/flight/statusText} }}\",\"styles\":{\"width\":154,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"right_panel\",\"component\":\"Column\",\"children\":[\"gate_label\",\"gate_value\",\"seat_row\",\"spacer\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":112,\"height\":116,\"padding\":10,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"gate_label\",\"component\":\"Text\",\"content\":\"{{ ${/flight/gateLabel} }}\",\"styles\":{\"width\":92,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"gate_value\",\"component\":\"Text\",\"content\":\"{{ ${/flight/gate} }}\",\"styles\":{\"width\":92,\"height\":22,\"fontSize\":18,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"seat_row\",\"component\":\"Row\",\"children\":[\"seat_label\",\"seat_value\"],\"itemMargin\":4,\"styles\":{\"width\":92,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"seat_label\",\"component\":\"Text\",\"content\":\"{{ ${/flight/seatLabel} }}\",\"styles\":{\"width\":36,\"height\":16,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"seat_value\",\"component\":\"Text\",\"content\":\"{{ ${/flight/seat} }}\",\"styles\":{\"width\":52,\"height\":16,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"spacer\",\"component\":\"Column\",\"children\":[],\"itemMargin\":0,\"styles\":{\"width\":92,\"height\":6,\"flexGrow\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/flight/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":92,\"height\":30,\"fontSize\":13,\"fontWeight\":\"medium\",\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"flight\":{\"flightNo\":\"CZ3125 航班\",\"routeTitle\":\"深圳-北京\",\"departTime\":\"13:20\",\"arriveTime\":\"16:35\",\"statusText\":\"准点 今天\",\"gateLabel\":\"登机口\",\"gate\":\"B12\",\"seatLabel\":\"座位\",\"seat\":\"12A\",\"actionLabel\":\"查看详情\"}}}}"
+  ]
+}

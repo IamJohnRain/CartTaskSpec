@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-11-fitness-009",
+  "scores": {
+    "instruction": {
+      "score": 9.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.2,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 9.2,
+  "reasons": {
+    "instruction": "用户要求做运动卡、显示一行数字、点一下跳app、看到已连接状态。截图中可见：左侧主区域显示标题'运动'、主指标'8,260步'及说明'今日步数'，完整呈现一行运动数字；右侧胶囊状绿色徽章'已连接'清晰可见；底部白色'去运动'按钮配备 onClick clickToDeeplink 事件，uri 与 eventCandidates 完全一致。尺寸 2x4（300x140）、catalogId/version/updateDataModel.path/value 均符合硬约束。assetCandidates 为空，模型未引入网络图。指令落实完整。",
+    "aesthetic": "截图整体观感较好：橙→亮橙的 RightBottom 渐变富有运动活力；主指标 40px 白色加粗字与 12px 浅色 caption 形成清晰的字号阶梯；绿色'已连接'徽章与橙色背景形成高对比点睛色，白底橙字'去运动'按钮辨识度强。扣分点：右侧半透明面板（#19ffffff）上的'设备状态'标签使用 #99ffffff，叠加在 10% 透明白底层 + 橙色背景后实际对比度偏低，截图中该字几乎要凑近才能看清，存在可读性瑕疵。",
+    "layout": "截图布局干净、未见堆叠或裁切。左侧 hero_column 宽 176、右侧 action_panel 宽 88、中间距 12，加两侧 12 padding 合计 12+176+12+88+12=300 严格命中 300 宽度。垂直方向：action_panel 内 status_label(16)+margin(8)+status_text(28)+margin(8)+action_button(32)=92，加上 padding 8*2=16 合计 108，落在 116 高度内且 justifyContent:center 居中良好。底部按钮底边到卡片底边约 12vp 处于安全区。受保护文本（标题、主指标、已连接、CTA）均完整可见、无 ellipsis 痕迹。仅'设备状态'小字视觉存在感偏弱但未被裁切。"
+  },
+  "issues": [
+    "右侧'设备状态'标签使用 #99ffffff 透明度在 #19ffffff 面板上叠加后实际可读性偏弱，截图中需要凑近才能看清",
+    "右侧 action_panel 内部元素在 116 高度下垂直居中后，顶部/底部留白偏紧，若数据更长会较易溢出（当前未触发）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"content_row\"],\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#ed6f21\",0],[\"#f9a01e\",1]]}}},{\"id\":\"content_row\",\"component\":\"Row\",\"children\":[\"hero_column\",\"action_panel\"],\"itemMargin\":12,\"styles\":{\"width\":276,\"height\":116,\"alignItems\":\"center\"}},{\"id\":\"hero_column\",\"component\":\"Column\",\"children\":[\"title_text\",\"primary_value\",\"primary_caption\"],\"itemMargin\":4,\"styles\":{\"width\":176,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/title} }}\",\"styles\":{\"width\":176,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/metricText} }}\",\"styles\":{\"width\":176,\"height\":52,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/caption} }}\",\"styles\":{\"width\":176,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#ccffffff\",\"maxLines\":1}},{\"id\":\"action_panel\",\"component\":\"Column\",\"children\":[\"status_label\",\"status_text\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":88,\"height\":116,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#26ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"status_label\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/statusLabel} }}\",\"styles\":{\"width\":72,\"height\":16,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/fitness/statusText} }}\",\"styles\":{\"width\":72,\"height\":26,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":13,\"textAlign\":\"center\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/fitness/actionLabel} }}\",\"enabled\":true,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"huaweischeme://healthapp/home/sport?sportType=2\"}}],\"styles\":{\"width\":72,\"height\":32,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffed6f21\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"fitness\":{\"title\":\"运动\",\"metricText\":\"8,260步\",\"caption\":\"今日步数\",\"statusLabel\":\"设备状态\",\"statusText\":\"已连接\",\"actionLabel\":\"去运动\"}}}}"
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "userQuery": "我想做一张出行的准备仪表盘,纯白底简洁素净风格,中间环形图显示准备完成度是焦点,周围几个固定文字标签(签证、行李、值机、证件)。每个标签前面有个可勾选方框,勾上环形就涨一截。如果某项临近截止就用橙色字提示风险,点击某项能跳进日历看对应日程,数据从日历读。倒计时数字用夜晚渐变,纯文字色块不要图片,不用列表。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-visa"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-luggage"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-checkin"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-docs"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "prep": {
+      "title": {
+        "type": "string",
+        "description": "出行准备仪表盘标题",
+        "sampleValue": "出行准备"
+      },
+      "countdownText": {
+        "type": "string",
+        "description": "距离出行或关键截止日的倒计时展示文本",
+        "sampleValue": "D-3 起飞"
+      },
+      "completionPercent": {
+        "type": "number",
+        "description": "四项准备完成后的总体百分比",
+        "sampleValue": 50
+      },
+      "completionText": {
+        "type": "string",
+        "description": "总体准备完成度展示文本",
+        "sampleValue": "50%"
+      },
+      "completionCaption": {
+        "type": "string",
+        "description": "完成度环形图下方说明",
+        "sampleValue": "已完成"
+      },
+      "items": [
+        {
+          "label": {
+            "type": "string",
+            "description": "第一项准备标签",
+            "sampleValue": "签证"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "第一项准备是否完成",
+            "sampleValue": true
+          },
+          "riskText": {
+            "type": "string",
+            "description": "第一项准备的临近截止风险提示",
+            "sampleValue": ""
+          },
+          "labelColor": {
+            "type": "string",
+            "description": "第一项准备标签文字颜色",
+            "sampleValue": "#e5000000"
+          }
+        },
+        {
+          "label": {
+            "type": "string",
+            "description": "第二项准备标签",
+            "sampleValue": "行李"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "第二项准备是否完成",
+            "sampleValue": false
+          },
+          "riskText": {
+            "type": "string",
+            "description": "第二项准备的临近截止风险提示",
+            "sampleValue": ""
+          },
+          "labelColor": {
+            "type": "string",
+            "description": "第二项准备标签文字颜色",
+            "sampleValue": "#e5000000"
+          }
+        },
+        {
+          "label": {
+            "type": "string",
+            "description": "第三项准备标签",
+            "sampleValue": "值机"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "第三项准备是否完成",
+            "sampleValue": false
+          },
+          "riskText": {
+            "type": "string",
+            "description": "第三项准备的临近截止风险提示",
+            "sampleValue": "今晚截止"
+          },
+          "labelColor": {
+            "type": "string",
+            "description": "第三项准备标签文字颜色",
+            "sampleValue": "#ffe84026"
+          }
+        },
+        {
+          "label": {
+            "type": "string",
+            "description": "第四项准备标签",
+            "sampleValue": "证件"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "第四项准备是否完成",
+            "sampleValue": true
+          },
+          "riskText": {
+            "type": "string",
+            "description": "第四项准备的临近截止风险提示",
+            "sampleValue": "明天截止"
+          },
+          "labelColor": {
+            "type": "string",
+            "description": "第四项准备标签文字颜色",
+            "sampleValue": "#ffe84026"
+          }
+        }
+      ]
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "签证准备对应日历日程唯一标识",
+              "sampleValue": "calendar-visa"
+            },
+            "title": {
+              "type": "string",
+              "description": "签证准备对应日历日程标题",
+              "sampleValue": "签证材料确认"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "签证准备对应日历日程开始时间",
+              "sampleValue": "09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "签证准备对应日历日程结束时间",
+              "sampleValue": "09:30"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "行李准备对应日历日程唯一标识",
+              "sampleValue": "calendar-luggage"
+            },
+            "title": {
+              "type": "string",
+              "description": "行李准备对应日历日程标题",
+              "sampleValue": "整理行李"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "行李准备对应日历日程开始时间",
+              "sampleValue": "19:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "行李准备对应日历日程结束时间",
+              "sampleValue": "20:00"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "值机准备对应日历日程唯一标识",
+              "sampleValue": "calendar-checkin"
+            },
+            "title": {
+              "type": "string",
+              "description": "值机准备对应日历日程标题",
+              "sampleValue": "在线值机"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "值机准备对应日历日程开始时间",
+              "sampleValue": "21:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "值机准备对应日历日程结束时间",
+              "sampleValue": "21:20"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "证件准备对应日历日程唯一标识",
+              "sampleValue": "calendar-docs"
+            },
+            "title": {
+              "type": "string",
+              "description": "证件准备对应日历日程标题",
+              "sampleValue": "检查证件"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "证件准备对应日历日程开始时间",
+              "sampleValue": "08:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "证件准备对应日历日程结束时间",
+              "sampleValue": "08:45"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

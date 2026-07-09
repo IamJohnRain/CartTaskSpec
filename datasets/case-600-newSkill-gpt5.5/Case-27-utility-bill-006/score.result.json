@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-27-utility-bill-006",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.1,
+  "reasons": {
+    "instruction": "用户明确要求\"红色提醒\"，但截图中卡片整体采用橙色渐变（#ed6f21→#ed955f），色相明显偏橙而非红，与\"红色\"语义不符，这是主要的指令偏离。数据绑定完整呈现：欠费/水电缴费/红色提醒/今日待处理/去缴费均可见，事件配置正确（clickToDeeplink 含完整 bundleName/abilityName/uri），资产（bolt_fill.svg、location_north_up_right_fill.svg）按语义正确使用，size=2x2/root width:140 height:140/catalogId/version 等硬约束均满足。综合来看信息齐全、协议合规，但配色与\"红色\"要求存在明显偏差，扣 2.5 分。",
+    "aesthetic": "截图整体观感简洁专业，层次清晰：32号800字重的\"欠费\"为最强字重，配合12号700字重的\"红色提醒\"，再配10号字重的辅助文字，阶梯合理；半透明白色 contextCard 与白色 pill 按钮在橙底上对比鲜明，文字可读性良好；行内间距与组件圆角统一。唯一明显缺憾是色调实际呈现为暖橙而非用户期望的\"红色\"，削弱了警示语义的传达，扣 2.5 分。",
+    "layout": "截图中卡片本体 140x140 区域三段式布局（heroRow 42 / contextCard 36 / actionPill 26，加 6*2 的 itemMargin 与 12*2 的 padding）合计恰好填满 140，无溢出。闪电图标圆形容器与\"欠费/水电缴费\"右对齐文字列无重叠；半透明白色 contextCard 内左侧 2x24 的 Divider 竖线与右侧\"红色提醒/今日待处理\"列无遮挡；底部白色 pill 按钮中的箭头图标与\"去缴费\"文字居中分布，无截断。底边到卡片底边留白约 11vp，符合 2x2 的 8-12vp 区间。未观察到任何元素堆叠/文字裁切/CTA 不可用问题。"
+  },
+  "issues": [
+    "配色与用户\"红色提醒\"要求不符：实际使用橙色渐变 #ed6f21→#ed955f，应调整为红色调（如 #d32f2f→#ef5350）以传达警示语义",
+    "actionLabel 文字色 #ffed6f21 同样为橙色，应随主色调整为红色（如 #ffd32f2f）以保持视觉一致性"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"heroRow\",\"contextCard\",\"actionPill\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#d32f2f\",0],[\"#ef5350\",1]]}}},{\"id\":\"heroRow\",\"component\":\"Row\",\"children\":[\"visualMark\",\"primaryInfo\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":42,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"visualMark\",\"component\":\"Stack\",\"children\":[\"primaryIcon\"],\"styles\":{\"width\":42,\"height\":42,\"borderRadius\":21,\"backgroundColor\":\"#ffffffff\",\"alignContent\":\"center\"}},{\"id\":\"primaryIcon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/primaryIcon} }}\",\"styles\":{\"width\":24,\"height\":24,\"objectFit\":\"contain\"}},{\"id\":\"primaryInfo\",\"component\":\"Column\",\"children\":[\"primaryValue\",\"primaryCaption\"],\"itemMargin\":0,\"styles\":{\"width\":66,\"height\":42,\"justifyContent\":\"center\",\"alignItems\":\"end\"}},{\"id\":\"primaryValue\",\"component\":\"Text\",\"content\":\"{{ ${/primary/value} }}\",\"styles\":{\"width\":66,\"height\":32,\"fontSize\":32,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"primaryCaption\",\"component\":\"Text\",\"content\":\"{{ ${/primary/caption} }}\",\"styles\":{\"width\":66,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"end\"}},{\"id\":\"contextCard\",\"component\":\"Row\",\"children\":[\"accentLine\",\"contextInfo\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":36,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"accentLine\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":24,\"color\":\"#ffffffff\"}},{\"id\":\"contextInfo\",\"component\":\"Column\",\"children\":[\"contextTitle\",\"contextMeta\"],\"itemMargin\":2,\"styles\":{\"width\":88,\"height\":28,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"contextTitle\",\"component\":\"Text\",\"content\":\"{{ ${/support/title} }}\",\"styles\":{\"width\":88,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"contextMeta\",\"component\":\"Text\",\"content\":\"{{ ${/support/meta} }}\",\"styles\":{\"width\":88,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"actionPill\",\"component\":\"Row\",\"children\":[\"actionIcon\",\"actionLabel\"],\"itemMargin\":6,\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":116,\"height\":26,\"padding\":{\"left\":10,\"right\":10},\"borderRadius\":13,\"justifyContent\":\"center\",\"alignItems\":\"center\",\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"actionIcon\",\"component\":\"Image\",\"src\":\"{{ ${/asset/actionIcon} }}\",\"styles\":{\"width\":16,\"height\":16,\"objectFit\":\"contain\"}},{\"id\":\"actionLabel\",\"component\":\"Text\",\"content\":\"{{ ${/action/label} }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffd32f2f\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"asset\":{\"primaryIcon\":\"resources/base/media/bolt_fill.svg\",\"actionIcon\":\"resources/base/media/location_north_up_right_fill.svg\"},\"primary\":{\"value\":\"欠费\",\"caption\":\"水电缴费\"},\"support\":{\"title\":\"红色提醒\",\"meta\":\"今日待处理\"},\"action\":{\"label\":\"去缴费\"}}}}"
+  ]
+}

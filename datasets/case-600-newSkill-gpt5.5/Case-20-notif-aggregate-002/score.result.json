@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-20-notif-aggregate-002",
+  "scores": {
+    "instruction": {
+      "score": 8.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 7.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.9,
+  "reasons": {
+    "instruction": "用户要求做一个天气通知卡片并支持点击跳转到app，DSL 中 onClick 正确使用 eventCandidates 的 clickToDeeplink 与 uri 字段，卡片 2x4 尺寸、catalogId、version、root shell 均符合硬约束。截图可见位置徽章'深圳市南山区'、主温度'26°C'、天气状况'多云'、空气'良'、湿度'68%'、'看天气'按钮等关键信息齐全，cloudy.png 资产按语义用作主图标。但 forecast 行中降雨概率'20%'在截图中看不到，信息呈现不完整，扣 2 分。",
+    "aesthetic": "截图整体观感良好：浅蓝到中蓝的右上→左下渐变与白色文字形成清爽自然的天空色系，前景在背景上对比清晰、阅读无障碍。字号层级合理：主温度 32px 为最强视觉锚点，天气状况 16px 次之，空气湿度/预报 12px 最小；圆角（卡片 22、徽章 11、按钮 16）和间距统一。'看天气'白底蓝字按钮形成强 CTA 焦点。整体克制专业。",
+    "layout": "截图中右侧预报行实际渲染为'今日 24° / 31° 降雨'，末尾的'20%'因 forecast_text 容器 width 仅 113 而被截断（按字符宽度估算原文约 113px，处于临界值，right-aligned 渲染时被吞掉尾部）。这是核心布局缺陷。其余结构：header_row 标题与位置徽章 spaceBetween 对齐良好，hero_row 图标 54×54 与文字 80px 列搭配不重叠，Divider 垂直线两侧留白合理，'看天气'按钮底边距卡片底约 12px 在 2x4 推荐区间内，热区 88×32 充足。无元素堆叠或越界。位置徽章'深圳市南山区'在 width 88 中也偏紧，但截图勉强显示完整。"
+  },
+  "issues": [
+    "forecast_text 容器宽 113 不足以容纳'今日 24° / 31° 降雨 20%'全部内容，截图中'20%'被截断丢失，降雨概率信息未完整呈现",
+    "location_text 宽 88 装 7 个汉字（实际需要约 100px），文本宽度紧贴容器边缘，存在潜在挤压风险",
+    "support_column 右侧余白较大（textAlign:end），可适度让 forecast 文本更靠右、留出更宽的容器"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#86c5e3\",0],[\"#46b1e3\",1]]}}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"location_text\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":24,\"justifyContent\":\"spaceBetween\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"天气通知\",\"styles\":{\"width\":160,\"height\":22,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"location_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/location/prefectureName} + ' · ' + ${/data/weather/location/districtName} }}\",\"styles\":{\"width\":108,\"height\":22,\"padding\":[2,8,2,8],\"borderRadius\":11,\"backgroundColor\":\"#19ffffff\",\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"hero_row\",\"main_divider\",\"support_column\"],\"itemMargin\":10,\"styles\":{\"width\":276,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"hero_text_column\"],\"itemMargin\":8,\"styles\":{\"width\":138,\"height\":84,\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy.png\",\"styles\":{\"width\":54,\"height\":54,\"objectFit\":\"contain\"}},{\"id\":\"hero_text_column\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":4,\"styles\":{\"width\":76,\"height\":66,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":76,\"height\":40,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} }}\",\"styles\":{\"width\":76,\"height\":22,\"fontSize\":16,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"main_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":76,\"vertical\":true,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"support_column\",\"component\":\"Column\",\"children\":[\"support_top_row\",\"forecast_text\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":117,\"height\":84,\"justifyContent\":\"start\",\"alignItems\":\"end\"}},{\"id\":\"support_top_row\",\"component\":\"Row\",\"children\":[\"air_text\",\"humidity_text\"],\"itemMargin\":6,\"styles\":{\"width\":117,\"height\":18,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"air_text\",\"component\":\"Text\",\"content\":\"{{ '空气 ' + ${/data/weather/current/airQuality} }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"humidity_text\",\"component\":\"Text\",\"content\":\"{{ '湿度 ' + ${/data/weather/current/humidityPercent} + '%' }}\",\"styles\":{\"width\":59,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#ffffffff\",\"maxLines\":1}},{\"id\":\"forecast_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/daily/0/temperatureRangeText} + ' · 降雨 ' + ${/data/weather/daily/0/rainProbabilityPercent} }}\",\"styles\":{\"width\":117,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":88,\"height\":32,\"borderRadius\":16,\"backgroundColor\":\"#ffffffff\",\"fontSize\":14,\"fontWeight\":500,\"fontColor\":\"#ff0a59f7\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"location\":{\"districtName\":\"南山区\",\"prefectureName\":\"深圳市\"},\"current\":{\"temperatureText\":\"26°C\",\"condition\":\"多云\",\"airQuality\":\"良\",\"humidityPercent\":68},\"daily\":[{\"temperatureRangeText\":\"24° / 31°\",\"rainProbabilityPercent\":\"20%\"}]}},\"state\":{\"loading\":false}}}}"
+  ]
+}

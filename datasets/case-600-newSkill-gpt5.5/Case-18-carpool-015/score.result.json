@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-18-carpool-015",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.8,
+  "reasons": {
+    "instruction": "截图中可见所有核心要素均已落实：左侧红色环形进度（50%红色弧）搭配汽车图标实现'拼车匹配率环形可视化'；中间面板展示标题'拼车匹配率 50%'与红色警示'顺路度仅50%待优化'；右侧太阳云朵图标与'看天气'按钮，按钮 onClick 完整使用 eventCandidates 中的 clickToDeeplink 参数；下方横排 3 张推荐路线卡分别显示 ✓ 快线12分 / ✓ 江湾18分 / ✗ 绕行24分；无渐变，使用 ✓ ✗ 语义图标；尺寸 300x140 符合 2x4 协议；updateDataModel.value 与 TaskSpec.dataModel 完全一致。略扣分在于'图片延伸出来的视觉风格'表现一般，仅以图标点缀而非延伸出强烈视觉语言。",
+    "aesthetic": "截图整体配色克制专业：白色卡片底 + 浅灰面板块 (#fff1f3f5) + 红色警示 + 蓝色 CTA 按钮，层次清晰和谐；标题 14pt 加粗与正文 12pt 形成两级字重，符合'一个最强字重'原则；✓ ✗ 语义图标搭配深/浅色文字自然区分推荐与绕行路线；无渐变要求被严格遵守。但汽车图标在浅灰底上略显灰白、视觉对比不够突出；天气图标尺寸偏小，气质不够'延伸'；留白良好但底部有较大空白使卡片上半部略显紧凑。",
+    "layout": "截图显示无元素堆叠、无文字截断、无溢出：顶行 (68h) + 间距 8 + 底行 (40h) = 116，刚好填满 116 内容区；顶行三列宽度 68+8+120+8+72=276 精准对齐；底行三卡片 86+8+86+8+86=274 与 276 内容区匹配良好；环形 Progress 64x64 与汽车图标 28x28 在 68x68 Stack 中居中；info_panel 标题 18h + 间隔 4 + 警示 30h = 52h，在 68h 内无溢出；按钮热区 72x32 ≈ 40vp，达标；底部路线卡底边距卡片底边约 8-10vp，安全范围内。第三张路线文字色 #99000000 略浅，但因 maxLines:1 且文字较短，截图未显示截断。"
+  },
+  "issues": [
+    "汽车图标在浅灰底上对比度偏弱，视觉锚点感不足",
+    "天气图标 24x24 尺寸偏小，未能形成'图片延伸出来的视觉风格'",
+    "info_panel 内标题与警示行距偏紧，itemMargin:4 让文字略显贴边",
+    "第三张路线卡文字色 #99000000 比前两张 #e5000000 透明度更高，虽表达'不推荐'但层级略乱"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"top_row\",\"route_row\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ffffffff\"}},{\"id\":\"top_row\",\"component\":\"Row\",\"children\":[\"match_stack\",\"info_panel\",\"weather_action\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":68,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"match_stack\",\"component\":\"Stack\",\"children\":[\"match_progress\",\"car_icon\"],\"styles\":{\"width\":68,\"height\":68,\"backgroundColor\":\"#fff1f3f5\",\"borderRadius\":18,\"alignContent\":\"center\"}},{\"id\":\"match_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/carpool/matchValue} }}\",\"total\":\"{{ ${/carpool/matchTotal} }}\",\"styles\":{\"type\":\"ring\",\"color\":\"#ffe84026\",\"width\":64,\"height\":64}},{\"id\":\"car_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/icon_car.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\",\"marginTop\":0}},{\"id\":\"info_panel\",\"component\":\"Column\",\"children\":[\"title_text\",\"warning_text\"],\"itemMargin\":6,\"styles\":{\"width\":120,\"height\":68,\"padding\":8,\"backgroundColor\":\"#fff1f3f5\",\"borderRadius\":16,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/title} }}\",\"styles\":{\"width\":104,\"height\":20,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"warning_text\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/warningText} }}\",\"styles\":{\"width\":104,\"height\":30,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#ffe84026\",\"maxLines\":2}},{\"id\":\"weather_action\",\"component\":\"Column\",\"children\":[\"weather_icon\",\"weather_button\"],\"itemMargin\":6,\"styles\":{\"width\":72,\"height\":68,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/cloudy_turning_sunny.png\",\"styles\":{\"width\":30,\"height\":30,\"objectFit\":\"contain\"}},{\"id\":\"weather_button\",\"component\":\"Button\",\"label\":\"看天气\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hww://www.huawei.com/totemweather?enterType=share&cityCode=\"}}],\"styles\":{\"width\":72,\"height\":30,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ff0a59f7\",\"backgroundColor\":\"#190a59f7\",\"borderRadius\":16}},{\"id\":\"route_row\",\"component\":\"Row\",\"children\":[\"route_card_1\",\"route_card_2\",\"route_card_3\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":40,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"route_card_1\",\"component\":\"Column\",\"children\":[\"route_text_1\"],\"styles\":{\"width\":86,\"height\":40,\"padding\":6,\"backgroundColor\":\"#fff1f3f5\",\"borderRadius\":12,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"route_text_1\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/routes/0/summary} }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"route_card_2\",\"component\":\"Column\",\"children\":[\"route_text_2\"],\"styles\":{\"width\":86,\"height\":40,\"padding\":6,\"backgroundColor\":\"#fff1f3f5\",\"borderRadius\":12,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"route_text_2\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/routes/1/summary} }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"route_card_3\",\"component\":\"Column\",\"children\":[\"route_text_3\"],\"styles\":{\"width\":86,\"height\":40,\"padding\":6,\"backgroundColor\":\"#fff1f3f5\",\"borderRadius\":12,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"route_text_3\",\"component\":\"Text\",\"content\":\"{{ ${/carpool/routes/2/summary} }}\",\"styles\":{\"width\":74,\"height\":18,\"fontSize\":12,\"fontWeight\":600,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"carpool\":{\"title\":\"拼车匹配率 50%\",\"matchValue\":50,\"matchTotal\":100,\"warningText\":\"顺路度仅50%待优化\",\"routes\":[{\"summary\":\"✓ 快线12分\"},{\"summary\":\"✓ 江湾18分\"},{\"summary\":\"✗ 绕行24分\"}]}}}}"
+  ]
+}

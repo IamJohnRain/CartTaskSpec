@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-22-express-001",
+  "scores": {
+    "instruction": {
+      "score": 6.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 4.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 5.3,
+  "reasons": {
+    "instruction": "用户明确要求'背景放图字叠上去'，但截图中完全看不到 courier_box.png 快递箱图片，画面被一层不透明的橙黄渐变（#ed955f→#f9a01e）完全覆盖，背景图实际未呈现，指令'放图'落空。'写一句还有几个在路上'主指标应为'还有2件在路上'，截图中只能看到'还有2件在路'，末字'上'被截断，语义不完整。'点一下导航去取件'的 Button 标签与 onClick 事件按 eventCandidates 原样下发，'从日历读日程'数据绑定正确，'已签收的标出来'白色徽标'耳机保护套 已签收'正常呈现——这些都达标。综合因背景图缺失与主指标截断扣分。",
+    "aesthetic": "整体配色为暖橙渐变，视觉调性契合'快递'主题，白色文字在橙色背景上有可读性。徽标与按钮的白底配深色字形成良好对比，层级清晰。但因主标题被截断成'还有2件在路'，信息传达被破坏，削弱了卡片的精致感；上方区域因 title 截断+被截'上'字显得左重右空，不够克制。",
+    "layout": "截图中可清晰看到主指标'还有2件在路'最右一个字'上'被右边界裁掉（实际渲染中文字溢出 116vp 宽度），按公式核算：fontSize=18 权重 800 下'还有2件在路上'约 119vp 超过 116vp，必然截断——这是受保护的主指标文本被裁，是本卡最严重的布局事故。其余元素（18:30 小区东门驿站、已签收徽标、去取件按钮）纵向在 116vp 内容区内基本可放下，底部按钮距离卡片下边约 10vp 处于 8–12vp 健康区间；按钮热区 32vp 接近 40vp 理想值，可接受。综合因主指标文字截断严重扣分。"
+  },
+  "issues": [
+    "主指标文字'还有2件在路上'在 116vp 宽度、fontSize 18、weight 800 下被右边界裁掉末字'上'，渲染为'还有2件在路'，违反受保护文本不得被裁的硬约束",
+    "用户明确要求'背景放图'，但 linearGradient 为完全不透明 (alpha=ff) 覆盖了 backgroundImage 资源 courier_box.png，截图中完全看不到快递箱背景图",
+    "受保护的主指标文本依赖 maxLines:1 + textOverflow:none + width:116 的组合，宽度给得太满，缺乏 fallback（如缩字、缩字号、缩小写）",
+    "screenshot 中没有体现任何背景图，'字叠上去'这一视觉手法落空"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Stack\",\"children\":[\"content_column\"],\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundImage\":\"resources/base/media/courier_box.png\",\"backgroundImageSizeWithStyle\":\"cover\",\"linearGradient\":{\"direction\":\"Bottom\",\"colors\":[[\"#00000000\",0],[\"#a0000000\",1]]},\"alignContent\":\"topStart\"}},{\"id\":\"content_column\",\"component\":\"Column\",\"children\":[\"primary_value\",\"pickup_meta\",\"signed_badge\",\"action_button\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":116,\"justifyContent\":\"end\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ '还有' + ${/data/calendar/items/0/description} }}\",\"styles\":{\"width\":116,\"height\":22,\"fontSize\":15,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"pickup_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/0/dtStart} + ' · ' + ${/data/calendar/items/0/eventLocation} }}\",\"styles\":{\"width\":116,\"height\":14,\"fontSize\":11,\"fontWeight\":500,\"fontColor\":\"#e6ffffff\",\"maxLines\":1,\"textAlign\":\"start\"}},{\"id\":\"signed_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/calendar/items/1/title} + ' ' + ${/data/calendar/items/1/description} }}\",\"styles\":{\"width\":86,\"height\":18,\"fontSize\":11,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"center\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":9,\"paddingLeft\":6,\"paddingRight\":6}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去取件\",\"onClick\":[{\"call\":\"clickToIntent\",\"args\":{\"intentName\":\"StartNavigate\",\"params\":{\"dstLocation\":{\"latitude\":\"22.3193\",\"longitude\":\"114.1694\"},\"trafficpe\":\"Walk\"}}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#ffffffff\",\"borderRadius\":15}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"calendar\":{\"items\":[{\"title\":\"快递取件\",\"description\":\"2件在路上\",\"eventLocation\":\"小区东门驿站\",\"dtStart\":\"18:30\"},{\"title\":\"耳机保护套\",\"description\":\"已签收\"}]}}}}"
+  ]
+}

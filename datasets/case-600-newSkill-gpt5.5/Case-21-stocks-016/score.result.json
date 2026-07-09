@@ -1,0 +1,33 @@
+{
+  "case_id": "Case-21-stocks-016",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 7.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 6.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 7.0,
+  "reasons": {
+    "instruction": "用户要求的三组分隔（涨幅榜/定投计划/风险提示）、每组基金前的可勾选方框、左右分区结构、'去设置'按钮的 clickToDeeplink 事件（含完整 bundleName/abilityName/uri 参数）、红字告警'⚠ 跌幅超限 -8.5%'、字符图标（⚙、⚠）均已在截图中可见；'沪深''红利''医药'三只基金名称、勾选态、涨幅/计划文本均正确显示。尺寸 2x2、root 140x140、borderRadius 18、clip true、padding 12、catalogId='ohos.a2ui.extended.catalog'、version='v0.9'、updateDataModel.path='/' 等硬约束全部满足。唯一轻微偏离是勾选框使用了 Checkbox 组件而非字符（受功能约束无法避免）。",
+    "aesthetic": "截图中白色卡片底、蓝色勾选、绿色涨幅、红色告警、灰色按钮的色彩搭配协调，前景文字在白底上清晰可读，字重层级清晰（标题加粗、关键值加粗、次要文字半透明黑），整体观感简洁克制，符合用户'简洁风格别花哨'的诉求。但 2x2 极小尺寸下信息密度高，列宽被压缩到 53px，留白不足，视觉上略显局促。",
+    "layout": "截图中可见卡片内容完整包含在 140x140 圆角边界内，无任何元素溢出卡片边界，'去设置'按钮热区足够，底部动作区到卡底留白合理，未出现文字被裁切截断。明显问题是：红色告警文本'⚠ 跌幅超限 -8.5%'在宽度仅 53px 的 info_col 内被强制换行，第一行显示'⚠ 跌幅超'，第二行显示'限 -8.5%'，中文词'超限'被从中间强行拆开，属于不自然断词，影响可读性与美观。"
+  },
+  "issues": [
+    "红色告警'⚠ 跌幅超限 -8.5%'在 info_col 宽度 53px 下换行，'超限'一词被从中间拆为'超'/'限'两段，断词位置不自然",
+    "2x2 尺寸下信息区列宽过窄（53px），导致长文本必然换行",
+    "勾选框为 Checkbox 组件而非字符（功能限制，无法避免）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"info_col\",\"split_divider\",\"action_col\"],\"itemMargin\":4,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"backgroundColor\":\"#ffffffff\",\"alignItems\":\"center\"}},{\"id\":\"info_col\",\"component\":\"Column\",\"children\":[\"title_text\",\"group_gain\",\"divider_one\",\"group_plan\",\"divider_two\",\"group_risk\",\"alert_text\"],\"itemMargin\":4,\"styles\":{\"width\":65,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"自选基金\",\"styles\":{\"width\":65,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"group_gain\",\"component\":\"Row\",\"children\":[\"gain_check\",\"gain_name\",\"gain_value\"],\"itemMargin\":2,\"styles\":{\"width\":65,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"gain_check\",\"component\":\"Checkbox\",\"value\":\"gainer\",\"group\":\"funds\",\"select\":\"{{ ${/funds/gainer/selected} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":1}}},{\"id\":\"gain_name\",\"component\":\"Text\",\"content\":\"{{ ${/funds/gainer/name} }}\",\"styles\":{\"width\":24,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"gain_value\",\"component\":\"Text\",\"content\":\"{{ ${/funds/gainer/changeText} }}\",\"styles\":{\"width\":27,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#ff64bb5c\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"divider_one\",\"component\":\"Divider\",\"styles\":{\"width\":65,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"group_plan\",\"component\":\"Row\",\"children\":[\"plan_check\",\"plan_name\",\"plan_value\"],\"itemMargin\":2,\"styles\":{\"width\":65,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"plan_check\",\"component\":\"Checkbox\",\"value\":\"plan\",\"group\":\"funds\",\"select\":\"{{ ${/funds/plan/selected} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":1}}},{\"id\":\"plan_name\",\"component\":\"Text\",\"content\":\"{{ ${/funds/plan/name} }}\",\"styles\":{\"width\":24,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"plan_value\",\"component\":\"Text\",\"content\":\"{{ ${/funds/plan/planText} }}\",\"styles\":{\"width\":27,\"height\":12,\"fontSize\":10,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1,\"textAlign\":\"end\"}},{\"id\":\"divider_two\",\"component\":\"Divider\",\"styles\":{\"width\":65,\"height\":1,\"strokeWidth\":1,\"color\":\"#33000000\"}},{\"id\":\"group_risk\",\"component\":\"Row\",\"children\":[\"risk_check\",\"risk_name\"],\"itemMargin\":2,\"styles\":{\"width\":65,\"height\":14,\"alignItems\":\"center\"}},{\"id\":\"risk_check\",\"component\":\"Checkbox\",\"value\":\"risk\",\"group\":\"funds\",\"select\":\"{{ ${/funds/risk/selected} }}\",\"styles\":{\"width\":10,\"height\":10,\"selectedColor\":\"#ff0a59f7\",\"unSelectedColor\":\"#33000000\",\"shape\":\"rounded_square\",\"mark\":{\"strokeColor\":\"#ffffffff\",\"size\":6,\"strokeWidth\":1}}},{\"id\":\"risk_name\",\"component\":\"Text\",\"content\":\"{{ ${/funds/risk/name} }}\",\"styles\":{\"width\":51,\"height\":12,\"fontSize\":10,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"alert_text\",\"component\":\"Text\",\"content\":\"{{ ${/funds/risk/alertText} }}\",\"styles\":{\"width\":65,\"height\":12,\"fontSize\":8,\"fontWeight\":700,\"fontColor\":\"#ffe84026\",\"maxLines\":1}},{\"id\":\"split_divider\",\"component\":\"Divider\",\"styles\":{\"width\":1,\"height\":116,\"strokeWidth\":1,\"vertical\":true,\"color\":\"#33000000\"}},{\"id\":\"action_col\",\"component\":\"Column\",\"children\":[\"action_glyph\",\"action_button\"],\"itemMargin\":8,\"styles\":{\"width\":42,\"height\":116,\"justifyContent\":\"center\",\"alignItems\":\"center\"}},{\"id\":\"action_glyph\",\"component\":\"Text\",\"content\":\"⚙\",\"styles\":{\"width\":24,\"height\":24,\"fontSize\":20,\"fontColor\":\"#99000000\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去设置\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.settings\",\"abilityName\":\"com.huawei.hmos.settings.MainAbility\",\"uri\":\"battery\"}}],\"styles\":{\"width\":42,\"height\":28,\"fontSize\":10,\"fontWeight\":\"medium\",\"fontColor\":\"#e5000000\",\"backgroundColor\":\"#19000000\",\"borderRadius\":14}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"funds\":{\"gainer\":{\"selected\":true,\"name\":\"沪深\",\"changeText\":\"+3%\"},\"plan\":{\"selected\":true,\"name\":\"红利\",\"planText\":\"周\"},\"risk\":{\"selected\":false,\"name\":\"医药\",\"alertText\":\"⚠ 跌幅超限 -8.5%\"}}}}}"
+  ]
+}

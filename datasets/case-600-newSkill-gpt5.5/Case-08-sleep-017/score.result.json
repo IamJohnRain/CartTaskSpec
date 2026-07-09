@@ -1,0 +1,37 @@
+{
+  "case_id": "Case-08-sleep-017",
+  "scores": {
+    "instruction": {
+      "score": 7.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 6.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 5.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 6.3,
+  "reasons": {
+    "instruction": "用户要求的五大要素基本落实：标题\"睡眠告警\"在顶部呈现；圆环中心显示\"89%\"血氧最低值；右侧纵向列出\"呼吸暂停12次\"、\"打鼹58分钟\"、\"心率异常2次\"三项异常；底部按钮\"提前1小时\"，onClick 正确使用 clickToDeeplink 跳转华为闹钟，参数与 eventCandidates 一致；深色舞台渐变背景（#FF191A1C→#634794）已实现。但用户明确要求\"全部用红色警示\"，实际渲染颜色 #FFDB6B42 偏橙红/陶土色，警示性不足，扣 1.5 分；标题字号 18 在 116 宽行中偏大，与下方信息层级对比不够克制。",
+    "aesthetic": "配色方向正确：深紫渐变舞台 + 暖色高亮形成夜晚告警氛围。但警示色 #FFDB6B42 更接近陶土橙而非纯红，未能传达\"红色警示\"的紧迫感；标题\"睡眠告警\"与下方\"89%\"字体重量都是 700，形成两个最强字重并立，层级被削弱；卡片上半部（标题到圆环）留白偏多，垂直节奏不够紧凑，整体观感可用但不够专业克制。",
+    "layout": "截图中圆环内\"89%\"文字明显紧贴环内壁：环尺寸 48×48，文字 fontSize:20 实际宽度约 36px，几乎填满环内径，\"8\"的左半与\"%\"的右半视觉上与橙色环线产生挤压，数字辨识度被干扰；middle_row 高度 54 大于环 48，环在该行内垂直居中后上下各空 3px，再叠加 itemMargin 4，使标题\"睡眠告警\"与圆环之间出现约 7px+ 的明显空隙，导致卡片上半部空洞；按钮底边到卡片底边约 18vp，超出 2x2 推荐的 ≤16vp 安全区间；右侧三项警示文字在 64px 列宽、fontSize 10 下\"呼吸暂停12次\"实测宽度约 70px，存在潜在右侧裁切风险。"
+  },
+  "issues": [
+    "圆环内\"89%\"字号 20 过大，与 48×48 环内径不匹配，造成文字挤压环线的视觉问题",
+    "警示色 #FFDB6B42 偏陶土橙，未满足用户\"全部用红色警示\"的明确诉求",
+    "标题 fontSize 18 与圆环主数值 fontSize 20 形成两个并行的最强字重，层级冲突",
+    "标题行与圆环行之间垂直留白偏大，卡片上半部空洞",
+    "按钮底边到卡片底边约 18vp，超出 2x2 卡片 ≤16vp 的安全下限",
+    "右侧警示文字\"呼吸暂停12次\"在 64px 列宽下有右侧潜在裁切风险",
+    "打鼹\"鼹\"字疑为\"鼾\"字笔误（数据模型与用户查询均如此）"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"middle_row\",\"action_button\"],\"itemMargin\":3,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#FF191A1C\",0],[\"#634794\",1]]},\"alignItems\":\"center\",\"justifyContent\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\"],\"styles\":{\"width\":116,\"height\":18,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/title} }}\",\"styles\":{\"width\":116,\"height\":18,\"fontSize\":16,\"fontWeight\":700,\"fontColor\":\"#FFFFFFFF\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"middle_row\",\"component\":\"Row\",\"children\":[\"oxygen_ring_stack\",\"alert_column\"],\"itemMargin\":4,\"styles\":{\"width\":116,\"height\":58,\"alignItems\":\"center\",\"justifyContent\":\"center\"}},{\"id\":\"oxygen_ring_stack\",\"component\":\"Stack\",\"children\":[\"oxygen_ring\",\"primary_value\"],\"styles\":{\"width\":52,\"height\":52,\"alignContent\":\"center\"}},{\"id\":\"oxygen_ring\",\"component\":\"Progress\",\"value\":\"{{ ${/sleep/spo2MinimumValue} }}\",\"total\":\"{{ ${/sleep/spo2Total} }}\",\"styles\":{\"width\":52,\"height\":52,\"type\":\"ring\",\"color\":\"#FFEF4444\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/spo2MinimumText} }}\",\"styles\":{\"width\":52,\"height\":18,\"fontSize\":13,\"fontWeight\":700,\"fontColor\":\"#FFEF4444\",\"maxLines\":1,\"textAlign\":\"center\"}},{\"id\":\"alert_column\",\"component\":\"Column\",\"children\":[\"respiration_alert\",\"snore_alert\",\"heart_alert\"],\"itemMargin\":2,\"styles\":{\"width\":60,\"height\":58,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"respiration_alert\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/respirationAlertText} }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FFEF4444\",\"maxLines\":1}},{\"id\":\"snore_alert\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/snoreAlertText} }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FFEF4444\",\"maxLines\":1}},{\"id\":\"heart_alert\",\"component\":\"Text\",\"content\":\"{{ ${/sleep/heartAlertText} }}\",\"styles\":{\"width\":60,\"height\":14,\"fontSize\":9,\"fontWeight\":500,\"fontColor\":\"#FFEF4444\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"{{ ${/sleep/actionLabel} }}\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":96,\"height\":26,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#FFFFFFFF\",\"backgroundColor\":\"#33FFFFFF\",\"borderRadius\":13}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"sleep\":{\"title\":\"睡眠告警\",\"spo2MinimumText\":\"89%\",\"spo2MinimumValue\":89,\"spo2Total\":100,\"respirationAlertText\":\"呼吸暂停12次\",\"snoreAlertText\":\"打鼹58分钟\",\"heartAlertText\":\"心率异常2次\",\"actionLabel\":\"提前1小时\"}}}}"
+  ]
+}

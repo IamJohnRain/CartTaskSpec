@@ -1,0 +1,32 @@
+{
+  "case_id": "Case-30-pet-feeder-009",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 9.0,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.9,
+  "reasons": {
+    "instruction": "截图中可见用户四项明确诉求均已落地：余粮比例 68% 以大字号主指标 + 进度条呈现；点击动作通过右下角「打开」按钮绑定到 clickToDeeplink 事件（call/args 原样来自 eventCandidates）；底部状态区显示「已连接」与「已完成」两条状态。deviceName、percentValue/percentText、connection.statusText、feeding.statusText 四个数据路径全部正确使用；assetCandidates 中 house_fill.svg 用作设备图标锚点；尺寸 2x4、catalogId、version、updateDataModel.path/value 等硬约束均满足。轻微扣分点：CTA 文案「打开」较为通用，未明确指向喂食器 App。",
+    "aesthetic": "截图整体观感干净专业：浅灰底 + 白色双卡片结构层次清晰；主指标 68% 用 40px 粗黑字形成唯一最强字重，'余粮比例' 12px 弱化处理；绿色（#64bb5c）作为进度条与状态点统一点缀，配色克制协调；文字与背景对比度充足，可读性良好。唯一略显平淡的是右下「打开」按钮采用浅灰底（#19000000），与主指标绿色系缺少呼应，作为唯一可点击 CTA 视觉权重偏弱。",
+    "layout": "从截图观察：无元素堆叠重叠、无文字截断、无组件溢出卡片边界。左主面板（178x116）内：header_row(24) + 间距6 + metric_row(52) + 间距6 + food_progress(8) = 96，底部留白 20vp，比例舒适；metric_row 内 68%(88) + 8 + 余粮比例(62) = 158，宽度对齐精确。右侧面板：状态卡 72 + 间距12 + 按钮 32 = 116，与容器高度完全吻合。两个状态行（已连接/已完成）各 20 高、间距 8，文本均完整显示无 ellipsis。'68%' 底部与进度条之间留有约 8vp 间隙，未发生粘连。底部「打开」按钮底边距卡片底边约 10vp，符合 2x4 规格 10-14vp 要求。"
+  },
+  "issues": [
+    "CTA 按钮「打开」背景为浅灰（#19000000），作为唯一可点击元素视觉权重不足，未能与绿色品牌色形成呼应",
+    "右侧状态卡采用内嵌白卡形成「双层卡片」结构，与左侧主面板风格虽一致但整体略显方块化，可考虑弱化状态卡边框以增加通透感"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Row\",\"children\":[\"main_panel\",\"side_panel\"],\"itemMargin\":8,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#fff1f3f5\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"main_panel\",\"component\":\"Column\",\"children\":[\"header_row\",\"metric_row\",\"food_progress\"],\"itemMargin\":6,\"styles\":{\"width\":178,\"height\":116,\"padding\":10,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"start\",\"alignItems\":\"start\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"feeder_icon\",\"title_text\"],\"itemMargin\":6,\"styles\":{\"width\":158,\"height\":24,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"feeder_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/house_fill.svg\",\"styles\":{\"width\":20,\"height\":20,\"objectFit\":\"contain\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/deviceName} }}\",\"styles\":{\"width\":132,\"height\":20,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"metric_row\",\"component\":\"Row\",\"children\":[\"primary_value\",\"metric_meta\"],\"itemMargin\":8,\"styles\":{\"width\":158,\"height\":52,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/food/percentText} }}\",\"styles\":{\"width\":88,\"height\":48,\"fontSize\":40,\"fontWeight\":700,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"metric_meta\",\"component\":\"Column\",\"children\":[\"primary_caption\"],\"styles\":{\"width\":62,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"余粮比例\",\"styles\":{\"width\":62,\"height\":18,\"fontSize\":12,\"fontWeight\":400,\"fontColor\":\"#99000000\",\"maxLines\":1}},{\"id\":\"food_progress\",\"component\":\"Progress\",\"value\":\"{{ ${/data/feeder/food/percentValue} }}\",\"total\":100,\"styles\":{\"type\":\"linear\",\"color\":\"#64bb5c\",\"width\":158,\"height\":8}},{\"id\":\"side_panel\",\"component\":\"Column\",\"children\":[\"status_card\",\"action_button\"],\"itemMargin\":10,\"styles\":{\"width\":90,\"height\":116,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"status_card\",\"component\":\"Column\",\"children\":[\"connection_row\",\"feeding_row\"],\"itemMargin\":6,\"styles\":{\"width\":90,\"height\":74,\"padding\":8,\"borderRadius\":18,\"backgroundColor\":\"#ffffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"connection_row\",\"component\":\"Row\",\"children\":[\"connection_dot\",\"connection_text\"],\"itemMargin\":6,\"styles\":{\"width\":74,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"connection_dot\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":8,\"height\":8,\"fontSize\":10,\"borderRadius\":4,\"backgroundColor\":\"#64bb5c\"}},{\"id\":\"connection_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/connection/statusText} }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"feeding_row\",\"component\":\"Row\",\"children\":[\"feeding_dot\",\"feeding_text\"],\"itemMargin\":6,\"styles\":{\"width\":74,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"feeding_dot\",\"component\":\"Text\",\"content\":\" \",\"styles\":{\"width\":8,\"height\":8,\"fontSize\":10,\"borderRadius\":4,\"backgroundColor\":\"#64bb5c\"}},{\"id\":\"feeding_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/feeder/feeding/statusText} }}\",\"styles\":{\"width\":60,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5000000\",\"maxLines\":1}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"查看喂食\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"com.huawei.hmos.clock\",\"abilityName\":\"com.huawei.hmos.clock.phone\",\"uri\":\"\"}}],\"styles\":{\"width\":90,\"height\":32,\"fontSize\":13,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff64bb5c\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"feeder\":{\"deviceName\":\"宠物喂食器\",\"food\":{\"percentValue\":68,\"percentText\":\"68%\"},\"connection\":{\"statusText\":\"已连接\"},\"feeding\":{\"statusText\":\"已完成\"}}}}}}"
+  ]
+}

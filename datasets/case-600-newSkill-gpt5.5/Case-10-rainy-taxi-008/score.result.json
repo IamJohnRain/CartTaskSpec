@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-10-rainy-taxi-008",
+  "scores": {
+    "instruction": {
+      "score": 9.0,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.5,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.7,
+  "reasons": {
+    "instruction": "用户原始指令五项诉求在截图中均有清晰落地：①可变化主数字——截图右上角大字'24°'通过 DataModel 绑定 temperatureText 渲染；②雨天排队语义——左上角云朵+雨滴图标与'雨天排队'副标题共同呈现；③点击跳转打车——底部蓝色'去打车'按钮 onClick 配置为 clickToDeeplink 且 args 原样来自 eventCandidates；④读天气——中间白色描边胶囊内显示'小雨 黄色预警'，分别对应 condition 与 alertLevel；⑤提醒快不行了——'快不行了'以 12pt 加粗呈现。size 2x2、catalogId、version、updateDataModel.path 全部合规。轻微扣分：'快不行了'的语义偏直白，更像状态文字而非用户口吻的'提醒'。",
+    "aesthetic": "基于截图观察：蓝色渐变背景（#467794→#46b1e3→#86c5e3）从左上到右下和谐过渡，呼应'雨天'主题；前景白色文字在蓝色背景上对比度足够，可读性良好；字号阶梯 32/14/12/10 清晰，'24°'为唯一最强字重（800），其他依次降级无打架；半透明白色描边胶囊与蓝色 CTA 按钮在层级上区分明显；左侧细色条作为 accent 提升质感。略减分：副标题'雨天排队'在 10pt 下与主数字间距偏小，视觉密度略紧。",
+    "layout": "基于截图实际观察：卡片无元素堆叠重叠，三段（hero_row 42 + context_card 34 + action_button 32 = 108）加上 padding 12*2=24 与 itemMargin 4*2=8，总计 140 严格等于 root 高度，边界对齐工整；'24°'在 68*32 容器内完整显示，未见截断；'快不行了'与'小雨 黄色预警'在 90 宽胶囊内两行排布正常；'去打车'按钮热区 116*32 ≈ 卡片宽度的 82.8%，远超 24vp 最小值。轻微扣分：右上角'24°'虽未截断，但 32pt 字号配 32 高度偏紧，与上方距离仅 4pt，在视觉上略有压迫感；底部按钮距卡片下沿 12pt 处于合理区间。"
+  },
+  "issues": [
+    "主数字'24°'字号 32 与容器高度 32 几乎相等，line-height 偏紧，'°'符号接近顶部边线，视觉上略拥挤",
+    "副标题'雨天排队'与主数字间距偏小（itemMargin=0），层次呼吸感不足",
+    "'快不行了'文案偏直白，更像状态标签而非用户口吻的'提醒'",
+    "主数字右对齐在 2x2 卡片中略显非主流，左对齐更符合阅读直觉"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"rainy_taxi_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":140,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"rainy_taxi_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"hero_row\",\"context_card\",\"action_button\"],\"itemMargin\":6,\"styles\":{\"width\":140,\"height\":140,\"padding\":12,\"borderRadius\":18,\"clip\":true,\"justifyContent\":\"start\",\"alignItems\":\"center\",\"linearGradient\":{\"direction\":\"RightBottom\",\"colors\":[[\"#467794\",0],[\"#46b1e3\",0.58],[\"#86c5e3\",1]]}}},{\"id\":\"hero_row\",\"component\":\"Row\",\"children\":[\"weather_icon\",\"primary_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":44,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_icon\",\"component\":\"Image\",\"src\":\"resources/base/media/rain.png\",\"styles\":{\"width\":40,\"height\":40,\"objectFit\":\"contain\"}},{\"id\":\"primary_info\",\"component\":\"Column\",\"children\":[\"primary_value\",\"primary_caption\"],\"itemMargin\":2,\"styles\":{\"width\":68,\"height\":44,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/temperatureText} }}\",\"styles\":{\"width\":68,\"height\":30,\"fontSize\":28,\"fontWeight\":800,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"primary_caption\",\"component\":\"Text\",\"content\":\"雨天排队\",\"styles\":{\"width\":68,\"height\":10,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"#ccffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"context_card\",\"component\":\"Row\",\"children\":[\"accent_line\",\"context_info\"],\"itemMargin\":8,\"styles\":{\"width\":116,\"height\":32,\"padding\":{\"left\":8,\"right\":8},\"borderRadius\":14,\"backgroundColor\":\"#33ffffff\",\"borderWidth\":1,\"borderColor\":\"#66ffffff\",\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"accent_line\",\"component\":\"Divider\",\"styles\":{\"width\":2,\"height\":20,\"color\":\"#ffffffff\"}},{\"id\":\"context_info\",\"component\":\"Column\",\"children\":[\"context_title\",\"context_meta\"],\"itemMargin\":2,\"styles\":{\"width\":90,\"height\":24,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"context_title\",\"component\":\"Text\",\"content\":\"提醒：排队压力大\",\"styles\":{\"width\":90,\"height\":14,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"context_meta\",\"component\":\"Text\",\"content\":\"{{ ${/data/weather/current/condition} + ' · ' + ${/data/weather/current/alertLevel} }}\",\"styles\":{\"width\":90,\"height\":10,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1,\"textOverflow\":\"none\",\"textAlign\":\"start\"}},{\"id\":\"action_button\",\"component\":\"Button\",\"label\":\"去打车\",\"onClick\":[{\"call\":\"clickToDeeplink\",\"args\":{\"bundleName\":\"\",\"abilityName\":\"\",\"uri\":\"hwtaxi://taxi/home\"}}],\"styles\":{\"width\":116,\"height\":30,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"#ffffffff\",\"backgroundColor\":\"#ff0a59f7\",\"borderRadius\":16}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"rainy_taxi_card\",\"path\":\"/\",\"value\":{\"data\":{\"weather\":{\"current\":{\"temperatureText\":\"24°\",\"condition\":\"小雨\",\"alertLevel\":\"黄色预警\"}}}}}}"
+  ]
+}

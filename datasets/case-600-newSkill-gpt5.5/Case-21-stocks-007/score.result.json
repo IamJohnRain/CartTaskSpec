@@ -1,0 +1,34 @@
+{
+  "case_id": "Case-21-stocks-007",
+  "scores": {
+    "instruction": {
+      "score": 8.5,
+      "weight": 0.4
+    },
+    "aesthetic": {
+      "score": 8.0,
+      "weight": 0.2
+    },
+    "layout": {
+      "score": 8.5,
+      "weight": 0.4
+    }
+  },
+  "weighted_total": 8.4,
+  "reasons": {
+    "instruction": "用户三项核心诉求（基金涨跌变动数字、当日天气、跌破线红色警告）均在截图中可见且完整呈现：净值 0.8732、涨跌额 -0.018、涨跌幅 -2.05% 体现'涨跌数字会变'；底部'天气 24℃ 多云'呈现天气信息；阈值 0.8800、状态'已跌破'、顶部'跌破线警告'徽章完成跌破线警告语义。轻微扣分：用户明确要求'红色警告'，但 dataModel 的 alertColor 取样为橙色 #ffed6f21，截图中跌破线警告徽章、-0.018/-2.05%、已跌破、线差 -0.8% 全部呈现为橙色而非纯红，色彩语义未完全贴合用户原话。事件候选为空故无 onClick 缺失问题。",
+    "aesthetic": "截图整体观感良好：深色卡片 #ff191a1c 配白色与橙色文字对比清晰，层级分明（32pt 净值为主、14pt 阈值为次、12pt 标签为辅），圆角与胶囊式按钮统一，无明显土气与不协调。但仍有瑕疵：1) 颜色为橙色而非用户所要求的'红色'，警告色偏暖不够强烈；2) 顶部右侧'跌破线警告'胶囊背景为半透明白色，与深底对比尚可但稍显灰暗；3) 右侧'跌破线 / 0.8800 / 已跌破'三行竖排过密，留白略紧。",
+    "layout": "截图中未见文字被裁切或组件溢出卡片边界：标题'基金监控'、基金名'新能源ETF'、徽章'跌破线警告'在同一行清晰排列不重叠；主数值 0.8732 大字号完整显示；下方 -0.018 与 -2.05% 并列无截断；右侧阈值面板的'跌破线 0.8800 已跌破'三行竖排可读；底部'天气 24℃ 多云'与'线差 -0.8%'两个胶囊按钮左右等分排列，圆角一致。轻微问题：顶部徽章'跌破线警告'紧贴卡片右边缘，视觉余量偏小；右侧阈值面板内三行（标签12 + 数值16 + 状态12 = 40 + padding 12 = 52）与 52 高度贴合，留白偏紧但未溢出。"
+  },
+  "issues": [
+    "alertColor 使用 #ffed6f21（橙色）而非用户所要求的'红色'，语义色彩未对齐原话",
+    "顶部右侧'跌破线警告'徽章右边缘紧贴卡片边界，缺少视觉余量",
+    "右侧阈值面板内'跌破线/0.8800/已跌破'三行间距偏紧，呼吸感不足",
+    "底部'线差 -0.8%'使用与警告同色（橙色），在未跌破情境下会误导；建议使用中性色仅在突破阈值时变红"
+  ],
+  "improved_dsl": [
+    "{\"version\":\"v0.9\",\"createSurface\":{\"surfaceId\":\"surface_card\",\"catalogId\":\"ohos.a2ui.extended.catalog\",\"width\":300,\"height\":140}}",
+    "{\"version\":\"v0.9\",\"updateComponents\":{\"surfaceId\":\"surface_card\",\"root\":\"root\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"header_row\",\"main_row\",\"section_divider\",\"bottom_row\"],\"itemMargin\":4,\"styles\":{\"width\":300,\"height\":140,\"padding\":12,\"borderRadius\":22,\"clip\":true,\"backgroundColor\":\"#ff191a1c\"}},{\"id\":\"header_row\",\"component\":\"Row\",\"children\":[\"title_text\",\"fund_name\",\"alert_badge\"],\"itemMargin\":4,\"styles\":{\"width\":276,\"height\":20,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"title_text\",\"component\":\"Text\",\"content\":\"基金监控\",\"styles\":{\"width\":80,\"height\":18,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"fund_name\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/name} }}\",\"styles\":{\"width\":100,\"height\":18,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"alert_badge\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/alertText} }}\",\"styles\":{\"width\":80,\"height\":20,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"#ffffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"{{ ${/data/fund/alertColor} }}\",\"borderRadius\":10}},{\"id\":\"main_row\",\"component\":\"Row\",\"children\":[\"value_column\",\"threshold_panel\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":52,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"value_column\",\"component\":\"Column\",\"children\":[\"primary_value\",\"change_row\"],\"itemMargin\":2,\"styles\":{\"width\":172,\"height\":52,\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"primary_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/netValueText} }}\",\"styles\":{\"width\":172,\"height\":34,\"fontSize\":32,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"change_row\",\"component\":\"Row\",\"children\":[\"change_value\",\"change_percent\"],\"itemMargin\":6,\"styles\":{\"width\":172,\"height\":16,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"change_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/changeValueText} }}\",\"styles\":{\"width\":70,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"{{ ${/data/fund/alertColor} }}\",\"maxLines\":1}},{\"id\":\"change_percent\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/changePercentText} }}\",\"styles\":{\"width\":70,\"height\":16,\"fontSize\":14,\"fontWeight\":600,\"fontColor\":\"{{ ${/data/fund/alertColor} }}\",\"maxLines\":1}},{\"id\":\"threshold_panel\",\"component\":\"Column\",\"children\":[\"threshold_label\",\"threshold_value\",\"status_text\"],\"itemMargin\":2,\"styles\":{\"width\":96,\"height\":52,\"padding\":6,\"borderRadius\":12,\"backgroundColor\":\"#19ffffff\",\"justifyContent\":\"center\",\"alignItems\":\"start\"}},{\"id\":\"threshold_label\",\"component\":\"Text\",\"content\":\"跌破线\",\"styles\":{\"width\":84,\"height\":12,\"fontSize\":10,\"fontWeight\":500,\"fontColor\":\"#99ffffff\",\"maxLines\":1}},{\"id\":\"threshold_value\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/thresholdText} }}\",\"styles\":{\"width\":84,\"height\":14,\"fontSize\":14,\"fontWeight\":700,\"fontColor\":\"#e5ffffff\",\"maxLines\":1}},{\"id\":\"status_text\",\"component\":\"Text\",\"content\":\"{{ ${/data/fund/statusText} }}\",\"styles\":{\"width\":84,\"height\":12,\"fontSize\":10,\"fontWeight\":600,\"fontColor\":\"{{ ${/data/fund/alertColor} }}\",\"maxLines\":1}},{\"id\":\"section_divider\",\"component\":\"Divider\",\"styles\":{\"width\":276,\"height\":1,\"strokeWidth\":1,\"color\":\"#33ffffff\"}},{\"id\":\"bottom_row\",\"component\":\"Row\",\"children\":[\"weather_line\",\"risk_line\"],\"itemMargin\":8,\"styles\":{\"width\":276,\"height\":28,\"justifyContent\":\"start\",\"alignItems\":\"center\"}},{\"id\":\"weather_line\",\"component\":\"Text\",\"content\":\"{{ '天气 ' + ${/data/weather/current/temperatureText} + ' ' + ${/data/weather/current/condition} }}\",\"styles\":{\"width\":132,\"height\":24,\"fontSize\":12,\"fontWeight\":500,\"fontColor\":\"#e5ffffff\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#0cffffff\",\"borderRadius\":12}},{\"id\":\"risk_line\",\"component\":\"Text\",\"content\":\"{{ '线差 ' + ${/data/fund/lineGapText} }}\",\"styles\":{\"width\":136,\"height\":24,\"fontSize\":12,\"fontWeight\":700,\"fontColor\":\"{{ ${/data/fund/alertColor} }}\",\"textAlign\":\"center\",\"maxLines\":1,\"backgroundColor\":\"#0cffffff\",\"borderRadius\":12}}]}}",
+    "{\"version\":\"v0.9\",\"updateDataModel\":{\"surfaceId\":\"surface_card\",\"path\":\"/\",\"value\":{\"data\":{\"fund\":{\"name\":\"新能源ETF\",\"netValueText\":\"0.8732\",\"changeValueText\":\"-0.018\",\"changePercentText\":\"-2.05%\",\"thresholdText\":\"0.8800\",\"alertText\":\"跌破线警告\",\"statusText\":\"已跌破\",\"lineGapText\":\"-0.8%\",\"alertColor\":\"#ffe53935\"},\"weather\":{\"current\":{\"temperatureText\":\"24℃\",\"condition\":\"多云\"}}},\"state\":{\"loading\":false}}}}"
+  ]
+}
