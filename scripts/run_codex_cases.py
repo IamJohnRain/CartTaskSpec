@@ -637,7 +637,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--dangerously-bypass-approvals-and-sandbox",
         action="store_true",
-        help="Pass Codex CLI's dangerous no-sandbox/no-approval option to each subprocess.",
+        default=True,
+        help="Pass Codex CLI's dangerous no-sandbox/no-approval option to each subprocess. Enabled by default.",
+    )
+    parser.add_argument(
+        "--no-dangerously-bypass-approvals-and-sandbox",
+        dest="dangerously_bypass_approvals_and_sandbox",
+        action="store_false",
+        help="Do not pass Codex CLI's dangerous no-sandbox/no-approval option.",
     )
     parser.add_argument("--timeout", type=int, default=1800, help="Per-case timeout in seconds. Default: 1800.")
     parser.add_argument("--startup-timeout", type=int, default=60, help="Timeout for starting each Codex process, in seconds. Default: 60.")
@@ -664,7 +671,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--force", action="store_true", help="Allow rerunning into a case dir that already has output files.")
     parser.add_argument("--dry-run", action="store_true", help="Prepare inputs and print commands without running Codex.")
     parser.add_argument("--debug", action="store_true", help="Keep per-case debug files: case.json, prompt.txt, codex stdout/stderr logs, and validator outputs.")
-    parser.add_argument("--ephemeral", action="store_true", help="Pass `--ephemeral` to codex exec.")
+    parser.add_argument("--ephemeral", action="store_true", default=True, help="Pass `--ephemeral` to codex exec. Enabled by default.")
+    parser.add_argument("--no-ephemeral", dest="ephemeral", action="store_false", help="Do not pass `--ephemeral` to codex exec.")
     return parser.parse_args(argv)
 
 
