@@ -335,18 +335,18 @@ def build_request(
     messages: list[dict[str, str]] = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT,
+            "content": SYSTEM_PROMPT + "\n\n" + build_content(task_spec_json, user_query, sample_model_json),
         },
         {
             "role": "user",
-            "content": build_content(task_spec_json, user_query, sample_model_json),
+            "content": user_query,
         },
     ]
     if genui_dsl:
         messages.append(
             {
                 "role": "assistant",
-                "content": ensure_genui_fence(genui_dsl),
+                "content": "<think>\n\n</think>\n\n" + genui_dsl,
             }
         )
     return {"messages": messages}
