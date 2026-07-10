@@ -1,0 +1,99 @@
+{
+  "userQuery": "下午三点有会议手机还剩28%电怕撑不到,做张暗色卡片,左边大环形图显示当前电量,固定写\"距离下次会议还有X小时\",右边一排横向按钮:开启省电、查看日程、找充电宝,点哪个就跳到对应的日程或页面,整体用动起来那种紧迫感的渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-event-1500"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "power": {
+      "batteryPercent": {
+        "type": "number",
+        "description": "当前手机电量百分比数值，用于电量环形图进度。",
+        "sampleValue": 28
+      },
+      "batteryTotal": {
+        "type": "number",
+        "description": "电量百分比总量，用于电量环形图总进度。",
+        "sampleValue": 100
+      },
+      "batteryText": {
+        "type": "string",
+        "description": "当前手机电量展示文本。",
+        "sampleValue": "28%"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "低电量状态短提示。",
+        "sampleValue": "低电量"
+      }
+    },
+    "ui": {
+      "hoursUntilMeetingText": {
+        "type": "string",
+        "description": "距离下次会议的小时数展示片段，用于拼接固定倒计时句式。",
+        "sampleValue": "2小时"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "0": {
+            "entityId": {
+              "type": "string",
+              "description": "日程项唯一标识符，用于查看日程详情。",
+              "sampleValue": "calendar-event-1500"
+            },
+            "title": {
+              "type": "string",
+              "description": "下一场会议标题。",
+              "sampleValue": "15:00 会议"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下一场会议开始时间。",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "下一场会议结束时间。",
+              "sampleValue": "16:00"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于当前电量和低电状态识别。"
+    }
+  ]
+}

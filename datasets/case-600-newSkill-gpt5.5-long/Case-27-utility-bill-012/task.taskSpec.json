@@ -1,0 +1,108 @@
+{
+  "userQuery": "做个燃气费账单卡,左右分区,左边金额和户号,右边按钮跳地图去最近缴费网点,中间细线隔开,顶部读我日历里下次缴费的日程时间,磨砂玻璃感,欠费时红色告警。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.543096",
+            "longitude": "114.057865"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "bill": {
+        "amountText": {
+          "type": "string",
+          "description": "燃气账单当前应缴金额展示文本，含货币符号。",
+          "sampleValue": "¥128.60"
+        },
+        "accountNoMasked": {
+          "type": "string",
+          "description": "脱敏后的燃气户号展示文本。",
+          "sampleValue": "户号 6220****9031"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "燃气账单缴费状态短文本。",
+          "sampleValue": "欠费"
+        },
+        "statusColor": {
+          "type": "string",
+          "description": "账单状态对应的前景色，欠费时使用告警色。",
+          "sampleValue": "#ffed6f21"
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历日程唯一标识符。",
+              "sampleValue": "calendar-gas-20260718"
+            },
+            "title": {
+              "type": "string",
+              "description": "日历中下一次燃气缴费日程标题。",
+              "sampleValue": "燃气费缴费"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下一次燃气缴费日程开始时间展示文本。",
+              "sampleValue": "7月18日 09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "下一次燃气缴费日程结束时间展示文本。",
+              "sampleValue": "7月18日 09:30"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "下一次缴费日程记录的位置或提醒来源。",
+              "sampleValue": "线上缴费提醒"
+            }
+          }
+        ]
+      },
+      "payment": {
+        "outlet": {
+          "name": {
+            "type": "string",
+            "description": "最近燃气缴费网点名称。",
+            "sampleValue": "民治燃气营业厅"
+          },
+          "latitude": {
+            "type": "string",
+            "description": "最近缴费网点纬度，用于地图导航事件。",
+            "sampleValue": "22.543096"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "最近缴费网点经度，用于地图导航事件。",
+            "sampleValue": "114.057865"
+          },
+          "trafficpe": {
+            "type": "string",
+            "description": "地图导航交通方式。",
+            "sampleValue": "Walk"
+          }
+        }
+      }
+    },
+    "ui": {
+      "actionLabel": {
+        "type": "string",
+        "description": "导航到附近缴费网点的按钮短文案。",
+        "sampleValue": "附近网点"
+      }
+    }
+  },
+  "assetCandidates": []
+}

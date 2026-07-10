@@ -1,0 +1,170 @@
+{
+  "userQuery": "给我做个导航样的会议提醒卡片，要那种背景是主题色加运动渐变绿色的氛围，中间弄个环形进度条叠加上我手机当前的电量百分比，下面纵向排布好今天的几场会。要是读取到外头天气数据下大雨路况风险大要迟到了，就标红提醒我注意，然后点击对应会议能直接进去开会，图标也直接用文字就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询所在区县名称。",
+            "sampleValue": "当前位置"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询所在城市名称。",
+            "sampleValue": "本地"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于判断是否为大雨等影响通勤的天气。",
+            "sampleValue": "大雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息或等级。",
+            "sampleValue": "大雨预警"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "天气数据更新时间。",
+          "sampleValue": "2026-07-09 08:20"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天按开始时间排序的会议日程列表，卡片固定展示前三条。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "产品例会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "线上会议"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "评审同步",
+              "dtStart": "11:00",
+              "dtEnd": "11:45",
+              "eventLocation": "会议室 A"
+            },
+            {
+              "entityId": "calendar-event-003",
+              "title": "客户沟通",
+              "dtStart": "15:30",
+              "dtEnd": "16:00",
+              "eventLocation": "视频会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条会议日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于点击跳转到对应日程。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "会议标题。",
+                "sampleValue": "产品例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，当天会议使用 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，当天会议使用 HH:MM。",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "会议地点或线上会议入口说明。",
+                "sampleValue": "线上会议"
+              }
+            }
+          }
+        }
+      }
+    },
+    "device": {
+      "battery": {
+        "value": {
+          "type": "number",
+          "description": "手机当前电量百分比数值，用于环形进度。",
+          "sampleValue": 68
+        },
+        "total": {
+          "type": "number",
+          "description": "手机电量百分比总量。",
+          "sampleValue": 100
+        },
+        "percentText": {
+          "type": "string",
+          "description": "手机当前电量百分比展示文本。",
+          "sampleValue": "68%"
+        },
+        "caption": {
+          "type": "string",
+          "description": "电量环下方的短标签。",
+          "sampleValue": "手机电量"
+        }
+      }
+    },
+    "state": {
+      "riskLabel": {
+        "type": "string",
+        "description": "天气和路况风险的短状态文案；大雨且可能迟到时显示红色提醒。",
+        "sampleValue": "大雨风险"
+      },
+      "riskMessage": {
+        "type": "string",
+        "description": "大雨路况风险提醒文案。",
+        "sampleValue": "路况风险高"
+      },
+      "loading": {
+        "type": "boolean",
+        "description": "数据加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

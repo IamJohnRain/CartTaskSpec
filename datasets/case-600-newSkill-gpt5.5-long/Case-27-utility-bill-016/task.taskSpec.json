@@ -1,0 +1,124 @@
+{
+  "userQuery": "之前那张水电缴费卡太素了,重做一张有大按钮的,上面\"已欠费128元\"红色告警(固定文字+动态数值的拼接)。卡片内嵌面板块显示日历的下次缴费事件,下面可滚动的历史缴费记录,带天气数据,走环境氛围渐变,用图片延伸的视觉风格,加几个语义图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal_pay_20260715"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "bill": {
+      "arrearsAmountText": {
+        "type": "string",
+        "description": "当前水电账户欠费金额展示文本，用于与固定告警文字拼接。",
+        "sampleValue": "128元"
+      }
+    },
+    "history": [
+      {
+        "dateText": {
+          "type": "string",
+          "description": "最近一条历史缴费记录的日期短文本。",
+          "sampleValue": "07/01"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "最近一条历史缴费记录的状态。",
+          "sampleValue": "已缴"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "最近一条历史缴费记录的金额。",
+          "sampleValue": "86元"
+        }
+      },
+      {
+        "dateText": {
+          "type": "string",
+          "description": "第二条历史缴费记录的日期短文本。",
+          "sampleValue": "06/01"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "第二条历史缴费记录的状态。",
+          "sampleValue": "已缴"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "第二条历史缴费记录的金额。",
+          "sampleValue": "92元"
+        }
+      }
+    ],
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "下次缴费日历事件唯一标识，用于打开日程详情。",
+              "sampleValue": "cal_pay_20260715"
+            },
+            "title": {
+              "type": "string",
+              "description": "下次缴费日历事件标题。",
+              "sampleValue": "下次缴费"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下次缴费日历事件开始时间。",
+              "sampleValue": "7月15日 09:00"
+            }
+          }
+        ]
+      },
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "humidityPercent": {
+            "type": "number",
+            "description": "当前相对湿度百分比。",
+            "sampleValue": 62
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵天气素材，可作为环境氛围背景图或天气视觉锚点。"
+    },
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "彩色多云天气图标，用于展示当前天气状态。"
+    },
+    {
+      "src": "resources/base/media/bolt_fill.svg",
+      "description": "闪电实心图标，用于水电缴费中的用电语义识别。"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标，用于水电缴费中的用水语义识别。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，用于下次缴费日程事件。"
+    }
+  ]
+}

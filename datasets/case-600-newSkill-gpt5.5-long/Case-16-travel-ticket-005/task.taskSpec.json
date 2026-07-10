@@ -1,0 +1,227 @@
+{
+  "userQuery": "明天行程卡重新做,之前那版排版太挤看着头疼。从日历拉明天的日程,纵向排三段带分隔线,浅米色底。顶部环形显示\"总进度还剩24%\"。三段分别是CA1234 08:00航班(已取消红色告警)、酒店15:00入住、机场大巴06:00,每段右边\"导航\"按钮触发地图。整体夜晚深紫到蓝色渐变,每段用文字字符✈🏨🚌当图标,别用真图。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.3080",
+            "longitude": "113.9185"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.2819",
+            "longitude": "114.1587"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.3080",
+            "longitude": "113.9185"
+          },
+          "trafficpe": "Bus"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历行程项唯一标识符",
+              "sampleValue": "calendar-flight-ca1234"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题",
+              "sampleValue": "CA1234 航班"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "事件起始时间，如果是当天的为HH:MM格式",
+              "sampleValue": "08:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "事件结束时间，如果是当天的为HH:MM格式",
+              "sampleValue": "10:30"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程发生的位置",
+              "sampleValue": "机场"
+            },
+            "description": {
+              "type": "string",
+              "description": "日程描述或状态提示",
+              "sampleValue": "已取消"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历行程项唯一标识符",
+              "sampleValue": "calendar-hotel-checkin"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题",
+              "sampleValue": "酒店入住"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "事件起始时间，如果是当天的为HH:MM格式",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "事件结束时间，如果是当天的为HH:MM格式",
+              "sampleValue": "15:30"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程发生的位置",
+              "sampleValue": "酒店"
+            },
+            "description": {
+              "type": "string",
+              "description": "日程描述或状态提示",
+              "sampleValue": ""
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历行程项唯一标识符",
+              "sampleValue": "calendar-airport-bus"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题",
+              "sampleValue": "机场大巴"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "事件起始时间，如果是当天的为HH:MM格式",
+              "sampleValue": "06:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "事件结束时间，如果是当天的为HH:MM格式",
+              "sampleValue": "07:00"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程发生的位置",
+              "sampleValue": "机场大巴站"
+            },
+            "description": {
+              "type": "string",
+              "description": "日程描述或状态提示",
+              "sampleValue": ""
+            }
+          }
+        ]
+      }
+    },
+    "ui": {
+      "progress": {
+        "remainingPercent": {
+          "type": "number",
+          "description": "顶部环形进度展示的剩余百分比",
+          "sampleValue": 24
+        },
+        "completedPercent": {
+          "type": "number",
+          "description": "顶部环形进度展示的已完成百分比",
+          "sampleValue": 76
+        },
+        "totalPercent": {
+          "type": "number",
+          "description": "进度总量百分比",
+          "sampleValue": 100
+        },
+        "label": {
+          "type": "string",
+          "description": "顶部进度说明文本",
+          "sampleValue": "总进度还剩24%"
+        }
+      },
+      "nav": [
+        {
+          "latitude": {
+            "type": "string",
+            "description": "航班导航目的地纬度",
+            "sampleValue": "22.3080"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "航班导航目的地经度",
+            "sampleValue": "113.9185"
+          },
+          "trafficpe": {
+            "type": "string",
+            "description": "航班导航交通方式",
+            "sampleValue": "Drive"
+          }
+        },
+        {
+          "latitude": {
+            "type": "string",
+            "description": "酒店导航目的地纬度",
+            "sampleValue": "22.2819"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "酒店导航目的地经度",
+            "sampleValue": "114.1587"
+          },
+          "trafficpe": {
+            "type": "string",
+            "description": "酒店导航交通方式",
+            "sampleValue": "Drive"
+          }
+        },
+        {
+          "latitude": {
+            "type": "string",
+            "description": "机场大巴导航目的地纬度",
+            "sampleValue": "22.3080"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "机场大巴导航目的地经度",
+            "sampleValue": "113.9185"
+          },
+          "trafficpe": {
+            "type": "string",
+            "description": "机场大巴导航交通方式",
+            "sampleValue": "Bus"
+          }
+        }
+      ]
+    }
+  },
+  "assetCandidates": []
+}

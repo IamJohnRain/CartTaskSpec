@@ -1,0 +1,101 @@
+{
+  "userQuery": "晚上躺床上刷手机耗电飞快。帮我做一张主题色背景的低电卡片，上方大号显示当前电量比如32%，下面叠一个环做背景层。底部横向排几个开关小项，比如省电模式、勿扰、深色模式，点一下能切换。背景来点睡眠氛围的渐变，电量低就警示色提示。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "display"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "percentage": {
+        "type": "number",
+        "description": "当前电量百分比数值，用于环形进度。",
+        "sampleValue": 32
+      },
+      "percentageText": {
+        "type": "string",
+        "description": "当前电量展示文本。",
+        "sampleValue": "32%"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "低电状态提醒文案。",
+        "sampleValue": "电量偏低，建议开启省电"
+      },
+      "accentColor": {
+        "type": "string",
+        "description": "低电警示色，电量低时用于主数值和环形进度。",
+        "sampleValue": "#ffd94838"
+      }
+    },
+    "controls": {
+      "powerSave": {
+        "label": {
+          "type": "string",
+          "description": "省电模式开关标签。",
+          "sampleValue": "省电模式"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "省电模式当前是否开启。",
+          "sampleValue": false
+        }
+      },
+      "dnd": {
+        "label": {
+          "type": "string",
+          "description": "勿扰模式开关标签。",
+          "sampleValue": "勿扰"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "勿扰模式当前是否开启。",
+          "sampleValue": true
+        }
+      },
+      "darkMode": {
+        "label": {
+          "type": "string",
+          "description": "深色模式开关标签。",
+          "sampleValue": "深色模式"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "深色模式当前是否开启。",
+          "sampleValue": true
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标素材，适合用于电量状态和节能场景识别。"
+    }
+  ]
+}

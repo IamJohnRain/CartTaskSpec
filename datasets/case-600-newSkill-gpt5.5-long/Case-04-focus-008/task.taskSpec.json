@@ -1,0 +1,140 @@
+{
+  "userQuery": "我需要个浅色背景的专注卡片，上面大字显示我最近的一个日历会议安排，下面纵向堆叠显示我今天的多个专注任务清单，每个任务前面有个能直接勾选打对的交互框，任务一旦超时没完成就得飘红告警，底部的勿扰开关我点一下就能直接切换系统状态，图标直接用文字加个叉号表示就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "do_not_disturb_mode",
+          "switchFlag": 1
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天最近的日历会议列表，卡片仅展示第一条会议。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_event_001",
+              "title": "产品评审",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "3F会议室"
+            }
+          ],
+          "0": {
+            "entityId": {
+              "type": "string",
+              "description": "最近一条日历会议的唯一标识，用于查看会议或事件详情。",
+              "sampleValue": "calendar_event_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "最近一条日历会议的标题。",
+              "sampleValue": "产品评审"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "最近一条日历会议的开始时间，今天内使用 HH:MM。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "最近一条日历会议的结束时间，今天内使用 HH:MM。",
+              "sampleValue": "10:00"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "最近一条日历会议地点。",
+              "sampleValue": "3F会议室"
+            }
+          }
+        }
+      },
+      "focus": {
+        "openTaskCountText": {
+          "type": "string",
+          "description": "今天尚未完成的专注任务数量展示文本。",
+          "sampleValue": "2项待专注"
+        },
+        "tasks": {
+          "type": "array",
+          "description": "今天的专注任务清单，卡片显式展示前两条。",
+          "sampleValue": [
+            {
+              "taskId": "focus_task_001",
+              "title": "复盘需求",
+              "completed": false,
+              "statusColor": "#ffed6f21"
+            },
+            {
+              "taskId": "focus_task_002",
+              "title": "整理笔记",
+              "completed": false,
+              "statusColor": "#e5000000"
+            }
+          ],
+          "0": {
+            "taskId": {
+              "type": "string",
+              "description": "第一条专注任务的唯一标识。",
+              "sampleValue": "focus_task_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条专注任务标题；超时未完成时应以告警色展示。",
+              "sampleValue": "复盘需求"
+            },
+            "completed": {
+              "type": "boolean",
+              "description": "第一条专注任务是否已完成。",
+              "sampleValue": false
+            },
+            "statusColor": {
+              "type": "string",
+              "description": "第一条专注任务的文本颜色；超时未完成时为告警红色。",
+              "sampleValue": "#ffed6f21"
+            }
+          },
+          "1": {
+            "taskId": {
+              "type": "string",
+              "description": "第二条专注任务的唯一标识。",
+              "sampleValue": "focus_task_002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条专注任务标题。",
+              "sampleValue": "整理笔记"
+            },
+            "completed": {
+              "type": "boolean",
+              "description": "第二条专注任务是否已完成。",
+              "sampleValue": false
+            },
+            "statusColor": {
+              "type": "string",
+              "description": "第二条专注任务的文本颜色。",
+              "sampleValue": "#e5000000"
+            }
+          }
+        },
+        "dnd": {
+          "label": {
+            "type": "string",
+            "description": "勿扰系统开关的当前状态文案，包含文字叉号图标。",
+            "sampleValue": "勿扰 × 已开启"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

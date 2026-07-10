@@ -1,0 +1,220 @@
+{
+  "userQuery": "工作消息聚合卡,信息用分隔线分区,不同底色区分。顶部放一个环形仪表盘显示今日未读消息比例(比如待读15条,深红表示快爆了),下面是纵向可滚动的列表,每条是日历日程事件,前面有✓或!文字字符当图标和勾选框,点进去能看详情。快开始/已冲突的日程标个红色待处理提醒,整体不要渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "卡片运行数据根节点。",
+      "sampleValue": {
+        "summary": {
+          "unreadRatio": 75,
+          "unreadPercentText": "75%",
+          "unreadCountText": "待读15条",
+          "unreadStatusText": "快爆了"
+        },
+        "calendar": {
+          "items": [
+            {
+              "entityId": "event-001",
+              "title": "项目同步",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityId": "event-002",
+              "title": "客户评审",
+              "dtStart": "11:00",
+              "dtEnd": "11:30"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "summary": {
+          "type": "object",
+          "description": "今日工作消息未读概览。",
+          "sampleValue": {
+            "unreadRatio": 75,
+            "unreadPercentText": "75%",
+            "unreadCountText": "待读15条",
+            "unreadStatusText": "快爆了"
+          },
+          "properties": {
+            "unreadRatio": {
+              "type": "number",
+              "description": "今日未读消息比例，取值 0 到 100。",
+              "sampleValue": 75
+            },
+            "unreadPercentText": {
+              "type": "string",
+              "description": "今日未读消息比例展示文本。",
+              "sampleValue": "75%"
+            },
+            "unreadCountText": {
+              "type": "string",
+              "description": "今日未读消息数量展示文本。",
+              "sampleValue": "待读15条"
+            },
+            "unreadStatusText": {
+              "type": "string",
+              "description": "今日未读消息压力状态短文案。",
+              "sampleValue": "快爆了"
+            }
+          }
+        },
+        "calendar": {
+          "type": "object",
+          "description": "今日日历事件搜索结果。",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "event-001",
+                "title": "项目同步",
+                "dtStart": "09:30",
+                "dtEnd": "10:00"
+              },
+              {
+                "entityId": "event-002",
+                "title": "客户评审",
+                "dtStart": "11:00",
+                "dtEnd": "11:30"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "今日日历日程事件列表。",
+              "sampleValue": [
+                {
+                  "entityId": "event-001",
+                  "title": "项目同步",
+                  "dtStart": "09:30",
+                  "dtEnd": "10:00"
+                },
+                {
+                  "entityId": "event-002",
+                  "title": "客户评审",
+                  "dtStart": "11:00",
+                  "dtEnd": "11:30"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单条日程事件。",
+                "sampleValue": {
+                  "entityId": "event-001",
+                  "title": "项目同步",
+                  "dtStart": "09:30",
+                  "dtEnd": "10:00"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日程详情页使用的唯一事件标识。",
+                    "sampleValue": "event-001"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "日程标题。",
+                    "sampleValue": "项目同步"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "日程开始时间，当天事件为 HH:MM。",
+                    "sampleValue": "09:30"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "日程结束时间，当天事件为 HH:MM。",
+                    "sampleValue": "10:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "卡片受控静态展示辅助字段。",
+      "sampleValue": {
+        "checks": [
+          false,
+          false
+        ],
+        "statusLabels": [
+          "待办",
+          "冲突"
+        ],
+        "glyphs": [
+          "!",
+          "!"
+        ]
+      },
+      "properties": {
+        "checks": {
+          "type": "array",
+          "description": "日程勾选框样例选中状态。",
+          "sampleValue": [
+            false,
+            false
+          ],
+          "items": {
+            "type": "boolean",
+            "description": "单条日程是否已勾选。",
+            "sampleValue": false
+          }
+        },
+        "statusLabels": {
+          "type": "array",
+          "description": "日程红色待处理状态标签。",
+          "sampleValue": [
+            "待办",
+            "冲突"
+          ],
+          "items": {
+            "type": "string",
+            "description": "单条日程状态短标签。",
+            "sampleValue": "待办"
+          }
+        },
+        "glyphs": {
+          "type": "array",
+          "description": "日程前置文字字符图标。",
+          "sampleValue": [
+            "!",
+            "!"
+          ],
+          "items": {
+            "type": "string",
+            "description": "单条日程前置字符图标。",
+            "sampleValue": "!"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

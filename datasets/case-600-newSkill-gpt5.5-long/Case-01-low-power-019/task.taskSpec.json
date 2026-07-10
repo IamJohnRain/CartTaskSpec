@@ -1,0 +1,98 @@
+{
+  "userQuery": "帮我做个低电模式卡片，里面要有一个横向排列的列表，每一项是一个省电功能比如关蓝牙调亮度等，每项可以勾选。不同区域用不同底色，里面嵌一个小面板。文字固定静态，用示例数据。电量到20%的时候要有个需要赶紧处理的提醒，配几个图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "title": {
+      "type": "string",
+      "description": "卡片标题，固定展示低电模式。",
+      "sampleValue": "低电模式"
+    },
+    "batteryPercentText": {
+      "type": "string",
+      "description": "当前低电量百分比展示文本。",
+      "sampleValue": "20%"
+    },
+    "alertText": {
+      "type": "string",
+      "description": "电量到20%时的紧急处理提醒文本。",
+      "sampleValue": "20%需处理"
+    },
+    "features": {
+      "type": "array",
+      "description": "横向排列的省电功能示例列表。",
+      "sampleValue": [
+        {
+          "key": "bluetooth",
+          "label": "蓝牙",
+          "selected": true
+        },
+        {
+          "key": "brightness",
+          "label": "亮度",
+          "selected": true
+        },
+        {
+          "key": "charge",
+          "label": "充电",
+          "selected": false
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单个省电功能项。",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "省电功能项的稳定标识。",
+            "sampleValue": "bluetooth"
+          },
+          "label": {
+            "type": "string",
+            "description": "省电功能项的短标签。",
+            "sampleValue": "蓝牙"
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "省电功能项是否已勾选的示例状态。",
+            "sampleValue": true
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于卡片标题或低电状态识别。"
+    },
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "充电闪电图标，适合用于低电量提醒或立即处理入口。"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合图标，适合表示省电、绿色用电或节能功能。"
+    },
+    {
+      "src": "resources/base/media/sun_min.svg",
+      "description": "低亮度太阳图标，适合表示降低屏幕亮度的省电功能。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合用于省电功能项或低电模式状态。"
+    }
+  ]
+}

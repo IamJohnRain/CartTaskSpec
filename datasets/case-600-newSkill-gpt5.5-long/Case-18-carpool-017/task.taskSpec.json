@@ -1,0 +1,231 @@
+{
+  "userQuery": "周末拼车郊游卡，列表展示几条备选路线，每条前面勾选我心仪那条，点进去能查看对应日程详情，读目的地天气看温度。简洁素净风格，中间放环形仪表盘显示\"路线已规划\"完成状态，\"已就绪\"用绿色对勾正向呈现。夜晚深蓝到紫倒计时渐变，纯文字与色块不用图。每次出游前都要纠结半天路线，能这样对比就好了。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/trip/routes/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/trip/routes/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/trip/routes/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "trip": {
+      "type": "object",
+      "description": "周末拼车郊游路线规划信息。",
+      "sampleValue": {
+        "title": "周末拼车",
+        "statusText": "已就绪",
+        "progress": {
+          "value": 100,
+          "total": 100,
+          "label": "路线已规划"
+        },
+        "routes": [
+          {
+            "title": "青浦湖畔",
+            "timeText": "09:30",
+            "selected": true,
+            "entityId": "calendar-route-qingpu"
+          },
+          {
+            "title": "佘山营地",
+            "timeText": "10:10",
+            "selected": false,
+            "entityId": "calendar-route-sheshan"
+          },
+          {
+            "title": "崇明花路",
+            "timeText": "10:40",
+            "selected": false,
+            "entityId": "calendar-route-chongming"
+          }
+        ]
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "卡片标题，表示本次周末拼车计划。",
+          "sampleValue": "周末拼车"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "路线规划的确认状态文本。",
+          "sampleValue": "已就绪"
+        },
+        "progress": {
+          "type": "object",
+          "description": "路线规划完成度信息。",
+          "sampleValue": {
+            "value": 100,
+            "total": 100,
+            "label": "路线已规划"
+          },
+          "properties": {
+            "value": {
+              "type": "number",
+              "description": "路线规划完成值。",
+              "sampleValue": 100
+            },
+            "total": {
+              "type": "number",
+              "description": "路线规划总值。",
+              "sampleValue": 100
+            },
+            "label": {
+              "type": "string",
+              "description": "环形仪表盘中心展示的完成状态。",
+              "sampleValue": "路线已规划"
+            }
+          }
+        },
+        "routes": {
+          "type": "array",
+          "description": "备选拼车路线列表，最多展示前三条。",
+          "sampleValue": [
+            {
+              "title": "青浦湖畔",
+              "timeText": "09:30",
+              "selected": true,
+              "entityId": "calendar-route-qingpu"
+            },
+            {
+              "title": "佘山营地",
+              "timeText": "10:10",
+              "selected": false,
+              "entityId": "calendar-route-sheshan"
+            },
+            {
+              "title": "崇明花路",
+              "timeText": "10:40",
+              "selected": false,
+              "entityId": "calendar-route-chongming"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条备选拼车路线。",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "备选路线名称。",
+                "sampleValue": "青浦湖畔"
+              },
+              "timeText": {
+                "type": "string",
+                "description": "路线对应日程的出发时间展示文本。",
+                "sampleValue": "09:30"
+              },
+              "selected": {
+                "type": "boolean",
+                "description": "是否为当前心仪勾选路线。",
+                "sampleValue": true
+              },
+              "entityId": {
+                "type": "string",
+                "description": "用于查看对应日程详情的日历事件标识。",
+                "sampleValue": "calendar-route-qingpu"
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧动态数据能力输出。",
+      "sampleValue": {
+        "weather": {
+          "location": {
+            "districtName": "青浦区",
+            "prefectureName": "上海市"
+          },
+          "current": {
+            "temperatureText": "26°C",
+            "condition": "多云"
+          }
+        }
+      },
+      "properties": {
+        "weather": {
+          "type": "object",
+          "description": "目的地天气数据。",
+          "sampleValue": {
+            "location": {
+              "districtName": "青浦区",
+              "prefectureName": "上海市"
+            },
+            "current": {
+              "temperatureText": "26°C",
+              "condition": "多云"
+            }
+          },
+          "properties": {
+            "location": {
+              "type": "object",
+              "description": "天气查询目的地位置。",
+              "sampleValue": {
+                "districtName": "青浦区",
+                "prefectureName": "上海市"
+              },
+              "properties": {
+                "districtName": {
+                  "type": "string",
+                  "description": "目的地区县名称。",
+                  "sampleValue": "青浦区"
+                },
+                "prefectureName": {
+                  "type": "string",
+                  "description": "目的地城市名称。",
+                  "sampleValue": "上海市"
+                }
+              }
+            },
+            "current": {
+              "type": "object",
+              "description": "目的地当前天气实况。",
+              "sampleValue": {
+                "temperatureText": "26°C",
+                "condition": "多云"
+              },
+              "properties": {
+                "temperatureText": {
+                  "type": "string",
+                  "description": "目的地当前温度展示文本。",
+                  "sampleValue": "26°C"
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "目的地当前天气现象。",
+                  "sampleValue": "多云"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

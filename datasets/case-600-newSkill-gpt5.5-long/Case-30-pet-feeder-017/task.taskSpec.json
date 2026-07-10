@@ -1,0 +1,198 @@
+{
+  "userQuery": "我每天要在不同时间去不同地点喂家里的几只宠物,卡片纵向堆叠显示今天所有喂食任务,每条包含时间、地点、喂什么粮,完成后勾选标\"已完成\"。点任务能跳转地图导航到对应寄养点,读日历日程。整体简洁,内嵌面板块,正向状态显示,能滚动看全部任务,语义图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/navigation/items/0/latitude} }}",
+            "longitude": "{{ ${/navigation/items/0/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/navigation/items/1/latitude} }}",
+            "longitude": "{{ ${/navigation/items/1/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/navigation/items/2/latitude} }}",
+            "longitude": "{{ ${/navigation/items/2/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天从日历读取的宠物喂食任务列表。",
+          "sampleValue": [
+            {
+              "entityId": "feed-001",
+              "dtStart": "08:10",
+              "eventLocation": "晴湖寄养点",
+              "description": "狸花猫 · 幼猫粮",
+              "oneClickServiceType": "navigation",
+              "oneClickServiceLink": "114.1694,22.3193",
+              "isServiceValid": 2
+            },
+            {
+              "entityId": "feed-002",
+              "dtStart": "12:40",
+              "eventLocation": "南门宠物屋",
+              "description": "柯基 · 低脂犬粮",
+              "oneClickServiceType": "navigation",
+              "oneClickServiceLink": "114.1758,22.3121",
+              "isServiceValid": 0
+            },
+            {
+              "entityId": "feed-003",
+              "dtStart": "18:30",
+              "eventLocation": "星湾寄养舍",
+              "description": "布偶猫 · 化毛配方",
+              "oneClickServiceType": "navigation",
+              "oneClickServiceLink": "114.1842,22.3056",
+              "isServiceValid": 0
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条喂食日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历日程唯一标识，用于关联任务。",
+                "sampleValue": "feed-001"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "喂食任务开始时间，今天内显示为 HH:MM。",
+                "sampleValue": "08:10"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "喂食地点或寄养点名称。",
+                "sampleValue": "晴湖寄养点"
+              },
+              "description": {
+                "type": "string",
+                "description": "喂食对象和粮食内容。",
+                "sampleValue": "狸花猫 · 幼猫粮"
+              },
+              "oneClickServiceType": {
+                "type": "string",
+                "description": "日程关联的一键服务类型。",
+                "sampleValue": "navigation"
+              },
+              "oneClickServiceLink": {
+                "type": "string",
+                "description": "寄养点导航坐标或服务链接。",
+                "sampleValue": "114.1694,22.3193"
+              },
+              "isServiceValid": {
+                "type": "integer",
+                "description": "服务有效性，2 表示已完成或有效状态。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "navigation": {
+      "items": {
+        "type": "array",
+        "description": "从喂食日程解析出的寄养点导航坐标。",
+        "sampleValue": [
+          {
+            "latitude": "22.3193",
+            "longitude": "114.1694"
+          },
+          {
+            "latitude": "22.3121",
+            "longitude": "114.1758"
+          },
+          {
+            "latitude": "22.3056",
+            "longitude": "114.1842"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个导航目的地坐标。",
+          "properties": {
+            "latitude": {
+              "type": "string",
+              "description": "寄养点纬度。",
+              "sampleValue": "22.3193"
+            },
+            "longitude": {
+              "type": "string",
+              "description": "寄养点经度。",
+              "sampleValue": "114.1694"
+            }
+          }
+        }
+      }
+    },
+    "view": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题。",
+        "sampleValue": "今日喂食"
+      },
+      "summary": {
+        "type": "string",
+        "description": "当天喂食任务数量和完成摘要。",
+        "sampleValue": "3项 · 1项已完成"
+      },
+      "hint": {
+        "type": "string",
+        "description": "任务点击后的能力提示。",
+        "sampleValue": "点任务导航"
+      },
+      "completedLabel": {
+        "type": "string",
+        "description": "已完成状态标签。",
+        "sampleValue": "已完成"
+      },
+      "pendingLabel": {
+        "type": "string",
+        "description": "未完成状态标签。",
+        "sampleValue": "待喂"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表示今天从日历读取的喂食日程。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表示点击任务后进入地图导航。"
+    }
+  ]
+}

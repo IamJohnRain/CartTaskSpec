@@ -1,0 +1,7 @@
+已完成生成：
+
+- `task.taskSpec.json`
+- `card.dsl.jsonl`
+- `card.cardspec.json`
+
+校验结果：TaskSpec/DSL 引用校验 `valid: true`；卡片校验 `status: polished`，`qualityScore: 100`，0 errors，0 warnings。

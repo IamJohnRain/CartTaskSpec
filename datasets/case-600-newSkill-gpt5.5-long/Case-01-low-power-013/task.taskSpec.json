@@ -1,0 +1,98 @@
+{
+  "userQuery": "晚上快没电了又睡不着，帮我做张卡片。上面用大数字显示\"剩余47%\"，下面列几个可勾选任务比如\"关闭蓝牙\"\"停止后台音乐\"，勾完点按钮直接进音乐歌单把正在听的歌也暂停了，顺便读下明天日历日程提醒我充电。不用图片纯文字色块就行，深夜蓝紫渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "percentText": {
+        "type": "string",
+        "description": "当前剩余电量百分比展示文本",
+        "sampleValue": "47%"
+      }
+    },
+    "tasks": {
+      "bluetooth": {
+        "label": {
+          "type": "string",
+          "description": "低电模式建议关闭蓝牙的任务短标签",
+          "sampleValue": "关蓝牙"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "关闭蓝牙任务是否已勾选",
+          "sampleValue": false
+        }
+      },
+      "music": {
+        "label": {
+          "type": "string",
+          "description": "低电模式建议停止音乐播放的任务短标签",
+          "sampleValue": "停音乐"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "停止后台音乐任务是否已勾选",
+          "sampleValue": false
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明天日历日程列表，用于提取充电提醒",
+          "sampleValue": [
+            {
+              "entityId": "calendar_charge_001",
+              "title": "充电",
+              "dtStart": "09:00",
+              "dtEnd": "09:15"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条明日日程",
+            "sampleValue": {
+              "entityId": "calendar_charge_001",
+              "title": "充电",
+              "dtStart": "09:00",
+              "dtEnd": "09:15"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar_charge_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "充电"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，明天当日显示为 HH:MM",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，明天当日显示为 HH:MM",
+                "sampleValue": "09:15"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

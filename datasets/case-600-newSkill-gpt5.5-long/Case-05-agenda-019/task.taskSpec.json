@@ -1,0 +1,167 @@
+{
+  "userQuery": "做个每日待办和会议结合的卡片，背景搞点柔和的磨砂质感。用横线把“工作”和“生活”隔开分成两块，上面嵌一个天气的小面板块。下面把日历里的日程纵向列出来，每项后面有个小圆圈，点一下能勾选打勾绑定状态。不需要渐变色，旁边带个铅笔的语义小图标，点有日历关联的那条能直接跳进去看具体的事件详情。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-work-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-work-002"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-life-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县或当前位置名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量等级。",
+            "sampleValue": "良"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "工作日程的唯一标识符，用于跳转日程详情。",
+              "sampleValue": "calendar-work-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "工作日程标题。",
+              "sampleValue": "产品评审会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "工作日程开始时间。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "工作日程结束时间。",
+              "sampleValue": "10:15"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条工作日程的唯一标识符，用于跳转日程详情。",
+              "sampleValue": "calendar-work-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条工作日程标题。",
+              "sampleValue": "周计划同步"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条工作日程开始时间。",
+              "sampleValue": "14:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条工作日程结束时间。",
+              "sampleValue": "14:30"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "生活日程的唯一标识符，用于跳转日程详情。",
+              "sampleValue": "calendar-life-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "生活日程标题。",
+              "sampleValue": "取洗衣"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "生活日程开始时间。",
+              "sampleValue": "18:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "生活日程结束时间。",
+              "sampleValue": "18:45"
+            }
+          }
+        ]
+      }
+    },
+    "ui": {
+      "summary": {
+        "type": "string",
+        "description": "今日工作与生活待办数量摘要。",
+        "sampleValue": "2项工作 · 1项生活"
+      },
+      "checks": {
+        "work0": {
+          "type": "boolean",
+          "description": "第一条工作日程的勾选状态。",
+          "sampleValue": false
+        },
+        "work1": {
+          "type": "boolean",
+          "description": "第二条工作日程的勾选状态。",
+          "sampleValue": true
+        },
+        "life0": {
+          "type": "boolean",
+          "description": "第一条生活日程的勾选状态。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达每日议程、日历事件和待办安排。"
+    },
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "多云天气彩色图标，适合天气小面板展示当前天气概况。"
+    }
+  ]
+}

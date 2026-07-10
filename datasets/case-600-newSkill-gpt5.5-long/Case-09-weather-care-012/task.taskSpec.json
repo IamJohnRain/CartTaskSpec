@@ -1,0 +1,97 @@
+{
+  "userQuery": "给我做个日程结合天气的卡片，左边放个大号的“日历”图标。视觉上要做个叠加效果，背景弄个红色到黑色的紧迫感渐变，上面盖个磨砂玻璃质感的图层，中心叠加上“距离出差还有3天”的动态文字。读一下日历看那天有没有极端天气，要是下暴雪这种取消级别的告警，点卡片直接跳到天气APP看航班影响。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "目标出差日期内匹配到的日历日程列表。",
+          "sampleValue": [
+            {
+              "title": "出差",
+              "dtStart": "07月12日"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "日程标题，用于生成倒计时主文案。",
+                "sampleValue": "出差"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始日期或时间展示文本。",
+                "sampleValue": "07月12日"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "current": {
+          "alertLevel": {
+            "type": "string",
+            "description": "当前或目标区域的天气预警信息。",
+            "sampleValue": "暴雪红色预警"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日天气预报。",
+          "sampleValue": [
+            {
+              "condition": "多云",
+              "temperatureRangeText": "2° / 8°"
+            },
+            {
+              "condition": "小雪",
+              "temperatureRangeText": "-1° / 4°"
+            },
+            {
+              "condition": "中雪",
+              "temperatureRangeText": "-4° / 1°"
+            },
+            {
+              "condition": "暴雪",
+              "temperatureRangeText": "-8° / -2°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "type": "string",
+                "description": "当天白天天气现象。",
+                "sampleValue": "暴雪"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "-8° / -2°"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于日程管理、日历事件查看和出差日程识别。"
+    }
+  ]
+}

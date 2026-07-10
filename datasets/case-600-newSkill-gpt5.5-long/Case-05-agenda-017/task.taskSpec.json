@@ -1,0 +1,97 @@
+{
+  "userQuery": "我想弄个晨间洗漱时间管理的桌面卡片，不用放任何图片，纯文字色块就行，用那种充满活力的运动风橙红渐变色。卡片正中间是个仪表盘样式的圆环，显示“今日早起打卡进度2/5”的动态数据。下面弄个可滚动的列表，读取我日历里的早间安排，每条安排前面加个勾选框，完成就打勾。再放个按钮能直接跳到时钟应用看具体时间。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "progress": {
+      "current": {
+        "type": "number",
+        "description": "今日早起打卡已完成次数。",
+        "sampleValue": 2
+      },
+      "total": {
+        "type": "number",
+        "description": "今日早起打卡目标总次数。",
+        "sampleValue": 5
+      },
+      "label": {
+        "type": "string",
+        "description": "圆环中心显示的打卡主题短标签。",
+        "sampleValue": "今日早起"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的今日早间安排列表。",
+          "sampleValue": [
+            {
+              "entityId": "morning-001",
+              "title": "刷牙洗脸",
+              "dtStart": "06:50",
+              "dtEnd": "07:05"
+            },
+            {
+              "entityId": "morning-002",
+              "title": "整理通勤",
+              "dtStart": "07:20",
+              "dtEnd": "07:35"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条早间日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "morning-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "刷牙洗脸"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程使用 HH:MM 格式。",
+                "sampleValue": "06:50"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程使用 HH:MM 格式。",
+                "sampleValue": "07:05"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "completion": {
+        "type": "array",
+        "description": "早间安排对应的完成勾选状态。",
+        "sampleValue": [
+          true,
+          false
+        ],
+        "items": {
+          "type": "boolean",
+          "description": "单条早间安排是否已完成。",
+          "sampleValue": true
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

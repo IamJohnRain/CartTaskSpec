@@ -1,0 +1,162 @@
+{
+  "userQuery": "我想做一张人脸分组的相册卡片,纵向列五个人的分组(爸妈/老友/同事/同学/我自己),每组前面可勾选圆圈双向绑定,右侧一个环形显示\"已选 X 张\"作为焦点数据,点跳到音乐App放我整理照片时听的歌单,读一下日历日程看今天有没有空整理,简洁素净的卡片表面,空间不足的红色告警,图标用(◕‿◕)这种文字字符,纯文字不渐变,纵向重复列表。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "album": {
+      "glyph": {
+        "type": "string",
+        "description": "相册人脸分组使用的纯文字表情字符图标。",
+        "sampleValue": "(◕‿◕)"
+      },
+      "groups": {
+        "type": "array",
+        "description": "五个人脸分组及其勾选状态和照片数量。",
+        "sampleValue": [
+          {
+            "id": "parents",
+            "name": "爸妈",
+            "selected": true,
+            "countText": "18张"
+          },
+          {
+            "id": "oldFriends",
+            "name": "老友",
+            "selected": true,
+            "countText": "12张"
+          },
+          {
+            "id": "coworkers",
+            "name": "同事",
+            "selected": false,
+            "countText": "9张"
+          },
+          {
+            "id": "classmates",
+            "name": "同学",
+            "selected": false,
+            "countText": "15张"
+          },
+          {
+            "id": "myself",
+            "name": "我自己",
+            "selected": true,
+            "countText": "5张"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个人脸分组条目。",
+          "sampleValue": {
+            "id": "parents",
+            "name": "爸妈",
+            "selected": true,
+            "countText": "18张"
+          },
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "人脸分组标识。",
+              "sampleValue": "parents"
+            },
+            "name": {
+              "type": "string",
+              "description": "人脸分组名称。",
+              "sampleValue": "爸妈"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "该分组是否被勾选。",
+              "sampleValue": true
+            },
+            "countText": {
+              "type": "string",
+              "description": "该分组内照片数量展示文本。",
+              "sampleValue": "18张"
+            }
+          }
+        }
+      },
+      "selectedCount": {
+        "type": "integer",
+        "description": "当前已选照片总数，用于右侧环形焦点数据。",
+        "sampleValue": 35
+      },
+      "totalCount": {
+        "type": "integer",
+        "description": "当前可整理照片总数，用作环形进度总量。",
+        "sampleValue": 59
+      },
+      "storageAlertText": {
+        "type": "string",
+        "description": "空间不足时展示的红色告警短文本。",
+        "sampleValue": "空间不足"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历日程列表，来自日历查询能力。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_evt_001",
+              "title": "整理照片",
+              "dtStart": "19:00",
+              "dtEnd": "20:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "sampleValue": {
+              "entityId": "calendar_evt_001",
+              "title": "整理照片",
+              "dtStart": "19:00",
+              "dtEnd": "20:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar_evt_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "整理照片"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "19:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "20:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据是否仍在加载。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

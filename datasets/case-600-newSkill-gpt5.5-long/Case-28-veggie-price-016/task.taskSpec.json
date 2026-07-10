@@ -1,0 +1,75 @@
+{
+  "userQuery": "菜价提醒卡,顶部大字写\"今日菜价 较昨日 ↓0.8元\",下面横向排几种菜的对比;要能跳到系统设置里开消息通知;读日程判断今天要不要囤菜;磨砂玻璃质感;状态写\"⚠ 有3种菜快涨价了\";用文字符号做图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "notification_settings"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "price": {
+        "heroText": {
+          "type": "string",
+          "description": "今日菜价与昨日差值的顶部主文案。",
+          "sampleValue": "今日菜价\n较昨日 ↓0.8元"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "菜价风险提醒状态文案，使用文本符号表达警示。",
+          "sampleValue": "⚠ 有3种菜快涨价了"
+        },
+        "veg1Text": {
+          "type": "string",
+          "description": "第一种蔬菜的名称、今日价格和趋势符号。",
+          "sampleValue": "青菜\n4.6↓"
+        },
+        "veg2Text": {
+          "type": "string",
+          "description": "第二种蔬菜的名称、今日价格和趋势符号。",
+          "sampleValue": "番茄\n6.8↑"
+        },
+        "veg3Text": {
+          "type": "string",
+          "description": "第三种蔬菜的名称、今日价格和趋势符号。",
+          "sampleValue": "土豆\n3.2↑"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历事件列表，用于判断是否需要囤菜。",
+          "sampleValue": [
+            {
+              "entityName": "日程",
+              "entityId": "sample-calendar-001",
+              "title": "晚饭在家",
+              "dtStart": "18:30",
+              "dtEnd": "19:30"
+            }
+          ]
+        }
+      }
+    },
+    "view": {
+      "stockAdviceText": {
+        "type": "string",
+        "description": "基于今日日程判断得到的囤菜建议短文案。",
+        "sampleValue": "今晚囤菜"
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "卡片数据加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

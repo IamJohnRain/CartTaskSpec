@@ -1,0 +1,219 @@
+{
+  "userQuery": "拼车匹配卡，左右并排显示两边出发点和到达点距离，每项前面勾选\"顺路\"标记，勾上后点地址跳地图导航；读出我明天日程；整张主题色（绿色）背景，左边放\"🚗\"文字字符主视觉，\"已匹配\"绿色对勾；纵向排三四个备选路线；用文字字符做图标。每次找顺路车都要翻很久，希望能直观点。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/routes/0/destination/latitude} }}",
+            "longitude": "{{ ${/routes/0/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/routes/1/destination/latitude} }}",
+            "longitude": "{{ ${/routes/1/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/routes/2/destination/latitude} }}",
+            "longitude": "{{ ${/routes/2/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "ui": {
+      "heroGlyph": {
+        "type": "string",
+        "description": "左侧主视觉使用的文字字符车标识。",
+        "sampleValue": "车"
+      },
+      "routeTitle": {
+        "type": "string",
+        "description": "路线候选区域标题。",
+        "sampleValue": "顺路备选"
+      },
+      "navHint": {
+        "type": "string",
+        "description": "路线点击导航的短提示。",
+        "sampleValue": "点地址导航"
+      }
+    },
+    "match": {
+      "statusText": {
+        "type": "string",
+        "description": "当前拼车匹配确认状态。",
+        "sampleValue": "√ 已匹配"
+      }
+    },
+    "routes": {
+      "type": "array",
+      "description": "拼车匹配出的顺路路线候选。",
+      "sampleValue": [
+        {
+          "label": "√顺路",
+          "fromText": "家 0.8km",
+          "toText": "公司 0.6km",
+          "actionText": "导航",
+          "destination": {
+            "latitude": "22.3193",
+            "longitude": "114.1694"
+          }
+        },
+        {
+          "label": "√顺路",
+          "fromText": "地铁口 1.2km",
+          "toText": "园区 0.9km",
+          "actionText": "导航",
+          "destination": {
+            "latitude": "22.3027",
+            "longitude": "114.1772"
+          }
+        },
+        {
+          "label": "√顺路",
+          "fromText": "学校 1.6km",
+          "toText": "商圈 1.1km",
+          "actionText": "导航",
+          "destination": {
+            "latitude": "22.3362",
+            "longitude": "114.1484"
+          }
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单条拼车备选路线。",
+        "sampleValue": {
+          "label": "√顺路",
+          "fromText": "家 0.8km",
+          "toText": "公司 0.6km",
+          "actionText": "导航",
+          "destination": {
+            "latitude": "22.3193",
+            "longitude": "114.1694"
+          }
+        },
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "顺路勾选标记文字。",
+            "sampleValue": "√顺路"
+          },
+          "fromText": {
+            "type": "string",
+            "description": "出发点名称和距离展示文本。",
+            "sampleValue": "家 0.8km"
+          },
+          "toText": {
+            "type": "string",
+            "description": "到达点名称和距离展示文本。",
+            "sampleValue": "公司 0.6km"
+          },
+          "actionText": {
+            "type": "string",
+            "description": "地图导航动作短文案。",
+            "sampleValue": "导航"
+          },
+          "destination": {
+            "type": "object",
+            "description": "路线导航目的地经纬度。",
+            "sampleValue": {
+              "latitude": "22.3193",
+              "longitude": "114.1694"
+            },
+            "properties": {
+              "latitude": {
+                "type": "string",
+                "description": "导航目的地纬度。",
+                "sampleValue": "22.3193"
+              },
+              "longitude": {
+                "type": "string",
+                "description": "导航目的地经度。",
+                "sampleValue": "114.1694"
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明日日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-001",
+              "title": "项目例会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "A座会议室"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条明日日程。",
+            "sampleValue": {
+              "entityId": "calendar-demo-001",
+              "title": "项目例会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "A座会议室"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-demo-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "明日日程标题。",
+                "sampleValue": "项目例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "明日日程开始时间。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "明日日程结束时间。",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "明日日程地点。",
+                "sampleValue": "A座会议室"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

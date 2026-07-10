@@ -1,0 +1,103 @@
+{
+  "userQuery": "做个工作消息聚合卡,内容用横线分块,上面展示我今天已读多少条还剩多少未读这种动态数值,下面嵌一块联系小组块,组长和HR电话列出来,旁边带个电话字符能直接拨过去。如果群消息发送失败或者有撤回的就用红色标出来,整张卡片用冷灰蓝那种环境氛围渐变,干净素净点,样例数据填一下就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "1001"
+      }
+    },
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "1002"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "card": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题，表示工作消息聚合入口。",
+        "sampleValue": "工作消息"
+      }
+    },
+    "stats": {
+      "readLabel": {
+        "type": "string",
+        "description": "今日已读消息指标标签。",
+        "sampleValue": "已读"
+      },
+      "readCount": {
+        "type": "number",
+        "description": "今天已读工作消息数量。",
+        "sampleValue": 42
+      },
+      "unreadLabel": {
+        "type": "string",
+        "description": "今日未读消息指标标签。",
+        "sampleValue": "未读"
+      },
+      "unreadCount": {
+        "type": "number",
+        "description": "当前剩余未读工作消息数量。",
+        "sampleValue": 7
+      }
+    },
+    "alerts": {
+      "summary": {
+        "type": "string",
+        "description": "群消息失败或撤回的异常摘要，需要用红色强调。",
+        "sampleValue": "失败2撤回1"
+      },
+      "color": {
+        "type": "string",
+        "description": "异常摘要的状态色，存在失败或撤回时使用告警红色。",
+        "sampleValue": "#ffed6f21"
+      }
+    },
+    "contacts": {
+      "leader": {
+        "role": {
+          "type": "string",
+          "description": "联系小组中组长角色标签。",
+          "sampleValue": "组长"
+        },
+        "phoneDisplay": {
+          "type": "string",
+          "description": "组长电话展示文本，使用短号样例保证卡片内完整显示。",
+          "sampleValue": "1001"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "点击拨打组长电话时传给拨号能力的号码。",
+          "sampleValue": "1001"
+        }
+      },
+      "hr": {
+        "role": {
+          "type": "string",
+          "description": "联系小组中 HR 角色标签。",
+          "sampleValue": "HR"
+        },
+        "phoneDisplay": {
+          "type": "string",
+          "description": "HR 电话展示文本，使用短号样例保证卡片内完整显示。",
+          "sampleValue": "1002"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "点击拨打 HR 电话时传给拨号能力的号码。",
+          "sampleValue": "1002"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/phone_fill.svg",
+      "description": "电话实心图标，适合用于联系小组中的拨打电话入口。"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "userQuery": "磨砂奶茶拼单卡,左右分区,口味双向勾选,日历读取单时间成单绿色提示,点日程能进详情,纯文字字符做图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "当天匹配到的日历拼单日程列表，本卡只读取第一条作为成单时间。",
+          "sampleValue": [
+            {
+              "entityId": "milk-tea-order-20260710",
+              "title": "磨砂奶茶拼单",
+              "dtStart": "15:20",
+              "dtEnd": "15:35"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历日程详情页所需的唯一标识符。",
+                "sampleValue": "milk-tea-order-20260710"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历日程标题，用于说明当前拼单对象。",
+                "sampleValue": "磨砂奶茶拼单"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内返回 HH:MM 格式，作为成单单时间展示。",
+                "sampleValue": "15:20"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今天内返回 HH:MM 格式。",
+                "sampleValue": "15:35"
+              }
+            }
+          }
+        }
+      }
+    },
+    "order": {
+      "drinkName": {
+        "type": "string",
+        "description": "拼单饮品名称。",
+        "sampleValue": "磨砂奶茶"
+      },
+      "flavors": {
+        "leftLabel": {
+          "type": "string",
+          "description": "左侧可勾选口味名称。",
+          "sampleValue": "原味"
+        },
+        "leftSelected": {
+          "type": "boolean",
+          "description": "左侧口味是否被勾选。",
+          "sampleValue": true
+        },
+        "rightLabel": {
+          "type": "string",
+          "description": "右侧可勾选口味名称。",
+          "sampleValue": "少糖"
+        },
+        "rightSelected": {
+          "type": "boolean",
+          "description": "右侧口味是否被勾选。",
+          "sampleValue": true
+        }
+      },
+      "statusText": {
+        "type": "string",
+        "description": "从日历时间判断后的拼单确认提示。",
+        "sampleValue": "已成单"
+      }
+    }
+  },
+  "assetCandidates": []
+}

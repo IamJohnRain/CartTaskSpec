@@ -1,0 +1,106 @@
+{
+  "userQuery": "帮我做一个女友防寒提醒卡片，背景用她学校雪景照片延伸出来的那种冰蓝氛围渐变。卡片上面横着排好几天的天气预报，每天配个带语义的天气小图标。中间弄个圆环进度条显示今天的当前降雨量毫升数，如果出现冻雨或者严重冰冻这种危险天气，要在旁边标红警告。卡片底部加上当前的时间，做成一个时钟跳转的入口，点进去能看具体的时间应用。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "rainfallMl": {
+            "type": "number",
+            "description": "今天当前降雨量毫升数，用于圆环进度条。",
+            "sampleValue": 18
+          },
+          "rainfallMlText": {
+            "type": "string",
+            "description": "今天当前降雨量的展示文本，包含 ml 单位。",
+            "sampleValue": "18 ml"
+          },
+          "iceAlertText": {
+            "type": "string",
+            "description": "冻雨或严重冰冻等危险天气的短预警文本。",
+            "sampleValue": "冻雨预警"
+          },
+          "iceAlertColor": {
+            "type": "string",
+            "description": "危险天气预警文本颜色；出现冻雨或严重冰冻时使用红色告警色。",
+            "sampleValue": "#ffe84026"
+          }
+        },
+        "daily": [
+          {
+            "weekday": {
+              "type": "string",
+              "description": "第 1 天预报的星期或短日期文本。",
+              "sampleValue": "今天"
+            }
+          },
+          {
+            "weekday": {
+              "type": "string",
+              "description": "第 2 天预报的星期或短日期文本。",
+              "sampleValue": "明天"
+            }
+          },
+          {
+            "weekday": {
+              "type": "string",
+              "description": "第 3 天预报的星期或短日期文本。",
+              "sampleValue": "周六"
+            }
+          }
+        ]
+      },
+      "time": {
+        "currentTimeText": {
+          "type": "string",
+          "description": "当前时间展示文本，用作底部时钟入口。",
+          "sampleValue": "23:10"
+        }
+      }
+    },
+    "assets": {
+      "forecast0Icon": {
+        "type": "string",
+        "description": "第 1 天天气语义图标资源路径。",
+        "sampleValue": "resources/base/media/snow.png"
+      },
+      "forecast1Icon": {
+        "type": "string",
+        "description": "第 2 天天气语义图标资源路径。",
+        "sampleValue": "resources/base/media/rain.png"
+      },
+      "forecast2Icon": {
+        "type": "string",
+        "description": "第 3 天天气语义图标资源路径。",
+        "sampleValue": "resources/base/media/cloudy.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/snow.png",
+      "description": "雪花彩色天气图标，适合表达雪、低温和冰蓝防寒场景。",
+      "bindTo": "/assets/forecast0Icon"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵与雨滴彩色天气图标，适合表达降雨或冻雨风险。",
+      "bindTo": "/assets/forecast1Icon"
+    },
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "云朵彩色天气图标，适合表达阴天、多云等天气预报。",
+      "bindTo": "/assets/forecast2Icon"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "userQuery": "排队卡,中间放个环形图叠在数字上,中心大字写\"✅ 已签到成功\"用绿色表示正向,外圈写\"当前叫号A008\",再叠一层\"已等待25分钟\"文字在最上面,背景用浅色调的底色,右上角小云朵图标点一下能跳到天气看今天出门取号要不要带伞,示例数据,语义图标用素材库里的就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "queue": {
+      "type": "object",
+      "description": "排队叫号与签到状态信息。",
+      "sampleValue": {
+        "statusText": "已签到成功",
+        "currentTicketText": "当前叫号A008",
+        "waitText": "已等待25分钟",
+        "progressValue": 72,
+        "progressTotal": 100
+      },
+      "properties": {
+        "statusText": {
+          "type": "string",
+          "description": "当前签到状态展示文本。",
+          "sampleValue": "已签到成功"
+        },
+        "currentTicketText": {
+          "type": "string",
+          "description": "当前叫号展示文本。",
+          "sampleValue": "当前叫号A008"
+        },
+        "waitText": {
+          "type": "string",
+          "description": "用户已等待时长展示文本。",
+          "sampleValue": "已等待25分钟"
+        },
+        "progressValue": {
+          "type": "number",
+          "description": "环形进度的当前值，用于表现等待进程的可视化比例。",
+          "sampleValue": 72
+        },
+        "progressTotal": {
+          "type": "number",
+          "description": "环形进度的总值。",
+          "sampleValue": 100
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧动态数据根节点。",
+      "sampleValue": {
+        "weather": {
+          "current": {
+            "condition": "多云"
+          }
+        }
+      },
+      "properties": {
+        "weather": {
+          "type": "object",
+          "description": "天气能力输出，用于天气入口的今日天气摘要。",
+          "sampleValue": {
+            "current": {
+              "condition": "多云"
+            }
+          },
+          "properties": {
+            "current": {
+              "type": "object",
+              "description": "当日天气实况。",
+              "sampleValue": {
+                "condition": "多云"
+              },
+              "properties": {
+                "condition": {
+                  "type": "string",
+                  "description": "当前天气现象，例如晴、阴、多云或小雨。",
+                  "sampleValue": "多云"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵组合图标，适合天气、出行语义，可作为右上角天气入口图标。"
+    }
+  ]
+}

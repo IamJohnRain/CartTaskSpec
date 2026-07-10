@@ -1,0 +1,95 @@
+{
+  "userQuery": "明天一早要飞，帮我做张出差行程卡竖着排。每一行是一项航班或车次，显示航班号、起降时间、航站楼，要能点进去看详情。中间塞个动态值，比如\"距下一趟还剩 02:13:48\"这种倒计时，看着有紧迫感。整体深夜蓝到紫的氛围渐变，字标用✈→🕐这种字符凑合就行。分区分不同底色，底部加个黄底警示\"前序航班已延误，注意后续衔接\"。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "flight-HU7608"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "train-G102"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "card": {
+        "title": {
+          "type": "string",
+          "description": "卡片标题，标识出差行程服务对象。",
+          "sampleValue": "出差行程"
+        },
+        "glyph": {
+          "type": "string",
+          "description": "紧凑字标，用字符表达航班到时间的行程感。",
+          "sampleValue": "AIR>T"
+        }
+      },
+      "countdown": {
+        "label": {
+          "type": "string",
+          "description": "下一趟行程倒计时标签。",
+          "sampleValue": "距下趟"
+        },
+        "value": {
+          "type": "string",
+          "description": "距离下一趟航班或车次的动态倒计时值。",
+          "sampleValue": "02:13:48"
+        }
+      },
+      "trips": [
+        {
+          "displayLine": {
+            "type": "string",
+            "description": "第一项行程的航班号、起降时间和航站楼压缩展示文本。",
+          "sampleValue": "HU7608 0640-0855T3"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "第一项行程详情事件实体标识。",
+            "sampleValue": "flight-HU7608"
+          }
+        },
+        {
+          "displayLine": {
+            "type": "string",
+            "description": "第二项行程的车次号、起降时间和到发区域压缩展示文本。",
+            "sampleValue": "G102 0918-1220 2F"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "第二项行程详情事件实体标识。",
+            "sampleValue": "train-G102"
+          }
+        }
+      ],
+      "warning": {
+        "text": {
+          "type": "string",
+          "description": "底部黄色警示条文案，提示前序航班延误和后续衔接风险。",
+          "sampleValue": "前序航班已延误，注意后续衔接"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞图标，适合用于出行计划、航班出发信息和旅行日程的识别素材。"
+    },
+    {
+      "src": "resources/base/media/clock.svg",
+      "description": "时钟线框图标，适合用于时间显示、行程倒计时和定时提醒语义。"
+    }
+  ]
+}

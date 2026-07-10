@@ -1,0 +1,143 @@
+{
+  "userQuery": "做个深色舞台风格的卡片，顶部横着排几个环形仪表盘显示“电量20%”、“内存90%”、“温度”这些动态数字，下面纵向堆叠几个清理选项，内存那个要用红色显示“危险：已超限”。加点充满速度感的渐变背景，要能读取我的日历日程，再放个一键切换省电模式的开关，底下横排几个像风扇、扫把那样的语义图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "metrics": {
+      "battery": {
+        "valuePercent": {
+          "type": "integer",
+          "description": "当前电量百分比数值，用于电量环形仪表。",
+          "sampleValue": 20
+        },
+        "valueText": {
+          "type": "string",
+          "description": "当前电量百分比展示文本。",
+          "sampleValue": "20%"
+        }
+      },
+      "memory": {
+        "valuePercent": {
+          "type": "integer",
+          "description": "当前内存占用百分比数值，用于内存环形仪表。",
+          "sampleValue": 90
+        },
+        "valueText": {
+          "type": "string",
+          "description": "当前内存占用百分比展示文本。",
+          "sampleValue": "90%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "内存风险状态提示文本。",
+          "sampleValue": "危险：已超限"
+        }
+      },
+      "temperature": {
+        "valueText": {
+          "type": "string",
+          "description": "当前设备温度展示文本。",
+          "sampleValue": "42℃"
+        },
+        "valuePercent": {
+          "type": "integer",
+          "description": "设备温度仪表归一化百分比数值。",
+          "sampleValue": 72
+        }
+      }
+    },
+    "cleanup": {
+      "optionPrimary": {
+        "type": "string",
+        "description": "第一项清理选项短标签。",
+        "sampleValue": "扫缓存"
+      },
+      "optionSecondary": {
+        "type": "string",
+        "description": "第二项清理选项短标签。",
+        "sampleValue": "降后台"
+      }
+    },
+    "powerSave": {
+      "enabled": {
+        "type": "boolean",
+        "description": "省电模式是否已开启。",
+        "sampleValue": false
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日历日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-sample-001",
+              "title": "产品评审",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项。",
+            "sampleValue": {
+              "entityId": "calendar-sample-001",
+              "title": "产品评审",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-sample-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "产品评审"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，如果是当天则为 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，如果是当天则为 HH:MM。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "充电闪电彩色图标，可作为加速、能量和性能释放语义图标。"
+    },
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除彩色图标，可作为扫把、清理缓存和清洁模式语义图标。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电彩色图标，可表示省电模式、绿色用电和低电耗状态。"
+    }
+  ]
+}

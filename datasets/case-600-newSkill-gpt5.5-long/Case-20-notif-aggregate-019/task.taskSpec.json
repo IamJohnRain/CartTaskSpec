@@ -1,0 +1,108 @@
+{
+  "userQuery": "电量+通知聚合服务卡,主题色背景,中心一个环形数据图(剩余电量%)做视觉主体。可滚动的通知列表,每条带勾选框,旁边一个\"省电设置\"按钮能跳到系统设置。读一下当前天气,夜间模式用深蓝紫渐变,电量低于20%用红色告警。图标用文字字符(⚡ ☀ ☾)就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "assets": {
+      "batteryIcon": {
+        "type": "string",
+        "description": "电量状态图标素材路径，用于电量聚合卡片的身份识别。",
+        "sampleValue": "resources/base/media/icon_electricity.png"
+      }
+    },
+    "battery": {
+      "percent": {
+        "type": "number",
+        "description": "当前剩余电量百分比数值，用于环形进度图。",
+        "sampleValue": 18
+      },
+      "percentText": {
+        "type": "string",
+        "description": "当前剩余电量百分比展示文本。",
+        "sampleValue": "18%"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "电量状态说明，低于20%时展示红色告警语义。",
+        "sampleValue": "低电量告警"
+      },
+      "ringColor": {
+        "type": "string",
+        "description": "电量环颜色，低电量时使用告警色。",
+        "sampleValue": "#ffed6f21"
+      }
+    },
+    "notifications": {
+      "summaryText": {
+        "type": "string",
+        "description": "当前未读或聚合通知数量摘要。",
+        "sampleValue": "3条通知"
+      },
+      "items": [
+        {
+          "title": {
+            "type": "string",
+            "description": "第一条通知标题摘要。",
+            "sampleValue": "充电器未连接"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "第一条通知是否已勾选。",
+            "sampleValue": false
+          }
+        },
+        {
+          "title": {
+            "type": "string",
+            "description": "第二条通知标题摘要。",
+            "sampleValue": "天气更新提醒"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "第二条通知是否已勾选。",
+            "sampleValue": true
+          }
+        }
+      ]
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "当前天气所在区县名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标素材，适合低电量模式、电量状态或电力相关卡片的身份识别。",
+      "bindTo": "/assets/batteryIcon"
+    }
+  ]
+}

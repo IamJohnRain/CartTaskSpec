@@ -1,0 +1,162 @@
+{
+  "userQuery": "我睡眠障碍想做一个深色舞台风格的睡眠卡片，整体深紫到深靛蓝的环境氛围渐变。顶部用环形进度图中心叠动态数字\"4.5h\"显示昨晚睡眠时长，红色字体提示不足。中间纵向重复排列几行数据：深睡0.6h⚠、浅睡3.2h、REM 0.4h⚠、清醒次数12次，每行左边带对应图标。最底下读明天天气\"多云转晴14度\"配图标，旁边\"设定起床闹钟\"按钮点开跳闹钟App。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "sleep": {
+        "lastNight": {
+          "durationHours": {
+            "type": "number",
+            "description": "昨晚睡眠时长，单位为小时，用于环形进度。",
+            "sampleValue": 4.5
+          },
+          "durationText": {
+            "type": "string",
+            "description": "昨晚睡眠时长展示文本。",
+            "sampleValue": "4.5h"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "睡眠状态提示文本。",
+            "sampleValue": "不足"
+          }
+        },
+        "targetHours": {
+          "type": "number",
+          "description": "建议睡眠目标时长，单位为小时。",
+          "sampleValue": 8
+        },
+        "stages": {
+          "deep": {
+            "label": {
+              "type": "string",
+              "description": "深睡阶段名称。",
+              "sampleValue": "深睡"
+            },
+            "durationText": {
+              "type": "string",
+              "description": "深睡阶段时长展示文本。",
+              "sampleValue": "0.6h"
+            },
+            "warningText": {
+              "type": "string",
+              "description": "深睡不足的提示文本。",
+              "sampleValue": "不足"
+            }
+          },
+          "light": {
+            "label": {
+              "type": "string",
+              "description": "浅睡阶段名称。",
+              "sampleValue": "浅睡"
+            },
+            "durationText": {
+              "type": "string",
+              "description": "浅睡阶段时长展示文本。",
+              "sampleValue": "3.2h"
+            }
+          },
+          "rem": {
+            "label": {
+              "type": "string",
+              "description": "REM 阶段名称。",
+              "sampleValue": "REM"
+            },
+            "durationText": {
+              "type": "string",
+              "description": "REM 阶段时长展示文本。",
+              "sampleValue": "0.4h"
+            },
+            "warningText": {
+              "type": "string",
+              "description": "REM 偏少的提示文本。",
+              "sampleValue": "偏少"
+            }
+          },
+          "awake": {
+            "label": {
+              "type": "string",
+              "description": "清醒次数名称。",
+              "sampleValue": "清醒次数"
+            },
+            "countText": {
+              "type": "string",
+              "description": "夜间清醒次数展示文本。",
+              "sampleValue": "12次"
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "13度"
+            },
+            {
+              "weekday": "明天",
+              "condition": "多云转晴",
+              "temperatureRangeText": "14度"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或相对日期文本。",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "多云转晴"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "适合直接显示的温度文本。",
+                "sampleValue": "14度"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/moon_z_fill_1.svg",
+      "description": "月亮加 Z 的睡眠图标，适合表示深睡或睡眠状态。"
+    },
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "月亮圆形图标，适合表示浅睡和夜间休息。"
+    },
+    {
+      "src": "resources/base/media/icon_sleep.png",
+      "description": "睡眠监督场景的彩色睡眠图标，适合表示 REM 或睡眠阶段。"
+    },
+    {
+      "src": "resources/base/media/clock_fill.svg",
+      "description": "时钟实心图标，适合表示清醒次数或时间相关数据。"
+    },
+    {
+      "src": "resources/base/media/cloudy_turning_sunny.png",
+      "description": "小云朵和太阳组合的彩色天气图标，适合表示多云转晴天气。"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "userQuery": "帮我做个深色舞台风格的日程卡片，上方放个超大号的火箭图标当主视觉。背景用点像极光那样的环境渐变色，下面纵向重复排列读取出来的几个发布会日程时间段和对应的环节名字。用分隔线把每个环节的区块拉开，主要是能点进去看每个日程事件的具体内容，不需要任何状态颜色变化。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "发布会日程事件列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "event-launch-001",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "title": "开场致辞"
+            },
+            {
+              "entityId": "event-launch-002",
+              "dtStart": "10:00",
+              "dtEnd": "10:45",
+              "title": "产品发布"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个发布会议程事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识，用于打开对应日程详情。",
+                "sampleValue": "event-launch-001"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天事件使用 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天事件使用 HH:MM 格式。",
+                "sampleValue": "10:00"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程环节名称。",
+                "sampleValue": "开场致辞"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞黑色线性图标，可作为发布会启动、发射感主视觉的近似素材；在深色舞台背景上需要放入浅色图标底板保证可读。"
+    }
+  ]
+}

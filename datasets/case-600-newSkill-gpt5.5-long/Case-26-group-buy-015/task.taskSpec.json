@@ -1,0 +1,143 @@
+{
+  "userQuery": "分区拼单提醒卡,信息用分隔线分块:订单信息、好友列表、倒计时。底色分区不同,阴天灰调氛围渐变背景。状态标\"订单已取消\"红色警告。跳时钟设闹钟。列表可滚动。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称，用于阴天氛围来源。",
+            "sampleValue": "西湖区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名称。",
+            "sampleValue": "杭州市"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，驱动阴天灰调卡片氛围。",
+            "sampleValue": "阴"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "19°C"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "天气预报列表，本卡片不直接展示。",
+          "sampleValue": []
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "天气更新时间。",
+          "sampleValue": "14:20"
+        }
+      }
+    },
+    "groupBuy": {
+      "order": {
+        "title": {
+          "type": "string",
+          "description": "拼单订单标题。",
+          "sampleValue": "拼单团购"
+        },
+        "status": {
+          "type": "string",
+          "description": "订单当前状态，取消状态需要红色警告显示。",
+          "sampleValue": "订单已取消"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "订单件数与金额摘要。",
+          "sampleValue": "3件 · ¥128.8"
+        },
+        "metaText": {
+          "type": "string",
+          "description": "订单编号或短标识。",
+          "sampleValue": "订单 A015"
+        },
+        "deadlineText": {
+          "type": "string",
+          "description": "拼单截止时间短文本。",
+          "sampleValue": "21:00截止"
+        },
+        "countdownText": {
+          "type": "string",
+          "description": "距离拼单截止的倒计时展示值。",
+          "sampleValue": "8:42"
+        }
+      },
+      "friends": {
+        "type": "array",
+        "description": "好友拼单参与状态列表，DSL 使用固定索引展示前四项。",
+        "sampleValue": [
+          {
+            "name": "小林",
+            "statusText": "已退"
+          },
+          {
+            "name": "阿宁",
+            "statusText": "未付"
+          },
+          {
+            "name": "Grace",
+            "statusText": "待邀"
+          },
+          {
+            "name": "小周",
+            "statusText": "已退"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个好友参与状态。",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "好友昵称。",
+              "sampleValue": "小林"
+            },
+            "statusText": {
+              "type": "string",
+              "description": "好友拼单状态短文本。",
+              "sampleValue": "已退"
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "卡片加载态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵组合图标，适合表达阴天、灰调天气氛围和环境状态。"
+    },
+    {
+      "src": "resources/base/media/person_3_fill.svg",
+      "description": "三人组实心图标，适合表达好友列表、拼单成员和群组状态。"
+    }
+  ]
+}

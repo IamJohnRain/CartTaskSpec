@@ -1,0 +1,95 @@
+{
+  "userQuery": "晚上听点下雨声好睡觉，帮我做个深黑色背景像舞台一样的卡片。左侧放主要的大字\"专注睡眠模式\"，右侧横着排开一排文字图标像\"雨声\"、\"风声\"。上面标个\"睡眠目标已达成\"的状态，还要读一下今晚的天气情况，点一下图标就能直接看到明天的起床日程。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称或当前位置展示文本",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "今晚当前温度展示文本",
+            "sampleValue": "22°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "今晚当前天气现象",
+            "sampleValue": "小雨"
+          },
+          "humidityPercent": {
+            "type": "number",
+            "description": "今晚当前相对湿度百分比",
+            "sampleValue": 86
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "今晚当前风力等级",
+            "sampleValue": 2
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明天与起床相关的日程列表",
+          "sampleValue": [
+            {
+              "entityName": "日历事件",
+              "entityId": "wake-20260710",
+              "title": "起床",
+              "dtStart": "07:30",
+              "dtEnd": "07:45"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "明日起床日程标题",
+                "sampleValue": "起床"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "明日起床日程开始时间",
+                "sampleValue": "07:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "明日起床日程结束时间",
+                "sampleValue": "07:45"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_focus.png",
+      "description": "专注模式图标，适合用于深色专注睡眠卡片中的模式识别。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴的彩色天气图标，适合表达雨声、降雨和夜间助眠氛围。"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "userQuery": "老人服药+日程的深色卡片,整体夜景舞台风,左边日历日程横向滚动列今天3条提醒,右边圆环倒计时显示距下次吃药还有32分钟,中间红色告警\"已超时15分钟未服药\",下面按钮点导航去附近药店,服药记录可以勾选,图标用场景语义图标,不要渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.3193",
+            "longitude": "114.1694"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历日程提醒列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "med-morning",
+              "title": "早药提醒",
+              "dtStart": "08:00",
+              "dtEnd": "08:05"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "blood-pressure",
+              "title": "血压测量",
+              "dtStart": "13:30",
+              "dtEnd": "13:40"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "clinic-call",
+              "title": "晚间复诊",
+              "dtStart": "19:00",
+              "dtEnd": "19:20"
+            }
+          ]
+        }
+      }
+    },
+    "care": {
+      "medicine": {
+        "countdownValue": {
+          "type": "number",
+          "description": "距下次吃药的剩余分钟数，用于圆环进度。",
+          "sampleValue": 32
+        },
+        "countdownTotal": {
+          "type": "number",
+          "description": "服药倒计时的总分钟数，用于圆环总量。",
+          "sampleValue": 60
+        },
+        "countdownNumberText": {
+          "type": "string",
+          "description": "距下次吃药剩余分钟数的短文本。",
+          "sampleValue": "32"
+        },
+        "countdownUnitText": {
+          "type": "string",
+          "description": "倒计时单位文本。",
+          "sampleValue": "分钟"
+        },
+        "countdownCaption": {
+          "type": "string",
+          "description": "倒计时语义标签。",
+          "sampleValue": "下次药"
+        },
+        "overdueAlertText": {
+          "type": "string",
+          "description": "超时未服药的红色告警文案。",
+          "sampleValue": "已超时15分钟未服药"
+        },
+        "recordLabel": {
+          "type": "string",
+          "description": "服药记录勾选项文案。",
+          "sampleValue": "已服药"
+        },
+        "recordChecked": {
+          "type": "boolean",
+          "description": "服药记录是否已经勾选。",
+          "sampleValue": false
+        }
+      },
+      "pharmacy": {
+        "actionLabel": {
+          "type": "string",
+          "description": "导航去附近药店的按钮短文案。",
+          "sampleValue": "导航"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "附近药店目的地纬度。",
+          "sampleValue": "22.3193"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "附近药店目的地经度。",
+          "sampleValue": "114.1694"
+        }
+      },
+      "assets": {
+        "scheduleIcon": {
+          "type": "string",
+          "description": "日程语义图标素材路径。",
+          "sampleValue": "resources/base/media/icon_schedule.png"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程语义图标，适合用于今天提醒和日历日程识别。",
+      "bindTo": "/care/assets/scheduleIcon"
+    }
+  ]
+}

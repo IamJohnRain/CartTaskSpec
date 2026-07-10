@@ -1,0 +1,117 @@
+{
+  "userQuery": "做个低电卡片上下分两个色块，上面浅色区是环形电量和今日日程，下面深色区横向排几个内嵌小卡片，分别跳到系统设置里的省电、存储、后台管理。电量低于20%橙色提示，渐变用紧迫感那种。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "device": {
+      "battery": {
+        "level": {
+          "type": "number",
+          "description": "当前设备电量百分比数值，用于环形进度。",
+          "sampleValue": 18
+        },
+        "total": {
+          "type": "number",
+          "description": "电量总量百分比基准。",
+          "sampleValue": 100
+        },
+        "percentText": {
+          "type": "string",
+          "description": "当前电量展示文本。",
+          "sampleValue": "18%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "低电状态短提示，电量低于20%时提示低电。",
+          "sampleValue": "低电"
+        },
+        "ringColor": {
+          "type": "string",
+          "description": "电量环颜色，低于20%时为橙色警示。",
+          "sampleValue": "#ffed6f21"
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-001",
+              "title": "站会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识。",
+              "sampleValue": "calendar-demo-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "站会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间，今天内使用HH:MM格式。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间，今天内使用HH:MM格式。",
+              "sampleValue": "10:00"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合放在电量环中心作为当前电量状态识别。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合用于系统设置省电入口。"
+    },
+    {
+      "src": "resources/base/media/externaldrive_fill.svg",
+      "description": "外置存储设备黑色图标，适合用于系统设置存储空间入口，需要放在浅色小卡片上。"
+    },
+    {
+      "src": "resources/base/media/hourglass_fill.svg",
+      "description": "沙漏和齿轮组合图标，适合用于应用时长或后台管理类设置入口，需要放在浅色小卡片上。"
+    }
+  ]
+}

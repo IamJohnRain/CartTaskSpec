@@ -1,0 +1,101 @@
+{
+  "userQuery": "想要一张物流卡,信息用分隔线分块。我经常晚上下班才去取件,上面读天气带磨砂玻璃质感的板块(显示阴天有雨),下面列几个待取包裹,每个前面能勾选,勾完状态自动绑定\"已取件\",这样回家路上不会漏拿。右上角\"拨打快递员\"按钮直接拨号。卡片做成柔和材质,渐变用夜晚的蓝紫色(经常晚上取件)。语义图标用📦🚚📍,列表能滚动。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "13800138000"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "当前天气查询所在区县。",
+            "sampleValue": "当前区"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于显示阴天有雨。",
+            "sampleValue": "阴雨"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "21°C"
+          }
+        },
+        "daily": [
+          {
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "今日降雨概率百分比。",
+              "sampleValue": "70%"
+            }
+          }
+        ]
+      }
+    },
+    "pickup": {
+      "parcels": [
+        {
+          "checked": {
+            "type": "boolean",
+            "description": "第一个待取包裹是否已勾选。",
+            "sampleValue": true
+          },
+          "place": {
+            "type": "string",
+            "description": "第一个待取包裹所在位置。",
+            "sampleValue": "A1柜"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "第一个待取包裹取件状态。",
+            "sampleValue": "已取件"
+          }
+        },
+        {
+          "checked": {
+            "type": "boolean",
+            "description": "第二个待取包裹是否已勾选。",
+            "sampleValue": false
+          },
+          "place": {
+            "type": "string",
+            "description": "第二个待取包裹所在位置。",
+            "sampleValue": "驿站"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "第二个待取包裹取件状态。",
+            "sampleValue": "待取"
+          }
+        }
+      ]
+    },
+    "contact": {
+      "courierPhone": {
+        "type": "string",
+        "description": "快递员联系电话，用于拨号事件参数。",
+        "sampleValue": "13800138000"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合阴雨天气板块。"
+    },
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "快递箱子彩色图标，适合物流取件提醒和包裹识别。"
+    }
+  ]
+}

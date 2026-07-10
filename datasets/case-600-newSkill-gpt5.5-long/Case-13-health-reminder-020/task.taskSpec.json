@@ -1,0 +1,113 @@
+{
+  "userQuery": "给慢性病人做一张吃药追踪卡,信息要分块用横线分开:第一块是今日服药清单(横向排三项,每项显示药名和剂量),第二块是日历日程里今天还有几次没吃,第三块是\"今日饮水1.2L/2L\"这种固定话术加数字。要是有哪次没吃就显示红色警报。整张卡底色用淡淡的薰衣草紫,背景有一点朦胧的薄雾感,渐变偏那种助眠音乐场景的氛围。右上角一个音符图标,点一下能跳到音乐app歌单播放轻音乐。所有图标用语义图标,药丸、水滴、日历都要有。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "health": {
+      "medicines": {
+        "0": {
+          "name": {
+            "type": "string",
+            "description": "今日服药清单第一项药名",
+            "sampleValue": "降压药"
+          },
+          "dose": {
+            "type": "string",
+            "description": "今日服药清单第一项剂量",
+            "sampleValue": "1片"
+          }
+        },
+        "1": {
+          "name": {
+            "type": "string",
+            "description": "今日服药清单第二项药名",
+            "sampleValue": "降糖药"
+          },
+          "dose": {
+            "type": "string",
+            "description": "今日服药清单第二项剂量",
+            "sampleValue": "0.5片"
+          }
+        },
+        "2": {
+          "name": {
+            "type": "string",
+            "description": "今日服药清单第三项药名",
+            "sampleValue": "他汀"
+          },
+          "dose": {
+            "type": "string",
+            "description": "今日服药清单第三项剂量",
+            "sampleValue": "20mg"
+          }
+        }
+      },
+      "water": {
+        "drunkText": {
+          "type": "string",
+          "description": "今日已饮水量展示文本",
+          "sampleValue": "1.2L"
+        },
+        "goalText": {
+          "type": "string",
+          "description": "今日饮水目标展示文本",
+          "sampleValue": "2L"
+        },
+        "drunkValue": {
+          "type": "number",
+          "description": "今日已饮水量数值，单位升",
+          "sampleValue": 1.2
+        },
+        "goalValue": {
+          "type": "number",
+          "description": "今日饮水目标数值，单位升",
+          "sampleValue": 2
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天尚未完成的服药日程列表，数组长度用于展示还有几次没吃",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "med-dose-20260710-evening",
+              "title": "晚间服药未完成",
+              "dtStart": "20:00",
+              "dtEnd": "20:10"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_allergy.png",
+      "description": "健康提醒语义图标，可用于服药清单的药物与用药健康识别。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表示今日服药日程与未完成次数。"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标，适合表示今日饮水量与饮水目标。"
+    },
+    {
+      "src": "resources/base/media/music_fill.svg",
+      "description": "音乐音符实心图标，适合表示轻音乐歌单播放入口。"
+    }
+  ]
+}

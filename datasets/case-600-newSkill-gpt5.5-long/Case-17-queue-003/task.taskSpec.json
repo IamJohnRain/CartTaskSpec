@@ -1,0 +1,130 @@
+{
+  "userQuery": "帮我做一个餐厅等位的卡片,左边大字号显示当前号码(动态变化),右边纵向排列几家餐厅的排队列表(可以滚动),每一行显示店名、当前号码、预计等待时间。顶部要有一个省电模式的开关可以切换,再读取日历里今天的订餐安排。整体磨砂玻璃质感,纯文字和色块,不要图片。其中一家等待超过40分钟的显示橙色提醒,别用渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "settings": {
+      "powerSavingEnabled": {
+        "type": "boolean",
+        "description": "当前省电模式是否已开启。",
+        "sampleValue": false
+      },
+      "nextSwitchFlag": {
+        "type": "number",
+        "description": "点击省电模式开关时提交给设置能力的切换值，0表示开启，1表示关闭。",
+        "sampleValue": 0
+      }
+    },
+    "data": {
+      "queue": {
+        "currentNumber": {
+          "type": "string",
+          "description": "当前餐厅等位叫到的号码。",
+          "sampleValue": "A108"
+        },
+        "caption": {
+          "type": "string",
+          "description": "当前号码的短说明。",
+          "sampleValue": "当前叫号"
+        },
+        "restaurants": {
+          "0": {
+            "name": {
+              "type": "string",
+              "description": "第一家餐厅名称。",
+              "sampleValue": "海港茶餐厅"
+            },
+            "currentNumber": {
+              "type": "string",
+              "description": "第一家餐厅当前叫号。",
+              "sampleValue": "A105"
+            },
+            "waitText": {
+              "type": "string",
+              "description": "第一家餐厅预计等待时间展示文本。",
+              "sampleValue": "18分钟"
+            }
+          },
+          "1": {
+            "name": {
+              "type": "string",
+              "description": "第二家餐厅名称。",
+              "sampleValue": "云吞面家"
+            },
+            "currentNumber": {
+              "type": "string",
+              "description": "第二家餐厅当前叫号。",
+              "sampleValue": "B026"
+            },
+            "waitText": {
+              "type": "string",
+              "description": "第二家餐厅预计等待时间展示文本。",
+              "sampleValue": "32分钟"
+            }
+          },
+          "2": {
+            "name": {
+              "type": "string",
+              "description": "第三家餐厅名称。",
+              "sampleValue": "炉端烧"
+            },
+            "currentNumber": {
+              "type": "string",
+              "description": "第三家餐厅当前叫号。",
+              "sampleValue": "C018"
+            },
+            "waitText": {
+              "type": "string",
+              "description": "第三家餐厅预计等待时间展示文本，超过40分钟时用于提醒。",
+              "sampleValue": "45分钟"
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "0": {
+            "entityId": {
+              "type": "string",
+              "description": "今日日历订餐安排的日程唯一标识。",
+              "sampleValue": "calendar_dining_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "今日日历订餐安排标题。",
+              "sampleValue": "订餐：晚市"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "订餐安排的地点。",
+              "sampleValue": "中环店"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "订餐安排开始时间，今天内使用HH:MM格式。",
+              "sampleValue": "19:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "订餐安排结束时间，今天内使用HH:MM格式。",
+              "sampleValue": "20:30"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

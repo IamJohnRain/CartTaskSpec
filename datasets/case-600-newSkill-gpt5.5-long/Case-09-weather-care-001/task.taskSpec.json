@@ -1,0 +1,150 @@
+{
+  "userQuery": "帮我做个极简的天气提醒卡片，读取老家天气数据，左侧放信息右侧放动作按钮，用图标当视觉主体，纵向列几行提醒，要带像“距离降温还有2天”这种固定文字和动态天数的拼接，如果温差变大要显示待处理的风险状态，整体加点环境氛围的柔和渐变，点击后能跳转到系统设置里去调整屏幕亮度。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "display_settings"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "端侧动态数据根节点。",
+      "sampleValue": {
+        "weather": {
+          "location": {
+            "districtName": "老家"
+          },
+          "current": {
+            "temperatureText": "18°C",
+            "condition": "多云转冷",
+            "alertLevel": "温差风险待处理"
+          },
+          "daily": [
+            {
+              "temperatureRangeText": "18° / 25°"
+            },
+            {
+              "temperatureRangeText": "11° / 19°"
+            }
+          ]
+        }
+      },
+      "weather": {
+        "type": "object",
+        "description": "老家当前天气与未来天气概要。",
+        "sampleValue": {
+          "location": {
+            "districtName": "老家"
+          },
+          "current": {
+            "temperatureText": "18°C",
+            "condition": "多云转冷",
+            "alertLevel": "温差风险待处理"
+          },
+          "daily": [
+            {
+              "temperatureRangeText": "18° / 25°"
+            },
+            {
+              "temperatureRangeText": "11° / 19°"
+            }
+          ]
+        },
+        "location": {
+          "type": "object",
+          "description": "实际查询成功的老家地区。",
+          "sampleValue": {
+            "districtName": "老家"
+          },
+          "districtName": {
+            "type": "string",
+            "description": "老家区县名称。",
+            "sampleValue": "老家"
+          }
+        },
+        "current": {
+          "type": "object",
+          "description": "当日天气实况。",
+          "sampleValue": {
+            "temperatureText": "18°C",
+            "condition": "多云转冷",
+            "alertLevel": "温差风险待处理"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "18°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象或趋势说明。",
+            "sampleValue": "多云转冷"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气预警或温差风险状态。",
+            "sampleValue": "温差风险待处理"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "未来数日天气预报。",
+          "sampleValue": [
+            {
+              "temperatureRangeText": "18° / 25°"
+            },
+            {
+              "temperatureRangeText": "11° / 19°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "sampleValue": {
+              "temperatureRangeText": "11° / 19°"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "单日温度范围展示文本。",
+              "sampleValue": "11° / 19°"
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "description": "卡片展示所需的受控辅助状态。",
+      "sampleValue": {
+        "loading": false,
+        "coolingCountdownDays": "2"
+      },
+      "loading": {
+        "type": "boolean",
+        "description": "天气数据是否处于加载态。",
+        "sampleValue": false
+      },
+      "coolingCountdownDays": {
+        "type": "string",
+        "description": "距离降温到来的动态天数。",
+        "sampleValue": "2"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "天气/雨伞图标，适合作为天气关怀提醒卡片的主视觉。"
+    },
+    {
+      "src": "resources/base/media/sun_min.svg",
+      "description": "太阳最小亮度图标，适合表示屏幕亮度设置入口。"
+    }
+  ]
+}

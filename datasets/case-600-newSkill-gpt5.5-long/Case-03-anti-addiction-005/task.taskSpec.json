@@ -1,0 +1,122 @@
+{
+  "userQuery": "我家神兽天天抱着平板不撒手，做个深色舞台风格的管控卡片。顶部要有“今日时长已用尽”的红色告警状态，搭配红黑色的紧迫动作渐变。下面纵向堆叠纯文字色块，加个内嵌的面板块，里面用可滚动的列表展示“周一玩超了”、“周二又玩超了”的违规记录。读取下日历看下周末日程，弄个按钮直接跳到系统应用时长里把所有游戏全锁了。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "control": {
+      "statusText": {
+        "type": "string",
+        "description": "顶部红色告警状态文案",
+        "sampleValue": "今日时长已用尽"
+      },
+      "remainText": {
+        "type": "string",
+        "description": "今日剩余可用时长展示文案",
+        "sampleValue": "0 分钟可用"
+      },
+      "blockPrimary": {
+        "type": "string",
+        "description": "纵向文字色块的主管控提示",
+        "sampleValue": "游戏管控已拉满"
+      },
+      "blockSecondary": {
+        "type": "string",
+        "description": "纵向文字色块的日程辅助提示",
+        "sampleValue": "周末日程已读取"
+      },
+      "panelTitle": {
+        "type": "string",
+        "description": "违规记录面板标题",
+        "sampleValue": "违规记录"
+      },
+      "violations": {
+        "type": "array",
+        "description": "最近违规记录列表",
+        "sampleValue": [
+          {
+            "summary": "周一玩超了"
+          },
+          {
+            "summary": "周二又玩超了"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条违规记录",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "description": "违规记录摘要",
+              "sampleValue": "周一玩超了"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下周末日历事件列表",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "sample-weekend-001",
+              "title": "周末家庭户外",
+              "dtStart": "周六 10:00",
+              "dtEnd": "周六 12:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历事件",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "sample-weekend-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "周末家庭户外"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "周六 10:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "周六 12:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据加载状态",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,84 @@
+{
+  "userQuery": "老人天气关怀卡,要纵向重复列出未来三天天气,每行图标+最高最低温,主标题固定文字\"明日温差大\"+动态数值\"最高 28℃ 最低 18℃\",旁边\"拨打女儿电话\"按钮跳拨号读天气,整体氛围背景用天蓝到暖橙的环境渐变,图标用☀、☁、🌧、📞语义图标,需要列表循环。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "138****1234"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "未来三天逐日天气预报。",
+          "sampleValue": [
+            {
+              "weekday": "明日",
+              "condition": "晴",
+              "temperatureRangeText": "最高 28℃ 最低 18℃"
+            },
+            {
+              "weekday": "后天",
+              "condition": "多云",
+              "temperatureRangeText": "最高 26℃ 最低 19℃"
+            },
+            {
+              "weekday": "周日",
+              "condition": "小雨",
+              "temperatureRangeText": "最高 24℃ 最低 17℃"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "预报日期或星期的短文本。",
+                "sampleValue": "明日"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "晴"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "最高温和最低温组合展示文本。",
+                "sampleValue": "最高 28℃ 最低 18℃"
+              }
+            }
+          }
+        }
+      }
+    },
+    "contact": {
+      "daughterPhoneNumber": {
+        "type": "string",
+        "description": "女儿电话的脱敏示例号码，用于拨号事件参数。",
+        "sampleValue": "138****1234"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/sunny.png",
+      "description": "彩色太阳天气图标，适合表示晴天天气行。"
+    },
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵天气图标，适合表示多云天气行。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "彩色云雨天气图标，适合表示降雨天气行。"
+    },
+    {
+      "src": "resources/base/media/icon_call.png",
+      "description": "亲人关怀场景的电话图标，适合表示拨打电话动作。"
+    }
+  ]
+}

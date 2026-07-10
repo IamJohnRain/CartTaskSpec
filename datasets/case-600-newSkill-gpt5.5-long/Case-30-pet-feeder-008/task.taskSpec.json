@@ -1,0 +1,92 @@
+{
+  "userQuery": "想要个磨砂感卡片,内嵌一个长方形面板(像\"喂食日志\"),纵向排三行\"18:00 喂小乖 30g / 14:00 喂奶猫 25g / 10:00 自动出粮 50g\",左边环形\"今天共喂 X 克\",顶上一行天气,余粮低于20%有红色提示,点\"找粮桶\"能跳地图导航,整体走夜晚蓝到紫的渐变,图标用\"🥣\"\"⏰\"这种字符。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象短文本。",
+            "sampleValue": "多云"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "18°C"
+          }
+        }
+      }
+    },
+    "feeder": {
+      "today": {
+        "totalGrams": {
+          "type": "number",
+          "description": "今天已喂食总克数。",
+          "sampleValue": 155
+        },
+        "goalGrams": {
+          "type": "number",
+          "description": "今天喂食进度环的参考总量。",
+          "sampleValue": 200
+        }
+      },
+      "logs": {
+        "first": {
+          "displayText": {
+            "type": "string",
+            "description": "第一条喂食日志展示文本。",
+            "sampleValue": "18:00 喂小乖 30g"
+          }
+        },
+        "second": {
+          "displayText": {
+            "type": "string",
+            "description": "第二条喂食日志展示文本。",
+            "sampleValue": "14:00 喂奶猫 25g"
+          }
+        },
+        "third": {
+          "displayText": {
+            "type": "string",
+            "description": "第三条喂食日志展示文本。",
+            "sampleValue": "10:00 自动出粮 50g"
+          }
+        }
+      },
+      "status": {
+        "remainingPercent": {
+          "type": "number",
+          "description": "粮桶剩余百分比，低于20时需要提示。",
+          "sampleValue": 18
+        },
+        "warningText": {
+          "type": "string",
+          "description": "余粮低于阈值时的红色提示文案。",
+          "sampleValue": "余粮低"
+        },
+        "warningColor": {
+          "type": "string",
+          "description": "余粮低提示的状态色。",
+          "sampleValue": "#ffe84026"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}
