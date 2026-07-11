@@ -123,6 +123,29 @@ ID 与结构：
 - 非模板生成时使用稳定语义 id，例如 surface_card、root、header_row、title_text、primary_value、primary_caption、support_row、action_button、asset_image。
 - updateComponents.root 一般使用 "root"；components 中必须包含 id 为 "root" 的 root 组件。
 - 三行 JSONL 中不要把 surfaceId 放在消息顶层；只放在 createSurface/updateComponents/updateDataModel 对象内。
+
+根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。
+TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。
+请从 userQuery 和 dataModelSchema 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。
+所有动态展示绑定路径必须能从 dataModelSchema 推导
+只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。
+genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：
+{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140或300,"height":140}}
+{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[...]}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{...}}}
+不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。
+
+输出格式样例：
+```genui
+{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140,"height":140}}
+{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[{"id":"root","component":"Column","children":["header_row","event_title","time_text","action_button"],"itemMargin":6,"styles":{"width":140,"height":140,"padding":12,"borderRadius":18,"clip":true,"justifyContent":"start","alignItems":"center","linearGradient":{"direction":"RightBottom","colors":[["#9e644f",0],["#db6b42",0.58],["#ed955f",1]]}}},{"id":"header_row","component":"Row","children":["schedule_icon","title_text"],"itemMargin":6,"styles":{"width":116,"height":20,"justifyContent":"start","alignItems":"center"}},{"id":"schedule_icon","component":"Image","src":"resources/base/media/icon_schedule.png","styles":{"width":18,"height":18,"objectFit":"contain"}},{"id":"title_text","component":"Text","content":"今日安排","styles":{"width":92,"height":18,"fontSize":12,"fontWeight":600,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"start"}},{"id":"event_title","component":"Text","content":"{{ ${/data/calendar/items/0/title} }}","styles":{"width":116,"height":22,"fontSize":16,"fontWeight":800,"fontColor":"#ffffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"time_text","component":"Text","content":"{{ ${/data/calendar/items/0/dtStart} + '-' + ${/data/calendar/items/0/dtEnd} }}","styles":{"width":116,"height":18,"fontSize":12,"fontWeight":600,"fontColor":"#99ffffff","maxLines":1,"textOverflow":"none","textAlign":"center"}},{"id":"action_button","component":"Button","label":"充电地图","onClick":[{"call":"clickToDeeplink","args":{"bundleName":"com.huawei.hmos.settings","abilityName":"com.huawei.hmos.settings.MainAbility","uri":"battery"}}],"styles":{"width":116,"height":34,"fontSize":14,"fontWeight":700,"fontColor":"#ffffffff","backgroundColor":"#33ffffff","borderRadius":17}}]}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{"data":{"calendar":{"items":[{"entityId":"calendar-event-001","title":"产品评审","dtStart":"14:00","dtEnd":"15:00"}]}},"state":{"loading":false}}}}
+```
+
+TaskSpec内容：
+{{TAK_SPEC_JSON}}
+
+请基于上面的TaskSpec内容和用户的数据，生成一个```genui```代码块，严格遵循上述输出契约和 DSL 规则。
 """
 
 
@@ -303,27 +326,6 @@ def read_genui_dsl(path: Path | None) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
-def build_content(task_spec_json: str, user_query: str, sample_model_json: str) -> str:
-    parts = [
-        "根据下面的 TaskSpec JSON 生成响应。严格遵循 system prompt 中的 DSL 规则。",
-        "TaskSpec 是轻量候选约束契约，不是布局蓝图；请自行完成具体布局和组件层级。",
-        "请从 userQuery 和 dataModelSchema 中自行判断需要展示的信息；eventCandidates 只是候选事件能力，最终 DSL 才生成 onClick。",
-        "所有动态展示绑定路径必须能从 dataModelSchema 推导",
-        "updateDataModel.value 请使用 dataModelSchema.sampleValue 按路径结构构造默认渲染数据，参考样例如下：",
-        sample_model_json,
-        "只输出 ```genui``` 一个代码块，不要输出解释、标题、路径、总结或 ```cardspec``` 代码块。",
-        "genui 代码块必须恰好 3 行 JSONL，外层结构必须严格是：",
-        '{"version":"v0.9","createSurface":{"surfaceId":"surface_card","catalogId":"ohos.a2ui.extended.catalog","width":140或300,"height":140}}',
-        '{"version":"v0.9","updateComponents":{"surfaceId":"surface_card","root":"root","components":[...]}}',
-        '{"version":"v0.9","updateDataModel":{"surfaceId":"surface_card","path":"/","value":{...}}}',
-        "不要把 surfaceId 放在消息顶层；components 必须是扁平组件数组，每个组件都有 id 和 component。",
-    ]
-    if user_query:
-        parts.extend(["", "原始用户输入：", user_query])
-    parts.extend(["", "TaskSpec JSON：", task_spec_json])
-    return "\n".join(parts)
-
-
 def build_request(
     spec: dict[str, Any],
     user_query: str,
@@ -335,7 +337,7 @@ def build_request(
     messages: list[dict[str, str]] = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT + "\n\n" + build_content(task_spec_json, user_query, sample_model_json),
+            "content": SYSTEM_PROMPT.replace("{{TAK_SPEC_JSON}}", task_spec_json),
         },
         {
             "role": "user",
