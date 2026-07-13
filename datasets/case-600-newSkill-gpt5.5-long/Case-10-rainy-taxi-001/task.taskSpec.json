@@ -1,0 +1,98 @@
+{
+  "userQuery": "做个雨天打车卡片，简洁风，左边嵌个小面板用勾选框让我自己勾选想叫的平台（滴滴、高德、曹操），右边横向排对应按钮，点一下直接跳到地图导航。暴雨红色告警时整张卡片配环境氛围渐变底色。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询所在区县名称，用于展示当前位置。",
+            "sampleValue": "浦东新区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "23°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "暴雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警级别。",
+            "sampleValue": "暴雨红色预警"
+          }
+        }
+      }
+    },
+    "ui": {
+      "platforms": {
+        "didi": {
+          "selected": {
+            "type": "boolean",
+            "description": "滴滴平台是否已勾选。",
+            "sampleValue": true
+          }
+        },
+        "amap": {
+          "selected": {
+            "type": "boolean",
+            "description": "高德平台是否已勾选。",
+            "sampleValue": true
+          }
+        },
+        "caocao": {
+          "selected": {
+            "type": "boolean",
+            "description": "曹操平台是否已勾选。",
+            "sampleValue": false
+          }
+        }
+      }
+    },
+    "navigation": {
+      "destination": {
+        "latitude": {
+          "type": "string",
+          "description": "地图导航目的地纬度。",
+          "sampleValue": "31.2304"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "地图导航目的地经度。",
+          "sampleValue": "121.4737"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合雨天打车场景中的服务识别与主视觉锚点。"
+    },
+    {
+      "src": "resources/base/media/icon_weathe2.png",
+      "description": "天气图标，适合雨天打车场景中表达天气状态或预警信息。"
+    }
+  ]
+}

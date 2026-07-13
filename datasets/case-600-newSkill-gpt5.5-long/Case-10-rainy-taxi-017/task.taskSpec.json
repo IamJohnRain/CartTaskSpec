@@ -1,0 +1,132 @@
+{
+  "userQuery": "出差去上海赶三个客户会，外面还下雨。帮我做一张深色舞台风格的卡片，三个会议横向并排排开，每个会议前面用\"①②③\"这种数字文字当图标。会议前加一个红色告警提示要迟到了。整张卡固定文案，环形进度条显示当前到下一个会议的准备时间。点某个会议可以进入日程详情。不要渐变，要读取日历日程数据。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-002"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-003"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一场客户会议的日程唯一标识，用于进入日程详情。",
+              "sampleValue": "cal-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一场客户会议的短标题。",
+              "sampleValue": "甲方会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一场客户会议开始时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第一场客户会议结束时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "10:10"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二场客户会议的日程唯一标识，用于进入日程详情。",
+              "sampleValue": "cal-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二场客户会议的短标题。",
+              "sampleValue": "乙方会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二场客户会议开始时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "13:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二场客户会议结束时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "14:20"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第三场客户会议的日程唯一标识，用于进入日程详情。",
+              "sampleValue": "cal-003"
+            },
+            "title": {
+              "type": "string",
+              "description": "第三场客户会议的短标题。",
+              "sampleValue": "丙方会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第三场客户会议开始时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "16:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第三场客户会议结束时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "16:40"
+            }
+          }
+        ]
+      }
+    },
+    "progress": {
+      "prepValue": {
+        "type": "number",
+        "description": "当前到下一场会议的准备时间进度值。",
+        "sampleValue": 20
+      },
+      "prepTotal": {
+        "type": "number",
+        "description": "准备时间进度总量。",
+        "sampleValue": 30
+      },
+      "prepText": {
+        "type": "string",
+        "description": "当前到下一场会议的准备时间展示文本。",
+        "sampleValue": "20分"
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据是否仍在加载。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

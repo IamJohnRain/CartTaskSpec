@@ -1,0 +1,117 @@
+{
+  "userQuery": "拼车匹配列表每条显示\"已找到X位拼友\"这种文字加数字的拼接，点一下导航到接驾点，左边信息区右边\"查看\"动作区，浅蓝底色配环境氛围渐变，列表能上下滚动。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/matches/0/latitude} }}",
+            "longitude": "{{ ${/matches/0/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/matches/1/latitude} }}",
+            "longitude": "{{ ${/matches/1/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/matches/2/latitude} }}",
+            "longitude": "{{ ${/matches/2/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "title": {
+      "type": "string",
+      "description": "卡片标题，标识当前展示拼车匹配结果。",
+      "sampleValue": "拼车匹配"
+    },
+    "summary": {
+      "type": "string",
+      "description": "当前可查看的拼车匹配组数摘要。",
+      "sampleValue": "附近3组可接驾"
+    },
+    "matches": {
+      "type": "array",
+      "description": "拼车匹配项列表，按推荐顺序排列。",
+      "sampleValue": [
+        {
+          "pickupName": "星河湾北门",
+          "friendCount": 3,
+          "etaText": "约6分钟"
+        },
+        {
+          "pickupName": "软件园西口",
+          "friendCount": 2,
+          "etaText": "约8分钟"
+        },
+        {
+          "pickupName": "地铁A出口",
+          "friendCount": 4,
+          "etaText": "约10分钟"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单条拼车匹配信息。",
+        "sampleValue": {
+          "pickupName": "星河湾北门",
+          "friendCount": 3,
+          "etaText": "约6分钟",
+          "latitude": "22.543096",
+          "longitude": "114.057865"
+        },
+        "properties": {
+          "pickupName": {
+            "type": "string",
+            "description": "接驾点名称。",
+            "sampleValue": "星河湾北门"
+          },
+          "friendCount": {
+            "type": "number",
+            "description": "已匹配到的拼友人数，用于拼接“已找到X位拼友”。",
+            "sampleValue": 3
+          },
+          "etaText": {
+            "type": "string",
+            "description": "到达接驾点的预计时间展示文本。",
+            "sampleValue": "约6分钟"
+          },
+          "latitude": {
+            "type": "string",
+            "description": "接驾点纬度，用于导航事件参数。",
+            "sampleValue": "22.543096"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "接驾点经度，用于导航事件参数。",
+            "sampleValue": "114.057865"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

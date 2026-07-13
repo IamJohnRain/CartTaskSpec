@@ -1,0 +1,99 @@
+{
+  "title": "天气提醒卡",
+  "description": "天气关怀提醒",
+  "suggestSize": "2x4",
+  "dataBindings": [
+    {
+      "capabilityId": "ViewWeather",
+      "arguments": {
+        "districtName": "青浦",
+        "prefectureName": "上海",
+        "forecastDays": 2
+      },
+      "writeResultTo": "/data/weather",
+      "outputSchema": {
+        "type": "object",
+        "description": "适合桌面卡片展示的天气概要。",
+        "properties": {
+          "location": {
+            "type": "object",
+            "description": "实际查询成功的地区。",
+            "properties": {
+              "districtName": {
+                "type": "string",
+                "description": "区或县名称。"
+              },
+              "prefectureName": {
+                "type": "string",
+                "description": "城市名称。"
+              }
+            }
+          },
+          "current": {
+            "type": "object",
+            "description": "当日天气实况。",
+            "properties": {
+              "temperatureText": {
+                "type": "string",
+                "description": "适合直接显示的温度文本。"
+              },
+              "condition": {
+                "type": "string",
+                "description": "当前天气现象。"
+              },
+              "humidityPercent": {
+                "type": "number",
+                "description": "当前相对湿度百分比。"
+              },
+              "windDirection": {
+                "type": "string",
+                "description": "当前风向。"
+              },
+              "windLevel": {
+                "type": "integer",
+                "description": "当前风力等级。"
+              },
+              "coldLevel": {
+                "type": "string",
+                "description": "感冒指数。"
+              }
+            }
+          },
+          "daily": {
+            "type": "array",
+            "description": "从今天开始按日期升序排列的每日预报。",
+            "items": {
+              "type": "object",
+              "properties": {
+                "weekday": {
+                  "type": "string",
+                  "description": "星期或相对日期文本。"
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "白天天气现象。"
+                },
+                "temperatureRangeText": {
+                  "type": "string",
+                  "description": "适合直接显示的温度范围。"
+                },
+                "rainProbabilityPercent": {
+                  "type": "string",
+                  "description": "白天降雨概率百分比。"
+                },
+                "coldLevel": {
+                  "type": "string",
+                  "description": "当天感冒指数。"
+                }
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "端侧完成天气查询和归一化的时间。"
+          }
+        }
+      }
+    }
+  ]
+}

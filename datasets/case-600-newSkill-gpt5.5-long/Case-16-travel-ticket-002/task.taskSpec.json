@@ -1,0 +1,69 @@
+{
+  "userQuery": "帮我做个行程概览,信息分块用横线分开。第一行写\"下一班次还有01:47\",下面\"检票进行中\"。底部要红色告警\"前序晚点,可能误接\"。整张卡片用图片延伸出来的模糊色块做底,橙红那种运动紧迫感渐变。一键拨号按钮要明显。底下再加个可滚动列表展示后面三段车次。纯文字+色块,不要图片。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "12306"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "trip": {
+      "nextCountdownText": {
+        "type": "string",
+        "description": "下一班次倒计时展示文本",
+        "sampleValue": "下一班次还有01:47"
+      },
+      "checkStatusText": {
+        "type": "string",
+        "description": "当前检票状态展示文本",
+        "sampleValue": "检票进行中"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "红色告警提示文本",
+        "sampleValue": "前序晚点,可能误接"
+      },
+      "segments": {
+        "type": "array",
+        "description": "后续三段车次摘要",
+        "sampleValue": [
+          {
+            "time": "13:20",
+            "route": "G102 至长沙"
+          },
+          {
+            "time": "15:05",
+            "route": "D783 至武汉"
+          },
+          {
+            "time": "17:40",
+            "route": "K218 至西安"
+          }
+        ],
+        "items": {
+          "time": {
+            "type": "string",
+            "description": "后续车次发车时间",
+            "sampleValue": "13:20"
+          },
+          "route": {
+            "type": "string",
+            "description": "后续车次编号与目的地",
+            "sampleValue": "G102 至长沙"
+          }
+        }
+      }
+    },
+    "contact": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "一键拨号使用的票务客服号码",
+        "sampleValue": "12306"
+      }
+    }
+  },
+  "assetCandidates": []
+}

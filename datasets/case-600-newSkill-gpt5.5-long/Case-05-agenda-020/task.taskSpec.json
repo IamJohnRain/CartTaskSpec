@@ -1,0 +1,126 @@
+{
+  "userQuery": "帮我做个带多项日程列表的卡片，纵向排布，读取日历数据，左边用大色块当主视觉，右边是日历内容，背景按上午下午分不同底色，每条后面拼上“距离开会还有20分钟”这种动态文字，点一下能进对应日程详情，别用图片只用色块。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-event-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-event-002"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条日程的唯一标识符，用于进入日程详情。",
+              "sampleValue": "calendar-event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条日程标题。",
+              "sampleValue": "项目例会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条日程开始时间，当天日程使用 HH:MM 格式。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第一条日程结束时间，当天日程使用 HH:MM 格式。",
+              "sampleValue": "10:00"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条日程的唯一标识符，用于进入日程详情。",
+              "sampleValue": "calendar-event-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条日程标题。",
+              "sampleValue": "客户同步"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条日程开始时间，当天日程使用 HH:MM 格式。",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条日程结束时间，当天日程使用 HH:MM 格式。",
+              "sampleValue": "15:30"
+            }
+          }
+        ]
+      }
+    },
+    "ui": {
+      "monthText": {
+        "type": "string",
+        "description": "主视觉色块中的月份展示文本。",
+        "sampleValue": "07月"
+      },
+      "dayText": {
+        "type": "string",
+        "description": "主视觉色块中的日期展示文本。",
+        "sampleValue": "09"
+      },
+      "countText": {
+        "type": "string",
+        "description": "今日日程数量摘要。",
+        "sampleValue": "2项"
+      },
+      "item0CountdownText": {
+        "type": "string",
+        "description": "第一条日程的动态倒计时提示文案。",
+        "sampleValue": "距开会20分钟"
+      },
+      "item1CountdownText": {
+        "type": "string",
+        "description": "第二条日程的动态倒计时提示文案。",
+        "sampleValue": "距开始2小时"
+      },
+      "item0Bg": {
+        "type": "string",
+        "description": "第一条日程按上午时段使用的底色。",
+        "sampleValue": "#FFFFF3DE"
+      },
+      "item1Bg": {
+        "type": "string",
+        "description": "第二条日程按下午时段使用的底色。",
+        "sampleValue": "#FFEAF3FF"
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据加载状态。",
+        "sampleValue": false
+      },
+      "empty": {
+        "type": "boolean",
+        "description": "今日是否无日程。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

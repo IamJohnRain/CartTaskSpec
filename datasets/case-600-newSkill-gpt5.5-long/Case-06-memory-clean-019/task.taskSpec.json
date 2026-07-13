@@ -1,0 +1,81 @@
+{
+  "userQuery": "手机快没电了存储也满了，帮我做个卡片，左边一排纵向排列几个像扫把、齿轮的图标，每个图标旁边显示当前电量，当电量低于20%的时候标红提示，右边放个动作区，放个一键清理按钮，顺便加个开关能直接打开省电模式，背景用那种暗色渐变烘托下快没电的氛围。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "device": {
+        "battery": {
+          "text": {
+            "type": "string",
+            "description": "当前电量展示文本；当电量低于20%时用于低电量提醒展示。",
+            "sampleValue": "18%"
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "电量文本颜色；低于20%时返回警示红色，高于或等于20%时返回普通前景色。",
+            "sampleValue": "#ffd94838"
+          }
+        },
+        "storage": {
+          "statusText": {
+            "type": "string",
+            "description": "当前存储压力的短状态文本。",
+            "sampleValue": "存储满"
+          }
+        }
+      }
+    },
+    "action": {
+      "cleanLabel": {
+        "type": "string",
+        "description": "清理动作按钮的短标签。",
+        "sampleValue": "清理"
+      },
+      "powerLabel": {
+        "type": "string",
+        "description": "省电模式开关旁的短标签。",
+        "sampleValue": "省电"
+      },
+      "powerModeEnabled": {
+        "type": "boolean",
+        "description": "省电模式当前是否已开启。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/clean_fill.svg",
+      "description": "清洁工具实心图标，适合表示清理、扫除和内存清理入口；黑色图形需放在浅色图标底板上。"
+    },
+    {
+      "src": "resources/base/media/externaldrive_fill.svg",
+      "description": "外置存储设备实心图标，适合表示存储空间、文件和容量压力；黑色图形需放在浅色图标底板上。"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合实心图标，适合表示省电、低电量和节能状态；黑色图形需放在浅色图标底板上。"
+    }
+  ]
+}

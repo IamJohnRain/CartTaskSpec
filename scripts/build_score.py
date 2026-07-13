@@ -689,7 +689,7 @@ def _make_thumb_bytes(png_path: Path, row_idx: int):
         im = PILImage.open(png_path)
         im = im.convert("RGBA")
         # 先裁剪：从顶部保留 1/3 高度
-        im = im.crop((0, 0, im.width, max(1, im.height // 3)))
+        im = im.crop((0, 0, im.width, max(1, im.height)))
         # 像素分辨率：保留到 THUMB_PIXEL_MAX（清晰度来源）
         im.thumbnail(THUMB_PIXEL_MAX)
         buf = io.BytesIO()

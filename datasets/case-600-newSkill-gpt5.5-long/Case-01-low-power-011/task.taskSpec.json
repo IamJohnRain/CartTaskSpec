@@ -1,0 +1,139 @@
+{
+  "userQuery": "深色舞台风卡片,最上面大圆形,环形进度里叠个数字\"X%\"显示电量;下面纵向排几项:一个勾选框(要不要直接导航回家)、日历下一条日程、一个导航按钮,夜晚倒计时渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.3193",
+            "longitude": "114.1694"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "power": {
+      "levelPercent": {
+        "type": "number",
+        "description": "当前电量百分比数值，用于环形进度。",
+        "sampleValue": 18
+      },
+      "levelText": {
+        "type": "string",
+        "description": "当前电量百分比展示文本。",
+        "sampleValue": "18%"
+      },
+      "lowPowerModeText": {
+        "type": "string",
+        "description": "低电模式或省电状态短文本。",
+        "sampleValue": "低电模式"
+      }
+    },
+    "preference": {
+      "directHome": {
+        "type": "boolean",
+        "description": "是否直接导航回家的勾选状态。",
+        "sampleValue": true
+      }
+    },
+    "countdown": {
+      "nightText": {
+        "type": "string",
+        "description": "夜晚倒计时短文本。",
+        "sampleValue": "夜晚 2h"
+      }
+    },
+    "destination": {
+      "home": {
+        "latitude": {
+          "type": "string",
+          "description": "回家导航目的地纬度。",
+          "sampleValue": "22.3193"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "回家导航目的地经度。",
+          "sampleValue": "114.1694"
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下一条或近期日历日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_event_001",
+              "title": "回家前充电",
+              "dtStart": "20:30",
+              "dtEnd": "21:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar_event_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "回家前充电"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "20:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "21:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于电量状态识别和环形进度主视觉的辅助标识。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于下一条日历安排的辅助识别。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "导航方向箭头图标，适合用于地图导航或路线规划动作。"
+    }
+  ]
+}

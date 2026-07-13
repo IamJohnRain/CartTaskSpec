@@ -1,0 +1,98 @@
+{
+  "userQuery": "出差党太难了,帮我做张明早航班的行程卡!左边一栏放航班号、登机口和座位号,右边放一个大的环形倒计时显示离登机还剩多久。加个勾选框,让我能勾上'已到机场'或'已值机'这种状态,点卡片能跳进日历看行程详情,数据从日历日程里读。最近动不动就延误取消,状态那里得能显示红色的'已取消'或'延误'告警。底色用浅灰偏蓝,整个卡片再来个从深夜蓝到天亮的渐变,纯文字色块不要图,环形进度条是视觉主角。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-flight-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明早航班相关日历日程列表，第一条为当前行程卡展示的航班日程。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-flight-001",
+              "flightNo": "CA1234",
+              "boardingGate": "B12",
+              "seatNo": "8A",
+              "boardingCountdownText": "2h15",
+              "boardingProgress": 68,
+              "boardingTotal": 100,
+              "flightStatus": "延误",
+              "flightStatusColor": "#ffe84026",
+              "arrivedAirport": true,
+              "checkedIn": false
+            }
+          ],
+          "0": {
+            "entityId": {
+              "type": "string",
+              "description": "日程索引项唯一标识符，用于跳转日历日程详情。",
+              "sampleValue": "calendar-flight-001"
+            },
+            "flightNo": {
+              "type": "string",
+              "description": "从日历日程标题或描述解析得到的航班号。",
+              "sampleValue": "CA1234"
+            },
+            "boardingGate": {
+              "type": "string",
+              "description": "从日历日程描述解析得到的登机口。",
+              "sampleValue": "B12"
+            },
+            "seatNo": {
+              "type": "string",
+              "description": "从日历日程描述解析得到的座位号。",
+              "sampleValue": "8A"
+            },
+            "boardingCountdownText": {
+              "type": "string",
+              "description": "距离登机开始的倒计时展示文本。",
+              "sampleValue": "2h15"
+            },
+            "boardingProgress": {
+              "type": "number",
+              "description": "登机倒计时环形进度值，取值范围 0 到 boardingTotal。",
+              "sampleValue": 68
+            },
+            "boardingTotal": {
+              "type": "number",
+              "description": "登机倒计时环形进度总量。",
+              "sampleValue": 100
+            },
+            "flightStatus": {
+              "type": "string",
+              "description": "航班当前状态，可显示正常、延误或已取消等。",
+              "sampleValue": "延误"
+            },
+            "flightStatusColor": {
+              "type": "string",
+              "description": "航班状态文字颜色，延误或已取消时使用红色告警色。",
+              "sampleValue": "#ffe84026"
+            },
+            "arrivedAirport": {
+              "type": "boolean",
+              "description": "是否已到机场的状态。",
+              "sampleValue": true
+            },
+            "checkedIn": {
+              "type": "boolean",
+              "description": "是否已值机的状态。",
+              "sampleValue": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

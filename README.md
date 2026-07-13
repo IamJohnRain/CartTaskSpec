@@ -127,20 +127,20 @@ python validate_generated_card.py --response response.json --spec examples\paren
 
 0. 批量生产DSL数据：
 ```bash
-python scripts/run_codex_cases.py datasets/case-600-newSkill-mmx3/600Cases.tagged.jsonl --ephemeral -j 5 -o datasets/case-600-newSkill-gpt5.5/ --start 6 --end 6
+python scripts/run_codex_cases.py datasets/case-600-newSkill-mmx3/600Cases.tagged.jsonl --ephemeral -j 5 -o datasets/case-600-newSkill-gpt5.5-long/ --start 204 --end 210
 ```
 
 1. 数据集dsl抽取到指定目录
 ```bash
 rm -rf /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases/*
-bash scripts/flatten_cards.sh -o /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases -i datasets/case-600-newSkill-gpt5.5/ 
+bash scripts/flatten_cards.sh -o /d/code/A2UI/a2uiRender/entry/src/main/resources/rawfile/a2ui_cases -i datasets/case-600-newSkill-gpt5.5-v1/ 
 ```
 
 2. 从模拟器中获取渲染结果
 ```powershell
 mkdir D:\tmp\a2ui\
 hdc file recv /data/app/el2/100/base/com.example.a2ui/haps/entry/files/a2ui-render-shots D:\tmp\a2ui\
-python scripts/restore_cards.py -i D:\tmp\a2ui\a2ui-render-shots\ -o datasets/case-600-newSkill-gpt5.5/
+python scripts/restore_cards.py -i D:\tmp\a2ui\a2ui-render-shots\ -o datasets/case-600-newSkill-gpt5.5-long/
 Remove-Item -Recurse -Path "D:\tmp\a2ui\a2ui-render-shots\"
 ```
 
@@ -151,6 +151,6 @@ python scripts/build_score.py -d /d/tmp/a2uitest/ -v /d/tmp/a2uitest-v1/ -j 10
 
 4. 输出分数报告
 ```
-python scripts/build_score.py -d datasets/case-600-newSkill-gpt5.5/ -x datasets/case-600-newSkill-gpt5.5/case-600-newSkill-gpt5.5.xlsx
+python scripts/build_score.py -d datasets/case-600-newSkill-gpt5.5-long/ -x datasets/case-600-newSkill-gpt5.5-long/case-600-newSkill-gpt5.5-long.xlsx
 ```
 

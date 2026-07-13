@@ -1,0 +1,113 @@
+{
+  "userQuery": "雨天打车排队等到崩溃,帮我做个卡片要能在雨幕背景上叠一层半透明面板,中央放一个环形进度,中间显示当前排队人数(动态数字比如\"17人\"),右下角显示手机电量比如\"68%\",旁边有可滚动的附近司机列表(车型+距离+接单按钮),点空白处跳天气app看实时雨势,排队超过20人用红橙色提醒我别干等,整体蓝紫雨夜渐变,用雨滴、伞、车这种语义图标就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "taxi": {
+      "queue": {
+        "currentText": {
+          "type": "string",
+          "description": "当前打车排队人数展示文本。",
+          "sampleValue": "23人"
+        },
+        "value": {
+          "type": "number",
+          "description": "当前打车排队人数数值，用于环形进度。",
+          "sampleValue": 23
+        },
+        "total": {
+          "type": "number",
+          "description": "排队提醒阈值总量，用于环形进度满刻度。",
+          "sampleValue": 30
+        },
+        "ringColor": {
+          "type": "string",
+          "description": "根据排队人数生成的环形进度状态色，超过20人时使用红橙提醒。",
+          "sampleValue": "#ffed6f21"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "排队状态提醒文案。",
+          "sampleValue": "超20人别干等"
+        }
+      },
+      "drivers": [
+        {
+          "model": {
+            "type": "string",
+            "description": "附近司机车辆类型。",
+            "sampleValue": "舒适型"
+          },
+          "distance": {
+            "type": "string",
+            "description": "附近司机距离展示文本。",
+            "sampleValue": "0.8km"
+          },
+          "buttonLabel": {
+            "type": "string",
+            "description": "司机行接单按钮展示文案。",
+            "sampleValue": "接单"
+          }
+        },
+        {
+          "model": {
+            "type": "string",
+            "description": "附近司机车辆类型。",
+            "sampleValue": "经济型"
+          },
+          "distance": {
+            "type": "string",
+            "description": "附近司机距离展示文本。",
+            "sampleValue": "1.4km"
+          },
+          "buttonLabel": {
+            "type": "string",
+            "description": "司机行接单按钮展示文案。",
+            "sampleValue": "接单"
+          }
+        }
+      ]
+    },
+    "device": {
+      "batteryText": {
+        "type": "string",
+        "description": "手机当前电量展示文本。",
+        "sampleValue": "68%"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于提示实时雨势。",
+            "sampleValue": "暴雨"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车图标，适合雨天打车场景中表达车辆和叫车服务。"
+    },
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "天气雨伞图标，适合表达雨天、雨势和出行天气语义。"
+    },
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合展示手机电量状态。"
+    }
+  ]
+}

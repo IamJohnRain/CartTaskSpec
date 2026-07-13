@@ -1,0 +1,152 @@
+{
+  "userQuery": "通勤日程卡片帮我做:左侧主视觉放日期和[日]字图标。右侧用分隔线分三块,底色深浅不同区分——第一块是今日会议列表(要可滚动的重复项);第二块是下班前待办(每条带勾选框,勾上能划掉);第三块'导航回家'按钮点了直接进地图。要读我日历日程数据。整体蓝到青的渐变带点紧迫感,图标全用文字字符。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "22.3193",
+            "longitude": "114.1694"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日从本地日历查询到的日程列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar_event",
+              "entityId": "cal-20260710-001",
+              "title": "晨会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityName": "calendar_event",
+              "entityId": "cal-20260710-002",
+              "title": "同步",
+              "dtStart": "15:00",
+              "dtEnd": "15:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar_event"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "cal-20260710-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "晨会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程为 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程为 HH:MM。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "date": {
+        "day": {
+          "type": "string",
+          "description": "卡片左侧主视觉展示的日期日号。",
+          "sampleValue": "10"
+        },
+        "month": {
+          "type": "string",
+          "description": "卡片左侧主视觉展示的月份。",
+          "sampleValue": "7月"
+        },
+        "weekday": {
+          "type": "string",
+          "description": "卡片左侧辅助展示的星期。",
+          "sampleValue": "周五"
+        },
+        "glyph": {
+          "type": "string",
+          "description": "用户指定的日字文字图标。",
+          "sampleValue": "日"
+        }
+      },
+      "todos": {
+        "items": {
+          "type": "array",
+          "description": "下班前待办条目，用于复选框区域的样例展示。",
+          "sampleValue": [
+            {
+              "text": "回邮件",
+              "done": false
+            },
+            {
+              "text": "交周报",
+              "done": true
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条待办。",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "待办内容。",
+                "sampleValue": "回邮件"
+              },
+              "done": {
+                "type": "boolean",
+                "description": "待办是否已完成。",
+                "sampleValue": false
+              }
+            }
+          }
+        }
+      },
+      "route": {
+        "home": {
+          "latitude": {
+            "type": "string",
+            "description": "导航回家的目的地纬度，由端侧已解析的家庭地址提供。",
+            "sampleValue": "22.3193"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "导航回家的目的地经度，由端侧已解析的家庭地址提供。",
+            "sampleValue": "114.1694"
+          },
+          "trafficpe": {
+            "type": "string",
+            "description": "回家导航交通方式。",
+            "sampleValue": "Drive"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

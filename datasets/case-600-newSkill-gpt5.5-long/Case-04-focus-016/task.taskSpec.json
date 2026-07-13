@@ -1,0 +1,98 @@
+{
+  "userQuery": "我最近睡眠老是不规律，帮我做个深色舞台风格的卡片监控一下。中间放个环形图，用那种带点睡眠氛围的深色渐变色块就行，别用真实图片。核心是文字得标红，提醒我“仅剩5%专注力余额”这种风险状态，点进去能看我今晚的具体熬夜日程。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "focus": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题，表达睡眠与专注监控对象。",
+        "sampleValue": "睡眠专注监控"
+      },
+      "balanceValue": {
+        "type": "number",
+        "description": "专注力余额百分比数值，用于环形图当前值。",
+        "sampleValue": 5
+      },
+      "balanceTotal": {
+        "type": "number",
+        "description": "专注力余额百分比总量，用于环形图总值。",
+        "sampleValue": 100
+      },
+      "riskText": {
+        "type": "string",
+        "description": "风险状态提醒文案，需要以红色突出显示。",
+        "sampleValue": "仅剩5%专注力余额"
+      },
+      "icon": {
+        "type": "string",
+        "description": "专注模式图标素材路径，用于环形图中心的非照片视觉锚点。",
+        "sampleValue": "resources/base/media/icon_focus.png"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今晚熬夜相关日程列表。",
+          "sampleValue": [
+            {
+              "entityName": "日程",
+              "entityId": "late-night-001",
+              "title": "熬夜复盘",
+              "dtStart": "23:45",
+              "dtEnd": "00:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条今晚熬夜日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别说明。",
+                "sampleValue": "日程"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程详情点击所需的唯一标识符。",
+                "sampleValue": "late-night-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "熬夜复盘"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程使用 HH:MM 展示。",
+                "sampleValue": "23:45"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程使用 HH:MM 展示。",
+                "sampleValue": "00:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_focus.png",
+      "description": "专注模式图标，本地 PNG 素材，适合用于专注余额、专注模式或状态监控的非照片视觉锚点。"
+    }
+  ]
+}

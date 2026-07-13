@@ -1,0 +1,122 @@
+{
+  "userQuery": "今天会议太多,想做一个能看日程又能勾选的卡片,中间一个环显示完成度,左边日期和浅色底,点任务能进入具体日程。带点紧迫感的渐变提醒我快迟到了,前面用文字小图标,能滚动。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt-002"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条日程唯一标识，用于进入日程详情。",
+              "sampleValue": "evt-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条日程标题。",
+              "sampleValue": "产品评审"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条日程当天开始时间。",
+              "sampleValue": "09:30"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条日程唯一标识，用于进入日程详情。",
+              "sampleValue": "evt-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条日程标题。",
+              "sampleValue": "客户会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条日程当天开始时间。",
+              "sampleValue": "11:00"
+            }
+          }
+        ]
+      }
+    },
+    "view": {
+      "dateLabel": {
+        "type": "string",
+        "description": "左侧日期短标签。",
+        "sampleValue": "7/10"
+      },
+      "dayLabel": {
+        "type": "string",
+        "description": "当天中文标签。",
+        "sampleValue": "今天"
+      },
+      "urgentText": {
+        "type": "string",
+        "description": "紧迫提醒短文案。",
+        "sampleValue": "快迟到"
+      },
+      "progressText": {
+        "type": "string",
+        "description": "今日待办完成度展示文本。",
+        "sampleValue": "75%"
+      },
+      "progress": {
+        "value": {
+          "type": "number",
+          "description": "已完成待办数量。",
+          "sampleValue": 3
+        },
+        "total": {
+          "type": "number",
+          "description": "今日待办总数量。",
+          "sampleValue": 4
+        }
+      },
+      "checks": [
+        {
+          "select": {
+            "type": "boolean",
+            "description": "第一条日程是否已勾选完成。",
+            "sampleValue": true
+          }
+        },
+        {
+          "select": {
+            "type": "boolean",
+            "description": "第二条日程是否已勾选完成。",
+            "sampleValue": false
+          }
+        }
+      ]
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于今日会议和待办清单的视觉识别。"
+    }
+  ]
+}

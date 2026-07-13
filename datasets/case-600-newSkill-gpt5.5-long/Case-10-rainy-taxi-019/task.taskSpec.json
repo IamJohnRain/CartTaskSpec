@@ -1,0 +1,95 @@
+{
+  "userQuery": "雨天打车卡片用纯文字和色块做就行别放图，深色舞台背景。中间主体放一个大的雨滴和车头组合图标，旁边一个勾选框让我选公司或家里作为目的地，打勾就联动触发地图导航开始规划路线。天气数据从外面读，雨太大显示红色告警，灰蓝到深紫的氛围渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "39.909187",
+            "longitude": "116.397451"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询对应的区县名称。",
+            "sampleValue": "朝阳区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "22°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "暴雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息，暴雨等强降雨场景可显示为红色告警。",
+            "sampleValue": "暴雨红色预警"
+          }
+        }
+      }
+    },
+    "destination": {
+      "selectedName": {
+        "type": "string",
+        "description": "当前勾选的导航目的地名称，可由用户画像在公司或家里之间选择。",
+        "sampleValue": "公司"
+      },
+      "selectedLatitude": {
+        "type": "string",
+        "description": "当前勾选目的地的纬度，来自用户已保存的公司或家庭地址。",
+        "sampleValue": "39.909187"
+      },
+      "selectedLongitude": {
+        "type": "string",
+        "description": "当前勾选目的地的经度，来自用户已保存的公司或家庭地址。",
+        "sampleValue": "116.397451"
+      },
+      "checked": {
+        "type": "boolean",
+        "description": "目的地勾选状态，点击勾选后触发地图导航规划。",
+        "sampleValue": true
+      }
+    },
+    "asset": {
+      "primaryIcon": {
+        "type": "string",
+        "description": "打车车辆主图标资源路径。",
+        "sampleValue": "resources/base/media/icon_car.png"
+      },
+      "dropIcon": {
+        "type": "string",
+        "description": "雨天状态图标资源路径。",
+        "sampleValue": "resources/base/media/icon_weathe2.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合雨天打车卡片中作为车头主视觉识别。",
+      "bindTo": "/asset/primaryIcon"
+    },
+    {
+      "src": "resources/base/media/icon_weathe2.png",
+      "description": "天气图标，适合雨天打车卡片中表达降雨状态。",
+      "bindTo": "/asset/dropIcon"
+    }
+  ]
+}

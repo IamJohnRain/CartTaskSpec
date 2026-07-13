@@ -1,0 +1,115 @@
+{
+  "userQuery": "想做一个图片延伸风格的水电缴费卡,左边纵向排三块用分隔线分开:电费\"本月 128 元\"、水费\"本月 56 元\"、燃气\"已欠费 89 元\",欠费那块红色告警。右边动作区放省电模式和勿扰模式两个开关,闪电水滴火焰语义图标,不要渐变效果。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "bills": {
+      "electricity": {
+        "label": {
+          "type": "string",
+          "description": "电费项目名称。",
+          "sampleValue": "电费"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "本月电费金额展示文本。",
+          "sampleValue": "本月 128 元"
+        }
+      },
+      "water": {
+        "label": {
+          "type": "string",
+          "description": "水费项目名称。",
+          "sampleValue": "水费"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "本月水费金额展示文本。",
+          "sampleValue": "本月 56 元"
+        }
+      },
+      "gas": {
+        "label": {
+          "type": "string",
+          "description": "燃气项目名称。",
+          "sampleValue": "燃气"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "燃气欠费金额展示文本。",
+          "sampleValue": "已欠费 89 元"
+        }
+      }
+    },
+    "actions": {
+      "power": {
+        "label": {
+          "type": "string",
+          "description": "省电模式开关短标签。",
+          "sampleValue": "省电"
+        },
+        "value": {
+          "type": "string",
+          "description": "省电模式开关值。",
+          "sampleValue": "power_saving"
+        },
+        "select": {
+          "type": "boolean",
+          "description": "省电模式当前是否开启的样例状态。",
+          "sampleValue": false
+        }
+      },
+      "quiet": {
+        "label": {
+          "type": "string",
+          "description": "勿扰模式开关短标签。",
+          "sampleValue": "勿扰"
+        },
+        "value": {
+          "type": "string",
+          "description": "勿扰模式开关值。",
+          "sampleValue": "do_not_disturb"
+        },
+        "select": {
+          "type": "boolean",
+          "description": "勿扰模式当前是否开启的样例状态。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/bolt_fill.svg",
+      "description": "黑色闪电实心图标，用于电费用电语义识别。"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "黑色水滴图标，用于水费用水语义识别。"
+    },
+    {
+      "src": "resources/base/media/flame_fill.svg",
+      "description": "黑色火焰实心图标，用于燃气项目和欠费告警语义识别。"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "userQuery": "我要个航班+接机联程卡,浅色调底色,左侧飞机图标作主视觉,中间环形图显示'距落地还剩XX分钟'动态值,下面一列可滚动的关联行程(接机酒店/外卖/出租车),每个都能一键导航,数据从日历读,落地前变橙提醒,字图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "a2ui://travel/navigate?target=pickup-hotel"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "a2ui://travel/navigate?target=takeaway"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "a2ui://travel/navigate?target=taxi"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "航班落地日程唯一标识符",
+              "sampleValue": "flight-arrival-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "航班落地日程标题",
+              "sampleValue": "HU7608 落地"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "航班起飞或行程开始时间",
+              "sampleValue": "08:10"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "航班计划落地时间",
+              "sampleValue": "10:35"
+            },
+            "description": {
+              "type": "string",
+              "description": "航班落地前提醒状态",
+              "sampleValue": "落地前提醒开启"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "接机酒店行程唯一标识符",
+              "sampleValue": "pickup-hotel-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "接机酒店关联行程标题",
+              "sampleValue": "接机酒店"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "接机酒店导航目的地或集合点",
+              "sampleValue": "T3到达层"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "接机酒店行程开始时间",
+              "sampleValue": "10:50"
+            },
+            "oneClickServiceLink": {
+              "type": "string",
+              "description": "接机酒店一键导航服务链接",
+              "sampleValue": "a2ui://travel/navigate?target=pickup-hotel"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "外卖关联行程唯一标识符",
+              "sampleValue": "takeaway-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "外卖关联行程标题",
+              "sampleValue": "外卖取餐"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "外卖取餐或配送目的地",
+              "sampleValue": "酒店大堂"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "外卖关联行程开始时间",
+              "sampleValue": "11:20"
+            },
+            "oneClickServiceLink": {
+              "type": "string",
+              "description": "外卖行程一键导航服务链接",
+              "sampleValue": "a2ui://travel/navigate?target=takeaway"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "出租车关联行程唯一标识符",
+              "sampleValue": "taxi-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "出租车关联行程标题",
+              "sampleValue": "出租车"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "出租车导航目的地或上车点",
+              "sampleValue": "东停车区"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "出租车关联行程开始时间",
+              "sampleValue": "11:45"
+            },
+            "oneClickServiceLink": {
+              "type": "string",
+              "description": "出租车一键导航服务链接",
+              "sampleValue": "a2ui://travel/navigate?target=taxi"
+            }
+          }
+        ]
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据加载状态",
+        "sampleValue": false
+      },
+      "minutesRemainingText": {
+        "type": "string",
+        "description": "距航班落地剩余分钟数展示值",
+        "sampleValue": "42"
+      },
+      "countdownLabel": {
+        "type": "string",
+        "description": "航班落地倒计时完整提示文案",
+        "sampleValue": "距落地还剩42分钟"
+      },
+      "countdownProgress": {
+        "type": "number",
+        "description": "落地倒计时环形进度值",
+        "sampleValue": 78
+      },
+      "countdownTotal": {
+        "type": "number",
+        "description": "落地倒计时环形进度总量",
+        "sampleValue": 100
+      },
+      "warningColor": {
+        "type": "string",
+        "description": "落地前提醒状态色",
+        "sampleValue": "#fff9a01e"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_fill_1.svg",
+      "description": "飞机实心图标，适合作为航班与旅行卡片的左侧主视觉识别素材。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表达地图导航、路线规划或一键导航动作。"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "userQuery": "夜宵拼单卡,顶部大图主视觉,下面分两个不同底色区域:浅色块放勾选口味(小龙虾✓、烧烤✓、凉菜☐),深色块放省电模式开关(打开整体变暗)和今日天气(读出来'晴24°')。成团绿色✓,整体夜晚深蓝紫渐变,下面能滚着看每个订单状态,语义图标用海鲜、啤酒、勾叉。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "group": {
+      "title": {
+        "type": "string",
+        "description": "拼单团购卡片标题。",
+        "sampleValue": "夜宵拼单"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "当前拼单成团确认状态短文本。",
+        "sampleValue": "成团 ✓"
+      },
+      "flavors": {
+        "lobster": {
+          "name": {
+            "type": "string",
+            "description": "已勾选的小龙虾口味名称。",
+            "sampleValue": "小龙虾"
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "小龙虾口味是否已勾选。",
+            "sampleValue": true
+          }
+        },
+        "bbq": {
+          "name": {
+            "type": "string",
+            "description": "已勾选的烧烤口味名称。",
+            "sampleValue": "烧烤"
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "烧烤口味是否已勾选。",
+            "sampleValue": true
+          }
+        },
+        "coldDish": {
+          "name": {
+            "type": "string",
+            "description": "未勾选的凉菜口味名称。",
+            "sampleValue": "凉菜"
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "凉菜口味是否已勾选。",
+            "sampleValue": false
+          }
+        }
+      }
+    },
+    "settings": {
+      "powerLabel": {
+        "type": "string",
+        "description": "省电模式开关当前展示文本。",
+        "sampleValue": "省电开"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "晴"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "24°"
+          }
+        }
+      }
+    },
+    "orders": {
+      "first": {
+        "statusText": {
+          "type": "string",
+          "description": "第一条夜宵订单状态。",
+          "sampleValue": "✓ A单已确认"
+        }
+      },
+      "second": {
+        "statusText": {
+          "type": "string",
+          "description": "第二条夜宵订单状态。",
+          "sampleValue": "× B单待支付"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/person_3_fill.svg",
+      "description": "三人组实心图标，适合表达拼单团购的群组状态；黑色 SVG，需放在浅色图标底板上保证深色夜晚背景可读。"
+    },
+    {
+      "src": "resources/base/media/sunny.png",
+      "description": "太阳彩色天气图标，适合表达今日晴天状态和天气摘要。"
+    }
+  ]
+}

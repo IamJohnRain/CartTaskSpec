@@ -1,6 +1,6 @@
 import os
 
-dataset_dir = "datasets/case-600-newSkill-gpt5.5"
+dataset_dir = "datasets/case-600-newSkill-gpt5.5-long"
 
 train_file = os.path.join(dataset_dir, "train.jsonl")
 test_file = os.path.join(dataset_dir, "test.jsonl")
@@ -15,7 +15,7 @@ for i, case in enumerate(cases):
     if not os.path.exists(case_file):
         print(f"Warning: task.request.json not found for case {case}, skipping.")
         continue
-    if i % 5 == 0:
+    if i % 10 == 0:
         with open(case_file, "r", encoding="utf-8") as f:
             test_cases.append(f.read().strip())
     else:

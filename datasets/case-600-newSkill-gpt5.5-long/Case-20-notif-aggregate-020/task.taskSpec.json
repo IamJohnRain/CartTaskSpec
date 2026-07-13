@@ -1,0 +1,158 @@
+{
+  "userQuery": "我手机里作业通知、家长群消息堆太多了,想搞一张服务卡把今天要处理的群消息聚到一块。每条消息前面带个可勾选的方框,我打完勾就标完成;右边想放个圆环显示今天还剩多少没处理。卡的最上面再读一下今天的天气,因为下午三点要去学校开家长会,要导航过去。整体视觉像班级群公告截图那种深色风再延伸下,深蓝到紫色的夜晚渐变,几条紧急的作业通知没回要标红提醒,每条消息前面用 [ ] 这样的字符当图标,消息列表就一条条往下排。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "当前天气查询的区县名称",
+            "sampleValue": "学校附近"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "28°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "messages": {
+        "remainingCount": {
+          "type": "number",
+          "description": "今天仍未处理的群消息数量",
+          "sampleValue": 5
+        },
+        "totalCount": {
+          "type": "number",
+          "description": "今天需要处理的群消息总数",
+          "sampleValue": 8
+        },
+        "items": {
+          "0": {
+            "checkGlyph": {
+              "type": "string",
+              "description": "第一条消息前的勾选字符图标",
+              "sampleValue": "[ ]"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条待处理群消息短标题",
+              "sampleValue": "作业未回"
+            },
+            "textColor": {
+              "type": "string",
+              "description": "第一条消息展示颜色，紧急未回时使用告警色",
+              "sampleValue": "#d64966"
+            }
+          },
+          "1": {
+            "checkGlyph": {
+              "type": "string",
+              "description": "第二条消息前的勾选字符图标",
+              "sampleValue": "[ ]"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条待处理群消息短标题",
+              "sampleValue": "英语回执"
+            },
+            "textColor": {
+              "type": "string",
+              "description": "第二条消息展示颜色，紧急未回时使用告警色",
+              "sampleValue": "#d64966"
+            }
+          },
+          "2": {
+            "checkGlyph": {
+              "type": "string",
+              "description": "第三条消息前的勾选字符图标",
+              "sampleValue": "[ ]"
+            },
+            "title": {
+              "type": "string",
+              "description": "第三条待处理群消息短标题",
+              "sampleValue": "校服确认"
+            },
+            "textColor": {
+              "type": "string",
+              "description": "第三条消息展示颜色",
+              "sampleValue": "#e5ffffff"
+            }
+          },
+          "3": {
+            "checkGlyph": {
+              "type": "string",
+              "description": "第四条消息前的勾选字符图标",
+              "sampleValue": "[ ]"
+            },
+            "title": {
+              "type": "string",
+              "description": "第四条待处理群消息短标题",
+              "sampleValue": "家长会"
+            },
+            "textColor": {
+              "type": "string",
+              "description": "第四条消息展示颜色",
+              "sampleValue": "#e5ffffff"
+            }
+          }
+        }
+      },
+      "meeting": {
+        "timeText": {
+          "type": "string",
+          "description": "今天家长会的短时间提示",
+          "sampleValue": "15:00家长会"
+        },
+        "destination": {
+          "latitude": {
+            "type": "string",
+            "description": "家长会学校目的地纬度，用于导航事件参数",
+            "sampleValue": "31.2304"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "家长会学校目的地经度，用于导航事件参数",
+            "sampleValue": "121.4737"
+          }
+        },
+        "navigateLabel": {
+          "type": "string",
+          "description": "导航入口的短标签",
+          "sampleValue": "导航"
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "天气和消息数据是否仍在加载",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

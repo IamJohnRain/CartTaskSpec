@@ -1,0 +1,109 @@
+{
+  "userQuery": "给老人做一个健康状态卡,标题\"今日健康\"固定不变,中间一个圆环动态显示步数比如\"已走 3820 步\",旁边横向并排三个小色块分别是心率、血压、睡眠评分,最下面有个开关可以直接切换省电模式,卡片底色按今天天气来比如下雨就偏灰冷,用静态数据就行,不用图片",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "weather": {
+      "summary": {
+        "type": "string",
+        "description": "今日天气摘要，用于说明冷灰雨天底色来源。",
+        "sampleValue": "雨天看护"
+      }
+    },
+    "health": {
+      "steps": {
+        "value": {
+          "type": "number",
+          "description": "今日已走步数，用于圆环进度值。",
+          "sampleValue": 3820
+        },
+        "total": {
+          "type": "number",
+          "description": "今日步数目标，用于圆环总量。",
+          "sampleValue": 8000
+        },
+        "caption": {
+          "type": "string",
+          "description": "步数圆环中的短说明。",
+          "sampleValue": "已走"
+        },
+        "primaryLine": {
+          "type": "string",
+          "description": "步数圆环中的主展示文本。",
+          "sampleValue": "3820步"
+        }
+      },
+      "heartRate": {
+        "label": {
+          "type": "string",
+          "description": "心率色块标签。",
+          "sampleValue": "心率"
+        },
+        "valueText": {
+          "type": "string",
+          "description": "心率展示值。",
+          "sampleValue": "86次/分"
+        }
+      },
+      "bloodPressure": {
+        "label": {
+          "type": "string",
+          "description": "血压色块标签。",
+          "sampleValue": "血压"
+        },
+        "valueText": {
+          "type": "string",
+          "description": "血压展示值。",
+          "sampleValue": "136/82"
+        }
+      },
+      "sleepScore": {
+        "label": {
+          "type": "string",
+          "description": "睡眠评分色块标签。",
+          "sampleValue": "睡眠"
+        },
+        "valueText": {
+          "type": "string",
+          "description": "睡眠评分展示值。",
+          "sampleValue": "82分"
+        }
+      }
+    },
+    "settings": {
+      "title": {
+        "type": "string",
+        "description": "省电模式开关标题。",
+        "sampleValue": "省电模式"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "省电模式当前状态提示。",
+        "sampleValue": "未开启"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "省电模式开关控件文案。",
+        "sampleValue": "开启"
+      },
+      "powerSavingOn": {
+        "type": "boolean",
+        "description": "省电模式当前是否已开启。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

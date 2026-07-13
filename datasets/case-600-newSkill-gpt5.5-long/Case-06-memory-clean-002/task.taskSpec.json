@@ -1,0 +1,105 @@
+{
+  "userQuery": "帮我做个简洁素净的卡片，左边放主视觉的存储清理小图标，右边横着排列几个不同应用的内存占用动态数值。还要有个“一键清理”的按钮，旁边加个能勾选是否清理微信缓存的选项，顺便关联我的日历日程并加个一键开启“超级省电”的开关。整体搞个代表加速动作的渐变色，不需要特殊状态提醒颜色。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "memory": {
+        "wechat": {
+          "usageMb": {
+            "type": "string",
+            "description": "微信当前内存占用数值，单位为 MB，卡片中以短数字展示。",
+            "sampleValue": "320"
+          }
+        },
+        "douyin": {
+          "usageMb": {
+            "type": "string",
+            "description": "抖音当前内存占用数值，单位为 MB，卡片中以短数字展示。",
+            "sampleValue": "180"
+          }
+        },
+        "gallery": {
+          "usageMb": {
+            "type": "string",
+            "description": "图库当前内存占用数值，单位为 MB，卡片中以短数字展示。",
+            "sampleValue": "96"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天关联的日历日程列表，卡片只展示第一条日程摘要。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_sample_001",
+              "title": "清理提醒",
+              "dtStart": "10:30",
+              "dtEnd": "11:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar_sample_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "清理提醒"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内使用 HH:MM。",
+                "sampleValue": "10:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今天内使用 HH:MM。",
+                "sampleValue": "11:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "cleanWeChatCache": {
+        "type": "boolean",
+        "description": "是否勾选清理微信缓存。",
+        "sampleValue": true
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标，适合用于内存清理和加速动作的主视觉。"
+    }
+  ]
+}

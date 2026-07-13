@@ -1,0 +1,145 @@
+{
+  "userQuery": "我要能直接看到今天的事!左边主视觉色块,右边纵向重复列开今天4个日程,每条前面都能勾选,点进去能看日程详情。整张卡用磨砂感,搭配一点橙红渐变催我赶紧走。要显示今天有雨,记得带伞。每条日程旁边有\"到会前30分钟提醒\"这种提示。还要一个红字告警\"9点会议您尚未出发\"。图标用文字字符就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/3/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询地区名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雨"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "evt-0900",
+              "title": "会",
+              "dtStart": "09:00",
+              "dtEnd": "10:00",
+              "remindTime": [
+                "30分"
+              ]
+            },
+            {
+              "entityId": "evt-1030",
+              "title": "会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00",
+              "remindTime": [
+                "30分"
+              ]
+            },
+            {
+              "entityId": "evt-1400",
+              "title": "评",
+              "dtStart": "14:00",
+              "dtEnd": "15:00",
+              "remindTime": [
+                "30分"
+              ]
+            },
+            {
+              "entityId": "evt-1800",
+              "title": "接",
+              "dtStart": "18:00",
+              "dtEnd": "18:30",
+              "remindTime": [
+                "30分"
+              ]
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日程项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情跳转所需唯一标识。",
+                "sampleValue": "evt-0900"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "当天日程开始时间，HH:MM 格式。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "当天日程结束时间，HH:MM 格式。",
+                "sampleValue": "10:00"
+              },
+              "remindTime": {
+                "type": "array",
+                "description": "日程提醒时间文本列表。",
+                "sampleValue": [
+                  "30分"
+                ],
+                "items": {
+                  "type": "string",
+                  "description": "单条日程提醒时间文本。",
+                  "sampleValue": "30分"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

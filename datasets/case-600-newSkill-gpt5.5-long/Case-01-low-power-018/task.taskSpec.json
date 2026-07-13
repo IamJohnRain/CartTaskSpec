@@ -1,0 +1,56 @@
+{
+  "userQuery": "想要个简洁的低电卡片——中间放个环形进度显示当前电量，环中心写\"剩余 47%\"这种固定文字加动态数字，旁边显示今天天气温度加小天气图标，下面纵向排两三个快捷项能跳到系统设置里的省电、电池详情页面（每个加对应图标）。整体用红到黄橙色的渐变提示紧迫感，不用任何图片，就文字加色块。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "levelPercent": {
+        "type": "number",
+        "description": "当前电量百分比数值，用于环形进度。",
+        "sampleValue": 47
+      },
+      "levelText": {
+        "type": "string",
+        "description": "当前电量百分比展示文本。",
+        "sampleValue": "47%"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前天气温度展示文本。",
+            "sampleValue": "27°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，可作为文字天气图标展示。",
+            "sampleValue": "晴"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

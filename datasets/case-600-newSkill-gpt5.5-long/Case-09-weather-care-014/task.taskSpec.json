@@ -1,0 +1,91 @@
+{
+  "userQuery": "帮我做个不插图片的纯文字色块天气卡片，上下分区用不同底色。上面放大字显示老家今晚的温度，如果降温超过10度导致直接变成红色危险告警状态。下面加个能打勾绑定的复选框“已添衣”，再放个按钮能跳转到我的运动健康App里看看她今天的步数。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询地区名称，用于表达老家所在地。",
+            "sampleValue": "老家"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本，可作为今晚关怀温度的天气能力参考值。",
+            "sampleValue": "8°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "阴"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气预警或关怀提醒等级。",
+            "sampleValue": "危险告警"
+          }
+        },
+        "daily": [
+          {
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "当日温度范围展示文本。",
+              "sampleValue": "8° / 17°"
+            },
+            "coldLevel": {
+              "type": "string",
+              "description": "感冒或添衣关怀指数。",
+              "sampleValue": "添衣保暖"
+            }
+          }
+        ]
+      }
+    },
+    "care": {
+      "tonightTemperatureText": {
+        "type": "string",
+        "description": "老家今晚温度展示文本。",
+        "sampleValue": "8°C"
+      },
+      "temperatureDropC": {
+        "type": "number",
+        "description": "今晚相对前一时段的降温摄氏度，用于判断是否超过10度。",
+        "sampleValue": 12
+      },
+      "dangerActive": {
+        "type": "boolean",
+        "description": "降温超过10度时为 true，表示卡片进入危险告警状态。",
+        "sampleValue": true
+      },
+      "dangerText": {
+        "type": "string",
+        "description": "降温危险状态的短提醒文案。",
+        "sampleValue": "降温12°"
+      },
+      "topBackgroundColor": {
+        "type": "string",
+        "description": "顶部温度区背景色，危险告警时使用红色状态面。",
+        "sampleValue": "#ffed6f21"
+      },
+      "clothesAdded": {
+        "type": "boolean",
+        "description": "已添衣复选框的绑定状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

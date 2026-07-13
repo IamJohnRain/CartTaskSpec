@@ -1,0 +1,107 @@
+{
+  "userQuery": "我明天的航班取消了,想做个紧急提醒卡片帮我赶紧处理。左边分块显示原航班信息、新的天气预报(目的地暴雨)、改签建议,中间用横线分开;右边放\"查看行程\"、\"改签\"和\"叫车去机场\"三个按钮。整体用那种机场航班信息大屏图延伸出的橙红紧迫配色,顶部一条明显的\"航班已取消\"红色告警条,飞机和警告图标都用上,信息固定就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "flight-itinerary-020"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.1443",
+            "longitude": "121.8083"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "flight": {
+      "statusText": {
+        "type": "string",
+        "description": "航班当前异常状态提示文本。",
+        "sampleValue": "航班已取消"
+      },
+      "flightNo": {
+        "type": "string",
+        "description": "原航班号。",
+        "sampleValue": "MU5128"
+      },
+      "timeText": {
+        "type": "string",
+        "description": "原航班计划起飞时间摘要。",
+        "sampleValue": "明天 10:25"
+      }
+    },
+    "assist": {
+      "suggestion": {
+        "type": "string",
+        "description": "紧急处理建议摘要。",
+        "sampleValue": "先改签"
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "目的地区县名称。",
+            "sampleValue": "浦东新区"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "目的地未来天气预报列表。",
+          "sampleValue": [
+            {
+              "condition": "暴雨",
+              "rainProbabilityPercent": "90%",
+              "temperatureRangeText": "24°/29°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "properties": {
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "暴雨"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比。",
+                "sampleValue": "90%"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围文本。",
+                "sampleValue": "24°/29°"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞图标，适合用于原航班信息和旅行行程识别。"
+    },
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "闹钟提醒图标，适合表达紧急告警和需要立刻处理的提醒状态。"
+    }
+  ]
+}

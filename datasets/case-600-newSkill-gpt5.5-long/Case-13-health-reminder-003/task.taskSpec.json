@@ -1,0 +1,244 @@
+{
+  "userQuery": "纯文字色块的喝水卡,不要图。最上面仪表盘式大圆环显示\"800ml/2000ml\",下面纵向排三行日程,每行\"8:00晨起 已喝\"\"13:00午餐前 待喝\"\"19:00晚餐后 待喝\",前面有勾选框。点地址能跳地图导航去公司那种。背景干净简洁,圆环是焦点。用蓝绿到淡青的渐变,想突出\"该喝水了\"那种紧迫感。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/destination/latitude} }}",
+            "longitude": "{{ ${/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "hydration": {
+      "type": "object",
+      "description": "今日饮水目标与当前完成量。",
+      "sampleValue": {
+        "currentMl": 800,
+        "targetMl": 2000,
+        "currentText": "800ml",
+        "targetText": "/2000ml",
+        "prompt": "该喝水了"
+      },
+      "properties": {
+        "currentMl": {
+          "type": "number",
+          "description": "今日已饮水量，单位毫升。",
+          "sampleValue": 800
+        },
+        "targetMl": {
+          "type": "number",
+          "description": "今日饮水目标量，单位毫升。",
+          "sampleValue": 2000
+        },
+        "currentText": {
+          "type": "string",
+          "description": "当前饮水量展示文本。",
+          "sampleValue": "800ml"
+        },
+        "targetText": {
+          "type": "string",
+          "description": "目标饮水量展示文本。",
+          "sampleValue": "/2000ml"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "当前饮水提醒短提示。",
+          "sampleValue": "该喝水了"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧能力返回数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "water-0800",
+              "title": "晨起",
+              "dtStart": "8:00",
+              "dtEnd": "8:05",
+              "description": "已喝",
+              "eventLocation": "公司"
+            },
+            {
+              "entityId": "water-1300",
+              "title": "午餐前",
+              "dtStart": "13:00",
+              "dtEnd": "13:05",
+              "description": "待喝",
+              "eventLocation": "公司"
+            },
+            {
+              "entityId": "water-1900",
+              "title": "晚餐后",
+              "dtStart": "19:00",
+              "dtEnd": "19:05",
+              "description": "待喝",
+              "eventLocation": "公司"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "calendar": {
+          "type": "object",
+          "description": "日历能力返回的喝水提醒日程。",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "water-0800",
+                "title": "晨起",
+                "dtStart": "8:00",
+                "dtEnd": "8:05",
+                "description": "已喝",
+                "eventLocation": "公司"
+              },
+              {
+                "entityId": "water-1300",
+                "title": "午餐前",
+                "dtStart": "13:00",
+                "dtEnd": "13:05",
+                "description": "待喝",
+                "eventLocation": "公司"
+              },
+              {
+                "entityId": "water-1900",
+                "title": "晚餐后",
+                "dtStart": "19:00",
+                "dtEnd": "19:05",
+                "description": "待喝",
+                "eventLocation": "公司"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "喝水提醒日程列表。",
+              "sampleValue": [
+                {
+                  "entityId": "water-0800",
+                  "title": "晨起",
+                  "dtStart": "8:00",
+                  "dtEnd": "8:05",
+                  "description": "已喝",
+                  "eventLocation": "公司"
+                },
+                {
+                  "entityId": "water-1300",
+                  "title": "午餐前",
+                  "dtStart": "13:00",
+                  "dtEnd": "13:05",
+                  "description": "待喝",
+                  "eventLocation": "公司"
+                },
+                {
+                  "entityId": "water-1900",
+                  "title": "晚餐后",
+                  "dtStart": "19:00",
+                  "dtEnd": "19:05",
+                  "description": "待喝",
+                  "eventLocation": "公司"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单条喝水提醒日程。",
+                "sampleValue": {
+                  "entityId": "water-0800",
+                  "title": "晨起",
+                  "dtStart": "8:00",
+                  "dtEnd": "8:05",
+                  "description": "已喝",
+                  "eventLocation": "公司"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日程项唯一标识符。",
+                    "sampleValue": "water-0800"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "喝水提醒标题。",
+                    "sampleValue": "晨起"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "喝水提醒开始时间。",
+                    "sampleValue": "8:00"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "喝水提醒结束时间。",
+                    "sampleValue": "8:05"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "喝水完成状态。",
+                    "sampleValue": "已喝"
+                  },
+                  "eventLocation": {
+                    "type": "string",
+                    "description": "提醒关联地点。",
+                    "sampleValue": "公司"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "description": "导航目的地信息。",
+      "sampleValue": {
+        "label": "公司导航",
+        "latitude": "22.543099",
+        "longitude": "114.057868"
+      },
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "导航入口展示文本。",
+          "sampleValue": "公司导航"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "公司地点纬度的脱敏样例值。",
+          "sampleValue": "22.543099"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "公司地点经度的脱敏样例值。",
+          "sampleValue": "114.057868"
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "description": "卡片加载状态。",
+      "sampleValue": {
+        "loading": false
+      },
+      "properties": {
+        "loading": {
+          "type": "boolean",
+          "description": "是否处于加载中。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

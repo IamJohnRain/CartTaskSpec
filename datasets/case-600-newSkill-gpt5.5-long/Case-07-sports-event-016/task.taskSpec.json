@@ -1,0 +1,115 @@
+{
+  "userQuery": "下个月上海马拉松要开跑了，我训练到一半老是忘记今天该跑多少。帮我做个深色背景的赛事卡片，纵向排列接下来两周的训练课表，每一项前面带个小跑步图标，中间醒目地显示\"距离比赛还有32天\"，同时把今天的天气也带上——如果下雨或者PM2.5超了就标个红色告警。点任意一项能跳进日历看那天的具体计划。整体氛围背景要那种夜训的感觉，但不要渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "run-20260709"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "run-20260710"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "ui": {
+      "cardTitle": {
+        "type": "string",
+        "description": "赛事训练卡片的短标题",
+        "sampleValue": "上马训练"
+      }
+    },
+    "race": {
+      "countdownText": {
+        "type": "string",
+        "description": "距离比赛开跑的醒目倒计时文本",
+        "sampleValue": "还有32天"
+      },
+      "countdownCaption": {
+        "type": "string",
+        "description": "倒计时说明文本",
+        "sampleValue": "距离比赛"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "18°"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于判断雨天告警",
+            "sampleValue": "小雨"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量等级，可表达 PM2.5 超标风险",
+            "sampleValue": "轻度污染"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气预警级别或告警文本",
+            "sampleValue": "红色告警"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历训练计划唯一标识，用于跳转计划详情",
+              "sampleValue": "run-20260709"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "训练计划日期或开始时间",
+              "sampleValue": "今天"
+            },
+            "title": {
+              "type": "string",
+              "description": "训练课表标题，包含距离或训练类型",
+              "sampleValue": "8km轻松跑"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历训练计划唯一标识，用于跳转计划详情",
+              "sampleValue": "run-20260710"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "训练计划日期或开始时间",
+              "sampleValue": "明天"
+            },
+            "title": {
+              "type": "string",
+              "description": "训练课表标题，包含距离或训练类型",
+              "sampleValue": "6km节奏跑"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动/跑步图标，适合作为训练课表每一项前置的小跑步标识。"
+    }
+  ]
+}

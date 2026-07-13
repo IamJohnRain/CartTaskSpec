@@ -1,0 +1,163 @@
+{
+  "userQuery": "股票卡片要有叠加图层,背景是大盘走势色块,前景文字是基金名称,环形进度中心叠着\"持仓收益 +5.8%\"这种数字。要能点直接跳地图导航到券商。读日历日程。简洁素净。某只基金跌停要红色\"危险\"告警。不用渐变。文字字符↑↓★做图标。横向排列几个指数卡片。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "fund": {
+      "name": {
+        "type": "string",
+        "description": "基金名称",
+        "sampleValue": "诺安成长混合"
+      },
+      "holdingReturnText": {
+        "type": "string",
+        "description": "持仓收益展示文本",
+        "sampleValue": "+5.8%"
+      },
+      "holdingReturnProgress": {
+        "type": "number",
+        "description": "持仓收益对应的环形进度数值",
+        "sampleValue": 58
+      },
+      "alertText": {
+        "type": "string",
+        "description": "基金跌停时的风险告警短文案",
+        "sampleValue": "危险"
+      },
+      "alertColor": {
+        "type": "string",
+        "description": "基金风险告警文字颜色",
+        "sampleValue": "#ffed6f21"
+      }
+    },
+    "broker": {
+      "name": {
+        "type": "string",
+        "description": "可导航前往的券商营业部名称",
+        "sampleValue": "华安证券"
+      },
+      "latitude": {
+        "type": "string",
+        "description": "券商营业部纬度",
+        "sampleValue": "31.2304"
+      },
+      "longitude": {
+        "type": "string",
+        "description": "券商营业部经度",
+        "sampleValue": "121.4737"
+      }
+    },
+    "market": {
+      "indexes": {
+        "type": "array",
+        "description": "横向指数摘要",
+        "sampleValue": [
+          {
+            "name": "沪深300",
+            "glyph": "↑",
+            "changeText": "+0.7%"
+          },
+          {
+            "name": "创业板",
+            "glyph": "↓",
+            "changeText": "-1.2%"
+          },
+          {
+            "name": "上证",
+            "glyph": "★",
+            "changeText": "+0.1%"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个指数摘要",
+          "sampleValue": {
+            "name": "沪深300",
+            "glyph": "↑",
+            "changeText": "+0.7%"
+          },
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "指数名称",
+              "sampleValue": "沪深300"
+            },
+            "glyph": {
+              "type": "string",
+              "description": "指数趋势文字字符图标",
+              "sampleValue": "↑"
+            },
+            "changeText": {
+              "type": "string",
+              "description": "指数涨跌幅展示文本",
+              "sampleValue": "+0.7%"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "event-001",
+              "title": "投顾沟通",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项",
+            "sampleValue": {
+              "entityId": "event-001",
+              "title": "投顾沟通",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "投顾沟通"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "15:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

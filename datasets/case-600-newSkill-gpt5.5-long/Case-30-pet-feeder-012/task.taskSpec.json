@@ -1,0 +1,138 @@
+{
+  "userQuery": "我养了三只猫,卡片管理三只猫的喂食事项,深色舞台风,左右分区。左边信息区列三个勾选框对应三只猫今天的喂食任务(从日历读),右边动作区能点进某只猫的日程看详细计划。出粮失败要明显红色告警,渐变用冷色调的环境氛围感。图标用文字字符画猫、画骨头。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天三只猫的喂食日历事件列表，按猫固定展示前三项。",
+          "sampleValue": [
+            {
+              "entityId": "cat-feed-mili-20260710",
+              "title": "米粒早餐",
+              "dtStart": "08:00",
+              "dtEnd": "08:10",
+              "description": "已按计划出粮"
+            },
+            {
+              "entityId": "cat-feed-huahua-20260710",
+              "title": "花花午餐",
+              "dtStart": "12:30",
+              "dtEnd": "12:40",
+              "description": "已按计划出粮"
+            },
+            {
+              "entityId": "cat-feed-heidou-20260710",
+              "title": "黑豆晚餐",
+              "dtStart": "18:30",
+              "dtEnd": "18:40",
+              "description": "出粮失败: 黑豆晚餐"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条宠物喂食日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于进入该猫喂食日程详情。",
+                "sampleValue": "cat-feed-mili-20260710"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题，包含猫名和本次喂食任务。",
+                "sampleValue": "米粒早餐"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "当天喂食事件开始时间，使用 HH:MM 展示。",
+                "sampleValue": "08:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "当天喂食事件结束时间，使用 HH:MM 展示。",
+                "sampleValue": "08:10"
+              },
+              "description": {
+                "type": "string",
+                "description": "喂食事件描述或状态说明，失败时包含出粮失败告警文本。",
+                "sampleValue": "出粮失败: 黑豆晚餐"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "taskChecks": {
+        "type": "array",
+        "description": "卡片受控辅助勾选态，用于示例渲染三只猫今日喂食任务状态。",
+        "sampleValue": [
+          {
+            "select": true
+          },
+          {
+            "select": true
+          },
+          {
+            "select": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单只猫今日喂食任务的示例勾选状态。",
+          "properties": {
+            "select": {
+              "type": "boolean",
+              "description": "该猫今日喂食任务是否已完成的示例勾选态。",
+              "sampleValue": true
+            }
+          }
+        }
+      },
+      "glyphs": {
+        "cat": {
+          "type": "string",
+          "description": "文字字符画猫图标。",
+          "sampleValue": "/\\_/\\"
+        },
+        "bone": {
+          "type": "string",
+          "description": "文字字符画骨头图标。",
+          "sampleValue": "<==>"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

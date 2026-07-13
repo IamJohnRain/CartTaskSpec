@@ -1,0 +1,136 @@
+{
+  "userQuery": "给我做个内存清理卡片，从上往下竖着排，最上面是个大圆环显示存储空间，旁边加上电池和耳机的动态电量百分比，圆环下面用不同颜色的色块把今天日历里的几个会议提醒叠着列出来，标红显示存储空间不足90%的风险状态，背景用个深色的渐变，再加上几个清理内存的小图标，点开会跳转到系统电池和存储设置页面，下面再把这周的日程纵向重复列几条就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "storage": {
+        "usedPercent": {
+          "type": "number",
+          "description": "当前存储空间使用百分比，用于环形进度。",
+          "sampleValue": 86
+        },
+        "usedPercentText": {
+          "type": "string",
+          "description": "当前存储空间使用百分比展示文本。",
+          "sampleValue": "86%"
+        },
+        "riskText": {
+          "type": "string",
+          "description": "存储空间低于90%阈值时的风险状态短文案。",
+          "sampleValue": "低于90%"
+        }
+      },
+      "device": {
+        "batteryPercent": {
+          "type": "string",
+          "description": "手机电池剩余电量百分比展示文本。",
+          "sampleValue": "76%"
+        },
+        "earphonePercent": {
+          "type": "string",
+          "description": "耳机当前剩余电量百分比展示文本。",
+          "sampleValue": "68%"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "本周日历日程列表，前两项用于展示今天会议提醒，后两项用于展示本周后续日程。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "evt_today_001",
+              "title": "周会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "evt_today_002",
+              "title": "设计评审",
+              "dtStart": "14:00",
+              "dtEnd": "15:00"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "evt_week_003",
+              "title": "复盘",
+              "dtStart": "周五 10:00",
+              "dtEnd": "周五 11:00"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "evt_week_004",
+              "title": "预约清理",
+              "dtStart": "周六 15:00",
+              "dtEnd": "周六 15:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "evt_today_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "周会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间展示文本。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间展示文本。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合展示手机电量状态。"
+    },
+    {
+      "src": "resources/base/media/icon_earphone.png",
+      "description": "耳机图标，适合展示耳机电量状态。"
+    },
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标，适合表达清理内存或释放空间动作。"
+    }
+  ]
+}
