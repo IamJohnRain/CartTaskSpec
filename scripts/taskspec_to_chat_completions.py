@@ -331,6 +331,7 @@ def build_request(
     user_query: str,
     genui_dsl: str,
     model: str,
+    rejected_response: str | None = None,
 ) -> dict[str, Any]:
     task_spec_json = canonical_task_spec_json(spec)
     sample_model_json = json.dumps(sample_data_model(spec["dataModelSchema"]), ensure_ascii=False, indent=2)
@@ -351,7 +352,10 @@ def build_request(
                 "content": "<think>\n\n</think>\n\n" + genui_dsl,
             }
         )
-    return {"messages": messages}
+    request: dict[str, Any] = {"messages": messages}
+    if rejected_response is not None:
+        request["rejected_response"] = rejected_response
+    return request
 
 
 def ensure_genui_fence(genui_dsl: str) -> str:
@@ -417,6 +421,19 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_MODEL,
         help=f"Chat completions model name. Default: {DEFAULT_MODEL}.",
     )
+    parser.add_argument(
+        "--hfrl",
+        action="store_true",
+        help="生成 HFRL 格式的请求体 (task.request.hfrl.json)，"
+             "在顶层增加 rejected_response 字段。",
+    )
+    parser.add_argument(
+        "--rejected-dsl",
+        type=Path,
+        default=None,
+        help="rejected DSL 文件路径。--hfrl 模式下生效；"
+             "不传则默认 {input_dir}/card.MiniMax-M3.dsl.jsonl。",
+    )
     return parser.parse_args()
 
 
@@ -427,10 +444,38 @@ def main() -> int:
         spec = load_task_spec(args.input_path)
         user_query = read_user_query(args.query, spec)
         genui_dsl = read_genui_dsl(args.genui_dsl)
-        request_payload = build_request(spec, user_query, genui_dsl, args.model)
 
-        if args.output:
-            write_json(args.output, request_payload)
+        rejected_response: str | None = None
+        output_path = args.output
+
+        if args.hfrl:
+            rejected_path = args.rejected_dsl
+            if rejected_path is None:
+                rejected_path = args.input_path.parent / "card.MiniMax-M3.dsl.jsonl"
+            if not rejected_path.is_file():
+                print(
+                    f"skip: rejected DSL 文件不存在: {rejected_path}",
+                    file=sys.stderr,
+                )
+                return 0
+            rejected_dsl_text = rejected_path.read_text(encoding="utf-8").strip()
+            if not rejected_dsl_text:
+                print(
+                    f"skip: rejected DSL 文件为空: {rejected_path}",
+                    file=sys.stderr,
+                )
+                return 0
+            rejected_response = "<think>\n\n</think>\n\n" + rejected_dsl_text
+            if output_path is None:
+                output_path = args.input_path.parent / "task.request.hfrl.json"
+
+        request_payload = build_request(
+            spec, user_query, genui_dsl, args.model,
+            rejected_response=rejected_response,
+        )
+
+        if output_path:
+            write_json(output_path, request_payload)
         else:
             print(json.dumps(request_payload, ensure_ascii=False, indent=2))
 
