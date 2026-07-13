@@ -11,8 +11,10 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import re
 import shutil
+import subprocess
 import sys
 import time
 from collections import Counter
@@ -248,9 +250,123 @@ def write_case_inputs(
     return prompt_text
 
 
+_NPM_ROOT_CACHE: Path | None = None
+_NPM_ROOT_RESOLVED = False
+_CODEX_JS_RELPATH = Path("node_modules") / "@openai" / "codex" / "bin" / "codex.js"
+
+
+def _find_npm_global_root() -> Path | None:
+    global _NPM_ROOT_CACHE, _NPM_ROOT_RESOLVED
+    if _NPM_ROOT_RESOLVED:
+        return _NPM_ROOT_CACHE
+    _NPM_ROOT_RESOLVED = True
+    npm_path = shutil.which("npm")
+    if npm_path is None:
+        return None
+    try:
+        proc = subprocess.run(
+            [npm_path, "root", "-g"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    candidate = Path(proc.stdout.strip()) if proc.stdout.strip() else None
+    if candidate is not None and candidate.is_dir():
+        _NPM_ROOT_CACHE = candidate
+        return candidate
+    return None
+
+
+def _candidate_codex_js_locations(shim_path: Path | None) -> Iterable[Path]:
+    if shim_path is not None:
+        yield shim_path.parent / _CODEX_JS_RELPATH
+        bin_dir = shim_path.parent
+        for parent in [bin_dir, *bin_dir.parents]:
+            yield parent / _CODEX_JS_RELPATH
+    npm_root = _find_npm_global_root()
+    if npm_root is not None:
+        yield npm_root / "@openai" / "codex" / "bin" / "codex.js"
+    for env_name in ("APPDATA", "LOCALAPPDATA"):
+        base = os.environ.get(env_name)
+        if base:
+            yield Path(base) / "npm" / _CODEX_JS_RELPATH
+    volta_home = os.environ.get("VOLTA_HOME")
+    if volta_home:
+        yield Path(volta_home) / "tools" / "image" / "packages" / "@openai" / "codex" / _CODEX_JS_RELPATH
+
+
+def _find_codex_js(codex_bin: str, shim_path: Path | None, override: str | None) -> tuple[Path | None, str]:
+    if override:
+        path = Path(override).expanduser()
+        if path.is_file():
+            return path, "manual"
+        log(f"CODEX launcher override --codex-js={override} not found, falling back to auto-detection")
+    for candidate in _candidate_codex_js_locations(shim_path):
+        try:
+            if candidate.is_file():
+                return candidate, "auto"
+        except OSError:
+            continue
+    return None, "fallback"
+
+
+def _find_node_exe(shim_path: Path | None, override: str | None) -> tuple[str | None, str]:
+    if override:
+        path = Path(override).expanduser()
+        if path.is_file():
+            return str(path), "manual"
+        log(f"CODEX launcher override --node-bin={override} not found, falling back to auto-detection")
+    node_in_path = shutil.which("node")
+    if node_in_path:
+        return node_in_path, "which"
+    if shim_path is not None and sys.platform == "win32":
+        candidates = [shim_path.parent / "node.exe"]
+        for parent in shim_path.parent.parents:
+            candidates.append(parent / "node.exe")
+        for candidate in candidates:
+            try:
+                if candidate.is_file():
+                    return str(candidate), "shim-dir"
+            except OSError:
+                continue
+    return None, "fallback"
+
+
+def _resolve_codex_launcher(codex_bin: str, codex_js_override: str | None, node_bin_override: str | None) -> list[str]:
+    if sys.platform != "win32":
+        return [codex_bin]
+    if not codex_bin.lower().endswith((".cmd", ".bat", ".ps1")):
+        resolved = shutil.which(codex_bin)
+        if resolved is None:
+            return [codex_bin]
+        if resolved.lower().endswith(".exe"):
+            return [resolved]
+        shim_path = Path(resolved)
+    else:
+        resolved = codex_bin
+        shim_path = Path(codex_bin)
+    node_exe, node_src = _find_node_exe(shim_path, node_bin_override)
+    codex_js, js_src = _find_codex_js(codex_bin, shim_path, codex_js_override)
+    if node_exe and codex_js:
+        log(f"CODEX launcher resolved node={node_exe} source={node_src} codex.js={codex_js} source={js_src}")
+        return [node_exe, str(codex_js)]
+    if resolved.lower().endswith((".cmd", ".bat")):
+        log(f"CODEX launcher fallback cmd=/c shim={resolved} (node={node_exe} codex.js={codex_js})")
+        return ["cmd.exe", "/c", resolved]
+    if resolved.lower().endswith(".ps1"):
+        log(f"CODEX launcher fallback powershell shim={resolved} (node={node_exe} codex.js={codex_js})")
+        return ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", resolved]
+    log(f"CODEX launcher unable to resolve {codex_bin}; using bare name (may fail to start)")
+    return [codex_bin]
+
+
 def build_codex_command(args: argparse.Namespace, case_dir: Path, prompt_path: Path, output_path: Path) -> list[str]:
     command = [
-        args.codex_bin,
+        *_resolve_codex_launcher(args.codex_bin, args.codex_js, args.node_bin),
         "--ask-for-approval",
         args.approval,
         "exec",
@@ -632,6 +748,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--model", help="Codex model name passed to `codex exec --model`.")
     parser.add_argument("--profile", help="Codex config profile passed to `codex exec --profile`.")
     parser.add_argument("--codex-bin", default="codex", help="Codex executable path. Default: codex.")
+    parser.add_argument(
+        "--codex-js",
+        default=None,
+        help="Manual override: absolute path to the @openai/codex bin/codex.js entry. Skips auto-detection when set.",
+    )
+    parser.add_argument(
+        "--node-bin",
+        default=None,
+        help="Manual override: absolute path to node.exe. Skips auto-detection when set.",
+    )
     parser.add_argument("--sandbox", default="workspace-write", choices=["read-only", "workspace-write", "danger-full-access"])
     parser.add_argument("--approval", default="never", choices=["untrusted", "on-request", "never"])
     parser.add_argument(
