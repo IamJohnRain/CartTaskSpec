@@ -25,7 +25,7 @@ from typing import Iterable
 
 
 DEFAULT_JOBS = 6
-DEFAULT_LIMIT = 100
+DEFAULT_LIMIT: int | None = None
 REQUIRED_OUTPUTS = ("query.txt", "card.cardspec.json", "card.dsl.jsonl", "task.taskSpec.json")
 VALIDATED_OUTPUTS = ("card.dsl.jsonl", "card.cardspec.json", "task.taskSpec.json")
 DEFAULT_TASKSPEC_REFS_VALIDATOR = Path("scripts/validate_taskspec_dsl_refs.py")
@@ -743,7 +743,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--limit",
         type=int,
         default=DEFAULT_LIMIT,
-        help=f"Maximum selected cases to run. Default: {DEFAULT_LIMIT}; use 0 for no limit.",
+        help="Maximum selected cases to run. Default: unlimited; use a positive integer to cap, or 0 for no limit.",
     )
     parser.add_argument("--model", help="Codex model name passed to `codex exec --model`.")
     parser.add_argument("--profile", help="Codex config profile passed to `codex exec --profile`.")
