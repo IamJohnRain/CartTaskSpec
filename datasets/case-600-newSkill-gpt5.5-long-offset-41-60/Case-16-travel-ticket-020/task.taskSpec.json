@@ -1,0 +1,106 @@
+{
+  "userQuery": "出差卡分三段用细线分开，依次是航班、目的地天气、操作区，中间加个动态值\"已延误 2h13m\"。点航班那行能进日程详情，右边动作区放\"申请退票\"按钮。磨砂玻璃半透质感，航班那行标红色\"已取消\"告警，字标用▸⚠ 字符。夜晚蓝紫渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-flight-20260713-01"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "travel://ticket/refund"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "航班对应的日程唯一标识，用于进入日程详情。",
+              "sampleValue": "calendar-flight-20260713-01"
+            },
+            "title": {
+              "type": "string",
+              "description": "航班行程标题或航班号。",
+              "sampleValue": "CA1831"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "航班计划起飞时间。",
+              "sampleValue": "22:40"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "航班出发地到目的地摘要。",
+              "sampleValue": "北京 - 上海"
+            }
+          }
+        ]
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "目的地区县名称。",
+            "sampleValue": "浦东"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "目的地城市名称。",
+            "sampleValue": "上海"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "目的地当前温度展示文本。",
+            "sampleValue": "28°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "目的地当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "目的地当前空气质量等级。",
+            "sampleValue": "良"
+          }
+        }
+      },
+      "flight": {
+        "status": {
+          "type": "string",
+          "description": "航班告警状态文案。",
+          "sampleValue": "已取消"
+        },
+        "delayText": {
+          "type": "string",
+          "description": "航班延误时长动态展示文本。",
+          "sampleValue": "已延误 2h13m"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞黑色线性图标，适合用于航班行程识别；在深色背景上应放入浅色半透明底板。"
+    },
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "云朵和太阳的彩色天气图标，适合用于目的地天气摘要。"
+    }
+  ]
+}

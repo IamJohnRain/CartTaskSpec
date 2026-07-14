@@ -1,0 +1,117 @@
+{
+  "userQuery": "做个睡眠报告卡，深色仪表盘风中间一个大环叠红色\"严重不足\"几个字，环下面几个勾选框勾选今天状态比如\"是否需要午休\"，卡片分区用不同底色，底部按钮点进去能看明天日程和今晚的入睡计划，整体紫色时间倒计时渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "sleep": {
+      "title": {
+        "type": "string",
+        "description": "睡眠报告标题",
+        "sampleValue": "睡眠报告"
+      },
+      "countdownText": {
+        "type": "string",
+        "description": "距离今晚建议入睡时间的倒计时文案",
+        "sampleValue": "距入睡 2小时10分"
+      },
+      "status": {
+        "type": "string",
+        "description": "睡眠状态风险等级",
+        "sampleValue": "严重不足"
+      },
+      "scoreText": {
+        "type": "string",
+        "description": "睡眠时长或达标比例文本",
+        "sampleValue": "4.5h"
+      },
+      "needNapLabel": {
+        "type": "string",
+        "description": "今日是否需要午休的勾选项标签",
+        "sampleValue": "需要午休"
+      },
+      "needNapChecked": {
+        "type": "boolean",
+        "description": "今日是否建议午休",
+        "sampleValue": true
+      },
+      "earlySleepLabel": {
+        "type": "string",
+        "description": "今晚是否需要提前入睡的勾选项标签",
+        "sampleValue": "提前入睡"
+      },
+      "earlySleepChecked": {
+        "type": "boolean",
+        "description": "今晚是否建议提前入睡",
+        "sampleValue": true
+      },
+      "planTime": {
+        "type": "string",
+        "description": "今晚建议入睡计划时间",
+        "sampleValue": "22:45"
+      },
+      "planTitle": {
+        "type": "string",
+        "description": "今晚入睡计划标题",
+        "sampleValue": "关灯放松"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明天日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar_tomorrow_001",
+              "title": "晨间会议",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识符",
+              "sampleValue": "calendar_tomorrow_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "明天第一条日程标题",
+              "sampleValue": "晨间会议"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "明天第一条日程开始时间",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "明天第一条日程结束时间",
+              "sampleValue": "10:00"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_sleep.png",
+      "description": "睡眠图标，适合用于睡眠监督或睡眠报告的主视觉识别。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于日程入口、明天安排和计划查看。"
+    }
+  ]
+}

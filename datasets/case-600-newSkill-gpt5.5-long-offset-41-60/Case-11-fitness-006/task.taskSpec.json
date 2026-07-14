@@ -1,0 +1,96 @@
+{
+  "userQuery": "失败警示的卡,嵌个小面板显示\"连续未运动 3 天\"(天数动态),旁边几个能勾的今日任务(运动30min、喝水8杯、拉伸)。最上面红色警告\"⚠ 健康风险:已超限\",再放天气和温度(接口拉),最下面一个\"立即补救\"按钮跳运动健康。APP截图风格,红橙运动渐变,字符用⚠🏃💔。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "fitness": {
+        "riskStatusText": {
+          "type": "string",
+          "description": "健康风险警示文本",
+          "sampleValue": "健康风险:已超限"
+        },
+        "inactiveDays": {
+          "type": "number",
+          "description": "连续未运动天数",
+          "sampleValue": 3
+        },
+        "inactiveSummary": {
+          "type": "string",
+          "description": "连续未运动天数的完整展示文本",
+          "sampleValue": "连续未运动 3 天"
+        },
+        "tasks": {
+          "type": "array",
+          "description": "今日运动补救任务列表",
+          "sampleValue": [
+            {
+              "label": "运动30min",
+              "done": false
+            },
+            {
+              "label": "喝水8杯",
+              "done": true
+            },
+            {
+              "label": "拉伸",
+              "done": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个今日任务",
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "任务名称",
+                "sampleValue": "运动30min"
+              },
+              "done": {
+                "type": "boolean",
+                "description": "任务是否已勾选完成",
+                "sampleValue": false
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称",
+            "sampleValue": "当前"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动跑步图标，适合用于运动健康风险和补救行动的视觉识别。"
+    }
+  ]
+}

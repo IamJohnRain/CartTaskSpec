@@ -1,0 +1,122 @@
+{
+  "userQuery": "做个喝水提醒卡片,顶部放一张大水滴主视觉,下面横向排3个小块,中间要个环形进度图显示今天喝了多少,旁边有勾选框标记每次喝完,达标就显示绿色\"已完成\",没达成就灰色,点时间能跳到闹钟app设置下次提醒,日程里下次吃药是下午3点从日历读出来,图标都用💧✓💊这种文字就行,别加渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "当天从日历读取的吃药日程列表，卡片使用第一条作为下次吃药提醒。",
+          "sampleValue": [
+            {
+              "entityName": "calendar_event",
+              "entityId": "sample-medicine-1500",
+              "title": "吃药",
+              "dtStart": "15:00",
+              "dtEnd": "15:10"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar_event"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "sample-medicine-1500"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "吃药"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天事件为 HH:MM 格式。",
+                "sampleValue": "15:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天事件为 HH:MM 格式。",
+                "sampleValue": "15:10"
+              }
+            }
+          }
+        }
+      }
+    },
+    "hydration": {
+      "todayAmountText": {
+        "type": "string",
+        "description": "今天已喝水量展示文本。",
+        "sampleValue": "1200ml"
+      },
+      "targetText": {
+        "type": "string",
+        "description": "今日喝水目标展示文本。",
+        "sampleValue": "目标 2000ml"
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "今日喝水进度数值。",
+        "sampleValue": 60
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "今日喝水进度总值。",
+        "sampleValue": 100
+      },
+      "isCompleted": {
+        "type": "boolean",
+        "description": "今日喝水是否达标。",
+        "sampleValue": false
+      },
+      "statusText": {
+        "type": "string",
+        "description": "达标状态文案，达标为已完成，未达成为未达成。",
+        "sampleValue": "未达成"
+      },
+      "statusColor": {
+        "type": "string",
+        "description": "达标状态颜色，达标用绿色，未达成用灰色。",
+        "sampleValue": "#99000000"
+      },
+      "nextReminderTime": {
+        "type": "string",
+        "description": "下次喝水提醒时间。",
+        "sampleValue": "16:30"
+      },
+      "lastDrinkChecked": {
+        "type": "boolean",
+        "description": "最近一次喝完水是否已勾选。",
+        "sampleValue": true
+      },
+      "checkLabel": {
+        "type": "string",
+        "description": "喝完勾选项标签。",
+        "sampleValue": "已喝"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标，适合用于饮水提醒卡片顶部主视觉。"
+    }
+  ]
+}

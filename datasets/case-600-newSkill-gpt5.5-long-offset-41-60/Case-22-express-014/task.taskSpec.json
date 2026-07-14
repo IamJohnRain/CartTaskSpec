@@ -1,0 +1,151 @@
+{
+  "userQuery": "我经常不在家快递被退回,想做卡片:上面嵌一个跳到运动健康的小板块显示今天走了多少步,提醒我出门活动;下面列几个\"派送失败·X次\"的异常包裹,要读我日历看白天什么时候不在家。深蓝到浅紫的氛围渐变,失败状态用红字高亮,底部要能滚动。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "health": {
+        "stepsText": {
+          "type": "string",
+          "description": "今日步数展示文本，用于运动健康入口主数值。",
+          "sampleValue": "6320步"
+        },
+        "activityHint": {
+          "type": "string",
+          "description": "提醒用户出门活动的短提示。",
+          "sampleValue": "出门活动"
+        }
+      },
+      "calendar": {
+        "awaySummary": {
+          "type": "string",
+          "description": "根据白天日历推断的不在家时间摘要。",
+          "sampleValue": "外出段"
+        },
+        "items": {
+          "type": "array",
+          "description": "白天日历事件列表，用于辅助判断用户不在家时段。",
+          "sampleValue": [
+            {
+              "entityName": "日程",
+              "entityId": "calendar_sample_1",
+              "title": "客户拜访",
+              "dtStart": "10:00",
+              "dtEnd": "12:00"
+            },
+            {
+              "entityName": "日程",
+              "entityId": "calendar_sample_2",
+              "title": "外出办事",
+              "dtStart": "15:00",
+              "dtEnd": "17:00"
+            }
+          ],
+          "0": {
+            "entityId": {
+              "type": "string",
+              "description": "第一条白天日历事件唯一标识。",
+              "sampleValue": "calendar_sample_1"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条白天日历事件标题。",
+              "sampleValue": "客户拜访"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条白天日历事件开始时间。",
+              "sampleValue": "10:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第一条白天日历事件结束时间。",
+              "sampleValue": "12:00"
+            }
+          },
+          "1": {
+            "entityId": {
+              "type": "string",
+              "description": "第二条白天日历事件唯一标识。",
+              "sampleValue": "calendar_sample_2"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条白天日历事件标题。",
+              "sampleValue": "外出办事"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条白天日历事件开始时间。",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "第二条白天日历事件结束时间。",
+              "sampleValue": "17:00"
+            }
+          }
+        }
+      },
+      "express": {
+        "exceptions": {
+          "type": "array",
+          "description": "异常包裹列表，展示派送失败次数和关联外出时段。",
+          "sampleValue": [
+            {
+              "statusText": "派送失败·2次",
+              "awayWindow": "10-12"
+            },
+            {
+              "statusText": "派送失败·1次",
+              "awayWindow": "15-17"
+            }
+          ],
+          "0": {
+            "statusText": {
+              "type": "string",
+              "description": "第一件异常包裹的派送失败次数。",
+              "sampleValue": "派送失败·2次"
+            },
+            "awayWindow": {
+              "type": "string",
+              "description": "第一件异常包裹关联的白天不在家时段。",
+              "sampleValue": "10-12"
+            }
+          },
+          "1": {
+            "statusText": {
+              "type": "string",
+              "description": "第二件异常包裹的派送失败次数。",
+              "sampleValue": "派送失败·1次"
+            },
+            "awayWindow": {
+              "type": "string",
+              "description": "第二件异常包裹关联的白天不在家时段。",
+              "sampleValue": "15-17"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动/跑步 PNG 图标，适合运动健康入口和步数展示。"
+    },
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱图标，适合物流异常和包裹识别。"
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "userQuery": "周六日要出远门,做张3天喂食安排卡:顶部大字标题,中间环形显示3天总粮量,下面是个能上下滑的列表每天4顿共12条,每条带勾选框和当天天气小标签,最后一天标红——那天天气不好要取消户外喂食点,深色夜间渐变,布局简洁,文字当图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "pet-feeder-plan-3days"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "card": {
+      "title": {
+        "type": "string",
+        "description": "卡片顶部大字标题",
+        "sampleValue": "3天喂食安排"
+      }
+    },
+    "summary": {
+      "totalGrams": {
+        "type": "number",
+        "description": "三天总粮量克数",
+        "sampleValue": 720
+      },
+      "totalText": {
+        "type": "string",
+        "description": "三天总粮量展示文本",
+        "sampleValue": "720g"
+      },
+      "caption": {
+        "type": "string",
+        "description": "总粮量说明",
+        "sampleValue": "3天总粮量"
+      }
+    },
+    "data": {
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "未来三天天气摘要",
+          "sampleValue": [
+            {
+              "weekday": "周六",
+              "condition": "多云"
+            },
+            {
+              "weekday": "周日",
+              "condition": "阴"
+            },
+            {
+              "weekday": "周一",
+              "condition": "大雨"
+            }
+          ],
+          "itemSchema": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期文本",
+                "sampleValue": "周六"
+              },
+              "condition": {
+                "type": "string",
+                "description": "天气现象",
+                "sampleValue": "多云"
+              }
+            }
+          }
+        }
+      }
+    },
+    "plan": {
+      "items": {
+        "type": "array",
+        "description": "三天每天四顿的喂食安排",
+        "sampleValue": [
+          {
+            "checked": false,
+            "time": "周六 07:30",
+            "meal": "早餐 60g",
+            "weatherTag": "多云",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周六 12:30",
+            "meal": "午餐 60g",
+            "weatherTag": "多云",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周六 18:00",
+            "meal": "晚餐 60g",
+            "weatherTag": "多云",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周六 22:00",
+            "meal": "夜宵 60g",
+            "weatherTag": "多云",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周日 07:30",
+            "meal": "早餐 60g",
+            "weatherTag": "阴",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周日 12:30",
+            "meal": "午餐 60g",
+            "weatherTag": "阴",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周日 18:00",
+            "meal": "晚餐 60g",
+            "weatherTag": "阴",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周日 22:00",
+            "meal": "夜宵 60g",
+            "weatherTag": "阴",
+            "note": "室内"
+          },
+          {
+            "checked": false,
+            "time": "周一 07:30",
+            "meal": "早餐 60g",
+            "weatherTag": "大雨",
+            "note": "取消户外"
+          },
+          {
+            "checked": false,
+            "time": "周一 12:30",
+            "meal": "午餐 60g",
+            "weatherTag": "大雨",
+            "note": "取消户外"
+          },
+          {
+            "checked": false,
+            "time": "周一 18:00",
+            "meal": "晚餐 60g",
+            "weatherTag": "大雨",
+            "note": "取消户外"
+          },
+          {
+            "checked": false,
+            "time": "周一 22:00",
+            "meal": "夜宵 60g",
+            "weatherTag": "大雨",
+            "note": "取消户外"
+          }
+        ],
+        "itemSchema": {
+          "type": "object",
+          "properties": {
+            "checked": {
+              "type": "boolean",
+              "description": "该顿喂食是否已勾选完成",
+              "sampleValue": false
+            },
+            "time": {
+              "type": "string",
+              "description": "喂食日期与时间",
+              "sampleValue": "周六 07:30"
+            },
+            "meal": {
+              "type": "string",
+              "description": "餐次和粮量",
+              "sampleValue": "早餐 60g"
+            },
+            "weatherTag": {
+              "type": "string",
+              "description": "当天天气小标签",
+              "sampleValue": "多云"
+            },
+            "note": {
+              "type": "string",
+              "description": "喂食点说明，最后一天用于标注取消户外喂食点",
+              "sampleValue": "室内"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

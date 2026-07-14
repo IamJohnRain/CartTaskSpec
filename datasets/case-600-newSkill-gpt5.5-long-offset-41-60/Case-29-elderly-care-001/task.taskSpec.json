@@ -1,0 +1,182 @@
+{
+  "userQuery": "老人紧急联系人卡片要分组用分隔线分开，每行一个家人前面有勾选框选\"主联系人\"，左边放主视觉头像延伸风格。下面能读今天天气数据，整张夜晚深蓝渐变。如果某电话打不通红色告警，点名字一键拨号。图标用素材库里的电话人头像。列表要能滚动看更多。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "13800000001"
+      }
+    },
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "13800000002"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "elderlyCare": {
+      "title": {
+        "type": "string",
+        "description": "老人紧急联系人卡片标题。",
+        "sampleValue": "紧急联系人"
+      },
+      "heroAvatarSrc": {
+        "type": "string",
+        "description": "主视觉家庭联系人头像素材路径。",
+        "sampleValue": "resources/base/media/person_3_fill.svg"
+      },
+      "callIconSrc": {
+        "type": "string",
+        "description": "电话拨打图标素材路径。",
+        "sampleValue": "resources/base/media/icon_call.png"
+      },
+      "primaryGroupLabel": {
+        "type": "string",
+        "description": "主联系人分组标题。",
+        "sampleValue": "主联系人"
+      },
+      "backupGroupLabel": {
+        "type": "string",
+        "description": "备用联系人分组标题。",
+        "sampleValue": "备用"
+      },
+      "contacts": [
+        {
+          "name": {
+            "type": "string",
+            "description": "家人联系人姓名。",
+            "sampleValue": "李梅"
+          },
+          "relation": {
+            "type": "string",
+            "description": "联系人与老人关系。",
+            "sampleValue": "女儿"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "用于一键拨号的脱敏样例电话号码。",
+            "sampleValue": "13800000001"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "是否为主联系人。",
+            "sampleValue": true
+          },
+          "callStatus": {
+            "type": "string",
+            "description": "电话连通状态。",
+            "sampleValue": "可拨通"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "联系人状态展示文案。",
+            "sampleValue": "主"
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "联系人状态文本颜色。",
+            "sampleValue": "#FFFFFFFF"
+          }
+        },
+        {
+          "name": {
+            "type": "string",
+            "description": "家人联系人姓名。",
+            "sampleValue": "王强"
+          },
+          "relation": {
+            "type": "string",
+            "description": "联系人与老人关系。",
+            "sampleValue": "儿子"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "用于一键拨号的脱敏样例电话号码。",
+            "sampleValue": "13800000002"
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "是否为主联系人。",
+            "sampleValue": false
+          },
+          "callStatus": {
+            "type": "string",
+            "description": "电话连通状态。",
+            "sampleValue": "未接通"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "联系人状态展示文案。",
+            "sampleValue": "未接通"
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "联系人状态文本颜色，电话打不通时使用告警色。",
+            "sampleValue": "#FFFF6B6B"
+          }
+        }
+      ]
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息。",
+            "sampleValue": "无预警"
+          }
+        }
+      }
+    },
+    "assets": {
+      "weatherIconSrc": {
+        "type": "string",
+        "description": "天气状态图标素材路径。",
+        "sampleValue": "resources/base/media/icon_weather1.png"
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "天气数据加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/person_3_fill.svg",
+      "description": "三人组头像图标，适合表达家庭成员和紧急联系人主视觉。",
+      "bindTo": "/elderlyCare/heroAvatarSrc"
+    },
+    {
+      "src": "resources/base/media/icon_call.png",
+      "description": "亲人关怀场景电话图标，适合表达一键拨号动作。",
+      "bindTo": "/elderlyCare/callIconSrc"
+    },
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "亲人关怀场景天气图标，适合表达今日天气摘要。",
+      "bindTo": "/assets/weatherIconSrc"
+    }
+  ]
+}

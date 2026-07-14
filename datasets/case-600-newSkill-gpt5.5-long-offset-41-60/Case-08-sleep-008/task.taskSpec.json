@@ -1,0 +1,109 @@
+{
+  "userQuery": "做个睡眠卡片，浅米色底面，上面叠深蓝到紫的深夜渐变氛围。纵向排版，顶部\"睡眠严重不足\"红色警示。中间一个可滚动的列表，列出最近7晚睡眠记录，每条带日期和睡眠时长。底部\"查找附近睡眠中心\"按钮点开能跳地图导航过去。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "sleep": {
+      "status": {
+        "type": "string",
+        "description": "睡眠状态警示文案",
+        "sampleValue": "睡眠严重不足"
+      },
+      "records": {
+        "type": "array",
+        "description": "最近7晚睡眠记录列表",
+        "sampleValue": [
+          {
+            "date": "7月7日",
+            "duration": "4小时12分"
+          },
+          {
+            "date": "7月8日",
+            "duration": "4小时35分"
+          },
+          {
+            "date": "7月9日",
+            "duration": "3小时58分"
+          },
+          {
+            "date": "7月10日",
+            "duration": "4小时20分"
+          },
+          {
+            "date": "7月11日",
+            "duration": "5小时05分"
+          },
+          {
+            "date": "7月12日",
+            "duration": "4小时48分"
+          },
+          {
+            "date": "7月13日",
+            "duration": "4小时10分"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单晚睡眠记录",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "睡眠记录日期",
+              "sampleValue": "7月7日"
+            },
+            "duration": {
+              "type": "string",
+              "description": "当晚睡眠时长展示文本",
+              "sampleValue": "4小时12分"
+            }
+          }
+        }
+      },
+      "center": {
+        "name": {
+          "type": "string",
+          "description": "附近睡眠中心名称",
+          "sampleValue": "附近睡眠中心"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "附近睡眠中心导航纬度",
+          "sampleValue": "31.2304"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "附近睡眠中心导航经度",
+          "sampleValue": "121.4737"
+        }
+      },
+      "asset": {
+        "sleepIcon": {
+          "type": "string",
+          "description": "睡眠状态图标资源路径",
+          "sampleValue": "resources/base/media/icon_sleep.png"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_sleep.png",
+      "description": "睡眠图标，适合用于睡眠监督卡片中的状态识别。",
+      "bindTo": "/sleep/asset/sleepIcon"
+    }
+  ]
+}

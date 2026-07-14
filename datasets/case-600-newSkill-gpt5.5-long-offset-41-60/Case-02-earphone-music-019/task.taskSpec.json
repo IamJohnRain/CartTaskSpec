@@ -1,0 +1,102 @@
+{
+  "userQuery": "帮我做个小组件，左右分两块且底色不一样，左边放天气数据和我的耳机名称，如果电量低于20%就变黄字提醒我，右边是用文字写着“每日推荐”、“心动歌单”的歌单入口点进去能跳转，歌单下面要有一行能左右滚动循环播放的最近常听歌曲列表。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=favoriteSong&type=412"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称",
+            "sampleValue": "青浦"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    },
+    "device": {
+      "earphoneName": {
+        "type": "string",
+        "description": "已连接耳机名称",
+        "sampleValue": "耳机"
+      },
+      "batteryPercent": {
+        "type": "number",
+        "description": "耳机当前电量百分比",
+        "sampleValue": 18
+      },
+      "batteryText": {
+        "type": "string",
+        "description": "耳机电量展示文本",
+        "sampleValue": "电量18%"
+      }
+    },
+    "music": {
+      "recentSongs": {
+        "type": "array",
+        "description": "最近常听歌曲列表",
+        "sampleValue": [
+          {
+            "title": "晴天"
+          },
+          {
+            "title": "光年"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "最近常听歌曲名",
+              "sampleValue": "晴天"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "云朵组合彩色天气图标，适合表示多云天气状态。"
+    },
+    {
+      "src": "resources/base/media/icon_earphone.png",
+      "description": "耳机图标，适合表示已连接耳机设备。"
+    },
+    {
+      "src": "resources/base/media/icon_music.png",
+      "description": "音乐图标，适合表示音乐歌单入口。"
+    }
+  ]
+}

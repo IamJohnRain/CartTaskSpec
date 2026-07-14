@@ -1,0 +1,148 @@
+{
+  "userQuery": "我做收尾的拼单卡想有焦虑感!距离起送还差7元,中央环形凑单进度,下方可滚动的商品列表(勾选才计入订单),点店铺名能直接跳地图导航,同时把下班时间从日历读出来当提醒,冷蓝到橙红的紧迫渐变,纯文字别加图。我之前那版颜色太温柔了,完全感受不到急迫,这次希望整体氛围让人催自己赶紧凑。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "order": {
+      "type": "object",
+      "description": "拼单团购订单状态",
+      "store": {
+        "type": "object",
+        "description": "可导航的店铺位置",
+        "name": {
+          "type": "string",
+          "description": "店铺短名称",
+          "sampleValue": "辣巷"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "店铺纬度，用于地图导航",
+          "sampleValue": "31.2304"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "店铺经度，用于地图导航",
+          "sampleValue": "121.4737"
+        }
+      },
+      "missingAmountText": {
+        "type": "string",
+        "description": "距离起送金额还差的展示文本",
+        "sampleValue": "差7元"
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "当前凑单进度数值",
+        "sampleValue": 23
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "起送目标总进度数值",
+        "sampleValue": 30
+      },
+      "deadlineHint": {
+        "type": "string",
+        "description": "催促下单的紧迫提示",
+        "sampleValue": "快凑够起送"
+      },
+      "items": {
+        "type": "array",
+        "description": "可勾选计入订单的商品列表",
+        "sampleValue": [
+          {
+            "name": "脆皮豆腐",
+            "priceText": "¥7",
+            "selected": true
+          },
+          {
+            "name": "冰粉",
+            "priceText": "¥6",
+            "selected": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "商品条目",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "商品名称",
+              "sampleValue": "脆皮豆腐"
+            },
+            "priceText": {
+              "type": "string",
+              "description": "商品价格展示文本",
+              "sampleValue": "¥7"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "商品是否已勾选并计入订单",
+              "sampleValue": true
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧动态能力数据",
+      "calendar": {
+        "type": "object",
+        "description": "日历查询结果",
+        "items": {
+          "type": "array",
+          "description": "下班相关日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-off-001",
+              "title": "下班",
+              "dtStart": "18:30",
+              "dtEnd": "18:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识",
+              "sampleValue": "cal-off-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "下班"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "下班日程开始时间",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "下班日程结束时间",
+                "sampleValue": "18:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,77 @@
+{
+  "userQuery": "信用卡还款提醒卡,左边放张卡面图,右边写\"距离还款还剩3天 应付¥1,200\",下面滚动列3张卡的待还金额,快到还款日那张要标红,卡片整体淡蓝渐变,字符图标,简洁点。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "信用卡还款日程列表，按还款日临近程度排序。",
+          "sampleValue": [
+            {
+              "entityId": "repay-card-001",
+              "title": "招行",
+              "description": "¥1,200",
+              "dtStart": "3天"
+            },
+            {
+              "entityId": "repay-card-002",
+              "title": "中信",
+              "description": "¥860",
+              "dtStart": "8天"
+            },
+            {
+              "entityId": "repay-card-003",
+              "title": "建行",
+              "description": "¥520",
+              "dtStart": "12天"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单张信用卡还款日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于打开还款提醒日程详情。",
+                "sampleValue": "repay-card-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "信用卡或发卡行短名称。",
+                "sampleValue": "招行"
+              },
+              "description": {
+                "type": "string",
+                "description": "该信用卡待还金额展示文本。",
+                "sampleValue": "¥1,200"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "距离还款日的倒计时展示文本。",
+                "sampleValue": "3天"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/id_fill.svg",
+      "description": "证件卡片形态的本地实心图标，可作为信用卡卡面识别图形，适合放在浅色底板上。"
+    }
+  ]
+}

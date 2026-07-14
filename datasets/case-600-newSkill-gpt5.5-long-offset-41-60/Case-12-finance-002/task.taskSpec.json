@@ -1,0 +1,138 @@
+{
+  "userQuery": "想要个有层次感的预算卡,底层是环境渐变背景,中间叠个环形进度,环心写大号动态数字\"¥8,236\",分区分不同底色(支出区淡红、收入区淡绿),有个勿扰模式开关,读一下日历里最近的扣款日,出现超支红色告警状态,底部可滚动的列表,图标用素材库里的就行 — 重点是数字要突出,别又跟背景糊在一起看不清。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "budget": {
+      "title": {
+        "type": "string",
+        "description": "预算卡片标题",
+        "sampleValue": "本月预算"
+      },
+      "currentAmountText": {
+        "type": "string",
+        "description": "当前已用预算金额展示文本",
+        "sampleValue": "¥8,236"
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "预算使用进度数值",
+        "sampleValue": 86
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "预算进度总量",
+        "sampleValue": 100
+      },
+      "statusText": {
+        "type": "string",
+        "description": "预算状态提示",
+        "sampleValue": "已超支 ¥436"
+      },
+      "expenseText": {
+        "type": "string",
+        "description": "支出区金额展示文本",
+        "sampleValue": "¥8,236"
+      },
+      "incomeText": {
+        "type": "string",
+        "description": "收入区金额展示文本",
+        "sampleValue": "¥9,420"
+      },
+      "dndEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式当前是否开启",
+        "sampleValue": true
+      },
+      "items": {
+        "type": "array",
+        "description": "底部预算流水摘要列表",
+        "sampleValue": [
+          {
+            "name": "餐饮",
+            "amount": "-¥128"
+          },
+          {
+            "name": "工资",
+            "amount": "+¥9,420"
+          },
+          {
+            "name": "交通",
+            "amount": "-¥64"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "预算流水摘要项",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "流水分类名称",
+              "sampleValue": "餐饮"
+            },
+            "amount": {
+              "type": "string",
+              "description": "流水金额展示文本",
+              "sampleValue": "-¥128"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历中查询到的近期扣款日程",
+          "sampleValue": [
+            {
+              "entityId": "bill-20260715",
+              "title": "信用卡扣款",
+              "dtStart": "7月15日"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "扣款日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识",
+                "sampleValue": "bill-20260715"
+              },
+              "title": {
+                "type": "string",
+                "description": "扣款日程标题",
+                "sampleValue": "信用卡扣款"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "扣款日程开始日期展示文本",
+                "sampleValue": "7月15日"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合标识最近扣款日或日程来源。"
+    },
+    {
+      "src": "resources/base/media/bell_slash_fill.svg",
+      "description": "铃铛加斜杠图标，适合标识勿扰或关闭通知状态。"
+    }
+  ]
+}

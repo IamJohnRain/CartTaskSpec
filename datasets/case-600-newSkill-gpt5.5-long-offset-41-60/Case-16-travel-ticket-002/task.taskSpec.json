@@ -1,0 +1,97 @@
+{
+  "userQuery": "做一张出行助手卡,纵向堆叠,顶部大块放航班主信息,下面用文字一行行展示\"目的地上海·多云22℃\"这种固定文案,分区不同底色,要有\"航班可能延误·建议提前出门\"这种待处理风险提示,夜晚渐变,文字符号 ⚠ ☁ 当图标,最下面要一个可滚动的列表显示行李清单。要读取我明天航班的日历和上海天气。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-flight-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "明天航班日历事件的唯一标识符，用于打开日程详情。",
+              "sampleValue": "cal-flight-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "明天航班日历事件标题。",
+              "sampleValue": "MU5108 上海行程"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "明天航班起飞时间，已格式化为可展示文本。",
+              "sampleValue": "明天 08:35"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "明天航班到达或结束时间，已格式化为可展示文本。",
+              "sampleValue": "10:55"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "明天航班出发机场或日历地点。",
+              "sampleValue": "首都机场 T2"
+            }
+          }
+        ]
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询目的地名称。",
+            "sampleValue": "上海"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "目的地当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "目的地当前温度展示文本。",
+            "sampleValue": "22℃"
+          }
+        }
+      }
+    },
+    "luggage": {
+      "items": [
+        {
+          "text": {
+            "type": "string",
+            "description": "行李清单第一项展示文本。",
+            "sampleValue": "证件与登机牌"
+          }
+        },
+        {
+          "text": {
+            "type": "string",
+            "description": "行李清单第二项展示文本。",
+            "sampleValue": "充电器与耳机"
+          }
+        },
+        {
+          "text": {
+            "type": "string",
+            "description": "行李清单第三项展示文本。",
+            "sampleValue": "雨伞与外套"
+          }
+        }
+      ]
+    }
+  },
+  "assetCandidates": []
+}

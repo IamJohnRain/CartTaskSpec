@@ -1,0 +1,117 @@
+{
+  "userQuery": "帮我做个磨砂玻璃质感的日程专注卡，左右分区。读取今天的日历日程并在左边用文字和语义图标横排展示会议数量等动态数据，带上'已完成'状态，右边放个一键开启免打扰的开关。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历日程列表，用于统计会议数量并展示下一场日程。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-event-001",
+              "title": "项目例会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00",
+              "eventLocation": "会议室 A"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-event-002",
+              "title": "设计评审",
+              "dtStart": "14:00",
+              "dtEnd": "15:00",
+              "eventLocation": "线上会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "项目例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程为 HH:MM。",
+                "sampleValue": "10:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程为 HH:MM。",
+                "sampleValue": "11:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点。",
+                "sampleValue": "会议室 A"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "todayLabel": {
+        "type": "string",
+        "description": "今天日期的短展示文本。",
+        "sampleValue": "07/13"
+      },
+      "statusLabel": {
+        "type": "string",
+        "description": "日程处理状态展示文本。",
+        "sampleValue": "已完成"
+      },
+      "focusActionLabel": {
+        "type": "string",
+        "description": "开启专注免打扰入口的短按钮文案。",
+        "sampleValue": "开启"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合表示今天的日历日程摘要。"
+    },
+    {
+      "src": "resources/base/media/icon_meeting.png",
+      "description": "会议图标，适合表示会议数量等当日会议动态数据。"
+    },
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合表示下一场日程的开始时间。"
+    },
+    {
+      "src": "resources/base/media/checkmark_calendar_fill.svg",
+      "description": "带对勾的日历图标，适合表示日程已完成或已确认状态。"
+    },
+    {
+      "src": "resources/base/media/icon_focus.png",
+      "description": "专注模式图标，适合表示免打扰或专注模式入口。"
+    }
+  ]
+}

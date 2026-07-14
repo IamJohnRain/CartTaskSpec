@@ -1,0 +1,162 @@
+{
+  "userQuery": "帮我做一张上班通勤的卡片,左边放一个大大的路况环形,中间叠当前通勤耗时,右边写\"预计到岗还有XX分钟\",今天路上有事故所以要标红,整体用橙红渐变那种紧迫感,顶上加一个日程小标\"9:00 周会\",点进去能看日程详情,各部分底色要分得开,图标用文字那种就行别整花的",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "卡片动态数据根节点",
+      "sampleValue": {
+        "commute": {
+          "trafficIndex": 82,
+          "trafficTotal": 100,
+          "durationMinutesText": "38",
+          "arrivalPrefix": "预计到岗还有",
+          "arrivalMinutesText": "18分钟",
+          "incidentText": "前方事故",
+          "trafficLabel": "拥堵偏慢",
+          "routeSummary": "东三环路段红色拥堵"
+        },
+        "calendar": {
+          "items": [
+            {
+              "entityId": "calendar-meeting-0900",
+              "title": "周会",
+              "dtStart": "9:00",
+              "dtEnd": "10:00"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "commute": {
+          "type": "object",
+          "description": "今日上班通勤状态",
+          "sampleValue": {
+            "trafficIndex": 82,
+            "trafficTotal": 100,
+            "durationMinutesText": "38",
+            "arrivalPrefix": "预计到岗还有",
+            "arrivalMinutesText": "18分钟",
+            "incidentText": "前方事故",
+            "trafficLabel": "拥堵偏慢",
+            "routeSummary": "东三环路段红色拥堵"
+          },
+          "properties": {
+            "trafficIndex": {
+              "type": "number",
+              "description": "路况环当前拥堵指数",
+              "sampleValue": 82
+            },
+            "trafficTotal": {
+              "type": "number",
+              "description": "路况环总量基准",
+              "sampleValue": 100
+            },
+            "durationMinutesText": {
+              "type": "string",
+              "description": "当前通勤耗时分钟数文本",
+              "sampleValue": "38"
+            },
+            "arrivalPrefix": {
+              "type": "string",
+              "description": "预计到岗倒计时前缀",
+              "sampleValue": "预计到岗还有"
+            },
+            "arrivalMinutesText": {
+              "type": "string",
+              "description": "预计到岗剩余分钟展示文本",
+              "sampleValue": "18分钟"
+            },
+            "incidentText": {
+              "type": "string",
+              "description": "事故路况提示文本",
+              "sampleValue": "前方事故"
+            },
+            "trafficLabel": {
+              "type": "string",
+              "description": "当前路况状态短标签",
+              "sampleValue": "拥堵偏慢"
+            },
+            "routeSummary": {
+              "type": "string",
+              "description": "通勤路线拥堵摘要",
+              "sampleValue": "东三环路段红色拥堵"
+            }
+          }
+        },
+        "calendar": {
+          "type": "object",
+          "description": "今日日程数据",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "calendar-meeting-0900",
+                "title": "周会",
+                "dtStart": "9:00",
+                "dtEnd": "10:00"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "今日日程列表",
+              "sampleValue": [
+                {
+                  "entityId": "calendar-meeting-0900",
+                  "title": "周会",
+                  "dtStart": "9:00",
+                  "dtEnd": "10:00"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "日程项",
+                "sampleValue": {
+                  "entityId": "calendar-meeting-0900",
+                  "title": "周会",
+                  "dtStart": "9:00",
+                  "dtEnd": "10:00"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日程详情实体 ID",
+                    "sampleValue": "calendar-meeting-0900"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "日程标题",
+                    "sampleValue": "周会"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "日程开始时间",
+                    "sampleValue": "9:00"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "日程结束时间",
+                    "sampleValue": "10:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

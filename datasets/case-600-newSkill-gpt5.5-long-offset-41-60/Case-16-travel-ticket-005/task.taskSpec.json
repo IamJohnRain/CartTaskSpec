@@ -1,0 +1,126 @@
+{
+  "userQuery": "卡片主要动作是一个超明显的\"查看登机牌\"按钮,加个倒计时数值,内嵌一个面板块显示详情,日历里的数据,要是出错了用红色告警,夜场倒计时渐变背景,下面要一个可滚动的重复列表展示我后续几段行程,✈️⚠️这些字符当图标就行",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历查询得到的后续票务行程列表，按时间升序排列。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "flight-boarding-001",
+              "title": "MU5128 查看登机牌",
+              "eventLocation": "T2 18号登机口",
+              "description": "登机牌已就绪",
+              "dtStart": "21:35",
+              "dtEnd": "23:50",
+              "importantEventType": 2
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "hotel-checkin-002",
+              "title": "酒店入住",
+              "eventLocation": "虹桥商务区",
+              "description": "凭证件办理",
+              "dtStart": "00:30",
+              "dtEnd": "01:00",
+              "importantEventType": 0
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历行程。",
+            "sampleValue": {
+              "entityName": "calendar",
+              "entityId": "flight-boarding-001",
+              "title": "MU5128 查看登机牌",
+              "eventLocation": "T2 18号登机口",
+              "description": "登机牌已就绪",
+              "dtStart": "21:35",
+              "dtEnd": "23:50",
+              "importantEventType": 2
+            },
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日历索引项类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开日历详情。",
+                "sampleValue": "flight-boarding-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "行程或票务日程标题。",
+                "sampleValue": "MU5128 查看登机牌"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "行程发生位置或登机口。",
+                "sampleValue": "T2 18号登机口"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程备注或票务状态。",
+                "sampleValue": "登机牌已就绪"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "行程开始时间，当天事件为 HH:MM。",
+                "sampleValue": "21:35"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "行程结束时间，当天事件为 HH:MM。",
+                "sampleValue": "23:50"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日关系，2 表示倒数日。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "display": {
+      "countdownText": {
+        "type": "string",
+        "description": "距离下一段核心票务行程的倒计时展示值。",
+        "sampleValue": "01:18"
+      },
+      "countdownLabel": {
+        "type": "string",
+        "description": "倒计时短标签。",
+        "sampleValue": "距登机"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "日历或票务数据异常时的红色告警文案。",
+        "sampleValue": "⚠️ 核验中"
+      },
+      "hasError": {
+        "type": "boolean",
+        "description": "是否存在日历数据或票务同步异常。",
+        "sampleValue": true
+      }
+    }
+  },
+  "assetCandidates": []
+}

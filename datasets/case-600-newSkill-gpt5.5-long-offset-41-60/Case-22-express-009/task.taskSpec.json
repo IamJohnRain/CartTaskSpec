@@ -1,0 +1,114 @@
+{
+  "userQuery": "我想在卡片里堆几个待取的快递信息，每个快递前面能勾选表示已取，中间夹一个面板显示我从日历读出来的「下午3点有个取件提醒」，卡片走深色舞台风那种感觉。取件的时候想直接点歌听，帮我跳到音乐app的歌单页面就行，已取的快递要显示成绿色那种「已完成」的正向状态。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "express": {
+        "packages": {
+          "type": "array",
+          "description": "待取快递信息列表，卡片固定展示前两项。",
+          "sampleValue": [
+            {
+              "name": "丰巢4821",
+              "statusText": "待取",
+              "done": false,
+              "statusColor": "#99ffffff"
+            },
+            {
+              "name": "菜鸟A12",
+              "statusText": "已完成",
+              "done": true,
+              "statusColor": "#ff5ba854"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个快递条目。",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "快递待取地点、来源或取件码摘要。",
+                "sampleValue": "丰巢4821"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "快递当前取件状态，已取时显示正向完成状态。",
+                "sampleValue": "待取"
+              },
+              "done": {
+                "type": "boolean",
+                "description": "快递是否已经取件，用于勾选框选中态。",
+                "sampleValue": false
+              },
+              "statusColor": {
+                "type": "string",
+                "description": "状态文字颜色，已完成状态使用确认绿色。",
+                "sampleValue": "#99ffffff"
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从日历读取的取件提醒列表，卡片固定展示第一条提醒。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-pickup-1500",
+              "title": "取件提醒",
+              "dtStart": "15:00",
+              "dtEnd": "15:15"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日历提醒事项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事项唯一标识符。",
+                "sampleValue": "calendar-pickup-1500"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历提醒标题。",
+                "sampleValue": "取件提醒"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历提醒开始时间，当天事项为 HH:MM 格式。",
+                "sampleValue": "15:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日历提醒结束时间，当天事项为 HH:MM 格式。",
+                "sampleValue": "15:15"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱子图标，适合用于物流信息和取件提醒的包裹识别。"
+    },
+    {
+      "src": "resources/base/media/icon_music.png",
+      "description": "音乐图标，适合用于取件时跳转歌单的音乐入口。"
+    }
+  ]
+}

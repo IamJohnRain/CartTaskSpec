@@ -1,0 +1,119 @@
+{
+  "userQuery": "下雨天加班回家卡片重做一下吧，整张卡片用打车App主题色背景，上面放一个很大很醒目的雨伞图标加现在时间\"23:45\"，再显示\"当前排队第X位\"的动态数字，点击能触发地图导航显示回家的路。下方红色\"周围0辆车\"失败告警高亮，因为太晚真的打不到车。下面给我做一个可滚动的备选出行方式列表：地铁末班车、出租车呼叫点、代驾。整个渐变要那种深夜感，深蓝到紫色过渡。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.230416",
+            "longitude": "121.473701"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于确认雨天场景。",
+            "sampleValue": "小雨"
+          }
+        }
+      },
+      "taxi": {
+        "currentTime": {
+          "type": "string",
+          "description": "当前时间展示文本。",
+          "sampleValue": "23:45"
+        },
+        "queueText": {
+          "type": "string",
+          "description": "当前打车排队位次展示文本。",
+          "sampleValue": "当前排队第18位"
+        },
+        "nearbyCarsText": {
+          "type": "string",
+          "description": "周边可用车辆数量失败告警文本。",
+          "sampleValue": "周围0辆车"
+        },
+        "statusReason": {
+          "type": "string",
+          "description": "夜间雨天打车失败原因短说明。",
+          "sampleValue": "夜深雨大，暂时无人接单"
+        },
+        "destinationName": {
+          "type": "string",
+          "description": "导航目标地点名称。",
+          "sampleValue": "回家"
+        },
+        "destination": {
+          "latitude": {
+            "type": "string",
+            "description": "回家导航目标纬度。",
+            "sampleValue": "31.230416"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "回家导航目标经度。",
+            "sampleValue": "121.473701"
+          }
+        },
+        "alternatives": [
+          {
+            "name": {
+              "type": "string",
+              "description": "备选出行方式名称。",
+              "sampleValue": "地铁末班车"
+            },
+            "hint": {
+              "type": "string",
+              "description": "备选出行方式短提示。",
+              "sampleValue": "步行12分钟"
+            }
+          },
+          {
+            "name": {
+              "type": "string",
+              "description": "备选出行方式名称。",
+              "sampleValue": "出租车呼叫点"
+            },
+            "hint": {
+              "type": "string",
+              "description": "备选出行方式短提示。",
+              "sampleValue": "商场北门"
+            }
+          },
+          {
+            "name": {
+              "type": "string",
+              "description": "备选出行方式名称。",
+              "sampleValue": "代驾"
+            },
+            "hint": {
+              "type": "string",
+              "description": "备选出行方式短提示。",
+              "sampleValue": "预计可约"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "天气雨伞图标，适合雨天出行、下雨提醒和雨天打车主视觉。"
+    },
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合雨天打车场景和车辆状态辅助展示。"
+    }
+  ]
+}

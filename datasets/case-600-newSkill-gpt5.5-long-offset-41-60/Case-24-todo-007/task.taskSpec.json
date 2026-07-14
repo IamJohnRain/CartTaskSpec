@@ -1,0 +1,85 @@
+{
+  "userQuery": "做一个待办卡,有个特别醒目的大按钮(比如\"去省电设置\")作为主操作,点了能跳到系统设置里的省电页面。任务横向排三项能勾选。左边信息区,右边动作区,整体磨砂玻璃质感柔柔的那种,不要渐变,不要那种特别艳的颜色。任务前用○●字符,数据用静态示例就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "todo": {
+      "title": {
+        "type": "string",
+        "description": "待办卡片标题",
+        "sampleValue": "待办"
+      },
+      "status": {
+        "type": "string",
+        "description": "待办完成概览",
+        "sampleValue": "1/3 完成"
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "跳转省电设置的主操作按钮文案",
+        "sampleValue": "省电"
+      },
+      "tasks": {
+        "type": "array",
+        "description": "横向展示的三项待办任务",
+        "sampleValue": [
+          {
+            "mark": "●",
+            "name": "省电",
+            "selected": true
+          },
+          {
+            "mark": "○",
+            "name": "喝水",
+            "selected": false
+          },
+          {
+            "mark": "○",
+            "name": "整理",
+            "selected": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个待办任务",
+          "properties": {
+            "mark": {
+              "type": "string",
+              "description": "任务前的圆点字符",
+              "sampleValue": "○"
+            },
+            "name": {
+              "type": "string",
+              "description": "任务短名称",
+              "sampleValue": "喝水"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "任务是否勾选",
+              "sampleValue": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合表达低电模式或省电设置入口，色彩克制，可用于动作区或状态识别。"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合实心图标，适合表达节能模式、绿色用电或省电设置入口。"
+    }
+  ]
+}

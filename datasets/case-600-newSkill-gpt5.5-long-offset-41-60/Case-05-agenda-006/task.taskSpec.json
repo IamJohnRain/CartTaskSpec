@@ -1,0 +1,98 @@
+{
+  "userQuery": "帮我做个能滚动的今日行程卡片，读取日历数据，用分隔线把上下午的信息分组区块隔开。里面主要放静态文案，背景用导航地图那种渐变风格，图标直接用文字符号代替就行。整体不用特殊状态色，点某段行程能进日程详情，简洁紧凑一点，不然一屏放不下。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日按开始时间排序的日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "evt-20260713-001",
+              "title": "晨会同步",
+              "eventLocation": "线上会议",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            },
+            {
+              "entityId": "evt-20260713-002",
+              "title": "方案评审",
+              "eventLocation": "A座3层",
+              "dtStart": "10:30",
+              "dtEnd": "11:30"
+            },
+            {
+              "entityId": "evt-20260713-003",
+              "title": "客户沟通",
+              "eventLocation": "会议室B",
+              "dtStart": "14:00",
+              "dtEnd": "15:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开日程详情",
+                "sampleValue": "evt-20260713-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "晨会同步"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生的位置",
+                "sampleValue": "线上会议"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程使用 HH:MM 格式",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程使用 HH:MM 格式",
+                "sampleValue": "09:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

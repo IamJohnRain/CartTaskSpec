@@ -1,0 +1,77 @@
+{
+  "userQuery": "想做一个水电缴费的服务卡片,左边信息区右边动作区那种。信息区用横线隔成几组,上面写\"本月电费已用47%\",中间是日历里读到的\"距离缴费截止还有5天\",下面有个红色告警写\"已逾期,请尽快处理\"。右边动作区就一个\"立即缴费\"按钮,点完跳支付。卡片底部再加一个跳转到音乐歌单的小入口,缴费时想听点白噪音放松一下。左右两边用不同底色区分,纯色不要渐变,图标用⚡💧这种文字字符画就行,别搞花里胡哨的。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwpay://utility-bill/pay"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "bill": {
+        "monthUsageText": {
+          "type": "string",
+          "description": "本月电费使用比例展示文案。",
+          "sampleValue": "本月电费已用47%"
+        },
+        "alertText": {
+          "type": "string",
+          "description": "水电缴费逾期告警文案。",
+          "sampleValue": "已逾期,请尽快处理"
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "title": {
+              "type": "string",
+              "description": "日历中的水电缴费截止提醒标题。",
+              "sampleValue": "水电缴费截止"
+            },
+            "description": {
+              "type": "string",
+              "description": "由日历事件描述归一化得到的缴费截止倒计时文案。",
+              "sampleValue": "距离缴费截止还有5天"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日历事件唯一标识。",
+              "sampleValue": "calendar-utility-deadline-001"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日历事件开始时间。",
+              "sampleValue": "09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日历事件结束时间。",
+              "sampleValue": "09:30"
+            }
+          }
+        ]
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "卡片数据加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

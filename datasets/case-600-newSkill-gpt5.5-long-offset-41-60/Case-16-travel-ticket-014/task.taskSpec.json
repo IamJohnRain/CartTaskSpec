@@ -1,0 +1,212 @@
+{
+  "userQuery": "值机提醒卡整一下,赶飞机的时候用。浅色底中央环形显示值机完成度75%,横向排几个勾选项加一个一键拨打客服电话,纵向堆叠信息,从日历读数据,纯文字和语义图标,不要渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "95583"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "type": "object",
+        "description": "本地日历中的票务行程事件查询结果。",
+        "sampleValue": {
+          "items": [
+            {
+              "entityName": "calendar",
+              "entityId": "flight-checkin-001",
+              "title": "HU7608值机",
+              "eventLocation": "T3航站楼",
+              "description": "提前到机场办理托运与安检",
+              "dtStart": "07:40",
+              "dtEnd": "08:10"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "日历事件列表，首条为当前最近的值机或航班提醒。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "flight-checkin-001",
+              "title": "HU7608值机",
+              "eventLocation": "T3航站楼",
+              "description": "提前到机场办理托运与安检",
+              "dtStart": "07:40",
+              "dtEnd": "08:10"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "sampleValue": {
+              "entityName": "calendar",
+              "entityId": "flight-checkin-001",
+              "title": "HU7608值机",
+              "eventLocation": "T3航站楼",
+              "description": "提前到机场办理托运与安检",
+              "dtStart": "07:40",
+              "dtEnd": "08:10"
+            },
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识。",
+                "sampleValue": "flight-checkin-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "值机或航班日程标题。",
+                "sampleValue": "HU7608值机"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "值机或航班相关地点。",
+                "sampleValue": "T3航站楼"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程补充说明。",
+                "sampleValue": "提前到机场办理托运与安检"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "07:40"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "08:10"
+              }
+            }
+          }
+        }
+      }
+    },
+    "checkin": {
+      "type": "object",
+      "description": "值机完成度和提醒项的受控展示数据。",
+      "sampleValue": {
+        "progressValue": 75,
+        "progressTotal": 100,
+        "progressText": "75%",
+        "caption": "值机完成度",
+        "steps": [
+          {
+            "label": "证件",
+            "checked": true
+          },
+          {
+            "label": "托运",
+            "checked": true
+          },
+          {
+            "label": "登机口",
+            "checked": false
+          }
+        ]
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "值机完成度数值。",
+        "sampleValue": 75
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "值机完成度总量。",
+        "sampleValue": 100
+      },
+      "progressText": {
+        "type": "string",
+        "description": "值机完成度展示文本。",
+        "sampleValue": "75%"
+      },
+      "caption": {
+        "type": "string",
+        "description": "进度说明。",
+        "sampleValue": "值机完成度"
+      },
+      "steps": {
+        "type": "array",
+        "description": "横向展示的值机核对项。",
+        "sampleValue": [
+          {
+            "label": "证件",
+            "checked": true
+          },
+          {
+            "label": "托运",
+            "checked": true
+          },
+          {
+            "label": "登机口",
+            "checked": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个值机核对项。",
+          "sampleValue": {
+            "label": "证件",
+            "checked": true
+          },
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "核对项短标签。",
+              "sampleValue": "证件"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "核对项是否已完成。",
+              "sampleValue": true
+            }
+          }
+        }
+      }
+    },
+    "support": {
+      "type": "object",
+      "description": "客服拨号和辅助展示字段。",
+      "sampleValue": {
+        "customerServicePhone": "95583",
+        "callLabel": "拨打客服"
+      },
+      "customerServicePhone": {
+        "type": "string",
+        "description": "航空或票务客服号码。",
+        "sampleValue": "95583"
+      },
+      "callLabel": {
+        "type": "string",
+        "description": "拨号动作短文案。",
+        "sampleValue": "拨打客服"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞语义图标，黑色 SVG，适合用于航班出发和值机提醒识别。"
+    },
+    {
+      "src": "resources/base/media/checkmark_calendar_fill.svg",
+      "description": "带对勾的日历语义图标，黑白双色 SVG，适合表达日程确认和值机核对。"
+    },
+    {
+      "src": "resources/base/media/phone_fill.svg",
+      "description": "电话听筒语义图标，黑色 SVG，适合表达拨打客服电话动作。"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "userQuery": "之前那个相册日程卡太花哨了,重做。主题橙底里嵌一块白面板,顶部一个'今日拍摄'大按钮,下面横向排三个可勾选任务,旁边'省电拍摄模式'开关。任务从日历读,过期或快到期的标红告警。图标用字符,不渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日相册拍摄相关日程列表，按开始时间排序。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_photo_001",
+              "title": "补拍产品图",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "description": "快到期",
+              "statusText": "快到期",
+              "statusColor": "#FFE84026",
+              "checked": false
+            },
+            {
+              "entityId": "calendar_photo_002",
+              "title": "整理旅行相册",
+              "dtStart": "11:20",
+              "dtEnd": "12:00",
+              "description": "待处理",
+              "statusText": "待处理",
+              "statusColor": "#FF262626",
+              "checked": true
+            },
+            {
+              "entityId": "calendar_photo_003",
+              "title": "备份家庭照片",
+              "dtStart": "14:00",
+              "dtEnd": "14:30",
+              "description": "已过期",
+              "statusText": "已过期",
+              "statusColor": "#FFE84026",
+              "checked": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历任务。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开日程详情。",
+                "sampleValue": "calendar_photo_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "补拍产品图"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今日日程为 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今日日程为 HH:MM。",
+                "sampleValue": "10:00"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程说明或提醒摘要。",
+                "sampleValue": "快到期"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "由日历任务到期状态归一化后的展示文案。",
+                "sampleValue": "快到期"
+              },
+              "statusColor": {
+                "type": "string",
+                "description": "由日历任务到期状态归一化后的文字颜色，过期或快到期为红色。",
+                "sampleValue": "#FFE84026"
+              },
+              "checked": {
+                "type": "boolean",
+                "description": "任务是否已勾选完成。",
+                "sampleValue": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "mode": {
+      "powerSaving": {
+        "type": "boolean",
+        "description": "省电拍摄模式是否已开启。",
+        "sampleValue": false
+      },
+      "label": {
+        "type": "string",
+        "description": "省电拍摄模式展示名称。",
+        "sampleValue": "省电拍摄模式"
+      }
+    }
+  },
+  "assetCandidates": []
+}

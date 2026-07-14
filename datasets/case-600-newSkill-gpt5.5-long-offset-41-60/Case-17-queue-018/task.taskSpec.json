@@ -1,0 +1,116 @@
+{
+  "userQuery": "医院排队卡片,要带滚动列表那种。顶部大字\"您前面还有28位\",下面是可以滚动的列表,每行是个勾选项能打勾标记\"已签到\"那种双向绑定。磨砂质感。日期要能从日历读,点了能跳到音乐歌单听点东西打发时间。运动感的渐变,提示\"剩余等待约45分钟\"这种临近状态,有点急。字符图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从日历读取的医院排队相关日程列表，首项承载当前排队状态，后续项承载签到清单。",
+          "sampleValue": [
+            {
+              "entityId": "queue-20260713-main",
+              "title": "7月13日 门诊排队",
+              "description": "您前面还有28位",
+              "eventLocation": "剩余等待约45分钟",
+              "dtStart": "09:20",
+              "dtEnd": "10:05",
+              "oneClickServiceType": "queueStatus",
+              "isServiceValid": 2
+            },
+            {
+              "entityId": "queue-20260713-register",
+              "title": "挂号单确认",
+              "description": "已签到",
+              "dtStart": "09:20",
+              "dtEnd": "09:25",
+              "isServiceValid": 2
+            },
+            {
+              "entityId": "queue-20260713-nurse",
+              "title": "护士站报到",
+              "description": "已签到",
+              "dtStart": "09:30",
+              "dtEnd": "09:35",
+              "isServiceValid": 2
+            },
+            {
+              "entityId": "queue-20260713-room",
+              "title": "诊室外等候",
+              "description": "未签到",
+              "dtStart": "09:40",
+              "dtEnd": "10:05",
+              "isServiceValid": 0
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条医院排队日程或签到项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历项唯一标识符。",
+                "sampleValue": "queue-20260713-main"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历项标题或签到事项名称。",
+                "sampleValue": "7月13日 门诊排队"
+              },
+              "description": {
+                "type": "string",
+                "description": "日历项描述，用于展示排队主状态或签到状态。",
+                "sampleValue": "您前面还有28位"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日历项地点字段，用于展示当前剩余等待提示。",
+                "sampleValue": "剩余等待约45分钟"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历项开始时间或就诊日期时间。",
+                "sampleValue": "09:20"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日历项结束时间或预计完成时间。",
+                "sampleValue": "10:05"
+              },
+              "oneClickServiceType": {
+                "type": "string",
+                "description": "排队服务类型标识。",
+                "sampleValue": "queueStatus"
+              },
+              "isServiceValid": {
+                "type": "integer",
+                "description": "签到状态标识，2 表示已签到，0 表示未签到。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达日期、日程和医院排队预约来自日历。"
+    },
+    {
+      "src": "resources/base/media/music_fill.svg",
+      "description": "音乐音符实心图标，适合表达跳转歌单听音乐打发候诊时间。"
+    }
+  ]
+}

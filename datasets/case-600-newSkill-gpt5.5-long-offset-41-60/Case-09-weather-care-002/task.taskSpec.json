@@ -1,0 +1,82 @@
+{
+  "userQuery": "我想给老爸做个天气警报卡。上方放大字号的主视觉叠加在背景色上，加上类似“大风预警剩余2小时”这样的固定拼接动态文字。下面要分块列表展示多个时间段的天气，遇到超限的极端天气标红显示危险告警图标，最后加个一键拨打电话给老爸的按钮。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "138****0000"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息",
+            "sampleValue": "大风预警"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "高温",
+              "temperatureRangeText": "29°/36°"
+            },
+            {
+              "weekday": "明天",
+              "condition": "雷阵雨",
+              "temperatureRangeText": "27°/32°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或时间段文本",
+                "sampleValue": "今天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象",
+                "sampleValue": "高温"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "适合直接显示的温度范围",
+                "sampleValue": "29°/36°"
+              }
+            }
+          }
+        }
+      }
+    },
+    "contact": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "父亲的脱敏拨号号码",
+        "sampleValue": "138****0000"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_high_temperature.png",
+      "description": "高温/温度计告警图标，适合亲人关怀场景中的危险天气提醒。"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "userQuery": "做个菜价比价卡片,深色舞台那种感觉,卡片里嵌个面板,蔬菜列表能勾选已经比过价的,要能滚动看全部,我常买的得有十几种菜。右上角加个跳到省电设置的按钮,手机总没电。读下日历,提醒我周三要采购。涨价超10%的菜标红⚠提醒,图标用语义的那种就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "market": {
+      "type": "object",
+      "description": "菜价比价卡片的本地展示数据。",
+      "sampleValue": {
+        "title": "菜价比价",
+        "summary": "周三采购",
+        "items": [
+          { "name": "西红柿", "priceText": "4.8/斤", "changeText": "+12%", "warning": true, "checked": true },
+          { "name": "黄瓜", "priceText": "3.2/斤", "changeText": "+3%", "warning": false, "checked": true },
+          { "name": "生菜", "priceText": "5.6/斤", "changeText": "+15%", "warning": true, "checked": false },
+          { "name": "土豆", "priceText": "2.4/斤", "changeText": "-2%", "warning": false, "checked": false },
+          { "name": "胡萝卜", "priceText": "3.0/斤", "changeText": "+1%", "warning": false, "checked": false },
+          { "name": "青椒", "priceText": "6.8/斤", "changeText": "+11%", "warning": true, "checked": false },
+          { "name": "菠菜", "priceText": "7.5/斤", "changeText": "+8%", "warning": false, "checked": false },
+          { "name": "茄子", "priceText": "4.6/斤", "changeText": "+4%", "warning": false, "checked": false },
+          { "name": "西兰花", "priceText": "8.9/斤", "changeText": "+13%", "warning": true, "checked": false },
+          { "name": "冬瓜", "priceText": "2.1/斤", "changeText": "0%", "warning": false, "checked": false },
+          { "name": "豆角", "priceText": "7.2/斤", "changeText": "+6%", "warning": false, "checked": false },
+          { "name": "白菜", "priceText": "1.9/斤", "changeText": "+2%", "warning": false, "checked": false }
+        ]
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "卡片标题。",
+          "sampleValue": "菜价比价"
+        },
+        "summary": {
+          "type": "string",
+          "description": "采购提醒摘要。",
+          "sampleValue": "周三采购"
+        },
+        "items": {
+          "type": "array",
+          "description": "常买蔬菜比价列表，按用户常买项排序。",
+          "sampleValue": [
+            { "name": "西红柿", "priceText": "4.8/斤", "changeText": "+12%", "warning": true, "checked": true },
+            { "name": "黄瓜", "priceText": "3.2/斤", "changeText": "+3%", "warning": false, "checked": true },
+            { "name": "生菜", "priceText": "5.6/斤", "changeText": "+15%", "warning": true, "checked": false },
+            { "name": "土豆", "priceText": "2.4/斤", "changeText": "-2%", "warning": false, "checked": false },
+            { "name": "胡萝卜", "priceText": "3.0/斤", "changeText": "+1%", "warning": false, "checked": false },
+            { "name": "青椒", "priceText": "6.8/斤", "changeText": "+11%", "warning": true, "checked": false },
+            { "name": "菠菜", "priceText": "7.5/斤", "changeText": "+8%", "warning": false, "checked": false },
+            { "name": "茄子", "priceText": "4.6/斤", "changeText": "+4%", "warning": false, "checked": false },
+            { "name": "西兰花", "priceText": "8.9/斤", "changeText": "+13%", "warning": true, "checked": false },
+            { "name": "冬瓜", "priceText": "2.1/斤", "changeText": "0%", "warning": false, "checked": false },
+            { "name": "豆角", "priceText": "7.2/斤", "changeText": "+6%", "warning": false, "checked": false },
+            { "name": "白菜", "priceText": "1.9/斤", "changeText": "+2%", "warning": false, "checked": false }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个蔬菜的比价状态。",
+            "sampleValue": { "name": "西红柿", "priceText": "4.8/斤", "changeText": "+12%", "warning": true, "checked": true },
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "蔬菜名称。",
+                "sampleValue": "西红柿"
+              },
+              "priceText": {
+                "type": "string",
+                "description": "当前比价后的价格展示文本。",
+                "sampleValue": "4.8/斤"
+              },
+              "changeText": {
+                "type": "string",
+                "description": "相对上次采购的价格变化展示文本。",
+                "sampleValue": "+12%"
+              },
+              "warning": {
+                "type": "boolean",
+                "description": "是否涨价超过10%，用于红色提醒。",
+                "sampleValue": true
+              },
+              "checked": {
+                "type": "boolean",
+                "description": "是否已经完成比价勾选。",
+                "sampleValue": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧能力写入的数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "cal-20260715-001",
+              "title": "采购蔬菜",
+              "dtStart": "周三 18:30",
+              "dtEnd": "19:00"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "calendar": {
+          "type": "object",
+          "description": "日历能力返回的周三采购相关日程。",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "cal-20260715-001",
+                "title": "采购蔬菜",
+                "dtStart": "周三 18:30",
+                "dtEnd": "19:00"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "日历日程列表。",
+              "sampleValue": [
+                {
+                  "entityId": "cal-20260715-001",
+                  "title": "采购蔬菜",
+                  "dtStart": "周三 18:30",
+                  "dtEnd": "19:00"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单条日历日程。",
+                "sampleValue": {
+                  "entityId": "cal-20260715-001",
+                  "title": "采购蔬菜",
+                  "dtStart": "周三 18:30",
+                  "dtEnd": "19:00"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日历事件唯一标识符。",
+                    "sampleValue": "cal-20260715-001"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "日程标题。",
+                    "sampleValue": "采购蔬菜"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "日程开始时间展示文本。",
+                    "sampleValue": "周三 18:30"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "日程结束时间展示文本。",
+                    "sampleValue": "19:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程语义图标，适合提示周三采购提醒。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电语义图标，适合表达进入省电或电池相关设置。"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+﻿{
+  "userQuery": "基金+天气组合卡片，整卡蓝紫主题色背景，左右分区深色风格，要有\"今日数据已同步\"正向状态，横向排列多只基金数据，中间显示动态数字（盈亏金额或收益率），要能跳到天气应用。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "portfolio": {
+      "title": {
+        "type": "string",
+        "description": "基金组合卡片标题",
+        "sampleValue": "基金"
+      },
+      "syncStatus": {
+        "type": "string",
+        "description": "今日数据同步成功状态文案",
+        "sampleValue": "今日数据已同步"
+      },
+      "primaryMetric": {
+        "type": "string",
+        "description": "组合当日核心盈亏金额或收益率展示值",
+        "sampleValue": "+128.6"
+      },
+      "primaryMetricLabel": {
+        "type": "string",
+        "description": "核心动态数字的说明标签",
+        "sampleValue": "今日盈亏"
+      },
+      "funds": {
+        "type": "array",
+        "description": "横向展示的基金摘要列表",
+        "sampleValue": [
+          {
+            "name": "沪深",
+            "yieldText": "+1.2%"
+          },
+          {
+            "name": "中证",
+            "yieldText": "+0.8%"
+          },
+          {
+            "name": "纳指",
+            "yieldText": "-0.3%"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单只基金的名称与收益率摘要",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "基金短名称",
+              "sampleValue": "沪深"
+            },
+            "yieldText": {
+              "type": "string",
+              "description": "基金当日收益率展示文本",
+              "sampleValue": "+1.2%"
+            }
+          }
+        }
+      },
+      "weatherActionLabel": {
+        "type": "string",
+        "description": "天气应用跳转入口短文案",
+        "sampleValue": "天气"
+      }
+    },
+    "assets": {
+      "weatherIcon": {
+        "type": "string",
+        "description": "天气入口使用的本地天气图标资源路径",
+        "sampleValue": "resources/base/media/partly_cloudy.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "云朵在前、太阳在后的彩色天气图标，适合用于天气入口和出行天气识别。",
+      "bindTo": "/assets/weatherIcon"
+    }
+  ]
+}

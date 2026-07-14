@@ -1,0 +1,104 @@
+{
+  "userQuery": "做一张登机牌卡片，上一版做的实在太乱了。信息用分隔线分成三块：航班、行李、值机状态。中间嵌一个小面板显示预计登机时间，每分钟实时跳一下。整张卡浅米色底，背景带点午夜机场的氛围渐变。上一班飞机延误了2个半小时，气死了，所以这次状态色一定要标\"已取消\"或者\"严重延误\"那种红色告警。点航班号能进日历事件查看。图标用✈、⌖、◐这种纯文字符号。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历事件列表，用于承载登机牌相关日程。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-flight-ca1238",
+              "title": "CA1238",
+              "dtStart": "21:45",
+              "dtEnd": "22:25",
+              "eventLocation": "C12",
+              "description": "行李 20kg 已托运"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条航班日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程索引项唯一标识符，用于查看日历事件详情。",
+                "sampleValue": "calendar-flight-ca1238"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题，此处作为航班号展示。",
+                "sampleValue": "CA1238"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，此处作为预计登机时间展示。",
+                "sampleValue": "21:45"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，此处作为预计起飞或结束时间参考。",
+                "sampleValue": "22:25"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生位置，此处作为航站楼和登机口展示。",
+                "sampleValue": "C12"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程描述，此处作为行李摘要展示。",
+                "sampleValue": "行李 20kg 已托运"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "flightLabel": {
+        "type": "string",
+        "description": "航班信息块标签。",
+        "sampleValue": "航班"
+      },
+      "boardingLabel": {
+        "type": "string",
+        "description": "预计登机时间面板标签。",
+        "sampleValue": "预计登机"
+      },
+      "baggageLabel": {
+        "type": "string",
+        "description": "行李信息块标签。",
+        "sampleValue": "行李"
+      },
+      "checkinLabel": {
+        "type": "string",
+        "description": "值机状态信息块标签。",
+        "sampleValue": "值机"
+      },
+      "alertStatus": {
+        "type": "string",
+        "description": "红色告警状态文案。",
+        "sampleValue": "严重延误"
+      },
+      "refreshHint": {
+        "type": "string",
+        "description": "预计登机时间刷新频率提示。",
+        "sampleValue": "每分钟刷新"
+      }
+    }
+  },
+  "assetCandidates": []
+}

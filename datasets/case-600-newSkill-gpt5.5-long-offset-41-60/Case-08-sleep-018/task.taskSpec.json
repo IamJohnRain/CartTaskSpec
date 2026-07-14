@@ -1,0 +1,158 @@
+{
+  "userQuery": "做个睡眠计划列表卡，参考那张夜晚渐变图。横排三行：今晚22:30、明晚23:00、后晚23:30。读明天天气，下雨那一行用红色警告。点任意一行能跳到闹钟设提醒。纯文字色块别用图片。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "sleepPlan": {
+      "type": "object",
+      "description": "睡眠计划列表的静态展示数据。",
+      "sampleValue": {
+        "title": "睡眠计划",
+        "subtitle": "雨夜提前设提醒"
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "卡片标题。",
+          "sampleValue": "睡眠计划"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "结合明天天气的简短辅助提示。",
+          "sampleValue": "雨夜提前设提醒"
+        },
+        "items": {
+          "type": "array",
+          "description": "三条睡眠计划，按今晚、明晚、后晚排列。",
+          "sampleValue": [
+            {
+              "dayLabel": "今晚",
+              "time": "22:30",
+              "note": "常规提醒"
+            },
+            {
+              "dayLabel": "明晚",
+              "time": "23:00",
+              "note": "看明天天气"
+            },
+            {
+              "dayLabel": "后晚",
+              "time": "23:30",
+              "note": "逐步后移"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条睡眠计划。",
+            "properties": {
+              "dayLabel": {
+                "type": "string",
+                "description": "计划日期标签。",
+                "sampleValue": "明晚"
+              },
+              "time": {
+                "type": "string",
+                "description": "计划入睡时间。",
+                "sampleValue": "23:00"
+              },
+              "note": {
+                "type": "string",
+                "description": "计划辅助说明。",
+                "sampleValue": "看明天天气"
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧动态能力输出数据根节点。",
+      "sampleValue": {
+        "weather": {
+          "daily": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "rainProbabilityPercent": "20%"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨",
+              "rainProbabilityPercent": "78%"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "weather": {
+          "type": "object",
+          "description": "天气能力写入的天气概要。",
+          "sampleValue": {
+            "daily": [
+              {
+                "weekday": "今天",
+                "condition": "多云",
+                "rainProbabilityPercent": "20%"
+              },
+              {
+                "weekday": "明天",
+                "condition": "小雨",
+                "rainProbabilityPercent": "78%"
+              }
+            ]
+          },
+          "properties": {
+            "daily": {
+              "type": "array",
+              "description": "从今天开始按日期升序排列的每日预报。",
+              "sampleValue": [
+                {
+                  "weekday": "今天",
+                  "condition": "多云",
+                  "rainProbabilityPercent": "20%"
+                },
+                {
+                  "weekday": "明天",
+                  "condition": "小雨",
+                  "rainProbabilityPercent": "78%"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单日天气预报。",
+                "properties": {
+                  "weekday": {
+                    "type": "string",
+                    "description": "星期或日期展示文本。",
+                    "sampleValue": "明天"
+                  },
+                  "condition": {
+                    "type": "string",
+                    "description": "白天天气现象。",
+                    "sampleValue": "小雨"
+                  },
+                  "rainProbabilityPercent": {
+                    "type": "string",
+                    "description": "白天降雨概率百分比。",
+                    "sampleValue": "78%"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

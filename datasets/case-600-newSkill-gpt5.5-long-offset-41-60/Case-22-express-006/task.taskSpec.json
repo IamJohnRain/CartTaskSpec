@@ -1,0 +1,103 @@
+{
+  "userQuery": "做个等快递时听的卡,整体风格按一张图延展,嵌个面板显示派送城市天气,下面一个歌单按钮能跳音乐,包裹列表能滚,每行前面勾选已收,夜里打开有蓝紫渐变,用★→这种字符做图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "派送目的地区县名称。",
+            "sampleValue": "浦东新区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "派送目的地城市名称。",
+            "sampleValue": "上海"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "派送城市当前温度展示文本。",
+            "sampleValue": "27°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "派送城市当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "派送城市当前空气质量等级。",
+            "sampleValue": "良"
+          }
+        }
+      }
+    },
+    "packages": {
+      "items": {
+        "type": "array",
+        "description": "等待接收的包裹摘要列表。",
+        "sampleValue": [
+          {
+            "title": "咖啡豆补给",
+            "status": "派送中",
+            "received": false
+          },
+          {
+            "title": "耳机保护套",
+            "status": "已签收",
+            "received": true
+          },
+          {
+            "title": "纸箱小件",
+            "status": "待取件",
+            "received": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个包裹条目。",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "包裹名称短文本。",
+              "sampleValue": "咖啡豆补给"
+            },
+            "status": {
+              "type": "string",
+              "description": "包裹当前物流状态。",
+              "sampleValue": "派送中"
+            },
+            "received": {
+              "type": "boolean",
+              "description": "包裹是否已收。",
+              "sampleValue": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱素材，适合表达物流包裹识别和整卡视觉锚点。"
+    },
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "彩色多云天气素材，适合派送城市天气面板。"
+    }
+  ]
+}

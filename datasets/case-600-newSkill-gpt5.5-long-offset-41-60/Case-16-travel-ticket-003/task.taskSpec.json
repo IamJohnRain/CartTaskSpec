@@ -1,0 +1,99 @@
+{
+  "userQuery": "登机口提醒,左侧用飞机图标做主视觉,横排排'座位12A''登机口F23''起飞21:30'这种拼接标签,主题色背景夜晚渐变,点登机口能跳地图导航,从日历日程读。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/data/calendar/items/0/gateLatitude} }}",
+            "longitude": "{{ ${/data/calendar/items/0/gateLongitude} }}"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历日程读取到的航班行程列表，卡片展示第一条登机提醒。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-flight-001",
+              "title": "HU7826 北京首都T3",
+              "dtStart": "21:30",
+              "seatNumber": "12A",
+              "gate": "F23",
+              "departureTime": "21:30",
+              "airportTerminal": "北京首都T3",
+              "gateLatitude": "40.080101",
+              "gateLongitude": "116.584556"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条航班日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历日程唯一标识，用于关联行程详情。",
+                "sampleValue": "calendar-flight-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "航班或行程标题。",
+                "sampleValue": "HU7826 北京首都T3"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，作为起飞时间的来源字段。",
+                "sampleValue": "21:30"
+              },
+              "seatNumber": {
+                "type": "string",
+                "description": "登机牌座位号。",
+                "sampleValue": "12A"
+              },
+              "gate": {
+                "type": "string",
+                "description": "登机口编号。",
+                "sampleValue": "F23"
+              },
+              "departureTime": {
+                "type": "string",
+                "description": "起飞时间展示文本。",
+                "sampleValue": "21:30"
+              },
+              "airportTerminal": {
+                "type": "string",
+                "description": "机场或航站楼位置摘要。",
+                "sampleValue": "北京首都T3"
+              },
+              "gateLatitude": {
+                "type": "string",
+                "description": "登机口导航目的地纬度。",
+                "sampleValue": "40.080101"
+              },
+              "gateLongitude": {
+                "type": "string",
+                "description": "登机口导航目的地经度。",
+                "sampleValue": "116.584556"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞黑色线性图标，适合作为航班出发行程或登机提醒的主视觉。"
+    }
+  ]
+}

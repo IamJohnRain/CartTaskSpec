@@ -1,0 +1,174 @@
+{
+  "userQuery": "深色背景的待办卡,每条任务前能勾选,旁边写\"距离deadline还有3天\"\"剩余47%\"这种动态数值,要有倒计时夜色调渐变,任务列表可滚动,点地址能跳地图导航,文字图标就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/tasks/0/destination/latitude} }}",
+            "longitude": "{{ ${/tasks/0/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/tasks/1/destination/latitude} }}",
+            "longitude": "{{ ${/tasks/1/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/tasks/2/destination/latitude} }}",
+            "longitude": "{{ ${/tasks/2/destination/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "title": {
+      "type": "string",
+      "description": "待办卡片标题",
+      "sampleValue": "夜间待办"
+    },
+    "countdownBadge": {
+      "type": "string",
+      "description": "当前最近截止任务的倒计时摘要",
+      "sampleValue": "3天截止"
+    },
+    "summaryPercent": {
+      "type": "string",
+      "description": "当前清单剩余进度摘要",
+      "sampleValue": "剩余47%"
+    },
+    "tasks": {
+      "type": "array",
+      "description": "待办任务列表",
+      "sampleValue": [
+        {
+          "id": "todo-1",
+          "title": "交付评审稿",
+          "checked": false,
+          "deadlineText": "距离deadline还有3天",
+          "remainingText": "剩余47%",
+          "remainingPercent": 47,
+          "addressShort": "南门",
+          "destination": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          }
+        },
+        {
+          "id": "todo-2",
+          "title": "确认场地",
+          "checked": true,
+          "deadlineText": "距离deadline还有1天",
+          "remainingText": "剩余18%",
+          "remainingPercent": 18,
+          "addressShort": "会场",
+          "destination": {
+            "latitude": "31.2243",
+            "longitude": "121.4692"
+          }
+        },
+        {
+          "id": "todo-3",
+          "title": "夜间备份",
+          "checked": false,
+          "deadlineText": "距离deadline还有5天",
+          "remainingText": "剩余62%",
+          "remainingPercent": 62,
+          "addressShort": "机房",
+          "destination": {
+            "latitude": "31.2321",
+            "longitude": "121.4755"
+          }
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单条待办任务",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "任务标识",
+            "sampleValue": "todo-1"
+          },
+          "title": {
+            "type": "string",
+            "description": "任务标题",
+            "sampleValue": "交付评审稿"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "任务是否已勾选",
+            "sampleValue": false
+          },
+          "deadlineText": {
+            "type": "string",
+            "description": "距离截止时间的动态展示文案",
+            "sampleValue": "距离deadline还有3天"
+          },
+          "remainingText": {
+            "type": "string",
+            "description": "任务剩余比例展示文案",
+            "sampleValue": "剩余47%"
+          },
+          "remainingPercent": {
+            "type": "number",
+            "description": "任务剩余比例数值",
+            "sampleValue": 47
+          },
+          "addressShort": {
+            "type": "string",
+            "description": "可点击导航地址短名称",
+            "sampleValue": "南门"
+          },
+          "destination": {
+            "type": "object",
+            "description": "导航目的地坐标",
+            "properties": {
+              "latitude": {
+                "type": "string",
+                "description": "目的地纬度",
+                "sampleValue": "31.2304"
+              },
+              "longitude": {
+                "type": "string",
+                "description": "目的地经度",
+                "sampleValue": "121.4737"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合用于地图导航入口或地址动作提示。"
+    },
+    {
+      "src": "resources/base/media/clock.svg",
+      "description": "时钟线框图标，适合用于倒计时、截止时间或时间提醒。"
+    }
+  ]
+}

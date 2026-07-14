@@ -1,0 +1,107 @@
+{
+  "userQuery": "出差日程卡我想要个能打勾的清单感。用分隔线分几个区块:航班信息、酒店入住、景点预约,每个区块里有个勾选项,点一下能切换完成状态,跳到时钟app设闹钟提醒。读日历日程数据。卡片简洁,周围氛围感背景,夜晚深色渐变。如果酒店订单取消或者航班延误,显示红色告警。图标用[☀][⏰][✈]文字就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "出差日程条目列表，按航班、酒店、景点预约顺序投影。",
+          "sampleValue": [
+            {
+              "title": "航班",
+              "dtStart": "08:40",
+              "dtEnd": "11:10",
+              "description": "延误"
+            },
+            {
+              "title": "酒店",
+              "dtStart": "14:00",
+              "dtEnd": "15:00",
+              "description": "取消"
+            },
+            {
+              "title": "景点",
+              "dtStart": "19:30",
+              "dtEnd": "20:30",
+              "description": "待预约"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "日程标题，用于区分航班、酒店入住或景点预约。",
+                "sampleValue": "航班"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "08:40"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "11:10"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程状态说明，航班延误或酒店取消时显示为告警文本。",
+                "sampleValue": "延误"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "checks": {
+        "flight": {
+          "type": "boolean",
+          "description": "航班清单完成状态。",
+          "sampleValue": false
+        },
+        "hotel": {
+          "type": "boolean",
+          "description": "酒店入住清单完成状态。",
+          "sampleValue": false
+        },
+        "sight": {
+          "type": "boolean",
+          "description": "景点预约清单完成状态。",
+          "sampleValue": true
+        }
+      },
+      "colors": {
+        "flightStatus": {
+          "type": "string",
+          "description": "航班状态文字颜色，延误时使用告警红色。",
+          "sampleValue": "#ffdb6b42"
+        },
+        "hotelStatus": {
+          "type": "string",
+          "description": "酒店状态文字颜色，取消时使用告警红色。",
+          "sampleValue": "#ffdb6b42"
+        },
+        "sightStatus": {
+          "type": "string",
+          "description": "景点预约状态文字颜色。",
+          "sampleValue": "#99ffffff"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

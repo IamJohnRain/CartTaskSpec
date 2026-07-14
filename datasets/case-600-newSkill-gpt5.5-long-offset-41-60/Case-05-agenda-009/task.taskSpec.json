@@ -1,0 +1,98 @@
+{
+  "userQuery": "我需要个深色舞台风格的卡片，背景要够黑，上面浮着几个面板块。上面横向排列我接下来日历里的几场会，固定显示会议主题和时间，配上时间的语义图标，能左右滑重复展示。点一下某个面板块就能进日程详情里面看具体事件，不需要花里胡哨的状态颜色。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "接下来日历中的会议日程列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "evt-1001",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:15"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "evt-1002",
+              "title": "项目同步会",
+              "dtStart": "11:00",
+              "dtEnd": "11:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日历会议事件。",
+            "sampleValue": {
+              "entityName": "calendar",
+              "entityId": "evt-1001",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:15"
+            },
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识，用于打开日程详情。",
+                "sampleValue": "evt-1001"
+              },
+              "title": {
+                "type": "string",
+                "description": "会议主题。",
+                "sampleValue": "产品评审会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，若为当天则使用 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，若为当天则使用 HH:MM 格式。",
+                "sampleValue": "10:15"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合用于会议时间字段旁的语义提示。"
+    },
+    {
+      "src": "resources/base/media/icon_meeting.png",
+      "description": "会议图标，适合用于日程或会议主题识别。"
+    }
+  ]
+}

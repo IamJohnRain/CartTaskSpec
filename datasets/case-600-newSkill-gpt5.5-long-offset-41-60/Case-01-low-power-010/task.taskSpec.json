@@ -1,0 +1,97 @@
+{
+  "userQuery": "今天会议多经常用到一半没电,上一版做得太死板。帮我做一张卡片,左边显示当前电池状态和百分比,旁边黄色警示提醒电量不足,右边放\"充电宝\"图片延伸的视觉,下面可滚动的列表显示接下来的会议日程,固定文字\"距离下一场会议还有X分钟\"加动态时间,点能跳到系统电池设置,整体用那种紧迫的渐变色。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "battery": {
+        "percentText": {
+          "type": "string",
+          "description": "当前电池百分比展示文本",
+          "sampleValue": "18%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "当前电池状态提示",
+          "sampleValue": "电量不足"
+        },
+        "nextMeetingCountdownText": {
+          "type": "string",
+          "description": "距离下一场会议的动态倒计时文本",
+          "sampleValue": "距离下一场会议还有12分钟"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天接下来的会议日程列表",
+          "sampleValue": [
+            {
+              "entityId": "meeting-001",
+              "title": "产品评审会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00"
+            },
+            {
+              "entityId": "meeting-002",
+              "title": "客户同步",
+              "dtStart": "14:00",
+              "dtEnd": "14:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条会议日程",
+            "sampleValue": {
+              "entityId": "meeting-001",
+              "title": "产品评审会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "meeting-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "产品评审会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "10:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "11:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "充电闪电图标，适合低电模式中表达充电、应急补电或充电宝相关视觉。"
+    },
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合低电模式中表达当前电池状态和剩余电量。"
+    }
+  ]
+}

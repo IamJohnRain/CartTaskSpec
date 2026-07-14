@@ -1,0 +1,105 @@
+{
+  "userQuery": "我每天要看股票走势还要跑业务，做个带清晨阳光渐变背景的浅色卡片，上面纵向排好今天的客户拜访行程，右侧用电池图标显示我当前的手机电量，只要客户确认了就标记成绿色的已完成状态，点开能看到具体的日程详情。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天客户拜访日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-visit-001",
+              "title": "拜访华南客户",
+              "dtStart": "09:30",
+              "dtEnd": "10:30",
+              "statusText": "已完成",
+              "statusColor": "#ff64bb5c"
+            },
+            {
+              "entityId": "calendar-visit-002",
+              "title": "拜访渠道客户",
+              "dtStart": "14:00",
+              "dtEnd": "15:00",
+              "statusText": "待确认",
+              "statusColor": "#99000000"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条客户拜访日程。",
+            "sampleValue": {
+              "entityId": "calendar-visit-001",
+              "title": "拜访华南客户",
+              "dtStart": "09:30",
+              "dtEnd": "10:30",
+              "statusText": "已完成",
+              "statusColor": "#ff64bb5c"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情页使用的唯一标识符。",
+                "sampleValue": "calendar-visit-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "客户拜访日程标题。",
+                "sampleValue": "拜访华南客户"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "客户拜访开始时间，当天事件使用 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "客户拜访结束时间，当天事件使用 HH:MM 格式。",
+                "sampleValue": "10:30"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "客户确认后的完成状态文案，已确认时显示已完成。",
+                "sampleValue": "已完成"
+              },
+              "statusColor": {
+                "type": "string",
+                "description": "客户确认状态对应的文本颜色，已完成使用确认绿色。",
+                "sampleValue": "#ff64bb5c"
+              }
+            }
+          }
+        }
+      },
+      "device": {
+        "batteryPercentText": {
+          "type": "string",
+          "description": "当前手机电量百分比展示文本。",
+          "sampleValue": "76%"
+        },
+        "batteryIcon": {
+          "type": "string",
+          "description": "电池状态图标素材路径。",
+          "sampleValue": "resources/base/media/icon_electricity.png"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合在右侧显示当前手机电量状态。"
+    }
+  ]
+}

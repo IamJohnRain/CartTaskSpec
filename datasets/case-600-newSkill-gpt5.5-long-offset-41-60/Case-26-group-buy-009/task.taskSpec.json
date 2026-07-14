@@ -1,0 +1,127 @@
+{
+  "userQuery": "主题色背景的拼单卡,内嵌几个小面板,固定文案显示规则,口味能勾选,日历读截单时间,成单了绿色显示,点一下导航到取单点。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.230416",
+            "longitude": "121.473701"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历中匹配拼单截单时间的事件列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar_group_buy_cutoff_001",
+              "title": "拼单截单",
+              "dtStart": "18:30",
+              "dtEnd": "18:35"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条拼单截单日历事件",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识",
+                "sampleValue": "calendar_group_buy_cutoff_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题",
+                "sampleValue": "拼单截单"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "截单开始时间，优先显示当天 HH:MM",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "截单结束时间，优先显示当天 HH:MM",
+                "sampleValue": "18:35"
+              }
+            }
+          }
+        }
+      }
+    },
+    "group": {
+      "statusText": {
+        "type": "string",
+        "description": "拼单当前成团状态文案",
+        "sampleValue": "已成团"
+      }
+    },
+    "flavors": {
+      "type": "array",
+      "description": "可勾选的口味偏好",
+      "sampleValue": [
+        {
+          "label": "微辣",
+          "value": "mild_spicy",
+          "select": true
+        },
+        {
+          "label": "少葱",
+          "value": "less_scallion",
+          "select": false
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单个口味选项",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "口味选项显示名称",
+            "sampleValue": "微辣"
+          },
+          "value": {
+            "type": "string",
+            "description": "口味选项值",
+            "sampleValue": "mild_spicy"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "口味是否已勾选",
+            "sampleValue": true
+          }
+        }
+      }
+    },
+    "pickup": {
+      "location": {
+        "latitude": {
+          "type": "string",
+          "description": "取单点纬度，用于地图导航",
+          "sampleValue": "31.230416"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "取单点经度，用于地图导航",
+          "sampleValue": "121.473701"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于截单时间或日程信息的小面板识别。"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "userQuery": "帮我做个赛程卡片,左半边用列表展示我订阅的几场篮球比赛(周三勇士vs湖人、周五掘金vs热火),有比赛因为直播源问题取消就用红色标\"已取消\"告警。右半边是动作区,点比赛跳日历看具体时间。整卡浅米色底,搭配清晨到白天的环境渐变,看着舒服点。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "basketball-warriors-lakers"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "basketball-nuggets-heat"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "games": {
+        "0": {
+          "day": {
+            "type": "string",
+            "description": "第一场订阅篮球比赛的星期展示文本",
+            "sampleValue": "周三"
+          },
+          "matchup": {
+            "type": "string",
+            "description": "第一场订阅篮球比赛的对阵双方",
+            "sampleValue": "勇士 vs 湖人"
+          },
+          "timeText": {
+            "type": "string",
+            "description": "第一场比赛在日历中的时间展示文本",
+            "sampleValue": "19:30"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "第一场比赛直播或赛程状态",
+            "sampleValue": "直播"
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "第一场比赛状态文本颜色",
+            "sampleValue": "#99000000"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "第一场比赛对应的日历事件标识",
+            "sampleValue": "basketball-warriors-lakers"
+          }
+        },
+        "1": {
+          "day": {
+            "type": "string",
+            "description": "第二场订阅篮球比赛的星期展示文本",
+            "sampleValue": "周五"
+          },
+          "matchup": {
+            "type": "string",
+            "description": "第二场订阅篮球比赛的对阵双方",
+            "sampleValue": "掘金 vs 热火"
+          },
+          "timeText": {
+            "type": "string",
+            "description": "第二场比赛在日历中的时间展示文本",
+            "sampleValue": "20:00"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "第二场比赛直播或赛程状态",
+            "sampleValue": "已取消"
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "第二场比赛状态文本颜色，取消时使用告警红色",
+            "sampleValue": "#FFE84026"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "第二场比赛对应的日历事件标识",
+            "sampleValue": "basketball-nuggets-heat"
+          }
+        }
+      },
+      "action": {
+        "title": {
+          "type": "string",
+          "description": "动作区标题",
+          "sampleValue": "查看日历"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "动作区辅助说明",
+          "sampleValue": "点比赛看具体时间"
+        },
+        "buttonLabel": {
+          "type": "string",
+          "description": "动作区按钮文案",
+          "sampleValue": "打开日历"
+        }
+      },
+      "assets": {
+        "calendarIcon": {
+          "type": "string",
+          "description": "日历动作区图标素材路径",
+          "sampleValue": "resources/base/media/calendar_fill.svg"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于日程管理、查看比赛日历事件和时间详情入口。",
+      "bindTo": "/data/assets/calendarIcon"
+    }
+  ]
+}

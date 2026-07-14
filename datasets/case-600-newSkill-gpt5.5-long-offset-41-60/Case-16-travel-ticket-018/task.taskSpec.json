@@ -1,0 +1,88 @@
+{
+  "userQuery": "做一张出行仪表卡,上半部分放一个大的登机牌图当主视觉,下面用两个分区的环图分别显示里程和登机口信息,各分区不同底色,夜晚蓝紫渐变,小图标用 ✈ ⌛ 这种文字符号,显示\"已值机·在线选座可用\"的正向状态,需要读取我日历里后天的航班。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "flight_evt_20260715"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历航班事件唯一标识符，用于打开日程详情。",
+              "sampleValue": "flight_evt_20260715"
+            },
+            "title": {
+              "type": "string",
+              "description": "后天日历中的航班标题。",
+              "sampleValue": "CA1831"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "航班出发与到达机场或航站楼信息。",
+              "sampleValue": "PEK T3 -> SHA"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "航班起飞时间。",
+              "sampleValue": "20:35"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "航班到达时间。",
+              "sampleValue": "22:45"
+            },
+            "description": {
+              "type": "string",
+              "description": "日历航班备注摘要，包含值机、在线选座、里程和登机口等票务信息。",
+              "sampleValue": "已值机·在线选座可用｜里程 1088 km｜登机口 C12"
+            }
+          }
+        ]
+      }
+    },
+    "flight": {
+      "status": {
+        "type": "string",
+        "description": "航班票务正向状态。",
+        "sampleValue": "已值机·在线选座可用"
+      },
+      "mileageLabel": {
+        "type": "string",
+        "description": "里程指标标签。",
+        "sampleValue": "1088km"
+      },
+      "gateLabel": {
+        "type": "string",
+        "description": "登机口指标标签。",
+        "sampleValue": "C12"
+      },
+      "mileageProgress": {
+        "type": "number",
+        "description": "里程环图进度值。",
+        "sampleValue": 72
+      },
+      "gateProgress": {
+        "type": "number",
+        "description": "登机口信息环图进度值。",
+        "sampleValue": 86
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞图标，适合用于航班出发信息和登机牌主视觉。"
+    }
+  ]
+}

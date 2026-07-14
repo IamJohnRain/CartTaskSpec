@@ -1,0 +1,84 @@
+{
+  "userQuery": "根据天气推荐省钱日程的卡,左边主视觉显示天气(比如阴天),右边列出现在适合做的省钱活动(在家做饭、步行通勤),浅色底,接近预算阈值要标黄,字符图标,纵向排。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "saving-plan-today"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称",
+            "sampleValue": "青浦"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于左侧主视觉状态",
+            "sampleValue": "阴"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "22°C"
+          }
+        }
+      }
+    },
+    "budget": {
+      "statusText": {
+        "type": "string",
+        "description": "当前预算使用状态的短文本",
+        "sampleValue": "近阈值"
+      },
+      "statusColor": {
+        "type": "string",
+        "description": "预算状态提示色，接近阈值时使用 warning 色",
+        "sampleValue": "#ffe84026"
+      }
+    },
+    "recommendations": [
+      {
+        "icon": {
+          "type": "string",
+          "description": "第一条省钱活动的字符图标",
+          "sampleValue": "炊"
+        },
+        "title": {
+          "type": "string",
+          "description": "第一条当前适合做的省钱活动",
+          "sampleValue": "在家做饭"
+        }
+      },
+      {
+        "icon": {
+          "type": "string",
+          "description": "第二条省钱活动的字符图标",
+          "sampleValue": "行"
+        },
+        "title": {
+          "type": "string",
+          "description": "第二条当前适合做的省钱活动",
+          "sampleValue": "步行通勤"
+        }
+      }
+    ]
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "云朵组合彩色天气图标，可用于阴天或多云天气的主视觉识别。"
+    }
+  ]
+}

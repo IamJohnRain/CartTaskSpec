@@ -1,0 +1,110 @@
+{
+  "userQuery": "帮我做一个盯老家天气的卡片，上面左右并排显示今日温度和明日温度，左边加个勾选框用来确认“已提醒父母关窗”。如果预报有大风就标黄提示“注意坠物”，用文字加底色排版就行。下面用静态数据列个最近几天的温度清单，点进去能跳天气应用。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "老家所在区县名称",
+            "sampleValue": "青浦"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "老家所在城市名称",
+            "sampleValue": "上海"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "今日天气现象",
+            "sampleValue": "多云"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "今日当前温度展示文本",
+            "sampleValue": "29°C"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "今日风力等级",
+            "sampleValue": 5
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天起的每日天气预报",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "24° / 31°"
+            },
+            {
+              "weekday": "明天",
+              "condition": "阵风",
+              "temperatureRangeText": "23° / 30°"
+            },
+            {
+              "weekday": "后天",
+              "condition": "小雨",
+              "temperatureRangeText": "22° / 28°"
+            }
+          ],
+          "items": {
+            "weekday": {
+              "type": "string",
+              "description": "预报对应星期或相对日期",
+              "sampleValue": "今天"
+            },
+            "condition": {
+              "type": "string",
+              "description": "白天天气现象",
+              "sampleValue": "多云"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "每日温度范围展示文本",
+              "sampleValue": "24° / 31°"
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "reminderChecked": {
+        "type": "boolean",
+        "description": "是否已提醒父母关窗的本地确认状态",
+        "sampleValue": false
+      },
+      "windWarningText": {
+        "type": "string",
+        "description": "大风预报时展示的坠物风险提示",
+        "sampleValue": "注意坠物"
+      },
+      "windSummary": {
+        "type": "string",
+        "description": "大风提示补充说明",
+        "sampleValue": "明日阵风 5 级"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "亲人关怀场景的天气雨伞图标，适合用于老家天气提醒卡片的身份识别。"
+    }
+  ]
+}

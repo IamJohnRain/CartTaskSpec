@@ -1,0 +1,99 @@
+{
+  "userQuery": "上次做的登机卡太丑了重做。深色舞台底，左边放个大飞机或者航旅的语义图标当主视觉。上面要有勾选框\"已值机/已托运\"那种能打勾的，绑定我的日历日程。卡片底部红色\"登机口临时变更\"告警，渐变要那种红橙紧迫感的。字标用▰▲⏱。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "用户日历中的航班登机相关日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-flight-boarding-001",
+              "title": "CA1234 登机",
+              "eventLocation": "T3 口 B12",
+              "dtStart": "08:45",
+              "dtEnd": "09:25",
+              "description": "已值机/已托运"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条航班登机日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历日程唯一标识，用于打开日程详情。",
+                "sampleValue": "calendar-flight-boarding-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "航班登机日程标题。",
+                "sampleValue": "CA1234 登机"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "登机口或航站楼位置。",
+                "sampleValue": "T3 口 B12"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "登机日程开始时间。",
+                "sampleValue": "08:45"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "登机日程结束时间。",
+                "sampleValue": "09:25"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程描述中的票务状态摘要。",
+                "sampleValue": "已值机/已托运"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "checkInDone": {
+        "type": "boolean",
+        "description": "是否已值机的受控展示状态。",
+        "sampleValue": true
+      },
+      "baggageDone": {
+        "type": "boolean",
+        "description": "是否已托运行李的受控展示状态。",
+        "sampleValue": true
+      },
+      "alertText": {
+        "type": "string",
+        "description": "底部登机口临时变更告警文案。",
+        "sampleValue": "登机口临时变更"
+      },
+      "glyphMark": {
+        "type": "string",
+        "description": "用户指定的票务字标符号。",
+        "sampleValue": "▰▲⏱"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞本地 SVG 图标，适合用于航班出发、登机卡和旅行日程的主视觉识别。"
+    }
+  ]
+}

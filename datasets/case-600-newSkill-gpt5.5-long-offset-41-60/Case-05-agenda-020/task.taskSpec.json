@@ -1,0 +1,96 @@
+{
+  "userQuery": "做个深色舞台风的时间管理卡片，左边是信息区放日程，右边是动作区放操作。背景叠加几个图层，最底下是日程列表纵向排列，上面浮着一个环形进度条，圆环中心叠加大号数字显示我今天的专注力得分。日程上的准备工作项能双向绑定勾选，如果某项议程临近开始还没确认，就变成黄色风险状态。日程从日历同步，点一下信息区能直接进日程详情，加上时钟语义图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "evt-focus-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日程详情跳转所需的日历事件唯一标识。",
+              "sampleValue": "evt-focus-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "今天同步到的下一项日程标题。",
+              "sampleValue": "项目复盘"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下一项日程开始时间，今天内展示为 HH:MM。",
+              "sampleValue": "14:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "下一项日程结束时间，今天内展示为 HH:MM。",
+              "sampleValue": "15:10"
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "今天同步到的后一项日程标题。",
+              "sampleValue": "设计评审"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "后一项日程开始时间，今天内展示为 HH:MM。",
+              "sampleValue": "16:00"
+            }
+          }
+        ]
+      }
+    },
+    "ui": {
+      "focusScore": {
+        "type": "string",
+        "description": "今天的专注力得分，用于环形进度中心的大号数字。",
+        "sampleValue": "86"
+      },
+      "focusProgress": {
+        "type": "number",
+        "description": "今天专注力得分对应的环形进度数值。",
+        "sampleValue": 86
+      },
+      "prepConfirmed": {
+        "type": "boolean",
+        "description": "当前日程准备工作是否已确认，供复选框绑定。",
+        "sampleValue": false
+      },
+      "riskLabel": {
+        "type": "string",
+        "description": "日程临近但准备工作未确认时展示的风险状态。",
+        "sampleValue": "待确认"
+      },
+      "riskColor": {
+        "type": "string",
+        "description": "风险状态使用的黄色提示色。",
+        "sampleValue": "#d1a738"
+      },
+      "clockIcon": {
+        "type": "string",
+        "description": "时钟语义图标素材路径。",
+        "sampleValue": "resources/base/media/icon_time.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "彩色时间图标，适合用于日程提醒或时间管理卡片中的时钟语义识别。",
+      "bindTo": "/ui/clockIcon"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "userQuery": "我想盯着我女朋友学校的天气，做一个纯文字加色块的关怀卡片，整体用深蓝到粉色的早晚环境渐变。卡片里固定写上“降温提醒：明天最低-5度，记得穿厚点”，嵌入一个点击查看详情的天气面板块。要是预报风力超过6级这种有出门风险的状态，得直接标红提醒我，卡片右下角弄个“去查看天气”的点击按钮。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "学校所在地的区县名称",
+            "sampleValue": "青浦区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "学校所在地的城市名称",
+            "sampleValue": "上海市"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "-2°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "阴转小雪"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "当前或临近预报风力等级，用于判断是否存在出门风险",
+            "sampleValue": 7
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量等级",
+            "sampleValue": "良"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报",
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期文本",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象",
+                "sampleValue": "小雪"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "适合直接显示的温度范围",
+                "sampleValue": "-5° / 1°"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "weekday": "明天",
+              "condition": "小雪",
+              "temperatureRangeText": "-5° / 1°"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "端侧完成天气查询和归一化的时间",
+          "sampleValue": "07:30更新"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

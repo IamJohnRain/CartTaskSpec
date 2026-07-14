@@ -1,0 +1,131 @@
+{
+  "userQuery": "通勤卡想带点运动元素,左右分区用细线分开。左边浅蓝块写'今日步数8420步',右边浅绿块显示'下一会议还有23分钟',要读日历日程。底部横向重复两三个小方块显示最近三天步数,点步数跳到运动健康App。整体淡粉到淡紫环境氛围渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "fitness": {
+        "today": {
+          "stepsText": {
+            "type": "string",
+            "description": "今日步数展示文本",
+            "sampleValue": "8420步"
+          }
+        },
+        "recentDays": {
+          "type": "array",
+          "description": "最近三天步数摘要",
+          "sampleValue": [
+            {
+              "dayText": "前天",
+              "stepsText": "7600"
+            },
+            {
+              "dayText": "昨天",
+              "stepsText": "8230"
+            },
+            {
+              "dayText": "今天",
+              "stepsText": "8420"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日步数摘要",
+            "properties": {
+              "dayText": {
+                "type": "string",
+                "description": "日期短标签",
+                "sampleValue": "今天"
+              },
+              "stepsText": {
+                "type": "string",
+                "description": "单日步数数值文本",
+                "sampleValue": "8420"
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-001",
+              "title": "项目同步会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "minutesUntilText": "23分钟"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar-demo-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "项目同步会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "10:00"
+              },
+              "minutesUntilText": {
+                "type": "string",
+                "description": "距离下一场会议开始的剩余时间展示文本",
+                "sampleValue": "23分钟"
+              }
+            }
+          }
+        }
+      }
+    },
+    "assets": {
+      "runIcon": {
+        "type": "string",
+        "description": "运动跑步图标资源路径",
+        "sampleValue": "resources/base/media/icon_run.png"
+      },
+      "scheduleIcon": {
+        "type": "string",
+        "description": "日程图标资源路径",
+        "sampleValue": "resources/base/media/icon_schedule.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动/跑步图标，适合表示步数、运动健康入口和通勤中的运动元素。",
+      "bindTo": "/assets/runIcon"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合表示下一会议、日历日程和时间安排。",
+      "bindTo": "/assets/scheduleIcon"
+    }
+  ]
+}
