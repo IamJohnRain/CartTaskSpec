@@ -1,0 +1,138 @@
+{
+  "userQuery": "我要一张深色舞台风的通知卡片,中间用环形进度条显示\"距离台风预警还有6小时\"(固定文字+动态数字的组合),旁边几个数据格显示风力等级。卡片纵向排3-4条天气预警,每条都用文字图标(☀☁☂那种),右上角⚙跳系统设置。临近阈值(风速超过8级)要标黄警告一下,样式不要渐变,纯深底配亮色数字就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气预警所在区县名称",
+            "sampleValue": "深圳"
+          }
+        },
+        "current": {
+          "windDirection": {
+            "type": "string",
+            "description": "当前风向",
+            "sampleValue": "东南风"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "当前风力等级",
+            "sampleValue": 9
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警等级",
+            "sampleValue": "台风黄色预警"
+          }
+        },
+        "warning": {
+          "hoursToTyphoonAlert": {
+            "type": "integer",
+            "description": "距离台风预警触发或升级的剩余小时数",
+            "sampleValue": 6
+          },
+          "progressValue": {
+            "type": "integer",
+            "description": "台风预警倒计时环形进度值",
+            "sampleValue": 75
+          },
+          "progressTotal": {
+            "type": "integer",
+            "description": "台风预警倒计时环形进度总值",
+            "sampleValue": 100
+          },
+          "thresholdLevel": {
+            "type": "integer",
+            "description": "需要标黄提示的风力等级阈值",
+            "sampleValue": 8
+          },
+          "gustLevel": {
+            "type": "integer",
+            "description": "阵风风力等级",
+            "sampleValue": 11
+          },
+          "riskText": {
+            "type": "string",
+            "description": "临近阈值或超过阈值时的简短提示",
+            "sampleValue": "风速超过8级"
+          },
+          "items": {
+            "type": "array",
+            "description": "天气预警摘要列表，按紧急程度排序",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "预警短标题",
+                  "sampleValue": "台风预警"
+                },
+                "detail": {
+                  "type": "string",
+                  "description": "预警摘要内容",
+                  "sampleValue": "6小时内影响"
+                },
+                "iconSrc": {
+                  "type": "string",
+                  "description": "预警对应的本地天气图标资源路径",
+                  "sampleValue": "resources/base/media/typhoon_fill.svg"
+                }
+              }
+            },
+            "sampleValue": [
+              {
+                "title": "台风预警",
+                "detail": "6小时内影响",
+                "iconSrc": "resources/base/media/typhoon_fill.svg"
+              },
+              {
+                "title": "强降雨",
+                "detail": "短时雨强",
+                "iconSrc": "resources/base/media/rain.png"
+              },
+              {
+                "title": "雷暴云团",
+                "detail": "注意避险",
+                "iconSrc": "resources/base/media/thunderstorm.png"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "天气数据是否仍在加载",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/typhoon_fill.svg",
+      "description": "台风漩涡造型本地 SVG，适合台风预警主视觉或预警行识别。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "雨云与雨滴彩色图标，适合降雨预警或天气列表状态。"
+    },
+    {
+      "src": "resources/base/media/thunderstorm.png",
+      "description": "雷暴云团彩色图标，适合雷暴或强对流天气预警。"
+    }
+  ]
+}

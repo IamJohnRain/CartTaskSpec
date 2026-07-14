@@ -1,0 +1,84 @@
+{
+  "userQuery": "想要一张水电费账单卡片,上面环形图显示已用82%(快到上限红色警示),底下大按钮\"立即缴费\",点进日历看缴费日日程。纯色块分区,上深下浅,紧急橙红渐变,不用图片。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "bill": {
+        "title": {
+          "type": "string",
+          "description": "水电费账单标题",
+          "sampleValue": "水电费账单"
+        },
+        "usagePercent": {
+          "type": "number",
+          "description": "当前已用额度百分比数值",
+          "sampleValue": 82
+        },
+        "usageText": {
+          "type": "string",
+          "description": "当前已用额度百分比展示文本",
+          "sampleValue": "已用 82%"
+        },
+        "warningText": {
+          "type": "string",
+          "description": "接近缴费或额度上限的警示提示",
+          "sampleValue": "快到上限"
+        },
+        "limitText": {
+          "type": "string",
+          "description": "账单额度或用量上限提示",
+          "sampleValue": "本期上限 100%"
+        },
+        "actionText": {
+          "type": "string",
+          "description": "账单缴费主操作文案",
+          "sampleValue": "立即缴费"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "缴费日日程列表",
+          "items": {
+            "type": "object",
+            "description": "缴费日日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于点击查看日程详情",
+                "sampleValue": "utility-pay-20260713"
+              },
+              "title": {
+                "type": "string",
+                "description": "缴费日日程标题",
+                "sampleValue": "水电费缴费日"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "缴费日程开始时间",
+                "sampleValue": "18:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "缴费日程结束时间",
+                "sampleValue": "18:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

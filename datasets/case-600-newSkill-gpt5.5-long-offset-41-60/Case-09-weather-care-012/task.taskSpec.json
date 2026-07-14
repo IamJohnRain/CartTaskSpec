@@ -1,0 +1,110 @@
+{
+  "userQuery": "帮我做个天气关怀卡片看姥姥那边城市的天气，左边主视觉是个大大的乌云打雷的语义图标，整体风格是从黑灰到深蓝的环境氛围渐变，今天有暴雨暴雪，搞个“重度危险”的告警状态，卡片里弄个对象绑定的勾选框让我标记有没有给她打过电话，用静态的降雨量示例数据就行，配个按钮能跳转到天气APP，千万别整那些花里胡哨的图片。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "姥姥所在城市或区县名称",
+            "sampleValue": "姥姥那边"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "-1°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "暴雨暴雪"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气预警等级或风险提示",
+            "sampleValue": "重度危险"
+          },
+          "windDirection": {
+            "type": "string",
+            "description": "当前风向",
+            "sampleValue": "北风"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "当前风力等级",
+            "sampleValue": 7
+          }
+        },
+        "daily": [
+          {
+            "weekday": {
+              "type": "string",
+              "description": "预报星期文本",
+              "sampleValue": "今天"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "当天温度范围",
+              "sampleValue": "-4° / 1°"
+            },
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "当天降雨概率百分比",
+              "sampleValue": "96%"
+            }
+          }
+        ]
+      }
+    },
+    "care": {
+      "grandma": {
+        "displayName": {
+          "type": "string",
+          "description": "关怀对象称呼",
+          "sampleValue": "姥姥"
+        },
+        "calledToday": {
+          "type": "boolean",
+          "description": "今天是否已经给关怀对象打过电话",
+          "sampleValue": false
+        },
+        "callValue": {
+          "type": "string",
+          "description": "复选框对象绑定值",
+          "sampleValue": "grandma_today_call"
+        },
+        "callGroup": {
+          "type": "string",
+          "description": "复选框对象绑定分组",
+          "sampleValue": "family_care"
+        }
+      }
+    },
+    "static": {
+      "rainfallText": {
+        "type": "string",
+        "description": "静态降雨量示例展示文本",
+        "sampleValue": "降雨量 88mm"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/thunderstorm.png",
+      "description": "云朵、闪电和雨滴组合的彩色天气图标，适合暴雨雷电天气的主视觉识别。"
+    }
+  ]
+}

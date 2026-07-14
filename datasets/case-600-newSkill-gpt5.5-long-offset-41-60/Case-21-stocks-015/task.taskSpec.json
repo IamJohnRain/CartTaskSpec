@@ -1,0 +1,137 @@
+{
+  "userQuery": "帮我做张股票持仓卡,左边大字显示「总盈亏 +1280元」,下面放个「查看详情」按钮能点。右边横向排几只重仓股名称和当日涨跌,快到止损线那只用红字标出来。再单独留块显示今天上海天气,顺便提示「距离财报披露还有3天」这种日程。整体浅米色底别用渐变,图标都用↑↓△○这种字符。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "earnings_001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "portfolio": {
+      "summaryLabel": {
+        "type": "string",
+        "description": "持仓盈亏指标名称",
+        "sampleValue": "总盈亏"
+      },
+      "profitText": {
+        "type": "string",
+        "description": "持仓总盈亏展示文本",
+        "sampleValue": "+1280元"
+      },
+      "profitColor": {
+        "type": "string",
+        "description": "总盈亏展示颜色",
+        "sampleValue": "#ff64bb5c"
+      },
+      "holdings": [
+        {
+          "name": {
+            "type": "string",
+            "description": "第一只重仓股名称",
+            "sampleValue": "宁德"
+          },
+          "changeText": {
+            "type": "string",
+            "description": "第一只重仓股当日涨跌",
+            "sampleValue": "↑1.8%"
+          },
+          "changeColor": {
+            "type": "string",
+            "description": "第一只重仓股涨跌展示颜色",
+            "sampleValue": "#ff64bb5c"
+          }
+        },
+        {
+          "name": {
+            "type": "string",
+            "description": "第二只重仓股名称",
+            "sampleValue": "茅台"
+          },
+          "changeText": {
+            "type": "string",
+            "description": "第二只重仓股当日涨跌",
+            "sampleValue": "↓0.6%"
+          },
+          "changeColor": {
+            "type": "string",
+            "description": "第二只重仓股涨跌展示颜色",
+            "sampleValue": "#99000000"
+          }
+        },
+        {
+          "name": {
+            "type": "string",
+            "description": "接近止损线的重仓股名称",
+            "sampleValue": "隆基"
+          },
+          "changeText": {
+            "type": "string",
+            "description": "接近止损线重仓股当日涨跌",
+            "sampleValue": "△-4.2%"
+          },
+          "changeColor": {
+            "type": "string",
+            "description": "接近止损线重仓股警示颜色",
+            "sampleValue": "#ffed6f21"
+          }
+        }
+      ]
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名称",
+            "sampleValue": "上海"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "财报披露日程唯一标识",
+              "sampleValue": "earnings_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "财报披露日程标题",
+              "sampleValue": "财报披露"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "财报披露日期或开始时间",
+              "sampleValue": "3天后"
+            },
+            "countdownText": {
+              "type": "string",
+              "description": "距离财报披露的倒计时摘要",
+              "sampleValue": "距离财报披露还有3天"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

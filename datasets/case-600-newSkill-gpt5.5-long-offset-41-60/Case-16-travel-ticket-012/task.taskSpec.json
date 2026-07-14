@@ -1,0 +1,63 @@
+{
+  "userQuery": "帮我做张纵向堆叠的火车行程卡,最上面大字号写车次和时间,中间显示当前里程(动态),下面嵌一个面板块写\"还有 3 站到达\"。读一下我日历里当天所有行程,如果下一个日程在 2 小时内,就提示\"行程临近\"。底色走浅米白,文字用深色,夜晚风格的紫蓝渐变压一下背景。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal-train-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "当天下一条日历行程的唯一标识符，用于查看日程详情。",
+              "sampleValue": "cal-train-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "当天下一条火车行程的日程标题，优先包含车次。",
+              "sampleValue": "G1234"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "火车行程开始时间，当天事件使用 HH:MM 格式。",
+              "sampleValue": "08:18"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "火车行程结束时间，当天事件使用 HH:MM 格式。",
+              "sampleValue": "12:06"
+            },
+            "description": {
+              "type": "string",
+              "description": "火车行程当前动态里程展示文本。",
+              "sampleValue": "当前 286 km"
+            }
+          }
+        ]
+      }
+    },
+    "ui": {
+      "stationsRemainingText": {
+        "type": "string",
+        "description": "火车行程到达前剩余站数提示。",
+        "sampleValue": "还有 3 站到达"
+      },
+      "proximityText": {
+        "type": "string",
+        "description": "当下一条日程在 2 小时内时展示的临近提醒。",
+        "sampleValue": "行程临近"
+      }
+    }
+  },
+  "assetCandidates": []
+}

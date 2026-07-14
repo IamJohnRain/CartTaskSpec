@@ -1,0 +1,155 @@
+{
+  "userQuery": "做个简洁素净的卡片，里面嵌个面板块用来纵向排列我今天的考察行程。读取日历数据，每项任务旁边带系统自带的办公楼和汽车语义图标。我要能把每个行程勾选掉，遇到快迟到的行程要变成黄色风险状态提醒。不需要渐变，点一下对应的行程能直接触发地图导航到那个地点。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "30.2741",
+            "longitude": "120.1551"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "30.2816",
+            "longitude": "120.1690"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天从本地日历读取的考察行程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "产业园办公楼考察",
+              "eventLocation": "科创中心 A 座",
+              "dtStart": "09:30",
+              "dtEnd": "10:20"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "乘车前往样板工区",
+              "eventLocation": "滨江样板工区",
+              "dtStart": "10:45",
+              "dtEnd": "11:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条考察日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "考察行程标题。",
+                "sampleValue": "产业园办公楼考察"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "考察行程地点名称。",
+                "sampleValue": "科创中心 A 座"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "当天行程开始时间，HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "当天行程结束时间，HH:MM 格式。",
+                "sampleValue": "10:20"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "item0": {
+        "done": {
+          "type": "boolean",
+          "description": "第一条行程是否已勾选完成。",
+          "sampleValue": false
+        },
+        "riskBackgroundColor": {
+          "type": "string",
+          "description": "第一条行程的风险状态背景色，快迟到时使用黄色提醒。",
+          "sampleValue": "#fffdf3d8"
+        },
+        "riskTextColor": {
+          "type": "string",
+          "description": "第一条行程的风险状态文字色。",
+          "sampleValue": "#ffe84026"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "第一条行程地点解析后的纬度，用于地图导航。",
+          "sampleValue": "30.2741"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "第一条行程地点解析后的经度，用于地图导航。",
+          "sampleValue": "120.1551"
+        }
+      },
+      "item1": {
+        "done": {
+          "type": "boolean",
+          "description": "第二条行程是否已勾选完成。",
+          "sampleValue": false
+        },
+        "riskBackgroundColor": {
+          "type": "string",
+          "description": "第二条行程的普通状态背景色。",
+          "sampleValue": "#0c000000"
+        },
+        "riskTextColor": {
+          "type": "string",
+          "description": "第二条行程的普通状态文字色。",
+          "sampleValue": "#66000000"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "第二条行程地点解析后的纬度，用于地图导航。",
+          "sampleValue": "30.2816"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "第二条行程地点解析后的经度，用于地图导航。",
+          "sampleValue": "120.1690"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_id.png",
+      "description": "工牌/办公考察语义图标，适合表示办公楼、单位到访或当下日程身份。"
+    },
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车语义图标，适合表示驾车导航、车辆出行或转场行程。"
+    }
+  ]
+}

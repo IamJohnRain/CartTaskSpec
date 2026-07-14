@@ -1,0 +1,77 @@
+{
+  "userQuery": "左边\"¥\"大图标和余额数字¥4,820,右边\"☎\"图标一键拨银行客服,下面纵向列出我4张银行卡的风险提示比如\"招商 余额不足\"、\"建行 卡片即将到期\",分区底色不一样,环境氛围渐变好看点,最近老漏接银行电话真的烦",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "95555"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "account": {
+      "balanceText": {
+        "type": "string",
+        "description": "当前账户余额展示文本，包含货币符号和千分位。",
+        "sampleValue": "¥4,820"
+      },
+      "riskSummary": {
+        "type": "string",
+        "description": "银行卡风险提醒数量摘要。",
+        "sampleValue": "4张风险提醒"
+      }
+    },
+    "support": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "银行客服电话号码，用于拨号事件参数。",
+        "sampleValue": "95555"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "description": "银行卡风险提示列表。",
+      "sampleValue": [
+        {
+          "bank": "招商",
+          "message": "余额不足"
+        },
+        {
+          "bank": "建行",
+          "message": "卡片即将到期"
+        },
+        {
+          "bank": "工行",
+          "message": "本月扣款失败"
+        },
+        {
+          "bank": "中行",
+          "message": "预留电话待确认"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单张银行卡的风险提示。",
+        "properties": {
+          "bank": {
+            "type": "string",
+            "description": "银行卡所属银行简称。",
+            "sampleValue": "招商"
+          },
+          "message": {
+            "type": "string",
+            "description": "银行卡风险提示短文案。",
+            "sampleValue": "余额不足"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/phone_fill.svg",
+      "description": "电话听筒实心图标，适合银行客服拨号入口。"
+    }
+  ]
+}

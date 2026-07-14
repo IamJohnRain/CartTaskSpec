@@ -1,0 +1,93 @@
+{
+  "userQuery": "做张宝宝生日相册卡,浅粉底+黄昏氛围渐变。左边用文字字符⊞做日历图标,右边信息区显示\"距离宝宝生日还有 12 天\"这种固定文字+动态数值拼接,下面\"查看活动日程\"按钮点了能进入10/15 14:00 生日派对这条日历事件。右上角红色感叹号提示\"上次备份失败 3张照片未同步\"危险告警,左右分区不用列表。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "生日派对日历事件列表，卡片只使用第一条事件。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "birthday-party-20261015-1400",
+              "title": "生日派对",
+              "dtStart": "14:00",
+              "dtEnd": "16:00",
+              "eventLocation": "家"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日历事件实体类型。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "用于进入日历详情的事件唯一标识。",
+                "sampleValue": "birthday-party-20261015-1400"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "生日派对"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "14:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "16:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点。",
+                "sampleValue": "家"
+              }
+            }
+          }
+        }
+      }
+    },
+    "view": {
+      "daysRemaining": {
+        "type": "integer",
+        "description": "距离宝宝生日的剩余天数，用于和固定文案拼接展示。",
+        "sampleValue": 12
+      },
+      "unsyncedPhotoCount": {
+        "type": "integer",
+        "description": "上次备份失败后未同步的照片数量。",
+        "sampleValue": 3
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，黑色，适合日程管理和日历事件查看。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程彩色图标，适合当下日程入口和日程提醒。"
+    }
+  ]
+}

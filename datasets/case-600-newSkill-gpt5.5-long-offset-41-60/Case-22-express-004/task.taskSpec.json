@@ -1,0 +1,131 @@
+{
+  "userQuery": "快递卡要深色舞台风,左边主视觉。能读天气,暴雨就标'危险:派送延迟'警告,每行'加入提醒'勾选。主按钮'查看完整物流'跳到天气应用,看啥时候雨停再下楼取。环境渐变,文字图标,能滚动。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "express": {
+        "title": {
+          "type": "string",
+          "description": "快递卡标题，用于标识当前物流服务对象。",
+          "sampleValue": "快递物流"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "非暴雨时展示的当前物流状态。",
+          "sampleValue": "派送中"
+        },
+        "route": {
+          "type": "string",
+          "description": "当前快递物流节点或派送位置摘要。",
+          "sampleValue": "快递员已到小区"
+        },
+        "pickupHint": {
+          "type": "string",
+          "description": "结合天气给出的取件提示。",
+          "sampleValue": "雨停后下楼取件"
+        }
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气能力返回的区县名称。",
+            "sampleValue": "当前区县"
+          },
+          "cityCode": {
+            "type": "string",
+            "description": "天气应用城市代码，用于定位天气页。",
+            "sampleValue": ""
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "24°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，暴雨时用于触发派送延迟风险提示。",
+            "sampleValue": "暴雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息。",
+            "sampleValue": "暴雨橙色预警"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的天气预报摘要。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "暴雨",
+              "rainProbabilityPercent": "92%"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨转阴",
+              "rainProbabilityPercent": "45%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "预报星期文本。",
+                "sampleValue": "今天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "暴雨"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比。",
+                "sampleValue": "92%"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "reminders": {
+        "first": {
+          "type": "boolean",
+          "description": "第一行加入提醒勾选状态。",
+          "sampleValue": true
+        },
+        "second": {
+          "type": "boolean",
+          "description": "第二行加入提醒勾选状态。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱子图标，适合用于物流卡片左侧主视觉。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "彩色云朵和雨滴图标，适合用于暴雨或降雨天气状态提示。"
+    }
+  ]
+}

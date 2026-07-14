@@ -1,0 +1,199 @@
+{
+  "userQuery": "想要一张能看完今天家里和日程的事的卡。最上面大号字写\"今日设备·全部可用\",下面用细线分两个区,记得用细线别用粗的。日历区显示\"14:00 取快递\"\"18:00 做饭\",勾选框确认完成;天气区显示\"晴转多云 25℃\"。点日历区跳日程、点天气区跳天气应用。素白底,不用渐变,小图标用家、太阳、日历就行。每次早上看一张卡就齐活,别再切来切去。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "卡片动态数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "calendar_001",
+              "dtStart": "14:00",
+              "title": "取快递"
+            },
+            {
+              "entityId": "calendar_002",
+              "dtStart": "18:00",
+              "title": "做饭"
+            }
+          ]
+        },
+        "weather": {
+          "current": {
+            "condition": "晴转多云",
+            "temperatureText": "25℃"
+          }
+        }
+      },
+      "properties": {
+        "calendar": {
+          "type": "object",
+          "description": "今天的日历事件查询结果。",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "calendar_001",
+                "dtStart": "14:00",
+                "title": "取快递"
+              },
+              {
+                "entityId": "calendar_002",
+                "dtStart": "18:00",
+                "title": "做饭"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "今天需要展示的日程条目。",
+              "sampleValue": [
+                {
+                  "entityId": "calendar_001",
+                  "dtStart": "14:00",
+                  "title": "取快递"
+                },
+                {
+                  "entityId": "calendar_002",
+                  "dtStart": "18:00",
+                  "title": "做饭"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单条日程。",
+                "sampleValue": {
+                  "entityId": "calendar_001",
+                  "dtStart": "14:00",
+                  "title": "取快递"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日程唯一标识，用于跳转日程详情。",
+                    "sampleValue": "calendar_001"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "当天日程开始时间，HH:MM 格式。",
+                    "sampleValue": "14:00"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "日程标题。",
+                    "sampleValue": "取快递"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "weather": {
+          "type": "object",
+          "description": "当前位置天气概要。",
+          "sampleValue": {
+            "current": {
+              "condition": "晴转多云",
+              "temperatureText": "25℃"
+            }
+          },
+          "properties": {
+            "current": {
+              "type": "object",
+              "description": "当前天气实况。",
+              "sampleValue": {
+                "condition": "晴转多云",
+                "temperatureText": "25℃"
+              },
+              "properties": {
+                "condition": {
+                  "type": "string",
+                  "description": "当前天气现象。",
+                  "sampleValue": "晴转多云"
+                },
+                "temperatureText": {
+                  "type": "string",
+                  "description": "适合直接展示的温度文本。",
+                  "sampleValue": "25℃"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "卡片受控静态辅助展示状态。",
+      "sampleValue": {
+        "title": "今日设备·全部可用",
+        "checked": {
+          "first": false,
+          "second": false
+        }
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "卡片顶部主标题。",
+          "sampleValue": "今日设备·全部可用"
+        },
+        "checked": {
+          "type": "object",
+          "description": "日程确认勾选状态。",
+          "sampleValue": {
+            "first": false,
+            "second": false
+          },
+          "properties": {
+            "first": {
+              "type": "boolean",
+              "description": "第一条日程是否已确认完成。",
+              "sampleValue": false
+            },
+            "second": {
+              "type": "boolean",
+              "description": "第二条日程是否已确认完成。",
+              "sampleValue": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/house_fill.svg",
+      "description": "房屋实心图标，适合表示家和智能家居入口。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表示今日日程区域。"
+    },
+    {
+      "src": "resources/base/media/sunny.png",
+      "description": "彩色太阳图标，适合表示晴天或天气区域。"
+    }
+  ]
+}

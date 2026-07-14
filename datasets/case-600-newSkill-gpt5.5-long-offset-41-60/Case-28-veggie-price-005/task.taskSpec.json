@@ -1,0 +1,166 @@
+{
+  "userQuery": "我每次去菜场都忘买几样,做张买菜清单卡左边清单右边操作区。要能勾选已买的菜状态实时同步,带浅米色底,渐变用运动那种紧迫感,提示\"还差2样没买\"。点闹钟定个做饭提醒,周日采购日程从日历读",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "shopping": {
+      "type": "object",
+      "description": "买菜清单状态数据。",
+      "sampleValue": {
+        "items": [
+          {
+            "name": "番茄",
+            "bought": true
+          },
+          {
+            "name": "青菜",
+            "bought": false
+          },
+          {
+            "name": "土豆",
+            "bought": false
+          }
+        ],
+        "remainingText": "还差2样",
+        "remainingTail": "没买"
+      },
+      "items": {
+        "type": "array",
+        "description": "买菜条目列表，每项包含名称和是否已买状态。",
+        "sampleValue": [
+          {
+            "name": "番茄",
+            "bought": true
+          },
+          {
+            "name": "青菜",
+            "bought": false
+          },
+          {
+            "name": "土豆",
+            "bought": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个买菜条目。",
+          "sampleValue": {
+            "name": "番茄",
+            "bought": true
+          },
+          "name": {
+            "type": "string",
+            "description": "菜品名称。",
+            "sampleValue": "番茄"
+          },
+          "bought": {
+            "type": "boolean",
+            "description": "菜品是否已购买，用于同步 Checkbox 勾选状态。",
+            "sampleValue": true
+          }
+        }
+      },
+      "remainingText": {
+        "type": "string",
+        "description": "未购买菜品数量的短提示。",
+        "sampleValue": "还差2样"
+      },
+      "remainingTail": {
+        "type": "string",
+        "description": "未购买状态补充文案。",
+        "sampleValue": "没买"
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧数据能力写入根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "calendar-001",
+              "title": "周日采购",
+              "dtStart": "09:00",
+              "dtEnd": "10:00"
+            }
+          ]
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "日历查询结果。",
+        "sampleValue": {
+          "items": [
+            {
+              "entityId": "calendar-001",
+              "title": "周日采购",
+              "dtStart": "09:00",
+              "dtEnd": "10:00"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "周日采购日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-001",
+              "title": "周日采购",
+              "dtStart": "09:00",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程。",
+            "sampleValue": {
+              "entityId": "calendar-001",
+              "title": "周日采购",
+              "dtStart": "09:00",
+              "dtEnd": "10:00"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识符。",
+              "sampleValue": "calendar-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "周日采购"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间。",
+              "sampleValue": "09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间。",
+              "sampleValue": "10:00"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "黑色日历实心图标，适合表示周日采购日程来源。"
+    },
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "黑白双色闹钟实心图标，适合表示做饭提醒入口。"
+    }
+  ]
+}

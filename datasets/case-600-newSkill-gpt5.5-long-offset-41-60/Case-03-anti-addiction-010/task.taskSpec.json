@@ -1,0 +1,127 @@
+{
+  "userQuery": "做个学习模式管控卡片，上面区域用醒目颜色放大号字体显示主视觉，中间放几个可勾选的固定任务选项比如完成作业和阅读，整体加个从橙色到红色的倒计时渐变效果，勾选完以后旁边出现绿色的打勾图标表示任务已达成，卡片下半部分换个底色，底部的按钮要能直接跳进系统设置里的应用限额去解锁娱乐APP，顺便联动一下日历日程看今天有没有课外班。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "mode": {
+      "title": {
+        "type": "string",
+        "description": "学习模式卡片标题",
+        "sampleValue": "学习模式"
+      },
+      "remainingMinutes": {
+        "type": "string",
+        "description": "距离娱乐应用解锁的剩余分钟数",
+        "sampleValue": "25"
+      },
+      "remainingUnit": {
+        "type": "string",
+        "description": "倒计时单位",
+        "sampleValue": "分钟"
+      }
+    },
+    "tasks": {
+      "homework": {
+        "label": {
+          "type": "string",
+          "description": "固定学习任务：完成作业",
+          "sampleValue": "作业"
+        },
+        "done": {
+          "type": "boolean",
+          "description": "完成作业是否已勾选达成",
+          "sampleValue": true
+        },
+        "statusIcon": {
+          "type": "string",
+          "description": "完成作业达成时显示的绿色打勾标记",
+          "sampleValue": "✓"
+        }
+      },
+      "reading": {
+        "label": {
+          "type": "string",
+          "description": "固定学习任务：阅读",
+          "sampleValue": "阅读"
+        },
+        "done": {
+          "type": "boolean",
+          "description": "阅读任务是否已勾选达成",
+          "sampleValue": false
+        },
+        "statusIcon": {
+          "type": "string",
+          "description": "阅读任务达成时显示的绿色打勾标记",
+          "sampleValue": ""
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天日历日程列表，用于判断是否有课外班",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "event_after_class_001",
+              "title": "课外班",
+              "dtStart": "18:30",
+              "dtEnd": "20:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历日程",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "event_after_class_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "课外班"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "20:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_timing.png",
+      "description": "防沉迷计时图标，可用于学习模式倒计时主视觉或时间提示。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，可用于表示今天日程或课外班安排。"
+    }
+  ]
+}

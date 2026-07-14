@@ -1,0 +1,94 @@
+{
+  "userQuery": "出差行程卡片上面静态显示航班号时间,下面一个\"立即值机\"大按钮,航班取消标红,简洁素净别用渐变,读日历日程。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历中匹配出差航班行程的日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-flight-001",
+              "title": "CA1831 北京-上海",
+              "dtStart": "08:20",
+              "dtEnd": "10:35",
+              "eventLocation": "首都机场 T3",
+              "description": "航班取消，请关注改签通知",
+              "oneClickServiceType": "checkIn",
+              "isServiceValid": 2
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条航班行程日程。",
+            "sampleValue": {
+              "entityId": "calendar-flight-001",
+              "title": "CA1831 北京-上海",
+              "dtStart": "08:20",
+              "dtEnd": "10:35",
+              "eventLocation": "首都机场 T3",
+              "description": "航班取消，请关注改签通知",
+              "oneClickServiceType": "checkIn",
+              "isServiceValid": 2
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开日程详情。",
+                "sampleValue": "calendar-flight-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "航班行程日程标题，通常包含航班号和城市信息。",
+                "sampleValue": "CA1831 北京-上海"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "航班日程开始时间。",
+                "sampleValue": "08:20"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "航班日程结束时间。",
+                "sampleValue": "10:35"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "航班相关地点或航站楼信息。",
+                "sampleValue": "首都机场 T3"
+              },
+              "description": {
+                "type": "string",
+                "description": "航班状态或补充说明。",
+                "sampleValue": "航班取消，请关注改签通知"
+              },
+              "oneClickServiceType": {
+                "type": "string",
+                "description": "日历日程关联的一键服务类型。",
+                "sampleValue": "checkIn"
+              },
+              "isServiceValid": {
+                "type": "integer",
+                "description": "一键服务可用状态，2 表示可用。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

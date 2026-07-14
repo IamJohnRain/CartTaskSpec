@@ -1,0 +1,153 @@
+{
+  "userQuery": "想要一张主题色背景的待办卡,卡片里嵌一块面板块,里面是可滚动的勾选任务,每条写成\"距离周五还有3天\"这种固定文字加动态数值,完成的任务标\"已达成\"绿色,可以点进对应日程看详情,读一下天气,用字符图标,不要渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询地区名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "可点入详情的日程项列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-001",
+              "title": "周五项目收尾",
+              "dtStart": "09:00",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityId": "calendar-002",
+              "title": "周五材料确认",
+              "dtStart": "14:00",
+              "dtEnd": "15:00"
+            },
+            {
+              "entityId": "calendar-003",
+              "title": "周五复盘",
+              "dtStart": "17:00",
+              "dtEnd": "18:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于打开日程详情。",
+                "sampleValue": "calendar-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "周五项目收尾"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "todo": {
+      "items": {
+        "type": "array",
+        "description": "待办任务展示项。",
+        "sampleValue": [
+          {
+            "daysRemaining": 3,
+            "completed": false,
+            "statusText": ""
+          },
+          {
+            "daysRemaining": 2,
+            "completed": false,
+            "statusText": ""
+          },
+          {
+            "daysRemaining": 1,
+            "completed": true,
+            "statusText": "已达成"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "properties": {
+            "daysRemaining": {
+              "type": "integer",
+              "description": "距离周五剩余天数。",
+              "sampleValue": 3
+            },
+            "completed": {
+              "type": "boolean",
+              "description": "任务是否已完成。",
+              "sampleValue": false
+            },
+            "statusText": {
+              "type": "string",
+              "description": "完成任务的确认状态文案。",
+              "sampleValue": "已达成"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,151 @@
+{
+  "userQuery": "做个极简风格的防沉迷卡片，表面内嵌几个面板块，里面带个能上下滚动的列表，列出今天各个App的使用动态时长。顶上显示“距离睡觉还有2小时”的固定文字加动态时间，旁边放个天气数据的小图标。弄几个勾选项让我选今天要限制哪些App，下面整个能切换“专注模式”的开关，整体加点类似夜晚睡眠的柔和环境渐变，图标用简单的文字字符表示就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "headline": {
+      "type": "string",
+      "description": "睡前倒计时固定提示文案。",
+      "sampleValue": "距离睡觉还有2小时"
+    },
+    "currentTimeText": {
+      "type": "string",
+      "description": "当前动态时间展示文本。",
+      "sampleValue": "21:30"
+    },
+    "weatherGlyph": {
+      "type": "string",
+      "description": "用于表达天气的小型文字字符。",
+      "sampleValue": "☁"
+    },
+    "focusMode": {
+      "type": "object",
+      "description": "专注模式开关展示状态。",
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "专注模式名称。",
+          "sampleValue": "专注模式"
+        },
+        "stateText": {
+          "type": "string",
+          "description": "专注模式当前状态文案。",
+          "sampleValue": "开启"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "专注模式是否开启。",
+          "sampleValue": true
+        }
+      }
+    },
+    "screenTime": {
+      "type": "object",
+      "description": "今天各 App 使用时长和限制选择样例。",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "今日 App 使用总览。",
+          "sampleValue": "今日使用 3小时20分"
+        },
+        "apps": {
+          "type": "array",
+          "description": "今天各 App 使用时长列表。",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "App 名称。",
+                "sampleValue": "短视频"
+              },
+              "durationText": {
+                "type": "string",
+                "description": "今天该 App 的使用时长展示文本。",
+                "sampleValue": "1小时12分"
+              },
+              "selected": {
+                "type": "boolean",
+                "description": "今天是否选择限制该 App。",
+                "sampleValue": true
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "name": "短视频",
+              "durationText": "1小时12分",
+              "selected": true
+            },
+            {
+              "name": "游戏",
+              "durationText": "48分",
+              "selected": true
+            },
+            {
+              "name": "社交",
+              "durationText": "36分",
+              "selected": false
+            },
+            {
+              "name": "阅读",
+              "durationText": "24分",
+              "selected": false
+            }
+          ]
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧能力数据根节点。",
+      "properties": {
+        "weather": {
+          "type": "object",
+          "description": "天气能力输出。",
+          "properties": {
+            "current": {
+              "type": "object",
+              "description": "当前天气实况。",
+              "properties": {
+                "temperatureText": {
+                  "type": "string",
+                  "description": "当前温度展示文本。",
+                  "sampleValue": "18°C"
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "当前天气现象。",
+                  "sampleValue": "多云"
+                }
+              }
+            },
+            "updatedAt": {
+              "type": "string",
+              "description": "天气数据更新时间。",
+              "sampleValue": "21:25"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,145 @@
+{
+  "userQuery": "做一个低电模式开关卡片，左边放一个电池主视觉图标，右边分区不同底色，标题写\"省电设置\"，可滚动的列表显示我最近几天的耗电应用排行，底部一个\"立即开启省电模式\"的红色按钮，告警状态用渐变橙红那种紧迫感。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "端侧能力返回数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "title": "视频应用",
+              "dtStart": "近3天",
+              "dtEnd": "32%",
+              "description": "排行第1"
+            },
+            {
+              "title": "社交应用",
+              "dtStart": "近3天",
+              "dtEnd": "24%",
+              "description": "排行第2"
+            },
+            {
+              "title": "地图应用",
+              "dtStart": "近3天",
+              "dtEnd": "18%",
+              "description": "排行第3"
+            }
+          ]
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "用于承载最近几天排行条目的动态数据。",
+        "sampleValue": {
+          "items": [
+            {
+              "title": "视频应用",
+              "dtStart": "近3天",
+              "dtEnd": "32%",
+              "description": "排行第1"
+            },
+            {
+              "title": "社交应用",
+              "dtStart": "近3天",
+              "dtEnd": "24%",
+              "description": "排行第2"
+            },
+            {
+              "title": "地图应用",
+              "dtStart": "近3天",
+              "dtEnd": "18%",
+              "description": "排行第3"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "最近几天的耗电应用排行条目。",
+          "sampleValue": [
+            {
+              "title": "视频应用",
+              "dtStart": "近3天",
+              "dtEnd": "32%",
+              "description": "排行第1"
+            },
+            {
+              "title": "社交应用",
+              "dtStart": "近3天",
+              "dtEnd": "24%",
+              "description": "排行第2"
+            },
+            {
+              "title": "地图应用",
+              "dtStart": "近3天",
+              "dtEnd": "18%",
+              "description": "排行第3"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个耗电应用排行条目。",
+            "sampleValue": {
+              "title": "视频应用",
+              "dtStart": "近3天",
+              "dtEnd": "32%",
+              "description": "排行第1"
+            },
+            "title": {
+              "type": "string",
+              "description": "应用名称或排行标题。",
+              "sampleValue": "视频应用"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "排行统计时间范围展示文本。",
+              "sampleValue": "近3天"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "应用耗电占比展示文本。",
+              "sampleValue": "32%"
+            },
+            "description": {
+              "type": "string",
+              "description": "排行顺位展示文本。",
+              "sampleValue": "排行第1"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合低电模式、省电设置和电量告警主视觉。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合省电模式状态和节能入口表达。"
+    }
+  ]
+}

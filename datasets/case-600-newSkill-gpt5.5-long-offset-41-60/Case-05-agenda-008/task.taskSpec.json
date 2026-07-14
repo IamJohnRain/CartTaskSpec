@@ -1,0 +1,196 @@
+{
+  "userQuery": "做个主题色背景的卡片，连我的日历，把纵向堆叠的会议排开。每个议程前面有个环形小仪表盘显示进度，开完的会要显示绿色的正向完成状态，最好加个这种雷厉风行的渐变色显得干练，每项议程得能勾选绑定状态，点击能查看日程详情，纵向排满多项。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "动态数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "event-001",
+              "title": "评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityId": "event-002",
+              "title": "同步会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00"
+            }
+          ]
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "日历能力返回的日程数据。",
+        "sampleValue": {
+          "items": [
+            {
+              "entityId": "event-001",
+              "title": "评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityId": "event-002",
+              "title": "同步会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "今天按时间排序的日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "event-001",
+              "title": "评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityId": "event-002",
+              "title": "同步会",
+              "dtStart": "10:30",
+              "dtEnd": "11:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "sampleValue": {
+              "entityId": "event-001",
+              "title": "评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识，用于查看日程详情。",
+              "sampleValue": "event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "评审会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间，当天日程使用 HH:MM。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间，当天日程使用 HH:MM。",
+              "sampleValue": "10:00"
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "仅用于卡片展示的受控辅助状态。",
+      "sampleValue": {
+        "title": "今日议程",
+        "agenda": [
+          {
+            "progress": 100,
+            "done": true,
+            "statusText": "已完成",
+            "statusColor": "#ff64bb5c"
+          },
+          {
+            "progress": 45,
+            "done": false,
+            "statusText": "推进中",
+            "statusColor": "#ffffffff"
+          }
+        ]
+      },
+      "title": {
+        "type": "string",
+        "description": "卡片标题。",
+        "sampleValue": "今日议程"
+      },
+      "agenda": {
+        "type": "array",
+        "description": "与前两条日程对齐的展示状态。",
+        "sampleValue": [
+          {
+            "progress": 100,
+            "done": true,
+            "statusText": "已完成",
+            "statusColor": "#ff64bb5c"
+          },
+          {
+            "progress": 45,
+            "done": false,
+            "statusText": "推进中",
+            "statusColor": "#ffffffff"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条议程展示状态。",
+          "sampleValue": {
+            "progress": 100,
+            "done": true,
+            "statusText": "已完成",
+            "statusColor": "#ff64bb5c"
+          },
+          "progress": {
+            "type": "number",
+            "description": "议程进度百分比。",
+            "sampleValue": 100
+          },
+          "done": {
+            "type": "boolean",
+            "description": "议程是否已完成，用于勾选状态。",
+            "sampleValue": true
+          },
+          "statusText": {
+            "type": "string",
+            "description": "议程状态短文本。",
+            "sampleValue": "已完成"
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "议程进度环颜色，已完成时为确认绿色。",
+            "sampleValue": "#ff64bb5c"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于当下日程和会议安排识别。"
+    }
+  ]
+}

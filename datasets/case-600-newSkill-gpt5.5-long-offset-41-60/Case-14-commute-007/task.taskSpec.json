@@ -1,0 +1,114 @@
+{
+  "userQuery": "通勤日程卡,整张用蓝色主题色背景,内嵌几个面板块,用分隔线分\"今日\"\"明日\"两组,各列两三条日程\"09:00 项目评审\"\"11:00 客户电话\",每条可点进日历事件查看,要有\"已取消\"的红色告警块,渐变方向朝紧迫感,字符合号当图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/3/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日和明日的日历日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "event-today-review",
+              "title": "项目评审",
+              "dtStart": "09:00",
+              "dtEnd": "10:00",
+              "entityName": "日历事件"
+            },
+            {
+              "entityId": "event-today-call",
+              "title": "客户电话",
+              "dtStart": "11:00",
+              "dtEnd": "11:30",
+              "entityName": "日历事件"
+            },
+            {
+              "entityId": "event-tomorrow-sync",
+              "title": "通勤同步",
+              "dtStart": "08:30",
+              "dtEnd": "09:00",
+              "entityName": "日历事件"
+            },
+            {
+              "entityId": "event-tomorrow-cancelled",
+              "title": "客户电话",
+              "dtStart": "11:00",
+              "dtEnd": "11:30",
+              "entityName": "日历事件"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开日历事件详情。",
+                "sampleValue": "event-today-review"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "项目评审"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今日事件为 HH:MM 格式。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今日事件为 HH:MM 格式。",
+                "sampleValue": "10:00"
+              },
+              "entityName": {
+                "type": "string",
+                "description": "内容类别说明。",
+                "sampleValue": "日历事件"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

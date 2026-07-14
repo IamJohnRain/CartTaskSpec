@@ -1,0 +1,122 @@
+{
+  "userQuery": "出门旅游手机突然只剩5%电好慌，帮我做个深色卡片用文字标题\"电量紧急\"和数值\"5%\"这种，旁边根据当前天气提示\"高温耗电加速\"，底下一排横向并排显示三个按钮分别是省电模式、勿扰、飞行模式可以一键切换，再嵌个面板显示风险告警。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "do_not_disturb_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "airplane_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "levelText": {
+        "type": "string",
+        "description": "当前手机电量展示文本。",
+        "sampleValue": "5%"
+      },
+      "title": {
+        "type": "string",
+        "description": "低电紧急状态标题。",
+        "sampleValue": "电量紧急"
+      },
+      "riskLevel": {
+        "type": "string",
+        "description": "当前低电风险等级。",
+        "sampleValue": "高风险"
+      },
+      "riskAlert": {
+        "type": "string",
+        "description": "低电模式风险告警短文案。",
+        "sampleValue": "预计续航不足，建议立即省电"
+      }
+    },
+    "status": {
+      "weatherDrainHint": {
+        "type": "string",
+        "description": "结合当前天气给出的耗电风险提示。",
+        "sampleValue": "高温耗电加速"
+      },
+      "actionState": {
+        "type": "string",
+        "description": "快捷开关当前目标状态提示。",
+        "sampleValue": "一键开启"
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "36°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "晴"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息。",
+            "sampleValue": "高温预警"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "天气能力更新时间。",
+          "sampleValue": "2026-07-13 15:30"
+        }
+      }
+    },
+    "assets": {
+      "batteryIcon": {
+        "type": "string",
+        "description": "低电模式电池图标路径。",
+        "sampleValue": "resources/base/media/icon_electricity.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合作为紧急电量状态的主视觉锚点。",
+      "bindTo": "/assets/batteryIcon"
+    }
+  ]
+}

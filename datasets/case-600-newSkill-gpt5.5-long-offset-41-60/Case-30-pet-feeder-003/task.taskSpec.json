@@ -1,0 +1,103 @@
+{
+  "userQuery": "我家三只猫的喂食卡片,最上面放个大号的猫碗或者猫脸emoji当主视觉,下面竖着列每只猫的喂食状态,旁边带勾选框我手动打钩表示已喂。要读取天气数据,因为我家后院还有个流浪猫窝会根据气温决定要不要多放粮。整体用那种有运动感、稍微紧迫一点的渐变色,别太安静。",
+  "size": "2x4",
+  "eventCandidates": [],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称",
+            "sampleValue": "朝阳区"
+          }
+        },
+        "current": {
+          "temperatureC": {
+            "type": "number",
+            "description": "当前摄氏温度，用于判断后院流浪猫窝是否需要多放粮",
+            "sampleValue": 7
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "7°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    },
+    "feeding": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题，表示三只猫的喂食清单",
+        "sampleValue": "三只猫喂食"
+      },
+      "yardAdvice": {
+        "type": "string",
+        "description": "根据当前气温给后院流浪猫窝的加粮提示",
+        "sampleValue": "后院猫窝多放粮"
+      },
+      "cats": {
+        "type": "array",
+        "description": "三只猫的固定喂食状态列表",
+        "sampleValue": [
+          {
+            "name": "橘子",
+            "status": "晚餐待喂",
+            "fed": false
+          },
+          {
+            "name": "奶糖",
+            "status": "已喂半份",
+            "fed": true
+          },
+          {
+            "name": "煤球",
+            "status": "等手动确认",
+            "fed": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单只猫的喂食状态",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "猫的名字",
+              "sampleValue": "橘子"
+            },
+            "status": {
+              "type": "string",
+              "description": "该猫当前喂食状态",
+              "sampleValue": "晚餐待喂"
+            },
+            "fed": {
+              "type": "boolean",
+              "description": "是否已手动勾选为已喂",
+              "sampleValue": false
+            }
+          }
+        }
+      }
+    },
+    "asset": {
+      "heroIcon": {
+        "type": "string",
+        "description": "主视觉天气图标素材路径，用于表达天气会影响后院猫窝加粮判断",
+        "sampleValue": "resources/base/media/cloudy_turning_sunny.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy_turning_sunny.png",
+      "description": "小云朵和太阳组合的彩色天气图标，可作为后院气温判断的主视觉锚点。",
+      "bindTo": "/asset/heroIcon"
+    }
+  ]
+}

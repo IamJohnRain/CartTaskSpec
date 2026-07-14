@@ -1,0 +1,134 @@
+{
+  "userQuery": "帮我做一张水电缴费的服务卡,深色舞台风格那种。左右分区,左边信息区纵向排三块:本月电费 ¥87、水费 ¥43、燃气费 ¥65,旁边标注\"⚠ 距缴费截止还有3天\"红色提醒,用电闪电水滴火焰图标。右边动作区放一个省电模式开关和一键缴费按钮。背景要个环境氛围渐变,整体看着高级点。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "title": {
+      "type": "string",
+      "description": "水电缴费服务卡标题",
+      "sampleValue": "水电缴费"
+    },
+    "warningText": {
+      "type": "string",
+      "description": "缴费截止倒计时提醒文案",
+      "sampleValue": "⚠ 距缴费截止还有3天"
+    },
+    "bills": {
+      "electricity": {
+        "label": {
+          "type": "string",
+          "description": "电费项目名称",
+          "sampleValue": "本月电费"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "本月电费金额展示文本",
+          "sampleValue": "¥87"
+        },
+        "icon": {
+          "type": "string",
+          "description": "电费图标素材路径",
+          "sampleValue": "resources/base/media/bolt_fill.svg"
+        }
+      },
+      "water": {
+        "label": {
+          "type": "string",
+          "description": "水费项目名称",
+          "sampleValue": "水费"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "水费金额展示文本",
+          "sampleValue": "¥43"
+        },
+        "icon": {
+          "type": "string",
+          "description": "水费图标素材路径",
+          "sampleValue": "resources/base/media/drop_1.svg"
+        }
+      },
+      "gas": {
+        "label": {
+          "type": "string",
+          "description": "燃气费项目名称",
+          "sampleValue": "燃气费"
+        },
+        "amountText": {
+          "type": "string",
+          "description": "燃气费金额展示文本",
+          "sampleValue": "¥65"
+        },
+        "icon": {
+          "type": "string",
+          "description": "燃气费图标素材路径",
+          "sampleValue": "resources/base/media/flame_fill.svg"
+        }
+      }
+    },
+    "powerSaving": {
+      "label": {
+        "type": "string",
+        "description": "省电模式开关标签",
+        "sampleValue": "省电模式"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "省电模式当前是否开启",
+        "sampleValue": false
+      },
+      "icon": {
+        "type": "string",
+        "description": "省电模式图标素材路径",
+        "sampleValue": "resources/base/media/battery_leaf_fill.svg"
+      }
+    },
+    "payActionText": {
+      "type": "string",
+      "description": "缴费动作入口短文案",
+      "sampleValue": "一键缴费"
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/bolt_fill.svg",
+      "description": "闪电实心图标，适合表示本月电费项目。",
+      "bindTo": "/bills/electricity/icon"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴线性图标，适合表示水费项目。",
+      "bindTo": "/bills/water/icon"
+    },
+    {
+      "src": "resources/base/media/flame_fill.svg",
+      "description": "火焰实心图标，适合表示燃气费项目。",
+      "bindTo": "/bills/gas/icon"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合图标，适合表示省电模式动作。",
+      "bindTo": "/powerSaving/icon"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "userQuery": "帮我做个睡眠卡片，中间放一个大的环形进度图显示昨晚睡眠占8小时的比例，环心写上具体睡了几个小时。环形图下面横向排三块小信息：入睡时间、起床时间、深睡占比，每块用不同的柔和底色区分，比如浅蓝、米色、淡紫。再放一个勾选框绑勿扰模式开关，勾上之后晚上自动开早上自动关。再结合下今天天气，如果是阴雨天睡眠时间偏少就整张卡片色调偏灰一点。整体用那种夜晚天空蓝到深紫的环境渐变。月亮、星星、云这些图标可以用。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "sleep": {
+      "durationHours": {
+        "type": "number",
+        "description": "昨晚实际睡眠小时数，用于环形进度值。",
+        "sampleValue": 6.2
+      },
+      "targetHours": {
+        "type": "number",
+        "description": "目标睡眠小时数，用于环形进度总量。",
+        "sampleValue": 8
+      },
+      "durationText": {
+        "type": "string",
+        "description": "昨晚睡眠时长展示文本。",
+        "sampleValue": "6.2h"
+      },
+      "targetText": {
+        "type": "string",
+        "description": "睡眠目标展示文本。",
+        "sampleValue": "/8h"
+      },
+      "sleepTime": {
+        "type": "string",
+        "description": "昨晚入睡时间。",
+        "sampleValue": "23:30"
+      },
+      "wakeTime": {
+        "type": "string",
+        "description": "今天起床时间。",
+        "sampleValue": "06:10"
+      },
+      "deepSleepPercentText": {
+        "type": "string",
+        "description": "深睡眠占比展示文本。",
+        "sampleValue": "42%"
+      },
+      "doNotDisturbEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式是否已绑定夜间自动开启、早晨自动关闭。",
+        "sampleValue": true
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于判断阴雨天气和辅助展示。",
+            "sampleValue": "小雨"
+          }
+        }
+      }
+    },
+    "theme": {
+      "rootStart": {
+        "type": "string",
+        "description": "结合天气与睡眠时长后的根背景渐变起始色；阴雨且睡眠偏少时偏灰。",
+        "sampleValue": "#ff202224"
+      },
+      "rootEnd": {
+        "type": "string",
+        "description": "结合天气与睡眠时长后的根背景渐变结束色；常态保持夜晚深紫氛围。",
+        "sampleValue": "#ff634794"
+      },
+      "ringColor": {
+        "type": "string",
+        "description": "睡眠环形进度颜色。",
+        "sampleValue": "#86c5e3"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合在睡眠卡片中表示阴雨天气。"
+    }
+  ]
+}

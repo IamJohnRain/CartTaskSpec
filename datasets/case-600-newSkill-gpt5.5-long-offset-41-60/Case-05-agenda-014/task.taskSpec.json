@@ -1,0 +1,112 @@
+{
+  "userQuery": "帮我做个运动打卡和晨会结合的卡片，分区弄不同的浅色背景。左边用“跑步小人”的语义图标当主体，显示我今天的动态步数“已走3520步”。右边弄个系统健康的小面板块，下面带上今天日历里的早会列表，弄成可以滑动查看的。整体加个充满活力的运动风渐变色，点一下早会日程直接进事件详情，别给我整那些静态死板的样式。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "health": {
+        "stepsText": {
+          "type": "string",
+          "description": "今日动态步数的展示文本。",
+          "sampleValue": "已走3520步"
+        },
+        "panelTitle": {
+          "type": "string",
+          "description": "系统健康面板标题。",
+          "sampleValue": "系统健康"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "今日运动状态的简短说明。",
+          "sampleValue": "活力达标"
+        }
+      },
+      "calendar": {
+        "sectionTitle": {
+          "type": "string",
+          "description": "今天早会列表分区标题。",
+          "sampleValue": "今日早会"
+        },
+        "items": {
+          "type": "array",
+          "description": "今天日历中的早会日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-1001",
+              "title": "产品晨会",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            },
+            {
+              "entityId": "calendar-event-1002",
+              "title": "项目站会",
+              "dtStart": "10:00",
+              "dtEnd": "10:15"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条早会日程。",
+            "sampleValue": {
+              "entityId": "calendar-event-1001",
+              "title": "产品晨会",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程项唯一标识符，用于进入日程详情。",
+                "sampleValue": "calendar-event-1001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "产品晨会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "09:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合运动记录、跑步锻炼追踪和步数统计的主体视觉。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合日程管理、日历事件查看和当日安排识别。"
+    }
+  ]
+}

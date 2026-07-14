@@ -1,0 +1,107 @@
+{
+  "userQuery": "浅米色底快递卡,横向并排几个包裹小方块,每个标'已签收✓'、'运输中…'、'派送中⚠',下面用横线分区嵌入日历面板显示'距离下次派送还有2天',快超时的标橙红提醒,纯展示不强求点击。",
+  "size": "2x2",
+  "eventCandidates": [],
+  "dataModelSchema": {
+    "data": {
+      "express": {
+        "packages": {
+          "type": "array",
+          "description": "快递包裹状态列表，按卡片固定展示前三项。",
+          "sampleValue": [
+            {
+              "label": "已签收✓",
+              "tone": "normal"
+            },
+            {
+              "label": "运输中…",
+              "tone": "normal"
+            },
+            {
+              "label": "派送中⚠",
+              "tone": "warning"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个包裹状态。",
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "包裹当前物流状态短标签。",
+                "sampleValue": "派送中⚠"
+              },
+              "tone": {
+                "type": "string",
+                "description": "状态色调，normal 表示普通状态，warning 表示快超时提醒。",
+                "sampleValue": "warning"
+              }
+            }
+          }
+        },
+        "calendarPanelTitle": {
+          "type": "string",
+          "description": "嵌入日历面板的短标题。",
+          "sampleValue": "派送日历"
+        },
+        "nextDeliveryCountdown": {
+          "type": "string",
+          "description": "距离下次派送的倒计时展示文案。",
+          "sampleValue": "距离下次派送还有2天"
+        },
+        "timeoutWarning": {
+          "type": "string",
+          "description": "快超时状态的橙红提醒短文案。",
+          "sampleValue": "快超时"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历事件列表，用于承接下次派送日程。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "delivery-next-001",
+              "title": "下次派送",
+              "dtStart": "后天",
+              "dtEnd": "全天"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历事件项。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "事件实体类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识。",
+                "sampleValue": "delivery-next-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题。",
+                "sampleValue": "下次派送"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历事件开始时间展示文本。",
+                "sampleValue": "后天"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日历事件结束时间展示文本。",
+                "sampleValue": "全天"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

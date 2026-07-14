@@ -1,0 +1,85 @@
+{
+  "userQuery": "快递清单卡,左边大块放主单号,右边列表显示所有包裹,每行写'订单 #2024 还剩 1 天到达'这种固定文字+数字,可以点单号直接跳到日历看那天的事。背景用图片延伸的视觉感,纯文字色块不加图片,不加渐变不标状态,列表能滚。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "快递包裹对应的日历事件列表，按预计到达时间排序。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "evt-main-2024",
+              "title": "#2024",
+              "dtStart": "明天",
+              "dtEnd": "明天"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "evt-2025",
+              "title": "#2025",
+              "dtStart": "后天",
+              "dtEnd": "后天"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "evt-2026",
+              "title": "#2026",
+              "dtStart": "周五",
+              "dtEnd": "周五"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个快递包裹对应的日历事件。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识符，用于跳转查看事件。",
+                "sampleValue": "evt-main-2024"
+              },
+              "title": {
+                "type": "string",
+                "description": "包裹订单号文本。",
+                "sampleValue": "#2024"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "预计到达日期展示文本。",
+                "sampleValue": "明天"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "预计到达结束日期展示文本。",
+                "sampleValue": "明天"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱子图标，适合用于物流信息、取件提醒和快递卡片的背景视觉锚点。"
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "userQuery": "下雨天去客户公司，帮我做个磨砂质感的卡片，纵向往下列出几个常去客户地址选中点导航按钮直接跳地图App，旁边内嵌小面板显示雨势，整卡用雨天蓝紫的环境渐变，等车太久要提醒下。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/destinations/0/latitude} }}",
+            "longitude": "{{ ${/destinations/0/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/destinations/1/latitude} }}",
+            "longitude": "{{ ${/destinations/1/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/destinations/2/latitude} }}",
+            "longitude": "{{ ${/destinations/2/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询所在区县名称",
+            "sampleValue": "浦东新区"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "小雨"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "23°C"
+          },
+          "humidityPercent": {
+            "type": "number",
+            "description": "当前相对湿度百分比",
+            "sampleValue": 86
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "小雨",
+              "temperatureRangeText": "22° / 26°",
+              "rainProbabilityPercent": "78%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期文本",
+                "sampleValue": "今天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象",
+                "sampleValue": "小雨"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "适合直接显示的温度范围",
+                "sampleValue": "22° / 26°"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比",
+                "sampleValue": "78%"
+              }
+            }
+          }
+        }
+      }
+    },
+    "destinations": {
+      "type": "array",
+      "description": "常去客户地址列表，包含可用于地图导航的脱敏样例坐标",
+      "sampleValue": [
+        {
+          "name": "客户总部",
+          "address": "世纪大道88号",
+          "latitude": "31.2397",
+          "longitude": "121.4998"
+        },
+        {
+          "name": "研发中心",
+          "address": "张江路168号",
+          "latitude": "31.2075",
+          "longitude": "121.6086"
+        },
+        {
+          "name": "商务园区",
+          "address": "金科路456号",
+          "latitude": "31.2111",
+          "longitude": "121.5992"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "客户地址短名称",
+            "sampleValue": "客户总部"
+          },
+          "address": {
+            "type": "string",
+            "description": "客户地址短文本",
+            "sampleValue": "世纪大道88号"
+          },
+          "latitude": {
+            "type": "string",
+            "description": "客户地址纬度字符串",
+            "sampleValue": "31.2397"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "客户地址经度字符串",
+            "sampleValue": "121.4998"
+          }
+        }
+      }
+    },
+    "wait": {
+      "minutesText": {
+        "type": "string",
+        "description": "当前等车时长展示文本",
+        "sampleValue": "12分钟"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "等车过久时展示的提醒文案",
+        "sampleValue": "等车偏久"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合表达雨天打车出行场景。"
+    },
+    {
+      "src": "resources/base/media/icon_weathe2.png",
+      "description": "天气图标，适合表达雨势和雨天环境状态。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航箭头图标，适合表达地图导航动作。"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "userQuery": "导航卡片左右排列,左边主图右边勾选项,我要能自己勾选走不走高架、避不避开收费站,这种交互必须能双向绑定。图片延伸风+整体氛围背景,多个勾选项纵向排,红色告警因为今天暴雨。读日历会议,点跳地图,不要渐变,文字符当图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日历会议列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-demo-001",
+              "title": "项目例会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "会议室A"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历会议。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-demo-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "会议标题。",
+                "sampleValue": "项目例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，当天事件使用 HH:MM。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，当天事件使用 HH:MM。",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "会议地点。",
+                "sampleValue": "会议室A"
+              }
+            }
+          }
+        }
+      }
+    },
+    "preferences": {
+      "useElevated": {
+        "type": "boolean",
+        "description": "通勤导航是否选择走高架。",
+        "sampleValue": true
+      },
+      "avoidTolls": {
+        "type": "boolean",
+        "description": "通勤导航是否选择避开收费站。",
+        "sampleValue": true
+      }
+    },
+    "navigation": {
+      "destination": {
+        "name": {
+          "type": "string",
+          "description": "地图导航目的地名称。",
+          "sampleValue": "公司"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "地图导航目的地纬度。",
+          "sampleValue": "31.2304"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "地图导航目的地经度。",
+          "sampleValue": "121.4737"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合表达暴雨通勤氛围和左侧主图。"
+    }
+  ]
+}

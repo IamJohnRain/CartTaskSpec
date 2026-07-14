@@ -1,0 +1,87 @@
+{
+  "userQuery": "帮我做个磨砂玻璃质感的日程卡片，左边是竖着排列的从日历读取的今天剩余会议列表，用日程相关的图标标一下，右边是动作区。最上面要拼一句动态文案提醒我“距离下班还有X小时”，不需要特殊状态色和渐变。点一下右边能直接跳到天气应用看看下班下不下雨。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "ui": {
+      "offWorkHours": {
+        "type": "string",
+        "description": "距离下班的剩余小时数，用于拼接顶部动态提醒文案。",
+        "sampleValue": "2"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天剩余的日历会议列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_item_001",
+              "title": "项目同步会",
+              "dtStart": "15:00",
+              "dtEnd": "15:30"
+            },
+            {
+              "entityId": "calendar_item_002",
+              "title": "需求评审",
+              "dtStart": "16:10",
+              "dtEnd": "17:00"
+            },
+            {
+              "entityId": "calendar_item_003",
+              "title": "日报收口",
+              "dtStart": "17:30",
+              "dtEnd": "18:00"
+            }
+          ],
+          "itemSchema": {
+            "entityId": {
+              "type": "string",
+              "description": "日程项唯一标识符。",
+              "sampleValue": "calendar_item_001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "项目同步会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "当天会议开始时间，HH:MM 格式。",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "当天会议结束时间，HH:MM 格式。",
+              "sampleValue": "15:30"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_meeting.png",
+      "description": "会议图标，适合标记会议列表中的单条会议。"
+    },
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合表达会议时间或倒计时信息。"
+    },
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "天气雨伞图标，适合天气应用入口和下班天气查看动作。"
+    }
+  ]
+}

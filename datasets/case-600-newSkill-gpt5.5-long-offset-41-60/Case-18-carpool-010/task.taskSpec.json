@@ -1,0 +1,72 @@
+{
+  "userQuery": "拼车卡片,左边做个内嵌小面板显示我日历里今天的两条拼车安排,右边放个\"去接人\"按钮点了直接拉起地图导航,不要图,纯文字加淡蓝到淡紫的氛围渐变就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "{{ ${/data/calendar/items/0/oneClickServiceLink} }}"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天日历中的拼车安排列表。",
+          "sampleValue": [
+            {
+              "title": "接王明",
+              "dtStart": "08:30",
+              "dtEnd": "08:50",
+              "eventLocation": "南门",
+              "oneClickServiceLink": "petalmaps://navigation?destination=南门"
+            },
+            {
+              "title": "送李娜",
+              "dtStart": "17:40",
+              "dtEnd": "18:10",
+              "eventLocation": "东区",
+              "oneClickServiceLink": "petalmaps://navigation?destination=东区"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条拼车日程。",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "拼车安排标题或联系人摘要。",
+                "sampleValue": "接王明"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "拼车安排开始时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "08:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "拼车安排结束时间，当天日程为 HH:MM 格式。",
+                "sampleValue": "08:50"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "拼车安排地点。",
+                "sampleValue": "南门"
+              },
+              "oneClickServiceLink": {
+                "type": "string",
+                "description": "日程提供的一键服务链接，用于拉起地图导航。",
+                "sampleValue": "petalmaps://navigation?destination=南门"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,155 @@
+{
+  "userQuery": "想要一个健康理财跟踪卡,用横线分隔成三块:左边浅绿底显示健康支出(健身房、瑜伽课),中间浅蓝底是医疗日历(下周二复查的提醒),右边浅灰底是预算完成度。纵向排列每个月的健康相关支出列表,'>🏃'图标点了能跳到健康应用看今天步数(步数多就少打车顺便省钱)。整体不要渐变不要彩色状态,卡片简洁直接",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "finance": {
+      "healthExpense": {
+        "totalText": {
+          "type": "string",
+          "description": "健康相关支出的本月合计金额展示文本。",
+          "sampleValue": "¥479"
+        },
+        "items": {
+          "type": "array",
+          "description": "健康相关支出项目列表。",
+          "sampleValue": [
+            {
+              "name": "健身房",
+              "amountText": "¥299"
+            },
+            {
+              "name": "瑜伽课",
+              "amountText": "¥180"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条健康支出项目。",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "健康支出项目名称。",
+                "sampleValue": "健身房"
+              },
+              "amountText": {
+                "type": "string",
+                "description": "健康支出项目金额展示文本。",
+                "sampleValue": "¥299"
+              }
+            }
+          }
+        },
+        "monthItems": {
+          "type": "array",
+          "description": "按月份纵向展示的健康相关支出明细。",
+          "sampleValue": [
+            {
+              "month": "7月",
+              "name": "健身房",
+              "amountText": "¥299"
+            },
+            {
+              "month": "7月",
+              "name": "瑜伽课",
+              "amountText": "¥180"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个月度健康支出明细。",
+            "properties": {
+              "month": {
+                "type": "string",
+                "description": "支出发生月份。",
+                "sampleValue": "7月"
+              },
+              "name": {
+                "type": "string",
+                "description": "健康支出名称。",
+                "sampleValue": "健身房"
+              },
+              "amountText": {
+                "type": "string",
+                "description": "月度支出金额展示文本。",
+                "sampleValue": "¥299"
+              }
+            }
+          }
+        }
+      },
+      "budget": {
+        "label": {
+          "type": "string",
+          "description": "预算进度说明。",
+          "sampleValue": "预算完成"
+        },
+        "percent": {
+          "type": "number",
+          "description": "预算完成百分比数值。",
+          "sampleValue": 68
+        },
+        "percentText": {
+          "type": "string",
+          "description": "预算完成百分比展示文本。",
+          "sampleValue": "68%"
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下周二本地日历中的复查提醒日程。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-review-001",
+              "title": "复查提醒",
+              "dtStart": "下周二 09:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识。",
+                "sampleValue": "calendar-review-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "复查提醒"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间展示文本。",
+                "sampleValue": "下周二 09:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合表示运动健康、步数查看和锻炼入口。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表示医疗复查日程提醒。"
+    }
+  ]
+}

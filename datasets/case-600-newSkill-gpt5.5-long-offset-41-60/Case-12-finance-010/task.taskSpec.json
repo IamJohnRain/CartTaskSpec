@@ -1,0 +1,104 @@
+{
+  "userQuery": "深色舞台风,卡片中间放个大图标(用钱包或图表素材库里的)当主视觉,周围是可滚动的待办缴费列表,卡片里嵌个面板读日历日程,右上角放个省电模式开关,出现逾期未还的红色告警,整体用深夜蓝渐变,图标都用素材库里的就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日历日程与待办缴费提醒列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "bill-overdue-001",
+              "title": "信用卡还款",
+              "description": "逾期未还",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "schedule-002",
+              "title": "理财复盘",
+              "description": "月度账单整理",
+              "dtStart": "15:00",
+              "dtEnd": "15:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程或缴费待办。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程或待办的唯一标识符。",
+                "sampleValue": "bill-overdue-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题或缴费事项名称。",
+                "sampleValue": "信用卡还款"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程或缴费待办的补充说明。",
+                "sampleValue": "逾期未还"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程或缴费提醒开始时间。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程或缴费提醒结束时间。",
+                "sampleValue": "09:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合实心图标，适合表达省电模式、节能状态或财务提醒卡片的主视觉锚点。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达日程面板、缴费提醒日期或待办列表入口。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合用于省电模式开关或低电模式相关视觉提示。"
+    }
+  ]
+}

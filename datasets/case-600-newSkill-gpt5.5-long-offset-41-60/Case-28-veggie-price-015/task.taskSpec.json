@@ -1,0 +1,125 @@
+{
+  "userQuery": "菜价卡片要左右分区，左边信息区显示'白菜2元/斤'右边动作区提示'建议提前采购'，素净简洁风格。读取天气数据显示'明日有雨蔬菜可能涨价'，下面横向排三四个常见蔬菜的均价做对比，加个时间夜晚的渐变",
+  "size": "2x4",
+  "eventCandidates": [],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称",
+            "sampleValue": "本地"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日天气预报",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "rainProbabilityPercent": "30%"
+            },
+            {
+              "weekday": "明日",
+              "condition": "有雨",
+              "rainProbabilityPercent": "78%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或日期短文本",
+                "sampleValue": "明日"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象",
+                "sampleValue": "有雨"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比",
+                "sampleValue": "78%"
+              }
+            }
+          }
+        }
+      }
+    },
+    "market": {
+      "title": {
+        "type": "string",
+        "description": "菜价卡片标题",
+        "sampleValue": "今日菜价"
+      },
+      "mainPrice": {
+        "type": "string",
+        "description": "主蔬菜及单价展示文本",
+        "sampleValue": "白菜2元/斤"
+      },
+      "actionHint": {
+        "type": "string",
+        "description": "采购建议提示文案",
+        "sampleValue": "建议提前采购"
+      },
+      "riskSuffix": {
+        "type": "string",
+        "description": "雨天对蔬菜价格影响的提示后缀",
+        "sampleValue": "蔬菜可能涨价"
+      },
+      "vegetables": {
+        "type": "array",
+        "description": "常见蔬菜均价对比列表",
+        "sampleValue": [
+          {
+            "name": "白菜",
+            "price": "2.0"
+          },
+          {
+            "name": "土豆",
+            "price": "2.8"
+          },
+          {
+            "name": "番茄",
+            "price": "4.6"
+          },
+          {
+            "name": "黄瓜",
+            "price": "3.5"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个蔬菜均价",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "蔬菜名称",
+              "sampleValue": "白菜"
+            },
+            "price": {
+              "type": "string",
+              "description": "每斤均价数字文本",
+              "sampleValue": "2.0"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合表达明日有雨和采购风险提示。"
+    },
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "月亮圆形实心图标，适合表达夜晚时间氛围。"
+    }
+  ]
+}

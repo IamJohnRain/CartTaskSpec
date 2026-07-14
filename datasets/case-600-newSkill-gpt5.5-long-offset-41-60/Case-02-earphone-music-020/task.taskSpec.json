@@ -1,0 +1,134 @@
+{
+  "userQuery": "我想在桌面上放个卡片，纵向排列我经常导航去的几个地方，比如“健身房”、“公司”。每项前面加个圆圈勾选框，旁边带个耳机图标，显示左耳47%右耳50%的电量。右边弄个动作区放个“一键导航”的按钮，背景用纯色磨砂质感就行别用渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/destinations/0/location/latitude} }}",
+            "longitude": "{{ ${/destinations/0/location/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "destinations": {
+      "type": "array",
+      "description": "常用导航地点列表，用于展示桌面快捷导航目的地。",
+      "sampleValue": [
+        {
+          "name": "健身房",
+          "checked": true,
+          "location": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          }
+        },
+        {
+          "name": "公司",
+          "checked": false,
+          "location": {
+            "latitude": "31.2243",
+            "longitude": "121.4692"
+          }
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单个常用导航地点。",
+        "sampleValue": {
+          "name": "健身房",
+          "checked": true,
+          "location": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          }
+        },
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "地点名称。",
+            "sampleValue": "健身房"
+          },
+          "checked": {
+            "type": "boolean",
+            "description": "地点前圆形勾选框的选中状态。",
+            "sampleValue": true
+          },
+          "location": {
+            "type": "object",
+            "description": "地点导航坐标。",
+            "sampleValue": {
+              "latitude": "31.2304",
+              "longitude": "121.4737"
+            },
+            "properties": {
+              "latitude": {
+                "type": "string",
+                "description": "导航目的地纬度。",
+                "sampleValue": "31.2304"
+              },
+              "longitude": {
+                "type": "string",
+                "description": "导航目的地经度。",
+                "sampleValue": "121.4737"
+              }
+            }
+          }
+        }
+      }
+    },
+    "earphone": {
+      "type": "object",
+      "description": "耳机状态信息。",
+      "sampleValue": {
+        "icon": "resources/base/media/icon_earphone.png",
+        "leftBatteryText": "左47%",
+        "rightBatteryText": "右50%"
+      },
+      "icon": {
+        "type": "string",
+        "description": "耳机图标素材路径。",
+        "sampleValue": "resources/base/media/icon_earphone.png"
+      },
+      "leftBatteryText": {
+        "type": "string",
+        "description": "左耳电量展示文本。",
+        "sampleValue": "左47%"
+      },
+      "rightBatteryText": {
+        "type": "string",
+        "description": "右耳电量展示文本。",
+        "sampleValue": "右50%"
+      }
+    },
+    "action": {
+      "type": "object",
+      "description": "导航动作相关展示文本。",
+      "sampleValue": {
+        "label": "导航"
+      },
+      "label": {
+        "type": "string",
+        "description": "导航动作入口展示文本。",
+        "sampleValue": "导航"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_earphone.png",
+      "description": "耳机图标，适合用于耳机音乐或耳机设备状态展示。",
+      "bindTo": "/earphone/icon"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航箭头图标，适合用于地图导航、路线规划和方向指引。"
+    }
+  ]
+}

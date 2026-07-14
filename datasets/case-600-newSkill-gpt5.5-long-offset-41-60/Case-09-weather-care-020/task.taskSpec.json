@@ -1,0 +1,62 @@
+{
+  "userQuery": "帮我做个天气监测卡片，左侧放个大大的暴雪语义图标延伸出冷色调风格，右侧背景叠加深色图层放文字。不需要按钮，点击直接跳转到天气应用就行，一旦读取到老家天气出现道路结冰红色预警等超限告警状态，图标要变成冰冻样式提醒我关注。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "老家天气查询的区县名称。",
+            "sampleValue": "老家"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于提示暴雪或冰冻等天气状态。",
+            "sampleValue": "道路结冰"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "-8°C"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息，出现道路结冰红色预警等超限告警时用于提醒关注。",
+            "sampleValue": "红色预警"
+          }
+        }
+      }
+    },
+    "visual": {
+      "weatherIcon": {
+        "type": "string",
+        "description": "天气主视觉图标资源；常规暴雪使用雪花图标，超限告警时切换为冰冻预警样式。",
+        "sampleValue": "resources/base/media/thermometer_snowflake.svg"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/thermometer_snowflake.svg",
+      "description": "温度计叠加雪花的寒冷预警图标，适合道路结冰红色预警等冰冻风险提醒，黑色线性图形需放在浅色图标底板上。",
+      "bindTo": "/visual/weatherIcon"
+    },
+    {
+      "src": "resources/base/media/snow.png",
+      "description": "彩色雪花天气图标，适合暴雪、降雪等常规天气状态的主视觉展示。"
+    }
+  ]
+}

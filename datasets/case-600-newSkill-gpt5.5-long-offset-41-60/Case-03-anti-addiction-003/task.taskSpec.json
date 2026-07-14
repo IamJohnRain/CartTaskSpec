@@ -1,0 +1,89 @@
+{
+  "userQuery": "做个晚上防熬夜的锁屏管控卡片，背景全用深紫色的夜间主题色。因为要管三个孩子，所以需要纵向重复排列多项日程安排，每项前面加个系统自带的闹钟小图标，把今天系统读取到的日历日程和设置的可用电量比例（比如剩余20%）展示出来。中间嵌一块独立的面板，如果到了晚上11点还没睡，就显示红色的“已超时”告警状态。加上从黑到深蓝的时间倒计时渐变效果，底部加个开关能直接一键开启系统的勿扰模式。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天系统日历读取到的三个孩子晚间日程摘要。",
+          "sampleValue": [
+            {
+              "entityId": "child-a-night-001",
+              "title": "安安 21:00 收手机",
+              "dtStart": "21:00",
+              "dtEnd": "21:20"
+            },
+            {
+              "entityId": "child-b-night-002",
+              "title": "贝贝 21:30 洗漱",
+              "dtStart": "21:30",
+              "dtEnd": "21:50"
+            },
+            {
+              "entityId": "child-c-night-003",
+              "title": "辰辰 22:30 熄灯",
+              "dtStart": "22:30",
+              "dtEnd": "22:50"
+            }
+          ]
+        }
+      }
+    },
+    "control": {
+      "batteryRatioText": {
+        "type": "string",
+        "description": "当前可用电量比例展示文本。",
+        "sampleValue": "剩余20%"
+      },
+      "countdownText": {
+        "type": "string",
+        "description": "距离晚上11点睡眠截止时间的倒计时展示文本。",
+        "sampleValue": "距23:00 00:18"
+      },
+      "sleepStatusText": {
+        "type": "string",
+        "description": "晚上11点未睡时显示的管控告警状态。",
+        "sampleValue": "已超时"
+      },
+      "dndStateText": {
+        "type": "string",
+        "description": "系统勿扰模式当前状态展示文本。",
+        "sampleValue": "未开启"
+      },
+      "dndSwitchSelected": {
+        "type": "boolean",
+        "description": "勿扰模式开关样例选中状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "系统闹钟图标，适合放在每条晚间日程前表示提醒。"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶图标，适合展示可用电量或节能状态。"
+    },
+    {
+      "src": "resources/base/media/moon_z_fill_1.svg",
+      "description": "月亮睡眠图标，适合表示夜间睡眠管控和防熬夜场景。"
+    },
+    {
+      "src": "resources/base/media/bell_slash_fill.svg",
+      "description": "铃铛斜杠图标，适合表示勿扰、静音或通知屏蔽。"
+    }
+  ]
+}

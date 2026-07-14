@@ -1,0 +1,98 @@
+{
+  "userQuery": "老人吃药提醒的卡片,纵向列表展示早中晚三次吃药,每条右边有勾选框点了算吃了。点击右上角能跳到系统省电设置。整体暗色调像夜晚氛围,深蓝到黑的渐变,纯文字加色块不要图片,漏吃药那天显示红色告警状态,数据先用静态示例就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "title": {
+      "type": "string",
+      "description": "卡片标题，说明当前是老人吃药提醒。",
+      "sampleValue": "吃药提醒"
+    },
+    "alertText": {
+      "type": "string",
+      "description": "漏服药时显示的红色告警状态文本。",
+      "sampleValue": "今日有漏服"
+    },
+    "settingsLabel": {
+      "type": "string",
+      "description": "右上角跳转系统省电设置的短入口文案。",
+      "sampleValue": "省电"
+    },
+    "reminders": {
+      "type": "array",
+      "description": "早中晚三次吃药提醒的静态示例列表。",
+      "sampleValue": [
+        {
+          "period": "早",
+          "time": "08:00",
+          "medicine": "降压药",
+          "status": "已服",
+          "taken": true,
+          "statusColor": "#ff5ba854"
+        },
+        {
+          "period": "中",
+          "time": "12:30",
+          "medicine": "维D钙",
+          "status": "未服",
+          "taken": false,
+          "statusColor": "#ffdb6b42"
+        },
+        {
+          "period": "晚",
+          "time": "20:00",
+          "medicine": "安神片",
+          "status": "待服",
+          "taken": false,
+          "statusColor": "#99ffffff"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单次服药提醒条目。",
+        "properties": {
+          "period": {
+            "type": "string",
+            "description": "服药时段，早、中、晚之一。",
+            "sampleValue": "早"
+          },
+          "time": {
+            "type": "string",
+            "description": "服药时间。",
+            "sampleValue": "08:00"
+          },
+          "medicine": {
+            "type": "string",
+            "description": "药品短名称。",
+            "sampleValue": "降压药"
+          },
+          "status": {
+            "type": "string",
+            "description": "本次服药完成状态。",
+            "sampleValue": "已服"
+          },
+          "taken": {
+            "type": "boolean",
+            "description": "是否已勾选为吃过药。",
+            "sampleValue": true
+          },
+          "statusColor": {
+            "type": "string",
+            "description": "状态文本颜色，漏服使用告警色。",
+            "sampleValue": "#ff5ba854"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

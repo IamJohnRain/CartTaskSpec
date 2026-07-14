@@ -1,0 +1,133 @@
+{
+  "userQuery": "下雨天叫车老被取消我真服了，帮我做个深色卡片上面大字写'取消风险3单'，下面滚动的待支付订单列表每条前带勾选框，固定文字加动态数字'赔付倒计时00:08:32'，再一个按钮直接导航去公司，红色告警赶紧处理，用车和地图图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.230416",
+            "longitude": "121.473701"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "当前打车所在地的区县名称。",
+            "sampleValue": "雨花台区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "当前打车所在地的城市名称。",
+            "sampleValue": "南京"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于表达雨天打车场景。",
+            "sampleValue": "小雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气或出行相关预警等级。",
+            "sampleValue": "红色告警"
+          }
+        }
+      },
+      "taxi": {
+        "risk": {
+          "title": {
+            "type": "string",
+            "description": "取消风险主标题。",
+            "sampleValue": "取消风险3单"
+          },
+          "alertText": {
+            "type": "string",
+            "description": "需要用户立即处理的告警提示。",
+            "sampleValue": "红色告警 赶紧处理"
+          }
+        },
+        "compensation": {
+          "countdownText": {
+            "type": "string",
+            "description": "赔付倒计时的动态时间文本。",
+            "sampleValue": "00:08:32"
+          }
+        },
+        "orders": [
+          {
+            "title": {
+              "type": "string",
+              "description": "第一条待支付订单摘要。",
+              "sampleValue": "待支付 雨天快车"
+            },
+            "amountText": {
+              "type": "string",
+              "description": "第一条待支付订单金额。",
+              "sampleValue": "18.6元"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "第一条待支付订单是否勾选。",
+              "sampleValue": true
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "第二条待支付订单摘要。",
+              "sampleValue": "待支付 改派单"
+            },
+            "amountText": {
+              "type": "string",
+              "description": "第二条待支付订单金额。",
+              "sampleValue": "12.0元"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "第二条待支付订单是否勾选。",
+              "sampleValue": false
+            }
+          }
+        ],
+        "destination": {
+          "name": {
+            "type": "string",
+            "description": "导航目的地名称。",
+            "sampleValue": "公司"
+          },
+          "latitude": {
+            "type": "string",
+            "description": "导航目的地纬度。",
+            "sampleValue": "31.230416"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "导航目的地经度。",
+            "sampleValue": "121.473701"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车彩色图标，适合用于雨天打车风险卡片中的用车识别。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合用于地图导航或路线规划入口。"
+    }
+  ]
+}

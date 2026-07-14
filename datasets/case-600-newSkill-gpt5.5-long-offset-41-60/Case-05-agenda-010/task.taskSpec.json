@@ -1,0 +1,189 @@
+{
+  "userQuery": "作为一个项目经常延期的人，我想要个磨砂质感的干净卡片管理我的评审任务，中间内嵌一个小组件显示今日日历日程，用分隔线把不同项目分开，纵向列出几条任务，每条前面有个勾选框让我点一下能双向同步打勾，右上角弄个勿扰模式的开关，图标用系统自带的月亮就行，让我开会时一键静音。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.calendar",
+          "itemName": "task-api-review",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.calendar",
+          "itemName": "task-ui-review",
+          "switchFlag": 1
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.calendar",
+          "itemName": "task-risk-review",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "do_not_disturb_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日日历日程列表",
+          "items": {
+            "type": "object",
+            "description": "日历日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar-review-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "需求评审会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "15:00"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "entityId": "calendar-review-001",
+              "title": "需求评审会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            }
+          ]
+        }
+      }
+    },
+    "tasks": {
+      "items": {
+        "type": "array",
+        "description": "评审任务列表及勾选状态",
+        "items": {
+          "type": "object",
+          "description": "评审任务项",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "任务唯一标识",
+              "sampleValue": "task-api-review"
+            },
+            "project": {
+              "type": "string",
+              "description": "项目简称",
+              "sampleValue": "A项目"
+            },
+            "title": {
+              "type": "string",
+              "description": "评审任务标题",
+              "sampleValue": "接口清单"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "任务是否已完成",
+              "sampleValue": false
+            }
+          }
+        },
+        "sampleValue": [
+          {
+            "id": "task-api-review",
+            "project": "A项目",
+            "title": "接口清单",
+            "checked": false
+          },
+          {
+            "id": "task-ui-review",
+            "project": "B项目",
+            "title": "交互稿确认",
+            "checked": true
+          },
+          {
+            "id": "task-risk-review",
+            "project": "C项目",
+            "title": "延期风险",
+            "checked": false
+          }
+        ]
+      }
+    },
+    "settings": {
+      "dndEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式是否开启",
+        "sampleValue": false
+      },
+      "dndSwitchFlag": {
+        "type": "number",
+        "description": "勿扰模式切换目标值，0 表示开启，1 表示关闭",
+        "sampleValue": 0
+      }
+    },
+    "summary": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题",
+        "sampleValue": "评审任务"
+      },
+      "todayLabel": {
+        "type": "string",
+        "description": "今日日历小组件标题",
+        "sampleValue": "今日日程"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "系统月亮圆形图标，适合表示勿扰模式、夜间模式或会议静音状态。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "系统日历图标，适合表示日程管理、日历事件查看和当日安排。"
+    }
+  ]
+}

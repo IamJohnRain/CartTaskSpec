@@ -1,0 +1,81 @@
+{
+  "userQuery": "晚上经常掉到15%才反应过来,帮我做张左右并排的磨砂质感卡片,左边大图显示当前电量,右边几个纵向排列的省电相关开关(深色模式、降低刷新率、关后台),固定文案提醒\"当前处于夜间时段,耗电较快\",红色告警状态,用夜晚深色渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "levelText": {
+        "type": "string",
+        "description": "当前电量展示文本",
+        "sampleValue": "15%"
+      },
+      "levelValue": {
+        "type": "number",
+        "description": "当前电量百分比数值",
+        "sampleValue": 15
+      },
+      "levelTotal": {
+        "type": "number",
+        "description": "电量百分比满量程",
+        "sampleValue": 100
+      },
+      "statusText": {
+        "type": "string",
+        "description": "低电量告警状态文案",
+        "sampleValue": "红色告警"
+      },
+      "reminder": {
+        "type": "string",
+        "description": "夜间耗电提醒固定文案",
+        "sampleValue": "当前处于夜间时段,耗电较快"
+      }
+    },
+    "switches": {
+      "darkModeOn": {
+        "type": "boolean",
+        "description": "深色模式是否已开启",
+        "sampleValue": true
+      },
+      "refreshRateReduced": {
+        "type": "boolean",
+        "description": "降低刷新率是否已开启",
+        "sampleValue": true
+      },
+      "backgroundClosed": {
+        "type": "boolean",
+        "description": "关闭后台是否已开启",
+        "sampleValue": true
+      }
+    },
+    "assets": {
+      "batteryIcon": {
+        "type": "string",
+        "description": "低电模式电池图标资源路径",
+        "sampleValue": "resources/base/media/icon_electricity.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合作为当前电量的主视觉识别素材。",
+      "bindTo": "/assets/batteryIcon"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "低电模式省电图标，适合作为省电开关或节能状态的辅助素材。"
+    }
+  ]
+}

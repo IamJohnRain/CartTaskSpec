@@ -1,0 +1,98 @@
+{
+  "userQuery": "帮我做个应用超时提醒卡片放桌面，底色用浅色调的。左边纵向排布信息，显示天气数据和拼接文案“已超限使用：45分钟”，左边用那种表示紧迫动作的醒目渐变色。右边是动作区，放个按钮能一键跳到天气APP看看明天的天气。发现玩太久直接标红显示危险告警状态，顺便用上素材库里的沙漏图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "25° / 32°"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨",
+              "temperatureRangeText": "24° / 30°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "预报星期文本。",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "小雨"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "天气预报温度范围展示文本。",
+                "sampleValue": "24° / 30°"
+              }
+            }
+          }
+        }
+      }
+    },
+    "usage": {
+      "appName": {
+        "type": "string",
+        "description": "发生超时提醒的应用名称。",
+        "sampleValue": "娱乐应用"
+      },
+      "overLimitMinutes": {
+        "type": "number",
+        "description": "已超限使用的分钟数。",
+        "sampleValue": 45
+      },
+      "statusText": {
+        "type": "string",
+        "description": "超时后的危险告警状态文案。",
+        "sampleValue": "危险告警"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/hourglass_fill.svg",
+      "description": "沙漏和齿轮组合图标，适合用于应用时长、防沉迷和超时提醒状态识别。"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "userQuery": "快递列表卡,每行\"包裹 X 预计到达 N 天\"拼接;带一个勿扰开关能直接切换;从天气读明天有雨提示带伞;浅色底,氛围背景,纯文字色块不要图,无渐变,无特殊状态色;列表可滚动。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "express": {
+        "packages": {
+          "type": "array",
+          "description": "快递包裹列表，按预计到达时间升序排列。",
+          "sampleValue": [
+            {
+              "name": "A",
+              "etaDays": 1
+            },
+            {
+              "name": "B",
+              "etaDays": 2
+            },
+            {
+              "name": "C",
+              "etaDays": 3
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "包裹代号，用于拼接“包裹 X”。",
+                "sampleValue": "A"
+              },
+              "etaDays": {
+                "type": "number",
+                "description": "预计到达剩余天数，用于拼接“预计到达 N 天”。",
+                "sampleValue": 1
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日天气预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或相对日期文本。",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "小雨"
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "dndEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式当前是否开启。",
+        "sampleValue": true
+      }
+    }
+  },
+  "assetCandidates": []
+}

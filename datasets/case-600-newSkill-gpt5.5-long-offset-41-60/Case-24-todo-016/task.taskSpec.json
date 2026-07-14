@@ -1,0 +1,105 @@
+{
+  "userQuery": "做一个待办清单,整张卡用深蓝色主题色,带点夜晚的渐变感。任务从日历读,纵向一列排开能勾选。左边显示时间信息,右边是动作按钮(点了跳到闹钟App)。时间相关的任务前面用⏰🕐字符,任务多了能滚动。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的待办和日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar_todo_001",
+              "title": "项目清单",
+              "dtStart": "21:00",
+              "dtEnd": "21:30"
+            },
+            {
+              "entityId": "calendar_todo_002",
+              "title": "明早材料",
+              "dtStart": "22:10",
+              "dtEnd": "22:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历待办项",
+            "sampleValue": {
+              "entityId": "calendar_todo_001",
+                "title": "项目清单",
+              "dtStart": "21:00",
+              "dtEnd": "21:30"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历待办项唯一标识符",
+                "sampleValue": "calendar_todo_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历待办项标题",
+                "sampleValue": "项目清单"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "待办开始时间，当天任务使用 HH:MM 格式",
+                "sampleValue": "21:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "待办结束时间，当天任务使用 HH:MM 格式",
+                "sampleValue": "21:30"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "dateText": {
+        "type": "string",
+        "description": "卡片左侧日期展示文本",
+        "sampleValue": "7月13日"
+      },
+      "summaryText": {
+        "type": "string",
+        "description": "今日待办数量摘要",
+        "sampleValue": "今日 2 项"
+      },
+      "checks": {
+        "type": "array",
+        "description": "卡片样例勾选状态",
+        "sampleValue": [
+          false,
+          true
+        ],
+        "items": {
+          "type": "boolean",
+          "description": "单条待办是否已勾选完成",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_alarm_clock.png",
+      "description": "闹钟图标，适合表达打开闹钟应用或时间提醒动作。"
+    },
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合放在日程或待办时间信息前作为时间提示。"
+    }
+  ]
+}

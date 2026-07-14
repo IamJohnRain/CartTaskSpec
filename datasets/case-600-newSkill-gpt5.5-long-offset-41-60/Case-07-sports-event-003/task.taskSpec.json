@@ -1,0 +1,179 @@
+{
+  "userQuery": "我是铁三爱好者，白天上班忙晚上怕漏掉赛事，做一张能自动弹的赛事卡。整体浅灰蓝底，左边主视觉放铁人三项图标和\"标铁俱乐部\"标题，右边是几个勾选关注项（铁三/马拉松/越野）加一个\"勿扰模式自动推送\"开关。每次赛前6小时自动读天气，下雨或大风就标橙色\"注意\"。下方纵向排三栏关注赛事，每栏左边用游泳/骑车/跑步语义图标，右边写赛事名日期。夜晚渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "club": {
+      "title": {
+        "type": "string",
+        "description": "卡片左侧主视觉标题，表示用户关注的铁三俱乐部。",
+        "sampleValue": "标铁俱乐部"
+      },
+      "heroIcon": {
+        "type": "string",
+        "description": "运动赛事提醒主视觉图标路径，必须来自素材白名单。",
+        "sampleValue": "resources/base/media/stopwatch_fill.svg"
+      },
+      "nightMode": {
+        "type": "boolean",
+        "description": "是否使用夜晚渐变氛围。",
+        "sampleValue": true
+      }
+    },
+    "settings": {
+      "triathlonSelected": {
+        "type": "boolean",
+        "description": "是否关注铁人三项赛事。",
+        "sampleValue": true
+      },
+      "marathonSelected": {
+        "type": "boolean",
+        "description": "是否关注马拉松赛事。",
+        "sampleValue": true
+      },
+      "trailSelected": {
+        "type": "boolean",
+        "description": "是否关注越野赛事。",
+        "sampleValue": false
+      },
+      "dndAutoPush": {
+        "type": "boolean",
+        "description": "勿扰模式下是否允许赛前自动推送。",
+        "sampleValue": true
+      },
+      "dndLabel": {
+        "type": "string",
+        "description": "勿扰自动推送设置项展示文案。",
+        "sampleValue": "勿扰自动推送"
+      }
+    },
+    "risk": {
+      "label": {
+        "type": "string",
+        "description": "赛前六小时根据天气判断后的风险状态文案，下雨或大风时为注意。",
+        "sampleValue": "注意"
+      },
+      "isWarning": {
+        "type": "boolean",
+        "description": "赛前六小时天气是否出现下雨或大风等需要提醒的情况。",
+        "sampleValue": true
+      },
+      "weatherSummary": {
+        "type": "string",
+        "description": "赛前六小时天气摘要，结合天气现象和风力。",
+        "sampleValue": "雨 5级"
+      }
+    },
+    "events": {
+      "items": {
+        "type": "array",
+        "description": "固定展示的三条关注赛事，按游泳、骑车、跑步训练语义排列。",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "赛事名称短标题。",
+              "sampleValue": "东湖标准铁三"
+            },
+            "dateText": {
+              "type": "string",
+              "description": "赛事日期短文本。",
+              "sampleValue": "7月20日"
+            },
+            "icon": {
+              "type": "string",
+              "description": "赛事条目的语义图标路径，必须来自素材白名单。",
+              "sampleValue": "resources/base/media/figure_pool_swim.svg"
+            }
+          }
+        },
+        "sampleValue": [
+          {
+            "name": "东湖标准铁三",
+            "dateText": "7月20日",
+            "icon": "resources/base/media/figure_pool_swim.svg"
+          },
+          {
+            "name": "滨海骑跑挑战",
+            "dateText": "8月03日",
+            "icon": "resources/base/media/stopwatch_fill.svg"
+          },
+          {
+            "name": "山径越野跑",
+            "dateText": "8月18日",
+            "icon": "resources/base/media/figure_run.svg"
+          }
+        ]
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气能力返回的区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "赛前六小时自动读取的天气现象。",
+            "sampleValue": "小雨"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "赛前六小时自动读取的风力等级。",
+            "sampleValue": 5
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气能力返回的预警等级。",
+            "sampleValue": "大风蓝色预警"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "天气能力刷新时间。",
+          "sampleValue": "赛前6小时"
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "天气与赛事数据是否处于加载中。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/stopwatch_fill.svg",
+      "description": "秒表运动计时图标，适合表示铁人三项赛事提醒、骑跑挑战和赛前倒计时主视觉。",
+      "bindTo": "/club/heroIcon"
+    },
+    {
+      "src": "resources/base/media/figure_pool_swim.svg",
+      "description": "游泳人物图标，适合用于铁三赛事中的游泳项目条目。"
+    },
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合用于跑步、马拉松或越野跑赛事条目。"
+    },
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "月亮圆形图标，适合表示夜间或勿扰模式状态。"
+    }
+  ]
+}

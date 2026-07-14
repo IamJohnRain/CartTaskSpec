@@ -1,0 +1,155 @@
+{
+  "userQuery": "帮我做个快递物流卡,但这次要设计感强一点——背景铺一张氛围图,前景叠一层半透明文字面板。上面放环形进度图,中心写\"已签收 1/3\"这种动态数字,还要跳运动健康App(取件顺便记步数),再从日历读我下午有个会议得提前取件提醒我。卡片上下分两个区,底色要明显不一样。下面能滚动列我所有包裹,状态用语义图标(🚚在路上、📦已揽件、✅已签收),数据用静态示例就行。整体不要渐变,要有\"可用/已连接\"那种正向感。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历事件唯一标识符，用于后续查看事件详情。",
+              "sampleValue": "calendar-meeting-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "下午需要提前取件的会议标题。",
+              "sampleValue": "项目周会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下午会议开始时间，使用当天 HH:MM 展示格式。",
+              "sampleValue": "15:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "下午会议结束时间，使用当天 HH:MM 展示格式。",
+              "sampleValue": "16:00"
+            }
+          }
+        ]
+      }
+    },
+    "logistics": {
+      "summary": {
+        "signedText": {
+          "type": "string",
+          "description": "包裹签收进度的中心展示文案。",
+          "sampleValue": "已签收 1/3"
+        },
+        "signedCount": {
+          "type": "integer",
+          "description": "已签收包裹数量。",
+          "sampleValue": 1
+        },
+        "totalCount": {
+          "type": "integer",
+          "description": "全部包裹数量。",
+          "sampleValue": 3
+        },
+        "connectionState": {
+          "type": "string",
+          "description": "物流服务与提醒能力的可用连接状态。",
+          "sampleValue": "可用/已连接"
+        },
+        "reminderText": {
+          "type": "string",
+          "description": "结合下午会议生成的提前取件提醒。",
+          "sampleValue": "15:30 周会前取件"
+        }
+      },
+      "packages": [
+        {
+          "statusIcon": {
+            "type": "string",
+            "description": "包裹状态语义图标素材路径。",
+            "sampleValue": "resources/base/media/courier_box.png"
+          },
+          "name": {
+            "type": "string",
+            "description": "包裹名称或来源摘要。",
+            "sampleValue": "生活用品"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "包裹当前物流状态。",
+            "sampleValue": "在路上"
+          },
+          "meta": {
+            "type": "string",
+            "description": "包裹位置、取件点或时间提示。",
+            "sampleValue": "驿站 18:00前"
+          }
+        },
+        {
+          "statusIcon": {
+            "type": "string",
+            "description": "包裹状态语义图标素材路径。",
+            "sampleValue": "resources/base/media/courier_box.png"
+          },
+          "name": {
+            "type": "string",
+            "description": "包裹名称或来源摘要。",
+            "sampleValue": "数码配件"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "包裹当前物流状态。",
+            "sampleValue": "已揽件"
+          },
+          "meta": {
+            "type": "string",
+            "description": "包裹位置、取件点或时间提示。",
+            "sampleValue": "杭州转运中"
+          }
+        },
+        {
+          "statusIcon": {
+            "type": "string",
+            "description": "包裹状态语义图标素材路径。",
+            "sampleValue": "resources/base/media/courier_box.png"
+          },
+          "name": {
+            "type": "string",
+            "description": "包裹名称或来源摘要。",
+            "sampleValue": "文件袋"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "包裹当前物流状态。",
+            "sampleValue": "已签收"
+          },
+          "meta": {
+            "type": "string",
+            "description": "包裹位置、取件点或时间提示。",
+            "sampleValue": "前台代收"
+          }
+        }
+      ]
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱子素材，适合表达物流、取件提醒、包裹状态与背景氛围。"
+    },
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动跑步图标，适合表达跳转运动健康 App 和取件顺便记步数。"
+    },
+    {
+      "src": "resources/base/media/icon_meeting.png",
+      "description": "会议图标，适合表达下午会议日程提醒。"
+    }
+  ]
+}

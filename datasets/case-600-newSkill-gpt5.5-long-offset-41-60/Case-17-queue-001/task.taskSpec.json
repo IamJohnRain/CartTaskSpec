@@ -1,0 +1,159 @@
+{
+  "userQuery": "我下周有好几项检查要排,卡片上面大字体写主要的检查信息,下面横着重复排几行小卡片,每行是\"X检查 等待X人\"的格式,能点进查看具体日程事件,顺便显示下天气,深色舞台风,人数快到了用警示色,不用渐变,图标全用文字字符代替。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/queue/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/queue/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/queue/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "queue": {
+        "items": {
+          "type": "array",
+          "description": "下周待排检查的排队摘要列表，按最接近叫号的检查优先排序。",
+          "sampleValue": [
+            {
+              "name": "胃镜检查",
+              "timeText": "周二 09:30",
+              "waitCountText": "2",
+              "waitColor": "#ffd94838",
+              "entityId": "calendar_exam_001"
+            },
+            {
+              "name": "CT检查",
+              "timeText": "周三 14:00",
+              "waitCountText": "5",
+              "waitColor": "#e5ffffff",
+              "entityId": "calendar_exam_002"
+            },
+            {
+              "name": "抽血检查",
+              "timeText": "周五 08:20",
+              "waitCountText": "8",
+              "waitColor": "#e5ffffff",
+              "entityId": "calendar_exam_003"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单项检查排队摘要。",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "检查项目名称。",
+                "sampleValue": "胃镜检查"
+              },
+              "timeText": {
+                "type": "string",
+                "description": "检查日程的短时间文本。",
+                "sampleValue": "周二 09:30"
+              },
+              "waitCountText": {
+                "type": "string",
+                "description": "当前等待人数的数字文本。",
+                "sampleValue": "2"
+              },
+              "waitColor": {
+                "type": "string",
+                "description": "等待人数状态对应的文字颜色，快到号时使用警示色。",
+                "sampleValue": "#ffd94838"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "对应日历事件的唯一标识，用于打开日程详情。",
+                "sampleValue": "calendar_exam_001"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询位置的区县名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下周检查相关日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_exam_001",
+              "title": "胃镜检查",
+              "dtStart": "周二 09:30",
+              "dtEnd": "周二 10:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历事件条目。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "索引项唯一标识符。",
+                "sampleValue": "calendar_exam_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "胃镜检查"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "事件起始时间。",
+                "sampleValue": "周二 09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "事件结束时间。",
+                "sampleValue": "周二 10:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}
