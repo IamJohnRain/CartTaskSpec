@@ -1,0 +1,121 @@
+{
+  "userQuery": "帮我做一张听书卡吧,主要用文字就行。中间放个环形显示今天听了多久,写\"今日已听45分钟\"这种固定文字加数字的拼接。下面横排三条,分别是周一38分钟、周二52分钟、周三47分钟,每条用不同底色区分开。点任意一条能跳到音乐应用那张睡前故事歌单。再从日历读一下最近一次读书会的日期放在角落里。背景用夜晚那种深蓝到紫色的渐变,没有图标就用⭐📖✦这种字符代替。今天听够目标就显示\"已完成\"。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "listen": {
+      "todayMinutes": {
+        "type": "number",
+        "description": "今天已经听书的分钟数。",
+        "sampleValue": 45
+      },
+      "targetMinutes": {
+        "type": "number",
+        "description": "今天听书目标分钟数，用于环形进度。",
+        "sampleValue": 45
+      },
+      "statusText": {
+        "type": "string",
+        "description": "今天听书是否达到目标后的状态文案。",
+        "sampleValue": "已完成"
+      },
+      "playlistName": {
+        "type": "string",
+        "description": "点击周数据后跳转的音乐歌单名称。",
+        "sampleValue": "睡前故事"
+      },
+      "week": {
+        "type": "array",
+        "description": "近三天听书分钟数摘要。",
+        "items": {
+          "type": "object",
+          "description": "单日听书记录。",
+          "properties": {
+            "day": {
+              "type": "string",
+              "description": "星期标签。",
+              "sampleValue": "周一"
+            },
+            "minutes": {
+              "type": "number",
+              "description": "当天听书分钟数。",
+              "sampleValue": 38
+            }
+          }
+        },
+        "sampleValue": [
+          {
+            "day": "周一",
+            "minutes": 38
+          },
+          {
+            "day": "周二",
+            "minutes": 52
+          },
+          {
+            "day": "周三",
+            "minutes": 47
+          }
+        ]
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历查询到的读书会日程列表。",
+          "items": {
+            "type": "object",
+            "description": "读书会日程项。",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "读书会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始日期或时间。",
+                "sampleValue": "7月20日"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "20:30"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识。",
+                "sampleValue": "calendar-bookclub-001"
+              },
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "日历"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "title": "读书会",
+              "dtStart": "7月20日",
+              "dtEnd": "20:30",
+              "entityId": "calendar-bookclub-001",
+              "entityName": "日历"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

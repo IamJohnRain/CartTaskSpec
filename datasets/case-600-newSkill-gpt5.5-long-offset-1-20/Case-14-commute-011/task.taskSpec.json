@@ -1,0 +1,103 @@
+{
+  "userQuery": "早间通勤前看的提醒卡,左侧主视觉显示当前时间\"07:15 周三\",右侧用分隔线分两组信息,上面是固定文字\"今日待办\"下面纵向往下列3-4条日程\"08:00 站会\"\"10:00 周报\"\"14:00 客户对接\",每条都能点进闹钟或日历,磨砂质感,睡眠那种深蓝到浅紫的氛围渐变,用闹钟、文件夹、咖啡图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日通勤前需要关注的日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-standup-0800",
+              "dtStart": "08:00",
+              "title": "站会"
+            },
+            {
+              "entityId": "calendar-weekly-1000",
+              "dtStart": "10:00",
+              "title": "周报"
+            },
+            {
+              "entityId": "calendar-client-1400",
+              "dtStart": "14:00",
+              "title": "客户对接"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情跳转所需的唯一标识",
+                "sampleValue": "calendar-standup-0800"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "当天日程开始时间，HH:MM 格式",
+                "sampleValue": "08:00"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "站会"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "黑白双色闹钟图标，适合表达早间提醒、闹钟入口和通勤前时间提醒。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "黑色日历图标，适合表达今日待办、日历事件和日程列表。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合表达当日安排、待办事项和日程入口。"
+    }
+  ]
+}

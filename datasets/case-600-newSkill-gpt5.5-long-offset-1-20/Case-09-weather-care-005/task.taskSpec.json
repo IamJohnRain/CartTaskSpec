@@ -1,0 +1,177 @@
+{
+  "userQuery": "老婆快预产期了，帮我做个磨砂质感的卡片。我要一个环形仪表盘展示距离预产期的剩余天数，数字叠加在中间，结合日历日程和今天天气数据，如果有大雨预警或者快到产检日程，要标红提示。卡片左边能横向并排排列几个产检准备事项，点进去能跳转天气App看冷暖，加上从红到黄那种紧迫感的渐变色，放些日历和天气的图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "care": {
+      "title": {
+        "type": "string",
+        "description": "天气与产检关怀卡片标题。",
+        "sampleValue": "预产期关怀"
+      },
+      "remainingDaysText": {
+        "type": "string",
+        "description": "距离预产期的剩余天数文本，用于环形仪表盘中心。",
+        "sampleValue": "12"
+      },
+      "remainingUnit": {
+        "type": "string",
+        "description": "倒计时单位。",
+        "sampleValue": "天"
+      },
+      "ringValue": {
+        "type": "number",
+        "description": "环形仪表盘当前值。",
+        "sampleValue": 28
+      },
+      "ringTotal": {
+        "type": "number",
+        "description": "环形仪表盘总值。",
+        "sampleValue": 40
+      },
+      "prepOne": {
+        "type": "string",
+        "description": "产检或临产准备事项一。",
+        "sampleValue": "证件"
+      },
+      "prepTwo": {
+        "type": "string",
+        "description": "产检或临产准备事项二。",
+        "sampleValue": "待产包"
+      },
+      "prepThree": {
+        "type": "string",
+        "description": "产检或临产准备事项三。",
+        "sampleValue": "雨具"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "大雨预警或临近产检时的红色提示文案。",
+        "sampleValue": "大雨预警 · 产检临近"
+      },
+      "warningColor": {
+        "type": "string",
+        "description": "真实告警状态使用的提示色。",
+        "sampleValue": "#ffe84026"
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询地区名称。",
+            "sampleValue": "当前位置"
+          },
+          "cityCode": {
+            "type": "string",
+            "description": "天气城市代码，用于天气 App 城市页跳转。",
+            "sampleValue": ""
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "27°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "大雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息。",
+            "sampleValue": "大雨黄色预警"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "temperatureRangeText": "25° / 30°",
+              "rainProbabilityPercent": "85%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或日期文本。",
+                "sampleValue": "今天"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当日温度范围。",
+                "sampleValue": "25° / 30°"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "当日降雨概率。",
+                "sampleValue": "85%"
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "未来一段时间内与产检相关的日程列表。",
+          "sampleValue": [
+            {
+              "title": "产检复查",
+              "dtStart": "明天 09:30",
+              "entityId": "calendar-checkup-001"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "产检复查"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "明天 09:30"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-checkup-001"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达产检日程和日历提醒。"
+    },
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "天气雨伞图标，适合亲人关怀场景中的天气、雨天或冷暖提醒。"
+    }
+  ]
+}

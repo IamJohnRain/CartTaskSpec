@@ -1,0 +1,113 @@
+{
+  "userQuery": "做一张浅色底纵向喝水提醒卡，横排三项用文字图标加动态数值（如\"今日饮水 1200ml\"\"已服药 2 次\"\"距目标还差 800ml\"），能点进最近一次饮水日程看详情，读一下天气，氛围感底色不用渐变，目标已达成那种绿色正向状态。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "water-event-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "health": {
+        "hydration": {
+          "todayIntakeText": {
+            "type": "string",
+            "description": "今日累计饮水量展示文本。",
+            "sampleValue": "1200ml"
+          },
+          "medicineTakenText": {
+            "type": "string",
+            "description": "今日已服药次数展示文本。",
+            "sampleValue": "2 次"
+          },
+          "remainingText": {
+            "type": "string",
+            "description": "距今日饮水目标还差的水量展示文本。",
+            "sampleValue": "800ml"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "今日目标完成状态展示文本。",
+            "sampleValue": "目标已达成"
+          },
+          "progressValue": {
+            "type": "number",
+            "description": "今日饮水目标完成进度值。",
+            "sampleValue": 100
+          },
+          "progressTotal": {
+            "type": "number",
+            "description": "今日饮水目标完成进度总量。",
+            "sampleValue": 100
+          }
+        }
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询返回的区县名称。",
+            "sampleValue": "浦东"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "最近一次饮水日程的唯一标识。",
+              "sampleValue": "water-event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "最近一次饮水日程标题。",
+              "sampleValue": "喝水提醒"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "最近一次饮水日程开始时间。",
+              "sampleValue": "15:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴线性图标，适合用于饮水提醒和今日饮水量识别。"
+    },
+    {
+      "src": "resources/base/media/checkmark_calendar_fill.svg",
+      "description": "带对勾的日历实心图标，适合用于已完成日程、打卡和服药完成状态。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于最近一次饮水日程和查看日程详情入口。"
+    },
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵天气图标，适合用于当前天气速览。"
+    }
+  ]
+}

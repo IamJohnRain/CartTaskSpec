@@ -1,0 +1,79 @@
+{
+  "userQuery": "做个日程防沉迷卡片，分区用不同底色，中间用文字“- - -”做分隔线分开。上面拼接写“距离睡觉还有2小时15分”，纵向列出学习、娱乐、运动三项静态日程安排，旁边用“★”这种文字字符当图标，列表各项依次显示黄色的待办风险状态，背景加点整体氛围感。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "anti-addiction-schedule"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "countdown": {
+      "prefix": {
+        "type": "string",
+        "description": "睡觉倒计时前缀文案，用于与剩余时间拼接展示。",
+        "sampleValue": "距离睡觉还有"
+      },
+      "remainingText": {
+        "type": "string",
+        "description": "距离睡觉的剩余时长展示文本。",
+        "sampleValue": "2小时15分"
+      }
+    },
+    "separatorText": {
+      "type": "string",
+      "description": "位于上下分区之间的文字分隔线。",
+      "sampleValue": "- - -"
+    },
+    "schedule": {
+      "items": {
+        "type": "array",
+        "description": "防沉迷静态日程安排列表，固定展示学习、娱乐、运动三项。",
+        "sampleValue": [
+          {
+            "icon": "★",
+            "name": "学习",
+            "status": "待办风险"
+          },
+          {
+            "icon": "★",
+            "name": "娱乐",
+            "status": "待办风险"
+          },
+          {
+            "icon": "★",
+            "name": "运动",
+            "status": "待办风险"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条静态日程安排。",
+          "properties": {
+            "icon": {
+              "type": "string",
+              "description": "日程项旁边使用的文字字符图标。",
+              "sampleValue": "★"
+            },
+            "name": {
+              "type": "string",
+              "description": "日程安排名称。",
+              "sampleValue": "学习"
+            },
+            "status": {
+              "type": "string",
+              "description": "日程项的待办风险状态文本。",
+              "sampleValue": "待办风险"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

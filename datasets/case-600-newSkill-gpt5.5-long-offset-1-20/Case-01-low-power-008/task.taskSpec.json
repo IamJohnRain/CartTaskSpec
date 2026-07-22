@@ -1,0 +1,73 @@
+{
+  "userQuery": "做一张低电提醒卡，深色氛围背景，顶部闪电⚡图标当主视觉，固定写\"电量不足\"，下面横向排几个小卡片显示日历里几个日程\"10:00会议\"、\"14:00午饭\"，右边一个开关\"勿扰模式\"点一下能切换，黄色提示\"预计还剩2小时\"，运动紧迫感渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-1000",
+              "dtStart": "10:00",
+              "title": "会议"
+            },
+            {
+              "entityId": "calendar-event-1400",
+              "dtStart": "14:00",
+              "title": "午饭"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-event-1000"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内使用 HH:MM 格式。",
+                "sampleValue": "10:00"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "会议"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "dndEnabled": {
+        "type": "boolean",
+        "description": "勿扰模式当前是否开启的样例状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "充电/闪电图标，适合低电模式卡片中作为顶部主视觉或电量提醒识别符号。"
+    }
+  ]
+}

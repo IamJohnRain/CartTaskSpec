@@ -1,0 +1,164 @@
+{
+  "userQuery": "给老人做一张吃药卡,顶部大字写\"今日服药已完成 2/3\",下面横向并排三个勾选框分别对应早中晚,每个框旁边用小字写\"距离下次服药还有2小时15分\"这种固定话术加动态时间。点任意位置能跳到闹钟app设重复提醒,同时读取日历日程显示今天还有什么别的药要吃。卡片用淡淡的米色底,素雅一点,右上角放药丸图标,完成的对勾用绿色,不要任何渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "medication": {
+      "titlePrefix": {
+        "type": "string",
+        "description": "卡片顶部服药完成标题前缀。",
+        "sampleValue": "今日服药已完成"
+      },
+      "completedCount": {
+        "type": "integer",
+        "description": "今日已完成的服药次数。",
+        "sampleValue": 2
+      },
+      "totalCount": {
+        "type": "integer",
+        "description": "今日计划服药总次数。",
+        "sampleValue": 3
+      },
+      "calendarSummaryPrefix": {
+        "type": "string",
+        "description": "底部日历摘要前缀。",
+        "sampleValue": "今日还有："
+      },
+      "actionLabel": {
+        "type": "string",
+        "description": "跳转闹钟应用的按钮文案。",
+        "sampleValue": "设重复提醒"
+      },
+      "slots": {
+        "type": "array",
+        "description": "早中晚三个服药项。",
+        "sampleValue": [
+          {
+            "label": "早",
+            "selected": true,
+            "delayPrefix": "还有\n",
+            "nextDelayText": "2h15m"
+          },
+          {
+            "label": "中",
+            "selected": true,
+            "delayPrefix": "还有\n",
+            "nextDelayText": "4h10m"
+          },
+          {
+            "label": "晚",
+            "selected": false,
+            "delayPrefix": "还有\n",
+            "nextDelayText": "8h30m"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个服药时段。",
+          "sampleValue": {
+            "label": "早",
+            "selected": true,
+            "delayPrefix": "还有\n",
+            "nextDelayText": "2h15m"
+          },
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "服药时段名称。",
+              "sampleValue": "早"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "该服药项是否已完成。",
+              "sampleValue": true
+            },
+            "delayPrefix": {
+              "type": "string",
+              "description": "下次服药时间提示前缀。",
+              "sampleValue": "还有\n"
+            },
+            "nextDelayText": {
+              "type": "string",
+              "description": "下次服药剩余时长。",
+              "sampleValue": "2h15m"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日程列表，卡片只展示第一条。",
+          "sampleValue": [
+            {
+              "entityName": "CalendarEvent",
+              "entityId": "calendar-event-001",
+              "title": "晚饭后降压药",
+              "dtStart": "18:30",
+              "dtEnd": "18:45"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "sampleValue": {
+              "entityName": "CalendarEvent",
+              "entityId": "calendar-event-001",
+              "title": "晚饭后降压药",
+              "dtStart": "18:30",
+              "dtEnd": "18:45"
+            },
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类型。",
+                "sampleValue": "CalendarEvent"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "晚饭后降压药"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "今天日程的开始时间，使用 HH:MM 展示。",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "今天日程的结束时间，使用 HH:MM 展示。",
+                "sampleValue": "18:45"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "闹钟实心图标，适合用于服药提醒、重复闹钟和定时入口。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于今日日程摘要和日历信息识别。"
+    }
+  ]
+}

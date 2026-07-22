@@ -1,0 +1,91 @@
+{
+  "userQuery": "帮我做个带点紧迫感渐变的防沉迷卡片，上面放个大大的时钟图标作为主视觉。下面竖向排列好几个管控App，每项都显示“距离锁屏还有15分钟”这种字样，根据日历的作息安排来自动限制。时间快到了就变成黄色风险提示，点击还能直接跳到闹钟应用去设定时。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "根据日历作息安排生成的防沉迷管控项列表",
+          "sampleValue": [
+            {
+              "entityId": "anti_addiction_001",
+              "title": "短视频",
+              "description": "距离锁屏还有15分钟",
+              "dtStart": "21:45",
+              "dtEnd": "22:00"
+            },
+            {
+              "entityId": "anti_addiction_002",
+              "title": "游戏",
+              "description": "距离锁屏还有15分钟",
+              "dtStart": "21:45",
+              "dtEnd": "22:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个管控 App 的作息限制项",
+            "sampleValue": {
+              "entityId": "anti_addiction_001",
+              "title": "短视频",
+              "description": "距离锁屏还有15分钟",
+              "dtStart": "21:45",
+              "dtEnd": "22:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历限制项唯一标识",
+                "sampleValue": "anti_addiction_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "被管控的 App 名称或日程标题",
+                "sampleValue": "短视频"
+              },
+              "description": {
+                "type": "string",
+                "description": "由日历作息推导出的锁屏倒计时提示",
+                "sampleValue": "距离锁屏还有15分钟"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "管控日程开始时间",
+                "sampleValue": "21:45"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "管控日程锁屏时间",
+                "sampleValue": "22:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "riskText": {
+        "type": "string",
+        "description": "时间临近时的黄色风险提示文案",
+        "sampleValue": "即将锁屏"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/clock_fill.svg",
+      "description": "时钟实心图标，适合用于防沉迷倒计时、锁屏前提醒和闹钟设置入口的主视觉。"
+    }
+  ]
+}

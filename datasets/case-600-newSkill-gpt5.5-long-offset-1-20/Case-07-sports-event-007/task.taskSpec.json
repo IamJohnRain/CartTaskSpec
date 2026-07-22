@@ -1,0 +1,181 @@
+{
+  "userQuery": "帮我做几个赛事倒计时的小卡片横向排成一排，浅色调底，每个卡片用环形进度叠加数字的样式，比如\"距离城市马拉松还有24天\"。卡片里有勾选项，能标记\"装备已准备\"、\"补给已买\"这种checklist状态，有未勾选的就标个黄色\"待处理\"风险提示。点卡片能跳运动健康看训练计划。整体用夜晚蓝紫渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "未来赛事日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityName": "calendar_event",
+              "entityId": "event-marathon-001",
+              "title": "城市马拉松",
+              "dtStart": "24天",
+              "dtEnd": "训练计划",
+              "description": "装备已准备，补给待购买",
+              "eventLocation": "滨江赛道",
+              "importantEventType": 2
+            },
+            {
+              "entityName": "calendar_event",
+              "entityId": "event-trail-002",
+              "title": "越野挑战",
+              "dtStart": "38天",
+              "dtEnd": "训练计划",
+              "description": "装备待检查，补给已买",
+              "eventLocation": "南山公园",
+              "importantEventType": 2
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条赛事日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar_event"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "event-marathon-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "赛事标题。",
+                "sampleValue": "城市马拉松"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "赛事倒计时展示文本。",
+                "sampleValue": "24天"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "赛事关联训练计划提示。",
+                "sampleValue": "训练计划"
+              },
+              "description": {
+                "type": "string",
+                "description": "赛事准备清单摘要。",
+                "sampleValue": "装备已准备，补给待购买"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "赛事地点。",
+                "sampleValue": "滨江赛道"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日关系，2 表示倒数日。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "events": {
+        "type": "array",
+        "description": "端侧归一化后的赛事倒计时展示项。",
+        "sampleValue": [
+          {
+            "title": "城市马拉松",
+            "daysText": "24",
+            "unit": "天",
+            "progress": 72
+          },
+          {
+            "title": "越野挑战",
+            "daysText": "38",
+            "unit": "天",
+            "progress": 46
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个赛事展示项。",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "赛事名称短标题。",
+              "sampleValue": "城市马拉松"
+            },
+            "daysText": {
+              "type": "string",
+              "description": "倒计时天数数字文本。",
+              "sampleValue": "24"
+            },
+            "unit": {
+              "type": "string",
+              "description": "倒计时单位。",
+              "sampleValue": "天"
+            },
+            "progress": {
+              "type": "number",
+              "description": "倒计时环形进度值。",
+              "sampleValue": 72
+            }
+          }
+        }
+      },
+      "checklist": {
+        "gear": {
+          "label": {
+            "type": "string",
+            "description": "装备准备项文案。",
+            "sampleValue": "装备"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "装备是否已准备。",
+            "sampleValue": true
+          }
+        },
+        "supply": {
+          "label": {
+            "type": "string",
+            "description": "补给采购项文案。",
+            "sampleValue": "补给"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "补给是否已购买。",
+            "sampleValue": false
+          }
+        }
+      },
+      "risk": {
+        "text": {
+          "type": "string",
+          "description": "存在未完成清单项时的风险提示。",
+          "sampleValue": "待处理"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动跑步彩色图标，适合赛事或训练计划入口识别。"
+    },
+    {
+      "src": "resources/base/media/stopwatch_fill.svg",
+      "description": "秒表图标，适合赛事倒计时和计时提醒。"
+    }
+  ]
+}

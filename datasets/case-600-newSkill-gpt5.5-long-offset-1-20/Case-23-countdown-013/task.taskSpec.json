@@ -1,0 +1,101 @@
+{
+  "userQuery": "结婚纪念日倒计时卡片,中间环形显示\"距离纪念日30天\",下面一排横向小图标(心形、戒指、蛋糕),氛围从背景延伸出来,中间一个明显按钮写着\"查看纪念日\",点进去看日历里那个纪念日事件。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "查询到的日历纪念日事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-anniversary-001",
+              "title": "结婚纪念日",
+              "dtStart": "30天后",
+              "dtEnd": "全天",
+              "importantEventType": 2
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于打开纪念日事件详情。",
+                "sampleValue": "calendar-anniversary-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题。",
+                "sampleValue": "结婚纪念日"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "纪念日开始时间或倒计时展示文本。",
+                "sampleValue": "30天后"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "纪念日结束时间。",
+                "sampleValue": "全天"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日类型，2表示倒数日。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "countdown": {
+      "title": {
+        "type": "string",
+        "description": "倒计时标题。",
+        "sampleValue": "结婚纪念日"
+      },
+      "message": {
+        "type": "string",
+        "description": "主倒计时展示文案。",
+        "sampleValue": "距离纪念日30天"
+      },
+      "daysLeft": {
+        "type": "integer",
+        "description": "距离纪念日的剩余天数。",
+        "sampleValue": 30
+      },
+      "totalDays": {
+        "type": "integer",
+        "description": "倒计时环形进度的总天数参考值。",
+        "sampleValue": 100
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/heart_fill.svg",
+      "description": "心形实心图标，用于表达结婚纪念日的爱意氛围。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，用于表达纪念日事件和查看日历入口。"
+    },
+    {
+      "src": "resources/base/media/stopwatch_fill.svg",
+      "description": "秒表实心图标，用于表达倒计时和剩余天数。"
+    }
+  ]
+}

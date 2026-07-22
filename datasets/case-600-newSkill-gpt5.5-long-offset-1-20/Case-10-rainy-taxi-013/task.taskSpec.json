@@ -1,0 +1,113 @@
+{
+  "userQuery": "下雨天做打车卡，磨砂底，左侧主视觉放个地图符号，右侧动态'距上车还有12分钟'，下面可滚动列表显示附近3辆车的车牌距离。叫不到车红色警告（已经等了快20分钟），点一下导航去公司。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.230400",
+            "longitude": "121.473700"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于表达雨天打车场景。",
+            "sampleValue": "小雨"
+          }
+        }
+      },
+      "taxi": {
+        "etaPrefix": {
+          "type": "string",
+          "description": "距司机到达上车点的倒计时提示前缀。",
+          "sampleValue": "距上车还有"
+        },
+        "etaMinutes": {
+          "type": "string",
+          "description": "距司机到达上车点的动态分钟数。",
+          "sampleValue": "12分钟"
+        },
+        "waitAlertText": {
+          "type": "string",
+          "description": "叫不到车或等待过久时的红色告警文案。",
+          "sampleValue": "告警 等候20分钟"
+        },
+        "cars": [
+          {
+            "plate": {
+              "type": "string",
+              "description": "附近车辆车牌号。",
+              "sampleValue": "沪A8K21"
+            },
+            "distanceText": {
+              "type": "string",
+              "description": "附近车辆距离上车点的展示文本。",
+              "sampleValue": "320m"
+            }
+          },
+          {
+            "plate": {
+              "type": "string",
+              "description": "附近车辆车牌号。",
+              "sampleValue": "沪B6P09"
+            },
+            "distanceText": {
+              "type": "string",
+              "description": "附近车辆距离上车点的展示文本。",
+              "sampleValue": "540m"
+            }
+          },
+          {
+            "plate": {
+              "type": "string",
+              "description": "附近车辆车牌号。",
+              "sampleValue": "沪D3M72"
+            },
+            "distanceText": {
+              "type": "string",
+              "description": "附近车辆距离上车点的展示文本。",
+              "sampleValue": "760m"
+            }
+          }
+        ],
+        "destination": {
+          "latitude": {
+            "type": "string",
+            "description": "公司目的地纬度，由出行服务解析得到。",
+            "sampleValue": "31.230400"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "公司目的地经度，由出行服务解析得到。",
+            "sampleValue": "121.473700"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/local_fill.svg",
+      "description": "定位实心图标，适合表达地图、上车点和当前位置标注，可作为雨天打车卡左侧主视觉。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表达去公司导航动作。"
+    },
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合雨天打车场景中的车辆识别。"
+    }
+  ]
+}

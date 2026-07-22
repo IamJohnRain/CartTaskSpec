@@ -1,0 +1,109 @@
+{
+  "userQuery": "医院叫号卡做得急一点,我前面还有几十个人呢!中间要个大的环形显示前面还有多少号,旁边能勾选是本人取号还是代取(上次我选错了被叫到才发现),底下能点进我约的科室日程,分区用不同底色区分一下,横排三个小数据卡(当前号/预计时间/已等时长),渐变用那种紧迫的橙红色,字符做图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "queue": {
+        "departmentName": {
+          "type": "string",
+          "description": "当前排队叫号所属科室名称",
+          "sampleValue": "呼吸内科"
+        },
+        "waitingAhead": {
+          "type": "integer",
+          "description": "当前用户前方仍需等待的号码数量",
+          "sampleValue": 32
+        },
+        "progressValue": {
+          "type": "integer",
+          "description": "用于环形进度展示的等待进度值",
+          "sampleValue": 68
+        },
+        "progressTotal": {
+          "type": "integer",
+          "description": "用于环形进度展示的总进度值",
+          "sampleValue": 100
+        },
+        "currentNo": {
+          "type": "string",
+          "description": "当前正在叫到的号码",
+          "sampleValue": "A126"
+        },
+        "estimatedTime": {
+          "type": "string",
+          "description": "预计轮到当前用户的时间",
+          "sampleValue": "约 28 分"
+        },
+        "waitedDuration": {
+          "type": "string",
+          "description": "当前用户已等待的时长",
+          "sampleValue": "已等 46 分"
+        },
+        "selfPickupSelected": {
+          "type": "boolean",
+          "description": "是否选择本人取号",
+          "sampleValue": true
+        },
+        "agentPickupSelected": {
+          "type": "boolean",
+          "description": "是否选择代取",
+          "sampleValue": false
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "预约科室相关日程列表",
+          "items": {
+            "entityId": {
+              "type": "string",
+              "description": "日程索引项唯一标识符",
+              "sampleValue": "calendar-queue-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "预约科室日程标题",
+              "sampleValue": "呼吸内科复诊"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "预约日程开始时间",
+              "sampleValue": "10:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "预约日程结束时间",
+              "sampleValue": "11:00"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "预约科室或候诊地点",
+              "sampleValue": "门诊 3 楼"
+            }
+          },
+          "sampleValue": [
+            {
+              "entityId": "calendar-queue-001",
+              "title": "呼吸内科复诊",
+              "dtStart": "10:30",
+              "dtEnd": "11:00",
+              "eventLocation": "门诊 3 楼"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

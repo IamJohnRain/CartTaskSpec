@@ -1,0 +1,149 @@
+{
+  "userQuery": "物流卡片要分组,用分隔线划开,左边大号\"派送中\"主视觉,右边分块显示运单号、当前位置、预计送达时间,各区块不同底色,示例数据就行。读一下天气数据。已签收用绿色正向色。整体用橙黄紧迫感渐变,文字字符做图标。下面可滚动包裹列表,5条以上。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "logistics": {
+      "statusText": {
+        "type": "string",
+        "description": "包裹当前物流状态，已签收时使用绿色正向状态色展示。",
+        "sampleValue": "派送中"
+      },
+      "statusIconText": {
+        "type": "string",
+        "description": "用作物流状态主视觉的文字字符图标。",
+        "sampleValue": "快"
+      },
+      "statusColor": {
+        "type": "string",
+        "description": "当前物流状态语义色，已签收时为绿色正向色。",
+        "sampleValue": "#FFFFFFFF"
+      },
+      "signedColor": {
+        "type": "string",
+        "description": "已签收状态使用的绿色正向色。",
+        "sampleValue": "#ff64bb5c"
+      },
+      "waybillNo": {
+        "type": "string",
+        "description": "快递运单号脱敏展示文本。",
+        "sampleValue": "SF 8732 1098"
+      },
+      "currentLocation": {
+        "type": "string",
+        "description": "包裹当前所在站点或派送位置。",
+        "sampleValue": "浦东花木站"
+      },
+      "etaText": {
+        "type": "string",
+        "description": "预计送达时间展示文本。",
+        "sampleValue": "今日 18:30"
+      },
+      "packages": {
+        "type": "array",
+        "description": "当前可滚动展示的包裹摘要列表，至少五条。",
+        "items": {
+          "type": "object",
+          "description": "单个包裹摘要。",
+          "properties": {
+            "iconText": {
+              "type": "string",
+              "description": "包裹列表项文字字符图标。",
+              "sampleValue": "1"
+            },
+            "name": {
+              "type": "string",
+              "description": "包裹简称或来源。",
+              "sampleValue": "生鲜包裹"
+            },
+            "state": {
+              "type": "string",
+              "description": "包裹当前状态摘要。",
+              "sampleValue": "骑手派送"
+            }
+          }
+        },
+        "sampleValue": [
+          {
+            "iconText": "1",
+            "name": "生鲜包裹",
+            "state": "骑手派送"
+          },
+          {
+            "iconText": "2",
+            "name": "办公文件",
+            "state": "到达站点"
+          },
+          {
+            "iconText": "3",
+            "name": "数码配件",
+            "state": "运输中"
+          },
+          {
+            "iconText": "4",
+            "name": "衣物包裹",
+            "state": "已签收"
+          },
+          {
+            "iconText": "5",
+            "name": "日用品",
+            "state": "揽收完成"
+          },
+          {
+            "iconText": "6",
+            "name": "图书订单",
+            "state": "等待出库"
+          }
+        ]
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "cityCode": {
+            "type": "string",
+            "description": "天气应用城市代码。",
+            "sampleValue": "60814"
+          },
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名。",
+            "sampleValue": "浦东新区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名。",
+            "sampleValue": "上海"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "31°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "端侧完成天气查询和归一化的时间。",
+          "sampleValue": "2026-07-16 16:20"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

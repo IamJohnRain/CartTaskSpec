@@ -1,0 +1,119 @@
+{
+  "userQuery": "快递取号提醒卡,主信息就是文字,左上角一个仪表盘小环显示当天取件量,点地址能跳地图导航到驿站,读一下日历看今天还有什么安排,底色用浅米色调,适合环境氛围那种渐变,底部横向并排几个驿站标签。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "pickup": {
+        "todayCount": {
+          "type": "number",
+          "description": "当天已到站或待取件的快递数量，用于左上角仪表盘小环。",
+          "sampleValue": 8
+        },
+        "dayTarget": {
+          "type": "number",
+          "description": "当天取件量仪表盘的参考总量。",
+          "sampleValue": 12
+        },
+        "codeText": {
+          "type": "string",
+          "description": "取号提醒的主文字。",
+          "sampleValue": "A26"
+        }
+      },
+      "station": {
+        "name": {
+          "type": "string",
+          "description": "快递驿站短地址或名称，用作可点击导航入口。",
+          "sampleValue": "人民路驿站"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "驿站地图导航目的地纬度。",
+          "sampleValue": "31.2304"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "驿站地图导航目的地经度。",
+          "sampleValue": "121.4737"
+        },
+        "tagPrimary": {
+          "type": "string",
+          "description": "底部第一个驿站标签。",
+          "sampleValue": "近门口"
+        },
+        "tagSecondary": {
+          "type": "string",
+          "description": "底部第二个驿站标签。",
+          "sampleValue": "24h柜"
+        },
+        "tagTertiary": {
+          "type": "string",
+          "description": "底部第三个驿站标签。",
+          "sampleValue": "冷链柜"
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日程索引项唯一标识符。",
+              "sampleValue": "calendar-event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "今日日程标题。",
+              "sampleValue": "部门例会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "今日日程开始时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "14:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "今日日程结束时间，今天内使用 HH:MM 格式。",
+              "sampleValue": "15:00"
+            }
+          }
+        ]
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历能力加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/courier_box.png",
+      "description": "彩色快递箱子图标，适合物流信息和取件提醒场景。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "黑色日历实心图标，适合日历事件查看和当日安排提示。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "黑色右上方向导航箭头，适合地图导航和路线指引入口。"
+    }
+  ]
+}

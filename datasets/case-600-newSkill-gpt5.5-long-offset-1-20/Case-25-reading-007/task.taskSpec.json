@@ -1,0 +1,107 @@
+{
+  "userQuery": "待读书单卡片,左边放书本文字图标当主视觉,右边是一个可勾选的任务列表,每项\"《书名》·剩余3天截止\"这种格式。点书名跳音乐App有声书歌单。整体用橙红渐变营造紧迫感,快到期的标红色警告,卡片能滚动看更多,左右分区不同底色,日历自动读。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的待读书截止事项列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "reading-001",
+              "title": "三体",
+              "description": "剩余1天截止",
+              "dtEnd": "剩余1天截止",
+              "importantEventType": 2
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "reading-002",
+              "title": "长安的荔枝",
+              "description": "剩余3天截止",
+              "dtEnd": "剩余3天截止",
+              "importantEventType": 0
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "reading-003",
+              "title": "明朝那些事儿",
+              "description": "剩余5天截止",
+              "dtEnd": "剩余5天截止",
+              "importantEventType": 0
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条待读书日历事项。",
+            "sampleValue": {
+              "entityName": "calendar",
+              "entityId": "reading-001",
+              "title": "三体",
+              "description": "剩余1天截止",
+              "dtEnd": "剩余1天截止",
+              "importantEventType": 2
+            },
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日历索引类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日历事项唯一标识符。",
+                "sampleValue": "reading-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "待读书名。",
+                "sampleValue": "三体"
+              },
+              "description": {
+                "type": "string",
+                "description": "截止倒计时展示文本。",
+                "sampleValue": "剩余1天截止"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "截止时间或截止倒计时展示文本。",
+                "sampleValue": "剩余1天截止"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日类型，2 表示倒数日，可用于识别临期事项。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据是否仍在加载。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/music_fill.svg",
+      "description": "音乐音符实心图标，可用于表达有声书歌单或音乐 App 播放入口。"
+    }
+  ]
+}

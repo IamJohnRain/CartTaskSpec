@@ -1,0 +1,113 @@
+{
+  "userQuery": "我想弄个纯白色的会议日程卡片，左边排今天的会议列表，右边放个详情按钮能点进去看。今天外面下雨读一下天气数据放标题旁边，下面排了横向滚动的待办列表，有个会马上迟到了用橙红色渐变警示一下，图标别用画的直接用感叹号字符。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "项目同步会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "3号会议室"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "设计评审",
+              "dtStart": "11:00",
+              "dtEnd": "12:00",
+              "eventLocation": "线上会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情跳转所需的唯一标识。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "项目同步会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程使用 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程使用 HH:MM 格式。",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生位置。",
+                "sampleValue": "3号会议室"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雨"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "24°C"
+          }
+        }
+      }
+    },
+    "todos": {
+      "type": "array",
+      "description": "卡片底部横向滚动的待办摘要。",
+      "sampleValue": [
+        {
+          "title": "发会议纪要"
+        },
+        {
+          "title": "确认预算"
+        },
+        {
+          "title": "带伞出门"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单条待办。",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "待办标题。",
+            "sampleValue": "发会议纪要"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

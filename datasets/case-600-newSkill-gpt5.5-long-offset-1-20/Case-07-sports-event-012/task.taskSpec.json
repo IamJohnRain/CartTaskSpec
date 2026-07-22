@@ -1,0 +1,90 @@
+{
+  "userQuery": "下周要跑半马了，帮我做一个赛事倒计时卡片，要左右分区那种。左边信息区显示\"距离比赛还有7天\"这种固定文字+动态天数的拼接，下面再分几个小格子放赛前准备清单，像\"装备已就绪\"\"能量胶已购\"\"配速已测试\"，打勾的就是正向完成态。右边动作区放个\"查看日程\"按钮，点进去能看具体的赛事日程事件，帮我读日历日程里的内容。卡片底色分区来，左边偏深紫右边偏深蓝，整体用夜晚跑步的氛围渐变。下面还要纵向排列多项检查项，每项前面用语义图标，像跑鞋、水壶、奖牌那种。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "ui": {
+      "countdownDays": {
+        "type": "number",
+        "description": "距离比赛的剩余天数，用于倒计时拼接展示。",
+        "sampleValue": 7
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下周赛事相关的日历日程列表，卡片展示第一条预览。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-halfmarathon-001",
+              "title": "半马赛前简报",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条赛事日程。",
+            "sampleValue": {
+              "entityId": "calendar-event-halfmarathon-001",
+              "title": "半马赛前简报",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于查看详情。",
+                "sampleValue": "calendar-event-halfmarathon-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "半马赛前简报"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，使用 HH:MM 展示。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，使用 HH:MM 展示。",
+                "sampleValue": "09:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合用于赛前准备或跑步状态识别。"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标，适合用于补水清单或补给状态识别。"
+    },
+    {
+      "src": "resources/base/media/stopwatch_fill.svg",
+      "description": "秒表图标，适合用于配速测试或计时状态识别。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历图标，适合用于赛事日程入口与事件预览。"
+    }
+  ]
+}

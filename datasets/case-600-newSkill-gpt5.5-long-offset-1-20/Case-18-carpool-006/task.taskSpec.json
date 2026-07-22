@@ -1,0 +1,124 @@
+{
+  "userQuery": "拼车信息卡左边放大的地图主视觉，右边并排显示费用、距离、时间这些动态数值，纵向列好几条行程用不同底色区分，状态显示\"司机已到达\"这种已连接正向状态，配蓝紫那种环境氛围渐变，不要图片纯色块。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "ride-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "tripSummary": {
+        "statusText": {
+          "type": "string",
+          "description": "拼车当前连接状态展示文案",
+          "sampleValue": "司机已到达"
+        },
+        "updateTime": {
+          "type": "string",
+          "description": "拼车状态更新时间",
+          "sampleValue": "14:05"
+        },
+        "feeText": {
+          "type": "string",
+          "description": "本次拼车预估费用展示文本",
+          "sampleValue": "¥48"
+        },
+        "distanceText": {
+          "type": "string",
+          "description": "本次拼车剩余距离展示文本",
+          "sampleValue": "12.6km"
+        },
+        "durationText": {
+          "type": "string",
+          "description": "本次拼车预计耗时展示文本",
+          "sampleValue": "28min"
+        },
+        "mapTitle": {
+          "type": "string",
+          "description": "地图主视觉中的当前行程标题",
+          "sampleValue": "机场拼车"
+        },
+        "mapRouteText": {
+          "type": "string",
+          "description": "地图主视觉中的路线摘要",
+          "sampleValue": "东门 → 科技园"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "拼车相关日程行程列表",
+          "sampleValue": [
+            {
+              "entityId": "ride-001",
+              "title": "东门上车",
+              "eventLocation": "科技园",
+              "dtStart": "14:08",
+              "dtEnd": "14:36"
+            },
+            {
+              "entityId": "ride-002",
+              "title": "南站接人",
+              "eventLocation": "会展中心",
+              "dtStart": "15:10",
+              "dtEnd": "15:38"
+            },
+            {
+              "entityId": "ride-003",
+              "title": "园区返程",
+              "eventLocation": "滨江路",
+              "dtStart": "18:20",
+              "dtEnd": "18:55"
+            }
+          ],
+          "itemSchema": {
+            "type": "object",
+            "description": "单条拼车行程日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程项唯一标识符",
+                "sampleValue": "ride-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "行程标题或上车提示",
+                "sampleValue": "东门上车"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "行程目的地或关键地点",
+                "sampleValue": "科技园"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "行程开始时间",
+                "sampleValue": "14:08"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "行程结束时间",
+                "sampleValue": "14:36"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "拼车信息是否正在加载",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,121 @@
+{
+  "userQuery": "医院多科室排队总览,横向并排几个科室,每个独立环形进度加拨号按钮,顶部日历读我今天的预约,加个\"一键刷新\"按钮,紧急科室橙色突出,整体红橙的紧迫感渐变,纯文字色块不要图片。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "01012345678"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hospitalqueue://refresh"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "今日医院预约日程的索引项唯一标识符。",
+              "sampleValue": "cal-hospital-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "今日医院预约日程标题。",
+              "sampleValue": "今日预约"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "今日预约开始时间，日内使用 HH:MM 展示。",
+              "sampleValue": "09:40"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "今日预约结束时间，日内使用 HH:MM 展示。",
+              "sampleValue": "10:10"
+            }
+          }
+        ]
+      },
+      "queue": {
+        "departments": [
+          {
+            "name": {
+              "type": "string",
+              "description": "第一个排队科室简称。",
+              "sampleValue": "内科"
+            },
+            "progress": {
+              "type": "number",
+              "description": "第一个科室当前排队进度百分比。",
+              "sampleValue": 72
+            },
+            "waitingText": {
+              "type": "string",
+              "description": "第一个科室等待状态短文本。",
+              "sampleValue": "12人"
+            },
+            "phoneNumber": {
+              "type": "string",
+              "description": "第一个科室拨号电话。",
+              "sampleValue": "01012345678"
+            },
+            "accentColor": {
+              "type": "string",
+              "description": "第一个紧急科室的橙色强调色。",
+              "sampleValue": "#ffed6f21"
+            }
+          },
+          {
+            "name": {
+              "type": "string",
+              "description": "第二个排队科室简称。",
+              "sampleValue": "儿科"
+            },
+            "progress": {
+              "type": "number",
+              "description": "第二个科室当前排队进度百分比。",
+              "sampleValue": 45
+            },
+            "waitingText": {
+              "type": "string",
+              "description": "第二个科室等待状态短文本。",
+              "sampleValue": "8人"
+            },
+            "phoneNumber": {
+              "type": "string",
+              "description": "第二个科室拨号电话。",
+              "sampleValue": "01012345678"
+            },
+            "accentColor": {
+              "type": "string",
+              "description": "第二个普通科室的橙红强调色。",
+              "sampleValue": "#fff9a01e"
+            }
+          }
+        ],
+        "refreshUri": {
+          "type": "string",
+          "description": "排队总览刷新入口 URI。",
+          "sampleValue": "hospitalqueue://refresh"
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "排队和日历数据是否仍在加载。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

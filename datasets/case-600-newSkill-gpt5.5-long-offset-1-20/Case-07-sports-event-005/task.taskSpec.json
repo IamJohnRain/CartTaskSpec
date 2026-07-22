@@ -1,0 +1,230 @@
+﻿{
+  "userQuery": "户外跑团要做一周训练计划卡。一周七天横向排列每格一个小卡片，写着日期、跑步距离和天气（要读天气数据），完成的标绿色对勾。点某天能跳进具体安排，整张卡用运动主题的橙红色加渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/2/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/3/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/4/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/5/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/training/days/6/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "training": {
+        "title": {
+          "type": "string",
+          "description": "跑团一周训练计划标题。",
+          "sampleValue": "本周跑团"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "训练周摘要说明。",
+          "sampleValue": "7天训练计划"
+        },
+        "days": {
+          "type": "array",
+          "description": "一周七天训练安排，按日期升序排列。",
+          "sampleValue": [
+            {
+              "dateText": "7/20",
+              "weekday": "一",
+              "distanceText": "5K",
+              "doneMark": "✓",
+              "doneColor": "#ff64bb5c",
+              "entityId": "run-plan-20260720"
+            },
+            {
+              "dateText": "7/21",
+              "weekday": "二",
+              "distanceText": "6K",
+              "doneMark": "",
+              "doneColor": "#00ffffff",
+              "entityId": "run-plan-20260721"
+            },
+            {
+              "dateText": "7/22",
+              "weekday": "三",
+              "distanceText": "8K",
+              "doneMark": "✓",
+              "doneColor": "#ff64bb5c",
+              "entityId": "run-plan-20260722"
+            },
+            {
+              "dateText": "7/23",
+              "weekday": "四",
+              "distanceText": "5K",
+              "doneMark": "",
+              "doneColor": "#00ffffff",
+              "entityId": "run-plan-20260723"
+            },
+            {
+              "dateText": "7/24",
+              "weekday": "五",
+              "distanceText": "9K",
+              "doneMark": "",
+              "doneColor": "#00ffffff",
+              "entityId": "run-plan-20260724"
+            },
+            {
+              "dateText": "7/25",
+              "weekday": "六",
+              "distanceText": "9K",
+              "doneMark": "",
+              "doneColor": "#00ffffff",
+              "entityId": "run-plan-20260725"
+            },
+            {
+              "dateText": "7/26",
+              "weekday": "日",
+              "distanceText": "4K",
+              "doneMark": "",
+              "doneColor": "#00ffffff",
+              "entityId": "run-plan-20260726"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日训练安排。",
+            "properties": {
+              "dateText": {
+                "type": "string",
+                "description": "日期短文本。",
+                "sampleValue": "7/20"
+              },
+              "weekday": {
+                "type": "string",
+                "description": "星期短文本。",
+                "sampleValue": "一"
+              },
+              "distanceText": {
+                "type": "string",
+                "description": "当天跑步距离展示文本。",
+                "sampleValue": "5K"
+              },
+              "doneMark": {
+                "type": "string",
+                "description": "完成状态标记，完成时显示对勾。",
+                "sampleValue": "✓"
+              },
+              "doneColor": {
+                "type": "string",
+                "description": "完成状态标记颜色。",
+                "sampleValue": "#ff64bb5c"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "当天具体安排对应的日历事件 ID。",
+                "sampleValue": "run-plan-20260720"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "一周训练日期对应的天气预报摘要。",
+          "sampleValue": [
+            {
+              "condition": "晴"
+            },
+            {
+              "condition": "多云"
+            },
+            {
+              "condition": "小雨"
+            },
+            {
+              "condition": "阴"
+            },
+            {
+              "condition": "晴"
+            },
+            {
+              "condition": "多云"
+            },
+            {
+              "condition": "晴"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "properties": {
+              "condition": {
+                "type": "string",
+                "description": "当天白天天气现象。",
+                "sampleValue": "晴"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_run.png",
+      "description": "运动跑步图标，适合用于跑团训练计划识别，主色可搭配运动橙红主题。"
+    }
+  ]
+}
+

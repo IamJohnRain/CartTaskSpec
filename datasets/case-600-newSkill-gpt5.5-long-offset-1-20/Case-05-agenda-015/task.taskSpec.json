@@ -1,0 +1,105 @@
+{
+  "userQuery": "给我做个带浅色底色的日程卡片，整体加点时间流逝那种柔和的暗色渐变。上面要按时间读取我日历里的行程安排，分成两块，中间画根分隔线隔开。上面区块放具体的会议事件，点一下能直接进日程详情；下面放一些静态的办会要求说明。最上面要拼接显示一句“距离活动开始还有3天”，其中这个3天是每天动态更新的。会议前面加上内置的钟表和地点语义图标，再往下纵向多排几项接下来的次要议程。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-event-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日程索引项唯一标识符，用于打开对应日程详情。",
+              "sampleValue": "calendar-event-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "项目阶段评审会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "事件起始时间，当天事件为 HH:MM 格式。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "事件结束时间，当天事件为 HH:MM 格式。",
+              "sampleValue": "10:30"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程发生的位置。",
+              "sampleValue": "A座 301会议室"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条日程索引项唯一标识符。",
+              "sampleValue": "calendar-event-002"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条日程标题。",
+              "sampleValue": "嘉宾签到确认"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条事件起始时间。",
+              "sampleValue": "11:00"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第三条日程索引项唯一标识符。",
+              "sampleValue": "calendar-event-003"
+            },
+            "title": {
+              "type": "string",
+              "description": "第三条日程标题。",
+              "sampleValue": "会场彩排"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第三条事件起始时间。",
+              "sampleValue": "14:00"
+            }
+          }
+        ]
+      },
+      "agenda": {
+        "countdownDays": {
+          "type": "string",
+          "description": "距离活动开始剩余天数展示文本，每天动态更新。",
+          "sampleValue": "3天"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_time.png",
+      "description": "时间图标，适合放在会议时间前作为日程时间语义提示。"
+    },
+    {
+      "src": "resources/base/media/local_fill.svg",
+      "description": "定位图标，适合放在会议地点前作为地点语义提示。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合表达日历安排或会议议程。"
+    }
+  ]
+}

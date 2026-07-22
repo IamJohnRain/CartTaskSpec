@@ -1,0 +1,105 @@
+{
+  "userQuery": "拼单免密支付开关卡!磨砂质感背景,可勾选\"拼单到账自动支付\"(勾选要保持)。跳系统设置里调免密额度。读天气,下雨天自动把额度提到200元。下面是我参与过的拼单历史列表可滑动,纯文字色块,状态\"已连接·免密可用\"。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询使用的区县或当前位置名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于判断雨天是否自动提升免密额度。",
+            "sampleValue": "小雨"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "22°C"
+          }
+        }
+      }
+    },
+    "payment": {
+      "connectionStatus": {
+        "type": "string",
+        "description": "拼单支付连接与免密可用状态。",
+        "sampleValue": "已连接·免密可用"
+      },
+      "autoPayEnabled": {
+        "type": "boolean",
+        "description": "拼单到账自动支付是否已勾选，运行时需保持用户勾选状态。",
+        "sampleValue": true
+      },
+      "autoPayLabel": {
+        "type": "string",
+        "description": "自动支付勾选项展示文案。",
+        "sampleValue": "拼单到账自动支付"
+      },
+      "noPasswordLimitText": {
+        "type": "string",
+        "description": "当前免密支付额度展示文本，下雨天自动提升到200元。",
+        "sampleValue": "200元"
+      },
+      "limitReason": {
+        "type": "string",
+        "description": "额度调整原因提示。",
+        "sampleValue": "雨天自动提高"
+      }
+    },
+    "history": {
+      "items": {
+        "type": "array",
+        "description": "用户参与过的拼单历史记录，按最近参与时间倒序。",
+        "sampleValue": [
+          {
+            "title": "鲜果拼团",
+            "status": "已到账",
+            "amountText": "¥42.8"
+          },
+          {
+            "title": "咖啡团购",
+            "status": "已支付",
+            "amountText": "¥18.0"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "拼单历史名称。",
+              "sampleValue": "鲜果拼团"
+            },
+            "status": {
+              "type": "string",
+              "description": "拼单历史支付或到账状态。",
+              "sampleValue": "已到账"
+            },
+            "amountText": {
+              "type": "string",
+              "description": "拼单历史金额展示文本。",
+              "sampleValue": "¥42.8"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

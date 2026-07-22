@@ -1,0 +1,171 @@
+{
+  "userQuery": "想要个待付账单清单的卡片。上面列出本月要付的项目可以打勾完成,顶部待付总额是动态更新的。旁边跳到天气的按钮我点开看今天要不要带伞,毕竟下雨天容易乱花钱。还要读日历日程看哪些账单快到期。分区不同底色,整体氛围背景,渐变用天气的环境感,图标用场景里的语义化图标(账单/日历那种),需要一个可滚动的重复列表。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "bills": {
+      "summary": {
+        "monthLabel": {
+          "type": "string",
+          "description": "账单所属月份展示文本。",
+          "sampleValue": "7月待付"
+        },
+        "unpaidTotalText": {
+          "type": "string",
+          "description": "根据未勾选账单动态汇总后的待付总额展示文本。",
+          "sampleValue": "¥1,286"
+        },
+        "countText": {
+          "type": "string",
+          "description": "本月仍需处理的账单数量摘要。",
+          "sampleValue": "3项待处理"
+        }
+      },
+      "items": [
+        {
+          "title": {
+            "type": "string",
+            "description": "待付账单项目名称。",
+            "sampleValue": "房租"
+          },
+          "amountText": {
+            "type": "string",
+            "description": "待付账单金额展示文本。",
+            "sampleValue": "¥980"
+          },
+          "dueText": {
+            "type": "string",
+            "description": "账单到期日或临近到期提示。",
+            "sampleValue": "明天到期"
+          },
+          "paid": {
+            "type": "boolean",
+            "description": "账单是否已经勾选完成。",
+            "sampleValue": false
+          }
+        },
+        {
+          "title": {
+            "type": "string",
+            "description": "待付账单项目名称。",
+            "sampleValue": "信用卡"
+          },
+          "amountText": {
+            "type": "string",
+            "description": "待付账单金额展示文本。",
+            "sampleValue": "¥216"
+          },
+          "dueText": {
+            "type": "string",
+            "description": "账单到期日或临近到期提示。",
+            "sampleValue": "周五到期"
+          },
+          "paid": {
+            "type": "boolean",
+            "description": "账单是否已经勾选完成。",
+            "sampleValue": false
+          }
+        },
+        {
+          "title": {
+            "type": "string",
+            "description": "待付账单项目名称。",
+            "sampleValue": "水电费"
+          },
+          "amountText": {
+            "type": "string",
+            "description": "待付账单金额展示文本。",
+            "sampleValue": "¥90"
+          },
+          "dueText": {
+            "type": "string",
+            "description": "账单到期日或临近到期提示。",
+            "sampleValue": "7月28日"
+          },
+          "paid": {
+            "type": "boolean",
+            "description": "账单是否已经勾选完成。",
+            "sampleValue": true
+          }
+        }
+      ]
+    },
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历日程唯一标识符，用于关联快到期账单日程。",
+              "sampleValue": "bill-calendar-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "与账单到期相关的日程标题。",
+              "sampleValue": "房租扣款提醒"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间或账单提醒时间。",
+              "sampleValue": "明天 09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间。",
+              "sampleValue": "明天 09:30"
+            }
+          }
+        ]
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询所在区县名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于判断是否需要带伞。",
+            "sampleValue": "小雨"
+          }
+        },
+        "daily": [
+          {
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "今天白天降雨概率百分比。",
+              "sampleValue": "73%"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "黑色日历实心图标，适合表示日历日程、账单到期提醒和日期关联信息。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "彩色云朵雨滴天气图标，适合表示雨天、带伞提醒和天气入口。"
+    }
+  ]
+}

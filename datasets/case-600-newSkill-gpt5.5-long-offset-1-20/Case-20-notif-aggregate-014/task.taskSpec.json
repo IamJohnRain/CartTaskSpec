@@ -1,0 +1,95 @@
+{
+  "userQuery": "快被各种截止日期搞疯了,想要个通知聚合卡片,左侧主视觉用柔和磨砂质感,分隔线分块,每块\"距离X还有N分钟/天\",比如\"距离会议还有15分钟\"、\"距离作业提交还有2天\"(从日历读的),点能跳歌单听首歌冷静下,几小时内要处理的标黄提醒,夜晚感渐变,纵向排列,可以用通知/日历/音乐库里的图标",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hwmusic://com.huawei.hmsapp.music/showMusicList?code=a001&type=4"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取并按截止时间升序排列的近期日程提醒列表。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "cal-meeting-001",
+              "title": "会议",
+              "dtStart": "21:15",
+              "dtEnd": "22:00",
+              "remainingText": "距离会议还有15分钟",
+              "urgencyLevel": "warning"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "cal-homework-002",
+              "title": "作业提交",
+              "dtStart": "周六 23:59",
+              "dtEnd": "周六 23:59",
+              "remainingText": "距离作业提交还有2天",
+              "urgencyLevel": "normal"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程提醒。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程索引项唯一标识符。",
+                "sampleValue": "cal-meeting-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "会议"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内为 HH:MM，否则为紧凑日期时间。",
+                "sampleValue": "21:15"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今天内为 HH:MM，否则为紧凑日期时间。",
+                "sampleValue": "22:00"
+              },
+              "remainingText": {
+                "type": "string",
+                "description": "端侧基于当前时间与日程开始时间计算的倒计时展示文本。",
+                "sampleValue": "还有15分钟"
+              },
+              "urgencyLevel": {
+                "type": "string",
+                "description": "日程紧急程度，几小时内需要处理时为 warning，否则为 normal。",
+                "sampleValue": "warning"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合用于通知聚合卡片的左侧主视觉和日历截止日期识别。"
+    },
+    {
+      "src": "resources/base/media/icon_music.png",
+      "description": "音乐图标，适合用于跳转歌单、播放音乐或冷静一下的动作入口。"
+    }
+  ]
+}

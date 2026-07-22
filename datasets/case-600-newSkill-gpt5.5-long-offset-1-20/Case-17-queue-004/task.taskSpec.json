@@ -1,0 +1,136 @@
+{
+  "userQuery": "几张医院检查的排队卡片,图层叠加深色舞台风,顶部大字\"您的检查序号:C015\"。纵向排几项不同检查项目,提示\"CT室排队较久请提前30分钟到\"这种注意状态。日期天气都得读,点了能进日程。紧迫感的渐变,素材库里的语义图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "queue": {
+      "sequenceText": {
+        "type": "string",
+        "description": "医院检查排队序号展示文本。",
+        "sampleValue": "您的检查序号:C015"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "当前检查排队注意事项提示。",
+        "sampleValue": "CT室排队较久请提前30分钟到"
+      },
+      "items": {
+        "type": "array",
+        "description": "检查项目排队摘要列表。",
+        "sampleValue": [
+          {
+            "name": "CT室",
+            "status": "排队较久"
+          },
+          {
+            "name": "超声",
+            "status": "等待叫号"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个检查项目排队信息。",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "检查项目名称。",
+              "sampleValue": "CT室"
+            },
+            "status": {
+              "type": "string",
+              "description": "检查项目当前排队状态。",
+              "sampleValue": "排队较久"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "与检查排队相关的日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-check-001",
+              "title": "医院检查排队",
+              "dtStart": "14:30",
+              "dtEnd": "16:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日程项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程索引项唯一标识符。",
+                "sampleValue": "calendar-check-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "医院检查排队"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "16:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_id.png",
+      "description": "工牌/ID 图标，适合表达医院检查序号与身份识别。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合表达进入日程或查看检查安排。"
+    },
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色多云天气图标，适合表达当前天气信息。"
+    }
+  ]
+}

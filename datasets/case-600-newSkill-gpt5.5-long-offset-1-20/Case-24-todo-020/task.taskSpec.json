@@ -1,0 +1,97 @@
+{
+  "userQuery": "待办卡片要简洁风的,里面嵌几个小面板。横向排几个待办项,每项能打勾绑定状态,旁边显示天气数据。有个超时的任务要红色告警,点了能跳闹钟,文字图标,不要渐变。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询地区名称",
+            "sampleValue": "西湖"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "todos": {
+        "items": {
+          "type": "array",
+          "description": "待办项列表，卡片固定展示前三项",
+          "sampleValue": [
+            {
+              "title": "材料",
+              "done": false
+            },
+            {
+              "title": "签批",
+              "done": true
+            },
+            {
+              "title": "回访",
+              "done": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个待办项",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "待办项短标题",
+                "sampleValue": "材料"
+              },
+              "done": {
+                "type": "boolean",
+                "description": "待办项完成状态",
+                "sampleValue": false
+              }
+            }
+          }
+        },
+        "overdue": {
+          "title": {
+            "type": "string",
+            "description": "超时待办标题",
+            "sampleValue": "超时回访"
+          },
+          "timeText": {
+            "type": "string",
+            "description": "超时提醒时间文本",
+            "sampleValue": "已超时 18分"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色多云天气图标，适合用于当前天气摘要。"
+    },
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "黑白双色闹钟图标，适合用于超时任务提醒和跳转闹钟入口。"
+    }
+  ]
+}

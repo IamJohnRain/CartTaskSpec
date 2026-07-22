@@ -1,0 +1,107 @@
+{
+  "userQuery": "想要个磨砂质感的待办清单,卡片里嵌几个小面板块,纵向排列任务,前面勾选框,已完成打勾的正向状态,点任务能看日程详情。不用渐变,用语义图标。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "title": {
+      "type": "string",
+      "description": "卡片标题。",
+      "sampleValue": "待办清单"
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "待办日程条目列表，用于展示今日任务并打开对应日程详情。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-item-001",
+              "title": "提交周报",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "办公桌",
+              "done": true
+            },
+            {
+              "entityId": "calendar-item-002",
+              "title": "产品评审",
+              "dtStart": "14:00",
+              "dtEnd": "15:00",
+              "eventLocation": "会议室A",
+              "done": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个待办日程条目。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程索引项唯一标识符，用于查看日程详情。",
+                "sampleValue": "calendar-item-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "待办任务标题。",
+                "sampleValue": "提交周报"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "任务开始时间，今天内使用 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "任务结束时间，今天内使用 HH:MM 格式。",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "任务关联地点。",
+                "sampleValue": "办公桌"
+              },
+              "done": {
+                "type": "boolean",
+                "description": "任务是否已完成，已完成时 Checkbox 显示勾选正向状态。",
+                "sampleValue": true
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/checkmark_calendar_fill.svg",
+      "description": "带对勾的日历实心图标，适合表达已完成日程或待办确认状态。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达待办清单和日程详情入口。"
+    },
+    {
+      "src": "resources/base/media/clock.svg",
+      "description": "时钟线框图标，适合表达任务开始时间或日程时间。"
+    }
+  ]
+}

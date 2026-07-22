@@ -1,0 +1,146 @@
+{
+  "userQuery": "给我做个主题色铺满背景的日程专注卡片，要适合夜晚的深色渐变。整体左右排版，用`历`字做图标，每一条日程事件都要纵向重复排列下来，比如左边写'距离项目交付还有3天'，右边放个圆环显示专注进度。还要读取一下明天的天气情况放上去，点一下能直接进那个日程事件的详情页。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "未来日程事件列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-project-delivery",
+              "title": "项目交付",
+              "dtStart": "3天后",
+              "dtEnd": "18:00",
+              "description": "距离项目交付还有3天"
+            },
+            {
+              "entityId": "calendar-event-focus-review",
+              "title": "方案复盘",
+              "dtStart": "明晚",
+              "dtEnd": "21:00",
+              "description": "明晚复盘关键清单"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识，用于进入日程详情。",
+                "sampleValue": "calendar-event-project-delivery"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程事件标题。",
+                "sampleValue": "项目交付"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间或倒计时展示文本。",
+                "sampleValue": "3天后"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "18:00"
+              },
+              "description": {
+                "type": "string",
+                "description": "适合卡片直接展示的日程摘要。",
+                "sampleValue": "距离项目交付还有3天"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日天气预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "27° / 34°",
+              "rainProbabilityPercent": "20%"
+            },
+            {
+              "weekday": "明天",
+              "condition": "小雨",
+              "temperatureRangeText": "25° / 31°",
+              "rainProbabilityPercent": "70%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或相对日期文本。",
+                "sampleValue": "明天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "小雨"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "25° / 31°"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比。",
+                "sampleValue": "70%"
+              }
+            }
+          }
+        }
+      }
+    },
+    "focus": {
+      "progressValue": {
+        "type": "number",
+        "description": "专注进度当前值。",
+        "sampleValue": 68
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "专注进度总值。",
+        "sampleValue": 100
+      },
+      "progressText": {
+        "type": "string",
+        "description": "专注进度百分比展示文本。",
+        "sampleValue": "68%"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "专注状态短文本。",
+        "sampleValue": "夜间专注"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合展示明日小雨天气。"
+    }
+  ]
+}

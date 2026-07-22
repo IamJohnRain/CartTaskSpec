@@ -1,0 +1,167 @@
+{
+  "userQuery": "周末要去杭州,做张出行卡,左边主视觉是西湖那种图延伸出来的,右边是天气和日程并排。每天一行纵向排开,日期旁有个勾选框标今天查过天气没。卡片整体用天气场景的氛围渐变,图标用☀ ☁ ☂字符,点天气能跳到天气app,行程从日历自动读。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称",
+            "sampleValue": "西湖区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名称",
+            "sampleValue": "杭州"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "28°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量等级",
+            "sampleValue": "良"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报",
+          "sampleValue": [
+            {
+              "date": "7/18",
+              "weekday": "周六",
+              "condition": "多云",
+              "temperatureRangeText": "25° / 32°",
+              "rainProbabilityPercent": "20%"
+            },
+            {
+              "date": "7/19",
+              "weekday": "周日",
+              "condition": "小雨",
+              "temperatureRangeText": "24° / 30°",
+              "rainProbabilityPercent": "65%"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报",
+            "properties": {
+              "date": {
+                "type": "string",
+                "description": "预报日期",
+                "sampleValue": "7/18"
+              },
+              "weekday": {
+                "type": "string",
+                "description": "星期文本",
+                "sampleValue": "周六"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象",
+                "sampleValue": "多云"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本",
+                "sampleValue": "25° / 32°"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比",
+                "sampleValue": "20%"
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "周末杭州行程日历事件",
+          "sampleValue": [
+            {
+              "entityId": "calendar-trip-001",
+              "title": "抵达杭州东",
+              "dtStart": "10:30",
+              "dtEnd": "11:00",
+              "eventLocation": "杭州东站"
+            },
+            {
+              "entityId": "calendar-trip-002",
+              "title": "西湖步行",
+              "dtStart": "15:00",
+              "dtEnd": "17:00",
+              "eventLocation": "西湖"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar-trip-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "抵达杭州东"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "10:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "11:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点",
+                "sampleValue": "杭州东站"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "云朵在前、太阳在后的彩色天气图标，适合表达杭州周末出行天气主视觉。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合表达周末降雨天气提示。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达从本地日历读取的行程安排。"
+    }
+  ]
+}

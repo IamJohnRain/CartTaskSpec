@@ -1,0 +1,134 @@
+{
+  "userQuery": "基金分红卡片,顶部大字号显示下一笔分红金额,主题色背景。下方用分隔线分'已确认'和'待确认'两组,几只基金横向排列,读日历日程,能跳到地图导航去最近的券商网点。能看出'距分红还有X天'的倒计时渐变,'已到账'正向绿色标记,文字小图标。一直搞不清各家基金的分红时间,这个卡片一定要直观,别让我再错过派息了。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "基金分红相关日历日程列表，第一条为下一笔分红，后续为确认状态摘要。",
+          "sampleValue": [
+            {
+              "entityId": "fund-dividend-001",
+              "title": "华夏红利",
+              "description": "¥128.60",
+              "dtStart": "3天",
+              "eventLocation": "招商证券人民路营业部",
+              "importantEventType": 2
+            },
+            {
+              "entityId": "fund-dividend-002",
+              "title": "易方达稳健",
+              "description": "已到账",
+              "dtStart": "今日",
+              "eventLocation": "招商证券人民路营业部",
+              "importantEventType": 1
+            },
+            {
+              "entityId": "fund-dividend-003",
+              "title": "南方收益",
+              "description": "待确认",
+              "dtStart": "7天",
+              "eventLocation": "招商证券人民路营业部",
+              "importantEventType": 2
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条基金分红日程。",
+            "sampleValue": {
+              "entityId": "fund-dividend-001",
+              "title": "华夏红利",
+              "description": "¥128.60",
+              "dtStart": "3天",
+              "eventLocation": "招商证券人民路营业部",
+              "importantEventType": 2
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于查看日程详情。",
+                "sampleValue": "fund-dividend-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "基金名称或分红日程标题。",
+                "sampleValue": "华夏红利"
+              },
+              "description": {
+                "type": "string",
+                "description": "分红金额或确认状态展示文本。",
+                "sampleValue": "¥128.60"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "距离分红到账或派息的倒计时展示文本。",
+                "sampleValue": "3天"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "关联券商网点或分红日程地点。",
+                "sampleValue": "招商证券人民路营业部"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日期类型，2 表示倒数日。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "countdownProgress": {
+        "type": "number",
+        "description": "距离下一次分红的倒计时进度，用于渐变进度条。",
+        "sampleValue": 64
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "倒计时进度条总量。",
+        "sampleValue": 100
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达基金分红来自日历日程。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表达跳转地图导航去最近券商网点。"
+    },
+    {
+      "src": "resources/base/media/checkmark_calendar_fill.svg",
+      "description": "带对勾的日历图标，适合表达已确认或已到账的分红日程状态。"
+    }
+  ]
+}

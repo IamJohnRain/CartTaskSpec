@@ -1,0 +1,84 @@
+{
+  "userQuery": "拼车人信息列表,纵向排4-5个同事的出发点和时间,背景浅米色,卡片里嵌一个天气小面板块写\"局部有雨\",色调用紧迫的橙黄渐变,文字当头像图标(取首字母)。上次那版列表项挤一起看不清,这次每项高度放大,右边再带个\"打电话\"小字,纵向往下排。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "{{ ${/carpool/passengers/0/phoneNumber} }}"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于天气小面板的状态提示。",
+            "sampleValue": "局部有雨"
+          }
+        }
+      }
+    },
+    "carpool": {
+      "passengers": {
+        "type": "array",
+        "description": "拼车同事列表，按出发顺序展示。",
+        "sampleValue": [
+          {
+            "initial": "L",
+            "pickup": "丽泽SOHO",
+            "departTime": "08:10",
+            "phoneNumber": "13800000001"
+          },
+          {
+            "initial": "W",
+            "pickup": "望京东",
+            "departTime": "08:18",
+            "phoneNumber": "13800000002"
+          },
+          {
+            "initial": "Z",
+            "pickup": "知春路",
+            "departTime": "08:25",
+            "phoneNumber": "13800000003"
+          },
+          {
+            "initial": "C",
+            "pickup": "朝阳门",
+            "departTime": "08:32",
+            "phoneNumber": "13800000004"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个拼车同事的信息。",
+          "properties": {
+            "initial": {
+              "type": "string",
+              "description": "同事姓名首字母，用作文字头像。",
+              "sampleValue": "L"
+            },
+            "pickup": {
+              "type": "string",
+              "description": "同事出发点短文本。",
+              "sampleValue": "丽泽SOHO"
+            },
+            "departTime": {
+              "type": "string",
+              "description": "同事预计出发时间。",
+              "sampleValue": "08:10"
+            },
+            "phoneNumber": {
+              "type": "string",
+              "description": "拨号事件使用的脱敏样例手机号。",
+              "sampleValue": "13800000001"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

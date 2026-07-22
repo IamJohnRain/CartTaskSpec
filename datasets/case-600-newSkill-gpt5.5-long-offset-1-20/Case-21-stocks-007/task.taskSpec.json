@@ -1,0 +1,129 @@
+{
+  "userQuery": "帮我做一张交易提醒卡,按时间段分组用细线隔开,每组写\"距离收盘还有X小时\"或\"下次定投还有X天\"这种拼接,点一下能跳到闹钟应用。日历里有重要会议或财报日的话也要显示出来,背景浅米色那种暖调,大跌熔断的时候出现红色警示。横向并排几个不同基金的持有天数,图标用字符就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "trading": {
+        "title": {
+          "type": "string",
+          "description": "交易提醒卡标题",
+          "sampleValue": "交易提醒"
+        },
+        "closeCountdownText": {
+          "type": "string",
+          "description": "按时间段拼接的距离收盘倒计时文案",
+          "sampleValue": "距离收盘还有 2 小时"
+        },
+        "sipCountdownText": {
+          "type": "string",
+          "description": "按时间段拼接的下次基金定投倒计时文案",
+          "sampleValue": "下次定投还有 5 天"
+        },
+        "alertText": {
+          "type": "string",
+          "description": "市场大跌或熔断时展示的红色警示文案",
+          "sampleValue": "大跌熔断警示"
+        },
+        "funds": {
+          "type": "array",
+          "description": "横向并排展示的基金持有天数摘要",
+          "sampleValue": [
+            {
+              "glyph": "A",
+              "name": "沪深300",
+              "holdingDaysText": "持有 128 天"
+            },
+            {
+              "glyph": "B",
+              "name": "中证500",
+              "holdingDaysText": "持有 86 天"
+            },
+            {
+              "glyph": "C",
+              "name": "红利低波",
+              "holdingDaysText": "持有 42 天"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单只基金持有摘要",
+            "properties": {
+              "glyph": {
+                "type": "string",
+                "description": "用字符表示的基金图标",
+                "sampleValue": "A"
+              },
+              "name": {
+                "type": "string",
+                "description": "基金简称",
+                "sampleValue": "沪深300"
+              },
+              "holdingDaysText": {
+                "type": "string",
+                "description": "基金持有天数展示文案",
+                "sampleValue": "持有 128 天"
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "日历里的重要会议或财报日列表",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-sample-001",
+              "title": "财报电话会",
+              "dtStart": "15:30",
+              "dtEnd": "16:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar-sample-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "重要会议或财报日标题",
+                "sampleValue": "财报电话会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "15:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "16:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

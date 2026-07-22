@@ -1,0 +1,84 @@
+{
+  "userQuery": "我通勤时间总是不准,想要卡片用分隔线分组,横向排几个小方块\"距离公司X分钟\"\"路况X条\"\"下次会议X小时后\",都是固定文字+动态值,点右边按钮跳地图导航,日历里9点客户会带上,浅色底,红黄渐变提示拥堵,纯文字+色块别放图。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "commute": {
+        "minutesToOffice": {
+          "type": "integer",
+          "description": "当前到公司预计通勤时间，单位分钟。",
+          "sampleValue": 36
+        },
+        "trafficIncidentCount": {
+          "type": "integer",
+          "description": "当前通勤路线上的路况事件数量。",
+          "sampleValue": 3
+        },
+        "nextMeetingHours": {
+          "type": "integer",
+          "description": "距离下一场客户会议的小时数。",
+          "sampleValue": 2
+        },
+        "congestionStatus": {
+          "type": "string",
+          "description": "当前通勤拥堵状态短文案。",
+          "sampleValue": "拥堵"
+        },
+        "destination": {
+          "latitude": {
+            "type": "string",
+            "description": "公司目的地纬度，用于地图导航。",
+            "sampleValue": "31.2304"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "公司目的地经度，用于地图导航。",
+            "sampleValue": "121.4737"
+          }
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历日程唯一标识符。",
+              "sampleValue": "calendar-client-0900"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题。",
+              "sampleValue": "客户会"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间，当天日程为 HH:MM 格式。",
+              "sampleValue": "09:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间，当天日程为 HH:MM 格式。",
+              "sampleValue": "10:00"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

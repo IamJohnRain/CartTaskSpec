@@ -1,0 +1,178 @@
+{
+  "userQuery": "菜价卡,左侧大号蔬菜文字符号图,右侧纵向排三个蔬菜价格。要能跳到明天的买菜日程,顺便显示周末天气。夜晚深蓝渐变,涨太猛的标\"注意\"。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "market": {
+        "title": {
+          "type": "string",
+          "description": "菜价卡标题",
+          "sampleValue": "今晚菜价"
+        },
+        "glyph": {
+          "type": "string",
+          "description": "左侧大号蔬菜文字符号图",
+          "sampleValue": "菜"
+        },
+        "updatedText": {
+          "type": "string",
+          "description": "菜价更新时间或市场时段说明",
+          "sampleValue": "夜市 20:10"
+        },
+        "vegetables": {
+          "type": "array",
+          "description": "需要展示的三个蔬菜价格",
+          "sampleValue": [
+            {
+              "name": "菠菜",
+              "priceText": "¥5.8/斤",
+              "trendText": "涨12%",
+              "warningText": "注意"
+            },
+            {
+              "name": "番茄",
+              "priceText": "¥4.2/斤",
+              "trendText": "平稳",
+              "warningText": ""
+            },
+            {
+              "name": "青椒",
+              "priceText": "¥6.6/斤",
+              "trendText": "涨22%",
+              "warningText": "注意"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个蔬菜价格项",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "蔬菜名称",
+                "sampleValue": "菠菜"
+              },
+              "priceText": {
+                "type": "string",
+                "description": "蔬菜单斤价格展示文本",
+                "sampleValue": "¥5.8/斤"
+              },
+              "trendText": {
+                "type": "string",
+                "description": "价格变化趋势展示文本",
+                "sampleValue": "涨12%"
+              },
+              "warningText": {
+                "type": "string",
+                "description": "涨幅过高时显示的注意状态文本",
+                "sampleValue": "注意"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "天气能力返回的每日预报列表",
+          "sampleValue": [
+            {
+              "weekday": "周五",
+              "condition": "多云",
+              "temperatureRangeText": "27°/34°"
+            },
+            {
+              "weekday": "周末",
+              "condition": "阵雨",
+              "temperatureRangeText": "25°/31°"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期文本",
+                "sampleValue": "周末"
+              },
+              "condition": {
+                "type": "string",
+                "description": "天气现象",
+                "sampleValue": "阵雨"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "温度范围展示文本",
+                "sampleValue": "25°/31°"
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明天买菜日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-veggie-20260718",
+              "title": "买菜",
+              "dtStart": "09:30",
+              "dtEnd": "10:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识",
+                "sampleValue": "calendar-veggie-20260718"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "买菜"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "10:30"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "数据加载状态",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "云朵组合彩色天气图标，适合用于周末天气摘要的小图标。"
+    }
+  ]
+}

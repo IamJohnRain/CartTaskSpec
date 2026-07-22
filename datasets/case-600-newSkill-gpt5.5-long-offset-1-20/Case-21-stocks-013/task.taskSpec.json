@@ -1,0 +1,241 @@
+{
+  "userQuery": "帮我做张基金持仓卡,最上面大号字写总盈亏,下面用横线分两块,横着排几个基金名字和净值,最底部日历提醒我下午有场路演,某只基金触发跌停要红色告警。能点地址跳地图去券商营业部,实盘软件那种风格,不要渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "portfolio": {
+      "type": "object",
+      "description": "基金持仓账户摘要",
+      "sampleValue": {
+        "title": "基金持仓",
+        "totalProfitLoss": "+12,860",
+        "totalProfitLossLabel": "总盈亏",
+        "currencyUnit": "元"
+      },
+      "title": {
+        "type": "string",
+        "description": "卡片标题",
+        "sampleValue": "基金持仓"
+      },
+      "totalProfitLoss": {
+        "type": "string",
+        "description": "基金持仓总盈亏展示值",
+        "sampleValue": "+12,860"
+      },
+      "totalProfitLossLabel": {
+        "type": "string",
+        "description": "总盈亏指标标签",
+        "sampleValue": "总盈亏"
+      },
+      "currencyUnit": {
+        "type": "string",
+        "description": "总盈亏金额单位",
+        "sampleValue": "元"
+      }
+    },
+    "funds": {
+      "type": "array",
+      "description": "横向展示的基金名称与净值",
+      "sampleValue": [
+        {
+          "name": "沪深300",
+          "nav": "1.284"
+        },
+        {
+          "name": "中证红利",
+          "nav": "0.936"
+        },
+        {
+          "name": "科创成长",
+          "nav": "1.057"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单只基金摘要",
+        "sampleValue": {
+          "name": "沪深300",
+          "nav": "1.284"
+        },
+        "name": {
+          "type": "string",
+          "description": "基金简称",
+          "sampleValue": "沪深300"
+        },
+        "nav": {
+          "type": "string",
+          "description": "基金最新净值展示值",
+          "sampleValue": "1.284"
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "description": "基金风险告警",
+      "sampleValue": {
+        "fundName": "科创成长",
+        "statusText": "触发跌停",
+        "level": "alert"
+      },
+      "fundName": {
+        "type": "string",
+        "description": "触发告警的基金名称",
+        "sampleValue": "科创成长"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "告警状态展示文案",
+        "sampleValue": "触发跌停"
+      },
+      "level": {
+        "type": "string",
+        "description": "告警等级",
+        "sampleValue": "alert"
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧动态能力返回数据",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityName": "calendar",
+              "entityId": "roadshow-001",
+              "title": "基金经理路演",
+              "dtStart": "15:00",
+              "dtEnd": "16:00",
+              "eventLocation": "线上会议"
+            }
+          ]
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "日历查询结果",
+        "sampleValue": {
+          "items": [
+            {
+              "entityName": "calendar",
+              "entityId": "roadshow-001",
+              "title": "基金经理路演",
+              "dtStart": "15:00",
+              "dtEnd": "16:00",
+              "eventLocation": "线上会议"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "description": "当日下午日程列表",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "roadshow-001",
+              "title": "基金经理路演",
+              "dtStart": "15:00",
+              "dtEnd": "16:00",
+              "eventLocation": "线上会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历日程项",
+            "sampleValue": {
+              "entityName": "calendar",
+              "entityId": "roadshow-001",
+              "title": "基金经理路演",
+              "dtStart": "15:00",
+              "dtEnd": "16:00",
+              "eventLocation": "线上会议"
+            },
+            "entityName": {
+              "type": "string",
+              "description": "内容类别",
+              "sampleValue": "calendar"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识符",
+              "sampleValue": "roadshow-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "日程标题",
+              "sampleValue": "基金经理路演"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "日程开始时间",
+              "sampleValue": "15:00"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "日程结束时间",
+              "sampleValue": "16:00"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "日程地点",
+              "sampleValue": "线上会议"
+            }
+          }
+        }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "description": "券商营业部导航目标",
+      "sampleValue": {
+        "name": "华南证券营业部",
+        "address": "金融街88号",
+        "latitude": "31.2304",
+        "longitude": "121.4737"
+      },
+      "name": {
+        "type": "string",
+        "description": "券商营业部名称",
+        "sampleValue": "华南证券营业部"
+      },
+      "address": {
+        "type": "string",
+        "description": "券商营业部地址短文本",
+        "sampleValue": "金融街88号"
+      },
+      "latitude": {
+        "type": "string",
+        "description": "营业部纬度",
+        "sampleValue": "31.2304"
+      },
+      "longitude": {
+        "type": "string",
+        "description": "营业部经度",
+        "sampleValue": "121.4737"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达下午路演日程提醒。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表达跳转地图去券商营业部。"
+    }
+  ]
+}

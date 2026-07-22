@@ -1,0 +1,177 @@
+{
+  "userQuery": "手机内存天天爆满，帮我弄个素净点的清理卡片。上面放个大环形进度条展示空间占比，旁边横着排开几个内存占用大头应用。每个应用前面得有个勾选框让我勾选，下面放个一键清理的按钮。顺便在卡片里嵌个日历日程的小块，显示明天日程。要是勾选清理时不小心把正在用的应用选了，得亮红色报错提示“清理失败”或者超限告警。底部整个快捷开关帮我一键切换到超级省电模式。背景和按钮用那种清理加速的蓝绿渐变色，扫描和垃圾桶的小图标都给我加上。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "storage_settings"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "memory": {
+        "usedPercent": {
+          "type": "integer",
+          "description": "当前手机空间或内存占用百分比，用于环形进度条展示空间占比。",
+          "sampleValue": 82
+        },
+        "progressTotal": {
+          "type": "integer",
+          "description": "空间占比进度总量。",
+          "sampleValue": 100
+        },
+        "usageText": {
+          "type": "string",
+          "description": "当前空间占比展示文本。",
+          "sampleValue": "82%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "清理异常或超限告警文本，选中正在使用的应用时展示清理失败。",
+          "sampleValue": "清理失败"
+        },
+        "apps": {
+          "type": "array",
+          "description": "内存占用较高的应用列表，用于固定展示前两个可勾选应用。",
+          "sampleValue": [
+            {
+              "name": "视频",
+              "sizeText": "2.4G",
+              "selected": true
+            },
+            {
+              "name": "聊天",
+              "sizeText": "1.8G",
+              "selected": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "内存占用应用项。",
+            "sampleValue": {
+              "name": "视频",
+              "sizeText": "2.4G",
+              "selected": true
+            },
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "应用简称。",
+                "sampleValue": "视频"
+              },
+              "sizeText": {
+                "type": "string",
+                "description": "应用占用空间展示文本。",
+                "sampleValue": "2.4G"
+              },
+              "selected": {
+                "type": "boolean",
+                "description": "应用清理勾选状态。",
+                "sampleValue": true
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "明天日程列表，卡片固定展示第一条日程摘要。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "event-tomorrow-001",
+              "title": "例会",
+              "dtStart": "10:00",
+              "dtEnd": "10:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日程项。",
+            "sampleValue": {
+              "entityName": "calendar",
+              "entityId": "event-tomorrow-001",
+              "title": "例会",
+              "dtStart": "10:00",
+              "dtEnd": "10:30"
+            },
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识。",
+                "sampleValue": "event-tomorrow-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "例会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "10:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "10:30"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题。",
+        "sampleValue": "内存清理"
+      },
+      "cleanLabel": {
+        "type": "string",
+        "description": "清理动作短文案。",
+        "sampleValue": "一键清理"
+      },
+      "powerLabel": {
+        "type": "string",
+        "description": "超级省电模式快捷开关文案。",
+        "sampleValue": "超级省电"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/clean_fill.svg",
+      "description": "清洁实心图标，适合表达扫描、清理和加速动作。"
+    },
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标，适合表达垃圾清理或清除动作。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合表达低电模式或超级省电快捷开关。"
+    }
+  ]
+}

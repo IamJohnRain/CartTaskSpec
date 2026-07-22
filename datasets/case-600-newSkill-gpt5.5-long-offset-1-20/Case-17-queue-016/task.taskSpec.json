@@ -1,0 +1,214 @@
+{
+  "userQuery": "做一组排队前的准备清单,纵向堆叠几行,每行是\"事项+勾选框\",勾上之后\"已确认\"那栏实时同步。最上面一行是个\"省电模式\"开关,点一下直接跳系统设置。读日历日程显示明天安排,浅冷色氛围渐变,左边大号信息,不用特殊状态色,文字符号做图标。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "type": "object",
+      "description": "动态数据根节点。",
+      "sampleValue": {
+        "calendar": {
+          "items": [
+            {
+              "entityId": "calendar_item_001",
+              "title": "取号前资料核对",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "政务大厅A区"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "calendar": {
+          "type": "object",
+          "description": "日历日程查询结果。",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "calendar_item_001",
+                "title": "取号前资料核对",
+                "dtStart": "09:30",
+                "dtEnd": "10:00",
+                "eventLocation": "政务大厅A区"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "明天的日历日程列表。",
+              "sampleValue": [
+                {
+                  "entityId": "calendar_item_001",
+                  "title": "取号前资料核对",
+                  "dtStart": "09:30",
+                  "dtEnd": "10:00",
+                  "eventLocation": "政务大厅A区"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单条明天日程。",
+                "sampleValue": {
+                  "entityId": "calendar_item_001",
+                  "title": "取号前资料核对",
+                  "dtStart": "09:30",
+                  "dtEnd": "10:00",
+                  "eventLocation": "政务大厅A区"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日程唯一标识符。",
+                    "sampleValue": "calendar_item_001"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "明天日程标题。",
+                    "sampleValue": "取号前资料核对"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "日程开始时间，展示为HH:MM。",
+                    "sampleValue": "09:30"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "日程结束时间，展示为HH:MM。",
+                    "sampleValue": "10:00"
+                  },
+                  "eventLocation": {
+                    "type": "string",
+                    "description": "日程发生地点。",
+                    "sampleValue": "政务大厅A区"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "queuePrep": {
+      "type": "object",
+      "description": "排队前准备清单的本地展示状态。",
+      "sampleValue": {
+        "powerModeLabel": "省电模式",
+        "powerModeState": "去设置",
+        "summaryTitle": "已确认",
+        "summaryText": "2 / 3",
+        "items": [
+          {
+            "label": "证件",
+            "checked": true,
+            "confirmedText": "已确认"
+          },
+          {
+            "label": "预约码",
+            "checked": true,
+            "confirmedText": "已确认"
+          },
+          {
+            "label": "叫号提醒",
+            "checked": false,
+            "confirmedText": "待确认"
+          }
+        ]
+      },
+      "properties": {
+        "powerModeLabel": {
+          "type": "string",
+          "description": "省电模式设置入口标题。",
+          "sampleValue": "省电模式"
+        },
+        "powerModeState": {
+          "type": "string",
+          "description": "省电模式入口状态短文案。",
+          "sampleValue": "去设置"
+        },
+        "summaryTitle": {
+          "type": "string",
+          "description": "清单确认栏标题。",
+          "sampleValue": "已确认"
+        },
+        "summaryText": {
+          "type": "string",
+          "description": "已确认事项数量摘要。",
+          "sampleValue": "2 / 3"
+        },
+        "items": {
+          "type": "array",
+          "description": "排队前准备事项列表。",
+          "sampleValue": [
+            {
+              "label": "证件",
+              "checked": true,
+              "confirmedText": "已确认"
+            },
+            {
+              "label": "预约码",
+              "checked": true,
+              "confirmedText": "已确认"
+            },
+            {
+              "label": "叫号提醒",
+              "checked": false,
+              "confirmedText": "待确认"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个准备事项。",
+            "sampleValue": {
+              "label": "证件",
+              "checked": true,
+              "confirmedText": "已确认"
+            },
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "准备事项名称。",
+                "sampleValue": "证件"
+              },
+              "checked": {
+                "type": "boolean",
+                "description": "该事项是否已经勾选。",
+                "sampleValue": true
+              },
+              "confirmedText": {
+                "type": "string",
+                "description": "该事项在确认栏中的同步文案。",
+                "sampleValue": "已确认"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "description": "卡片运行状态。",
+      "sampleValue": {
+        "loading": false
+      },
+      "properties": {
+        "loading": {
+          "type": "boolean",
+          "description": "日历数据是否正在加载。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

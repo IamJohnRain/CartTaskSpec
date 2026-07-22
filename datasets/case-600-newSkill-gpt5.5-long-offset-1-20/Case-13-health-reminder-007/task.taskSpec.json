@@ -1,0 +1,129 @@
+{
+  "userQuery": "要个吃药提醒卡,左边放个大的药丸造型色块当主视觉,右边纵向列今天的几次药,每行前面用方括号[ ]当图标可以勾选,勾上变绿表示已吃(这种正向状态)。背景用深蓝到紫的夜晚渐变,顶部还能从日历里读出\"上次吃药时间\",整个卡片分区不同底色对比。点药名能直接跳到闹钟设置下次提醒。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的吃药提醒日程列表，按时间排序。",
+          "sampleValue": [
+            {
+              "entityName": "日程",
+              "entityId": "med-001",
+              "title": "早餐药",
+              "dtStart": "08:00",
+              "dtEnd": "08:10"
+            },
+            {
+              "entityName": "日程",
+              "entityId": "med-002",
+              "title": "午间药",
+              "dtStart": "12:30",
+              "dtEnd": "12:40"
+            },
+            {
+              "entityName": "日程",
+              "entityId": "med-003",
+              "title": "睡前药",
+              "dtStart": "21:30",
+              "dtEnd": "21:40"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条吃药提醒日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "日程"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "med-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "药名或吃药提醒标题。",
+                "sampleValue": "早餐药"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "吃药提醒开始时间，今天内为 HH:MM。",
+                "sampleValue": "08:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "吃药提醒结束时间，今天内为 HH:MM。",
+                "sampleValue": "08:10"
+              }
+            }
+          }
+        }
+      }
+    },
+    "medication": {
+      "lastTakenTime": {
+        "type": "string",
+        "description": "从日历归纳出的上次吃药时间展示文本。",
+        "sampleValue": "上次 07:45"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "今日吃药完成状态摘要。",
+        "sampleValue": "今日 1/3 已吃"
+      },
+      "items": {
+        "type": "array",
+        "description": "吃药行的勾选状态辅助数据，与日历提醒按索引对应。",
+        "sampleValue": [
+          {
+            "done": true
+          },
+          {
+            "done": false
+          },
+          {
+            "done": false
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条吃药提醒的本地状态。",
+          "properties": {
+            "done": {
+              "type": "boolean",
+              "description": "是否已经吃药，true 表示已吃并显示绿色确认态。",
+              "sampleValue": true
+            }
+          }
+        }
+      }
+    },
+    "asset": {
+      "alarmIcon": {
+        "type": "string",
+        "description": "闹钟图标素材路径，用于提醒主视觉。",
+        "sampleValue": "resources/base/media/icon_alarm_clock.png"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_alarm_clock.png",
+      "description": "闹钟 PNG 图标，适合表达吃药提醒和跳转闹钟设置。"
+    }
+  ]
+}

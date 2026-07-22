@@ -1,0 +1,84 @@
+{
+  "userQuery": "帮我做个深色舞台风格带渐变的天气卡片，我比较关注老爸的血压和天气关联。以中心的环形血压数据为焦点，环形中心叠加显示今天的实时气温度数，如果气温骤降临近健康阈值就标黄提示。右边横排排列几个天气指标像湿度、风速，下面还要能一键拨号给老爸，纯文字和色块就行不用插图。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "13800000000"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称。",
+            "sampleValue": "朝阳"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前实时气温展示文本。",
+            "sampleValue": "13°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "阴"
+          },
+          "humidityPercent": {
+            "type": "number",
+            "description": "当前相对湿度百分比。",
+            "sampleValue": 68
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "当前风力等级。",
+            "sampleValue": 4
+          },
+          "coldLevel": {
+            "type": "string",
+            "description": "当前感冒指数或降温体感风险。",
+            "sampleValue": "易发"
+          }
+        }
+      }
+    },
+    "health": {
+      "father": {
+        "bloodPressureText": {
+          "type": "string",
+          "description": "老爸当前血压展示文本，已脱敏为样例。",
+          "sampleValue": "138/86"
+        },
+        "bloodPressureRiskPercent": {
+          "type": "number",
+          "description": "血压接近健康阈值的风险百分比，用于环形进度。",
+          "sampleValue": 78
+        },
+        "riskLabel": {
+          "type": "string",
+          "description": "天气与血压关联后的健康提醒短标签。",
+          "sampleValue": "降温"
+        },
+        "isTempDropWarning": {
+          "type": "boolean",
+          "description": "气温骤降且临近健康阈值时为 true，用于黄色提醒。",
+          "sampleValue": true
+        }
+      }
+    },
+    "contact": {
+      "fatherPhoneNumber": {
+        "type": "string",
+        "description": "拨号给老爸使用的脱敏样例号码。",
+        "sampleValue": "13800000000"
+      }
+    }
+  },
+  "assetCandidates": []
+}

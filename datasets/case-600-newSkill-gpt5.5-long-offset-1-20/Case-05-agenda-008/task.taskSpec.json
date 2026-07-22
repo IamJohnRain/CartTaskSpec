@@ -1,0 +1,77 @@
+{
+  "userQuery": "我要个纯色块没图片的主题色卡片，用来排我的项目周会。里面弄成纵向重复排列的几个面板块，每个块里纯靠文字排版，放日历读来的会议主题。最上面用日历的图标当视觉主体，配上一行大字“今日已完成3个”，点一下这块儿能直接进详情看具体的日程事件，整体别用渐变，干干净净的。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日项目周会相关日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "项目周会：版本排期同步",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "项目周会：风险项确认",
+              "dtStart": "14:00",
+              "dtEnd": "14:30"
+            },
+            {
+              "entityId": "calendar-event-003",
+              "title": "项目周会：行动项复盘",
+              "dtStart": "17:00",
+              "dtEnd": "17:20"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日历事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识，用于打开具体日程详情。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历读取的会议主题。",
+                "sampleValue": "项目周会：版本排期同步"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，当天事件为 HH:MM 格式。",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，当天事件为 HH:MM 格式。",
+                "sampleValue": "10:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用作日程管理和当日安排的视觉主体。"
+    }
+  ]
+}

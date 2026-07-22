@@ -1,0 +1,116 @@
+{
+  "userQuery": "帮我做张浅色系的纪念日倒计时卡片,要有个环形进度,下面竖着排几个纪念日,每个写「距离XX还有X天」这种,带个省电模式开关可以切,日历日程读出来,整体氛围感强一点偏睡眠蓝紫色,纯文字和色块别放图,纪念日要显示「可用」那种绿色状态。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的纪念日日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "anniv-001",
+              "title": "婚礼",
+              "description": "18天",
+              "dtStart": "08-03",
+              "dtEnd": "08-03",
+              "importantEventType": 2,
+              "isServiceValid": 2
+            },
+            {
+              "entityId": "anniv-002",
+              "title": "生日",
+              "description": "7天",
+              "dtStart": "07-23",
+              "dtEnd": "07-23",
+              "importantEventType": 2,
+              "isServiceValid": 2
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个纪念日日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "anniv-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "纪念日名称。",
+                "sampleValue": "婚礼"
+              },
+              "description": {
+                "type": "string",
+                "description": "距离纪念日的剩余天数展示文本。",
+                "sampleValue": "18天"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "纪念日日期。",
+                "sampleValue": "08-03"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "纪念日结束日期。",
+                "sampleValue": "08-03"
+              },
+              "importantEventType": {
+                "type": "integer",
+                "description": "重要日类型，2 表示倒数日。",
+                "sampleValue": 2
+              },
+              "isServiceValid": {
+                "type": "integer",
+                "description": "纪念日服务可用状态，2 表示可用。",
+                "sampleValue": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "title": {
+        "type": "string",
+        "description": "卡片标题。",
+        "sampleValue": "纪念日"
+      },
+      "primaryCountdown": {
+        "type": "string",
+        "description": "主纪念日倒计时摘要。",
+        "sampleValue": "还有18天"
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "环形进度当前值。",
+        "sampleValue": 72
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "环形进度总值。",
+        "sampleValue": 100
+      },
+      "powerSavingEnabled": {
+        "type": "boolean",
+        "description": "省电模式是否已开启。",
+        "sampleValue": true
+      }
+    }
+  },
+  "assetCandidates": []
+}

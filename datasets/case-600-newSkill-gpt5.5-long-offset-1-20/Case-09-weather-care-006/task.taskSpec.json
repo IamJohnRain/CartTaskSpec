@@ -1,0 +1,97 @@
+{
+  "userQuery": "帮我弄个父亲关怀卡片，左边放个大大的云朵文字字符当主视觉。右边横着排开未来三天的天气，显示当前的空气湿度动态数据。要是湿度低于20%这种有风险状态就用醒目颜色标出来。整体背景用那种水墨画的延伸视觉风格，配合下雨天的灰暗渐变色。点一下能跳到天气应用看详情就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "cityCode": {
+            "type": "string",
+            "description": "天气应用城市代码，用于打开对应城市天气详情。",
+            "sampleValue": "60814"
+          },
+          "districtName": {
+            "type": "string",
+            "description": "实际查询成功的区县名称。",
+            "sampleValue": "青浦区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "实际查询成功的城市名称。",
+            "sampleValue": "上海市"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，例如阴、多云、小雨。",
+            "sampleValue": "小雨"
+          },
+          "humidityPercent": {
+            "type": "number",
+            "description": "当前相对湿度百分比，低于20表示干燥风险。",
+            "sampleValue": 18
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "小雨",
+              "temperatureRangeText": "24°/29°"
+            },
+            {
+              "weekday": "明天",
+              "condition": "阴",
+              "temperatureRangeText": "25°/30°"
+            },
+            {
+              "weekday": "后天",
+              "condition": "多云",
+              "temperatureRangeText": "24°/31°"
+            }
+          ],
+          "items": {
+            "weekday": {
+              "type": "string",
+              "description": "星期或相对日期文本。",
+              "sampleValue": "今天"
+            },
+            "condition": {
+              "type": "string",
+              "description": "白天天气现象。",
+              "sampleValue": "小雨"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "适合直接显示的温度范围文本。",
+              "sampleValue": "24°/29°"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "云朵组合彩色天气图标，适合用作天气关怀卡片的云朵主视觉。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合彩色天气图标，适合表达雨天和潮湿天气状态。"
+    }
+  ]
+}

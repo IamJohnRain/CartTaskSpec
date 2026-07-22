@@ -1,0 +1,103 @@
+{
+  "userQuery": "读书日程卡,纯文字色块。横向排三个浅灰底色块:周三20:00读书会、周四21:00共读、周日19:30复盘,中间叠一个环形数字\"3\",底部📞图标点一下打电话给读书群。要读日历日程数据。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToCallPhone",
+      "args": {
+        "phoneNumber": "13800138000"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的读书相关日程列表，按发生时间排序。",
+          "sampleValue": [
+            {
+              "entityName": "calendar_event",
+              "entityId": "reading-wed-2000",
+              "title": "读书会",
+              "dtStart": "20:00",
+              "dtEnd": "21:00",
+              "weekday": "周三"
+            },
+            {
+              "entityName": "calendar_event",
+              "entityId": "reading-thu-2100",
+              "title": "共读",
+              "dtStart": "21:00",
+              "dtEnd": "22:00",
+              "weekday": "周四"
+            },
+            {
+              "entityName": "calendar_event",
+              "entityId": "reading-sun-1930",
+              "title": "复盘",
+              "dtStart": "19:30",
+              "dtEnd": "20:30",
+              "weekday": "周日"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类别。",
+                "sampleValue": "calendar_event"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "reading-wed-2000"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "读书会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间展示文本。",
+                "sampleValue": "20:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间展示文本。",
+                "sampleValue": "21:00"
+              },
+              "weekday": {
+                "type": "string",
+                "description": "日程发生的星期展示文本，由日历日期归一化得到。",
+                "sampleValue": "周三"
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "eventCount": {
+        "type": "number",
+        "description": "当前卡片展示的读书日程数量。",
+        "sampleValue": 3
+      }
+    },
+    "contact": {
+      "phoneNumber": {
+        "type": "string",
+        "description": "读书群联系电话，供拨号事件使用。",
+        "sampleValue": "13800138000"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/phone_fill.svg",
+      "description": "电话听筒实心图标，适合用于拨打电话动作入口。"
+    }
+  ]
+}

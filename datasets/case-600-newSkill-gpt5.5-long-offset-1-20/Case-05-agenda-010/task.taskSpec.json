@@ -1,0 +1,106 @@
+{
+  "userQuery": "帮我做个浅色底面的待开会卡片，每一项纵向排列，前面带上日历和地点的语义图标。把今天接下来的会议从日历同步过来，中间放个环形进度条显示当前手机的电量。如果电量低于20%或者在临近开会的十分钟内，就出现黄色的风险提示。底部加个设置按钮，点进去能直接跳到系统电池设置里面去开省电模式。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天接下来的日历会议列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "sample-meeting-001",
+              "title": "产品评审",
+              "eventLocation": "8楼会议室",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条会议日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "sample-meeting-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "会议标题。",
+                "sampleValue": "产品评审"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "会议地点。",
+                "sampleValue": "8楼会议室"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "会议开始时间，今天内用 HH:MM 展示。",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "会议结束时间，今天内用 HH:MM 展示。",
+                "sampleValue": "15:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "device": {
+      "battery": {
+        "percent": {
+          "type": "number",
+          "description": "当前手机电量百分比数值，用于环形进度条。",
+          "sampleValue": 18
+        },
+        "percentText": {
+          "type": "string",
+          "description": "当前手机电量百分比展示文本。",
+          "sampleValue": "18%"
+        }
+      }
+    },
+    "state": {
+      "riskText": {
+        "type": "string",
+        "description": "低电量或临近开会十分钟内的黄色风险提示文本。",
+        "sampleValue": "10分钟内开会"
+      },
+      "riskVisibility": {
+        "type": "string",
+        "description": "风险提示是否显示，低于20%或临近开会十分钟内为 visible，否则为 none。",
+        "sampleValue": "visible"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，用于表示会议时间或日历日程。"
+    },
+    {
+      "src": "resources/base/media/local_fill.svg",
+      "description": "定位实心图标，用于表示会议地点。"
+    }
+  ]
+}

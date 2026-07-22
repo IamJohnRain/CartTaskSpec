@@ -1,0 +1,1 @@
+已完成，`task.taskSpec.json`、`card.dsl.jsonl`、`card.cardspec.json` 都已生成并通过校验；两个校验器结果分别是 `valid: true` 和 `polished / 100`。

@@ -1,0 +1,135 @@
+{
+  "userQuery": "我的行程老是变来变去，做个磨砂玻璃风格的卡片吧，顶上用一个大圆环展示今天的会议完成度，中间用线条把待办和已完成分组隔开，纵向列出来读出的日历日程，点进去能看详情，如果哪个会被取消了要用刺眼的红色图标标出来示警，整体加点那种冲刺紧迫感的渐变色。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天读取到的日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "evt-standup-001",
+              "title": "需求同步",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "3F 会议室",
+              "description": "待办日程",
+              "statusText": "待办",
+              "statusIcon": "resources/base/media/icon_alarm_clock.png",
+              "statusColor": "#e5000000"
+            },
+            {
+              "entityId": "evt-review-002",
+              "title": "评审取消",
+              "dtStart": "14:00",
+              "dtEnd": "15:00",
+              "eventLocation": "线上",
+              "description": "已取消日程",
+              "statusText": "已取消",
+              "statusIcon": "resources/base/media/bell_slash_fill.svg",
+              "statusColor": "#ffed6f21"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开日程详情",
+                "sampleValue": "evt-standup-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "需求同步"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内使用 HH:MM",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今天内使用 HH:MM",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点",
+                "sampleValue": "3F 会议室"
+              },
+              "description": {
+                "type": "string",
+                "description": "日程补充说明或取消状态说明",
+                "sampleValue": "待办日程"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "日程状态文本，用于分组显示待办、已完成或已取消",
+                "sampleValue": "待办"
+              },
+              "statusIcon": {
+                "type": "string",
+                "description": "日程状态图标素材路径，取消日程使用红色示警图标",
+                "sampleValue": "resources/base/media/icon_alarm_clock.png"
+              },
+              "statusColor": {
+                "type": "string",
+                "description": "日程状态显示色，取消时使用 alert 色",
+                "sampleValue": "#e5000000"
+              }
+            }
+          }
+        },
+        "completedCount": {
+          "type": "integer",
+          "description": "今天已完成会议数量",
+          "sampleValue": 3
+        },
+        "totalCount": {
+          "type": "integer",
+          "description": "今天会议总数量",
+          "sampleValue": 5
+        },
+        "completionText": {
+          "type": "string",
+          "description": "今天会议完成度展示文本",
+          "sampleValue": "60%"
+        },
+        "todoLabel": {
+          "type": "string",
+          "description": "待办分组标签",
+          "sampleValue": "待办"
+        },
+        "doneLabel": {
+          "type": "string",
+          "description": "已完成或取消分组标签",
+          "sampleValue": "已完成"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_alarm_clock.png",
+      "description": "闹钟图标，适合表示待办日程或临近日程提醒。"
+    },
+    {
+      "src": "resources/base/media/bell_slash_fill.svg",
+      "description": "铃铛加斜杠图标，适合表示取消、静音或失效提醒，可用于取消会议示警。"
+    }
+  ]
+}

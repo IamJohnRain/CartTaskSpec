@@ -1,0 +1,126 @@
+{
+  "userQuery": "出行倒计时卡来一个,每次都忘带东西。从日历里读出发时间算倒计时,浅色底嵌个小面板,横向排三块:\"距离出发3天\"\"电量67%\"\"目的地晴25°C\",前面用✈️🌤🔋文字字符当图标。中间那块航班取消用红色告警,点中间那块能跳进日程详情,带分隔线分组。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取到的未来出行相关日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar_event_flight_001",
+              "title": "航班取消",
+              "dtStart": "2026-07-19 09:30",
+              "dtEnd": "2026-07-19 12:20",
+              "eventLocation": "上海虹桥 T2"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条出行日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情页跳转所需的唯一标识。",
+                "sampleValue": "calendar_event_flight_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题或当前航班状态。",
+                "sampleValue": "航班取消"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "出行日程的出发开始时间。",
+                "sampleValue": "2026-07-19 09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "出行日程的结束时间。",
+                "sampleValue": "2026-07-19 12:20"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "出行日程地点或出发地。",
+                "sampleValue": "上海虹桥 T2"
+              }
+            }
+          }
+        }
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "目的地区县或城市名称。",
+            "sampleValue": "目的地"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "目的地当前天气现象。",
+            "sampleValue": "晴"
+          },
+          "temperatureText": {
+            "type": "string",
+            "description": "目的地当前温度展示文本。",
+            "sampleValue": "25°C"
+          }
+        }
+      },
+      "device": {
+        "batteryText": {
+          "type": "string",
+          "description": "设备当前电量展示文本。",
+          "sampleValue": "67%"
+        }
+      }
+    },
+    "ui": {
+      "tripGlyph": {
+        "type": "string",
+        "description": "出发倒计时分组的文字字符图标。",
+        "sampleValue": "✈️"
+      },
+      "weatherGlyph": {
+        "type": "string",
+        "description": "天气分组的文字字符图标。",
+        "sampleValue": "🌤"
+      },
+      "batteryGlyph": {
+        "type": "string",
+        "description": "电量分组的文字字符图标。",
+        "sampleValue": "🔋"
+      },
+      "countdownPrefix": {
+        "type": "string",
+        "description": "由日历出发时间计算得到的倒计时前缀。",
+        "sampleValue": "距离出发"
+      },
+      "countdownValue": {
+        "type": "string",
+        "description": "由日历出发时间计算得到的剩余天数展示文本。",
+        "sampleValue": "3天"
+      },
+      "cardTitle": {
+        "type": "string",
+        "description": "卡片短标题。",
+        "sampleValue": "出行倒计时"
+      }
+    }
+  },
+  "assetCandidates": []
+}

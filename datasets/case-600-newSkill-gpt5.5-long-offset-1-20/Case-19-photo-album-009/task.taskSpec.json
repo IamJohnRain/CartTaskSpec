@@ -1,0 +1,83 @@
+{
+  "userQuery": "做个相册智能分类卡,左侧放主视觉,右边用分隔线分三块:人物/地点/时间。动态值\"已分组 286 张\"。底色分区上浅灰下暖白。开关切换\"自动按月归档\"要读取日历数据比如\"6月假期照片\"。\"存储不足\"用黄字告警。纯文字色块别加图。橙到红的清理紧迫渐变。纵向排多个分组项。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "album": {
+      "groupedText": {
+        "type": "string",
+        "description": "相册智能分类已完成分组的照片数量展示文本。",
+        "sampleValue": "已分组 286 张"
+      },
+      "peopleCount": {
+        "type": "string",
+        "description": "人物维度识别出的分组数量展示文本。",
+        "sampleValue": "18组"
+      },
+      "placeCount": {
+        "type": "string",
+        "description": "地点维度识别出的分组数量展示文本。",
+        "sampleValue": "12城"
+      },
+      "storageWarning": {
+        "type": "string",
+        "description": "相册存储空间不足时的告警短文案。",
+        "sampleValue": "存储不足"
+      },
+      "autoArchiveEnabled": {
+        "type": "boolean",
+        "description": "是否开启自动按月归档。",
+        "sampleValue": true
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "用于自动按月归档提示的日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-june-holiday",
+              "title": "6月假期照片",
+              "dtStart": "06月"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日历事件项。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识。",
+                "sampleValue": "calendar-june-holiday"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历事件标题，可作为按月归档提示来源。",
+                "sampleValue": "6月假期照片"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历事件开始时间展示文本。",
+                "sampleValue": "06月"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

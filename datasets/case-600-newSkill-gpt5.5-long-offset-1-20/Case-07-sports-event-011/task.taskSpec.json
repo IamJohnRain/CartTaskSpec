@@ -1,0 +1,71 @@
+{
+  "userQuery": "我下周六有场羽毛球俱乐部联赛，帮我做个赛事提醒卡。左边信息区大字\"距离比赛还有3天\"，右边动作区放一个日历图标按钮。整体用清晨运动感的蓝绿渐变，下方再纵向排列两块不同底色的小区块：第一块写比赛地点和对手，第二块显示我已完成热身打卡，标\"运动手环已连接\"。点日历按钮直接跳日历看日程。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "查询到的日历赛事日程列表",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "badminton-league-20260725",
+              "title": "羽毛球俱乐部联赛",
+              "eventLocation": "晨光羽毛球馆 3 号场",
+              "description": "对手：东区飞羽队",
+              "dtStart": "09:30",
+              "dtEnd": "11:30"
+            }
+          ]
+        }
+      }
+    },
+    "event": {
+      "countdownText": {
+        "type": "string",
+        "description": "距离比赛开始的倒计时展示文本",
+        "sampleValue": "距离比赛还有3天"
+      },
+      "sportName": {
+        "type": "string",
+        "description": "赛事运动项目或赛事短标题",
+        "sampleValue": "羽毛球俱乐部联赛"
+      },
+      "opponentText": {
+        "type": "string",
+        "description": "比赛对手展示文本",
+        "sampleValue": "对手：东区飞羽队"
+      }
+    },
+    "training": {
+      "warmupStatusText": {
+        "type": "string",
+        "description": "热身打卡完成状态",
+        "sampleValue": "已完成热身打卡"
+      },
+      "deviceStatusText": {
+        "type": "string",
+        "description": "运动穿戴设备连接状态",
+        "sampleValue": "运动手环已连接"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于日程管理、赛事日程查看和日历事件入口。"
+    }
+  ]
+}

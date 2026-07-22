@@ -1,0 +1,144 @@
+{
+  "userQuery": "公司开会经常一开就2小时手机没地方充，做个深色风格低电卡片，背景叠一层大环形图中心写电量数字的叠加效果，电量低于10%用红色告警，里面嵌个小面板显示今天剩余日程，底部多个竖向排列的开关项可以一键开省电、关蓝牙、关定位。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "bluetooth_entry"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "location_settings"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "device": {
+      "battery": {
+        "percent": {
+          "type": "integer",
+          "description": "当前手机电量百分比数值，用于环形进度和中心数字显示。",
+          "sampleValue": 8
+        },
+        "percentText": {
+          "type": "string",
+          "description": "当前手机电量百分比展示文本。",
+          "sampleValue": "8%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "低电状态提示，电量低于10%时显示红色告警语义。",
+          "sampleValue": "低电告警"
+        },
+        "ringColor": {
+          "type": "string",
+          "description": "电量环和主数值颜色，低于10%时为告警红色。",
+          "sampleValue": "#ffdb6b42"
+        },
+        "icon": {
+          "type": "string",
+          "description": "低电模式主视觉图标素材路径。",
+          "sampleValue": "resources/base/media/icon_electricity.png"
+        }
+      },
+      "switches": {
+        "powerSaveLabel": {
+          "type": "string",
+          "description": "开启省电模式的开关项文案。",
+          "sampleValue": "开省电"
+        },
+        "bluetoothLabel": {
+          "type": "string",
+          "description": "关闭蓝牙的开关项文案。",
+          "sampleValue": "关蓝牙"
+        },
+        "locationLabel": {
+          "type": "string",
+          "description": "关闭定位的开关项文案。",
+          "sampleValue": "关定位"
+        }
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天剩余日程列表，卡片固定展示第一条日程和剩余数量摘要。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "sample-calendar-001",
+              "title": "项目周会",
+              "dtStart": "15:00",
+              "dtEnd": "17:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程项。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "sample-calendar-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "项目周会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天日程为HH:MM格式。",
+                "sampleValue": "15:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天日程为HH:MM格式。",
+                "sampleValue": "17:00"
+              }
+            }
+          }
+        },
+        "remainingText": {
+          "type": "string",
+          "description": "今天剩余日程数量摘要。",
+          "sampleValue": "剩余1场"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适用于低电模式主视觉和电量状态识别。"
+    },
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适用于当日安排和剩余日程信息面板。"
+    }
+  ]
+}

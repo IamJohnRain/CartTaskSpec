@@ -1,0 +1,78 @@
+{
+  "userQuery": "我想要一个餐厅等位的卡片,周末约了朋友吃饭,想做成那种\"等位\"也能很有信息量的样式。左边放主视觉(用色块表示\"🍽\"风格的视觉),右边是信息区。整个卡片是分层结构,背景是大色块,前面叠文字:上面\"距离叫号还有X桌\"(X是动态的),下面\"前面等了4桌\"。还要能读天气,下雨就显示一个🌧。卡片多排横向重复,显示\"你前面的人\"——比如三组\"姓名缩写+排号\"的横排,看看是不是都到了。整张卡片不用图片,纯文字加色块,也不用渐变。",
+  "size": "2x4",
+  "eventCandidates": [],
+  "dataModelSchema": {
+    "queue": {
+      "remainTables": {
+        "type": "integer",
+        "description": "距离叫号还剩的桌数。",
+        "sampleValue": 6
+      },
+      "frontCount": {
+        "type": "integer",
+        "description": "当前排在用户前面的桌数。",
+        "sampleValue": 4
+      },
+      "people": {
+        "type": "array",
+        "description": "排在用户前面的等位人摘要，按排队顺序排列。",
+        "sampleValue": [
+          {
+            "initials": "LY",
+            "ticketNo": "A18",
+            "status": "已到"
+          },
+          {
+            "initials": "QZ",
+            "ticketNo": "A19",
+            "status": "未到"
+          },
+          {
+            "initials": "MX",
+            "ticketNo": "A20",
+            "status": "已到"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个前序等位人。",
+          "properties": {
+            "initials": {
+              "type": "string",
+              "description": "等位人姓名缩写。",
+              "sampleValue": "LY"
+            },
+            "ticketNo": {
+              "type": "string",
+              "description": "等位排号。",
+              "sampleValue": "A18"
+            },
+            "status": {
+              "type": "string",
+              "description": "到店状态摘要。",
+              "sampleValue": "已到"
+            }
+          }
+        }
+      },
+      "rainMark": {
+        "type": "string",
+        "description": "由天气结果归一化得到的雨天短标记，下雨时显示“雨”，非雨天为空。",
+        "sampleValue": "雨"
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，例如“小雨”“多云”。",
+            "sampleValue": "小雨"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,1 @@
+已生成并保存 `task.taskSpec.json`、`card.dsl.jsonl`、`card.cardspec.json`，两项校验都通过，`validate_card.py` 结果为 `polished`、`qualityScore: 100`。

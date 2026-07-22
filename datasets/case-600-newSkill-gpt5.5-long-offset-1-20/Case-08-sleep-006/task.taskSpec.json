@@ -1,0 +1,117 @@
+{
+  "userQuery": "做个睡眠卡片，深色夜晚渐变背景。顶部用月亮图标，下面写\"今日已睡 4.5小时 ⚠ 严重不足\"用感叹号做警告标红，横向排几个文字开关能切换系统勿扰模式\"勿扰 开/关 静音 开/关\"，再读取今晚日历日程。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "sleep": {
+      "title": {
+        "type": "string",
+        "description": "睡眠卡片标题",
+        "sampleValue": "今日睡眠"
+      },
+      "durationText": {
+        "type": "string",
+        "description": "今日已睡时长展示文本",
+        "sampleValue": "今日已睡 4.5小时"
+      },
+      "alertMark": {
+        "type": "string",
+        "description": "睡眠严重不足的警告感叹号",
+        "sampleValue": "!"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "睡眠不足状态文案",
+        "sampleValue": "严重不足"
+      }
+    },
+    "settings": {
+      "dndOnText": {
+        "type": "string",
+        "description": "勿扰开启入口短文案",
+        "sampleValue": "勿扰 开"
+      },
+      "dndOffText": {
+        "type": "string",
+        "description": "勿扰关闭入口短文案",
+        "sampleValue": "关"
+      },
+      "silentOnText": {
+        "type": "string",
+        "description": "静音开启入口短文案",
+        "sampleValue": "静音 开"
+      },
+      "silentOffText": {
+        "type": "string",
+        "description": "静音关闭入口短文案",
+        "sampleValue": "关"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今晚日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar_sample_001",
+              "title": "放松拉伸",
+              "dtStart": "21:30",
+              "dtEnd": "22:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "今晚日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "calendar_sample_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "放松拉伸"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "21:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "22:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "月亮圆形实心图标，黑白双色，适用于夜间模式、睡眠追踪和勿扰模式。"
+    }
+  ]
+}

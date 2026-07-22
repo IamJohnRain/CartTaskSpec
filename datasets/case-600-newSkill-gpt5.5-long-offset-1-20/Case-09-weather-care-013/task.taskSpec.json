@@ -1,0 +1,99 @@
+{
+  "userQuery": "我奶奶在老家，帮我做个盯天气的卡片。不需要图片，左右分两个不同底色的区域，左边用素材库里的那个大号的雷雨图标当主视觉，右边嵌一个天气应用的面板块。要是老家有暴雨或者台风红色预警这种危险状态，图标得闪一下提醒我，卡片背景最好带点黑灰色的恶劣天气渐变，点一下就能进天气详情。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "老家所在区县名称",
+            "sampleValue": "老家"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "老家所在城市名称",
+            "sampleValue": "家乡市"
+          },
+          "cityCode": {
+            "type": "string",
+            "description": "天气应用城市代码",
+            "sampleValue": "60814"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "雷阵雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息",
+            "sampleValue": "台风红色预警"
+          },
+          "windDirection": {
+            "type": "string",
+            "description": "当前风向",
+            "sampleValue": "东北风"
+          },
+          "windLevel": {
+            "type": "integer",
+            "description": "当前风力等级",
+            "sampleValue": 9
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "暴雨",
+              "temperatureRangeText": "24° / 29°",
+              "rainProbabilityPercent": "96%"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "端侧完成天气查询和归一化的时间",
+          "sampleValue": "15:30更新"
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "天气数据加载状态",
+        "sampleValue": false
+      },
+      "alertPulseColor": {
+        "type": "string",
+        "description": "危险天气时用于雷雨主视觉外层提示的高亮色",
+        "sampleValue": "#ffed6f21"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/thunderstorm.png",
+      "description": "彩色云朵、闪电和雨滴组合图标，适合作为雷雨或强对流天气主视觉，在深色天气背景上保持可读。"
+    }
+  ]
+}

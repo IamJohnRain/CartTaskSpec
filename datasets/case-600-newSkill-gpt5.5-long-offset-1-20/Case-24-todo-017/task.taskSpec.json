@@ -1,0 +1,185 @@
+{
+  "userQuery": "想要个主题色底的待办仪表盘,中间圆环显示完成率(仪表盘焦点),下面横排几个系统开关(勿扰、省电、夜间模式)能直接切换,完成的任务标绿色正向,勾选实时同步;顺便读下今天日历行程,文字字符图标,无渐变,示例数据。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "todo": {
+        "title": {
+          "type": "string",
+          "description": "待办仪表盘标题",
+          "sampleValue": "今日待办"
+        },
+        "completionRate": {
+          "type": "number",
+          "description": "待办完成率百分比数值",
+          "sampleValue": 75
+        },
+        "completionText": {
+          "type": "string",
+          "description": "待办完成率展示文本",
+          "sampleValue": "75%"
+        },
+        "summaryText": {
+          "type": "string",
+          "description": "今日待办完成数量摘要",
+          "sampleValue": "已完成 3/4"
+        },
+        "doneTask": {
+          "title": {
+            "type": "string",
+            "description": "已完成待办事项标题",
+            "sampleValue": "报销提交"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "已完成待办事项勾选状态",
+            "sampleValue": true
+          }
+        },
+        "nextTask": {
+          "title": {
+            "type": "string",
+            "description": "下一条待完成事项标题",
+            "sampleValue": "同步周报"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "下一条待办事项勾选状态",
+            "sampleValue": false
+          }
+        }
+      },
+      "switches": {
+        "dnd": {
+          "label": {
+            "type": "string",
+            "description": "勿扰开关短标签",
+            "sampleValue": "勿扰"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "勿扰模式当前开关状态",
+            "sampleValue": true
+          }
+        },
+        "power": {
+          "label": {
+            "type": "string",
+            "description": "省电开关短标签",
+            "sampleValue": "省电"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "省电模式当前开关状态",
+            "sampleValue": false
+          }
+        },
+        "night": {
+          "label": {
+            "type": "string",
+            "description": "夜间模式开关短标签",
+            "sampleValue": "夜间"
+          },
+          "select": {
+            "type": "boolean",
+            "description": "夜间模式当前开关状态",
+            "sampleValue": true
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天日历行程列表",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "cal-sample-001",
+              "title": "产品评审",
+              "dtStart": "15:00",
+              "dtEnd": "16:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "日程项",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程实体类型",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程实体唯一标识",
+                "sampleValue": "cal-sample-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "产品评审"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "15:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "16:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于今日行程入口或日程识别。"
+    },
+    {
+      "src": "resources/base/media/bell_slash_fill.svg",
+      "description": "勿扰或静音模式图标，适合用于系统勿扰开关。"
+    },
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池绿叶图标，适合用于省电模式和绿色节能状态。"
+    },
+    {
+      "src": "resources/base/media/moon_circle_fill.svg",
+      "description": "月亮圆形图标，适合用于夜间模式或休息场景。"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "userQuery": "帮我做张卡,读日历里最近几笔大额消费,点进去能看事件详情。叠层视觉,中心数字套在环里,浅色底,内嵌面板,本月支出爆了要红色告警,纯文字图标,纵向排列。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "本月日历中记录的大额消费事件列表，按最近或最重要排序。",
+          "sampleValue": [
+            {
+              "entityId": "expense_202607_001",
+              "title": "本月支出爆表",
+              "description": "12.8k",
+              "dtStart": "07/15",
+              "dtEnd": "22:00"
+            },
+            {
+              "entityId": "expense_202607_002",
+              "title": "数码配件 ¥3,280",
+              "description": "大额消费",
+              "dtStart": "07/14",
+              "dtEnd": "20:30"
+            },
+            {
+              "entityId": "expense_202607_003",
+              "title": "家电 ¥2,160",
+              "description": "大额消费",
+              "dtStart": "07/12",
+              "dtEnd": "18:10"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条大额消费日历事件。",
+            "sampleValue": {
+              "entityId": "expense_202607_001",
+              "title": "本月支出爆表",
+              "description": "12.8k",
+              "dtStart": "07/15",
+              "dtEnd": "22:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于点击后打开事件详情。",
+                "sampleValue": "expense_202607_001"
+              },
+              "title": {
+                "type": "string",
+                "description": "消费事件标题或支出状态摘要。",
+                "sampleValue": "本月支出爆表"
+              },
+              "description": {
+                "type": "string",
+                "description": "消费金额或事件补充说明。",
+                "sampleValue": "12.8k"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "消费事件发生日期或开始时间。",
+                "sampleValue": "07/15"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "消费事件结束时间。",
+                "sampleValue": "22:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

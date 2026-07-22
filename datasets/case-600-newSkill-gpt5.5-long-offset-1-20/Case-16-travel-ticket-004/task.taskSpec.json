@@ -1,0 +1,76 @@
+{
+  "userQuery": "出差火车行程卡,磨砂质感,信息用分割线分块,上面写车次和发车时间,中间'距离发车还剩XX分钟'动态字,底部横向排打车/导航/酒店字图标,夜蓝渐变,临开车黄字提示,从日历读。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "cal_train_20260716_g1022"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历行程事件唯一标识符，用于打开该火车行程详情。",
+              "sampleValue": "cal_train_20260716_g1022"
+            },
+            "title": {
+              "type": "string",
+              "description": "从日历读取的火车车次或行程标题。",
+              "sampleValue": "G1022"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "火车发车时间，日历能力当天事件通常返回 HH:MM。",
+              "sampleValue": "18:42"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "行程出发车站或事件地点。",
+              "sampleValue": "虹桥站"
+            },
+            "description": {
+              "type": "string",
+              "description": "行程补充说明，可包含倒计时或临开车提醒展示文本。",
+              "sampleValue": "距离发车还剩28分钟"
+            }
+          }
+        ]
+      }
+    },
+    "view": {
+      "countdownText": {
+        "type": "string",
+        "description": "根据日历发车时间计算后的倒计时展示文案。",
+        "sampleValue": "距离发车还剩28分钟"
+      },
+      "warningText": {
+        "type": "string",
+        "description": "临近发车时的短提示文案。",
+        "sampleValue": "临开车"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_car.png",
+      "description": "汽车/打车图标，适合用于出差行程卡底部打车快捷入口。"
+    },
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航箭头图标，适合用于地图导航或路线指引入口。"
+    },
+    {
+      "src": "resources/base/media/house_fill.svg",
+      "description": "房屋图标，适合用于酒店或住宿相关入口。"
+    }
+  ]
+}

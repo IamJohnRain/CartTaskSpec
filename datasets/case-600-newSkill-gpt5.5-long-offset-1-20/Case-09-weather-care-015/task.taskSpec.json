@@ -1,0 +1,95 @@
+{
+  "userQuery": "帮我爸做个卡片，左边放个医院的红色十字图标当主视觉，底色用那种浅蓝色的清爽表面，不用搞渐变，中间固定写上“老家天气预报”几个字，右边横向排列排满最近三天的温度、下雨和温感冒指数这些多项数据，图标就用你们天气库里的，点这个卡片能直接触发地图导航开车回老家。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的最近三天天气预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "temperatureRangeText": "25/31°",
+              "rainProbabilityPercent": "40%",
+              "coldLevel": "较低"
+            },
+            {
+              "weekday": "明天",
+              "temperatureRangeText": "24/30°",
+              "rainProbabilityPercent": "65%",
+              "coldLevel": "中等"
+            },
+            {
+              "weekday": "后天",
+              "temperatureRangeText": "23/29°",
+              "rainProbabilityPercent": "70%",
+              "coldLevel": "偏高"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报。",
+            "sampleValue": {
+              "weekday": "今天",
+              "temperatureRangeText": "25/31°",
+              "rainProbabilityPercent": "40%",
+              "coldLevel": "较低"
+            },
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或相对日期文本。",
+                "sampleValue": "今天"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "25/31°"
+              },
+              "rainProbabilityPercent": {
+                "type": "string",
+                "description": "白天降雨概率百分比。",
+                "sampleValue": "40%"
+              },
+              "coldLevel": {
+                "type": "string",
+                "description": "当天感冒指数。",
+                "sampleValue": "较低"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "云朵组合彩色天气图标，适合表示多云或常规天气预报。"
+    },
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合彩色天气图标，适合表示降雨天气。"
+    },
+    {
+      "src": "resources/base/media/icon_weather1.png",
+      "description": "亲人关怀场景的天气雨伞图标，适合表达天气照护提醒。"
+    }
+  ]
+}

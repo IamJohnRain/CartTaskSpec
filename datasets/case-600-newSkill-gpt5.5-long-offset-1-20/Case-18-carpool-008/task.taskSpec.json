@@ -1,0 +1,115 @@
+{
+  "userQuery": "拼车出行卡片,带浅色调底色那种,左边主视觉用文字字符画个汽车图标。信息要分组用分隔线分开,纵向重复排几项,每项能勾选。需要读取日历日程,跳转到运动健康应用。如果哪项拼车失败或者取消了,要用红色告警色显示,整体用运动清理类渐变。我现在好几条拼车信息,想一次性看完。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "huaweischeme://healthapp/home/sport?sportType=2"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的拼车日程列表，卡片固定展示前三项。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-carpool-001",
+              "title": "东门拼车",
+              "eventLocation": "东门集合",
+              "description": "失败",
+              "dtStart": "07:40",
+              "dtEnd": "08:20"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-carpool-002",
+              "title": "园区返程",
+              "eventLocation": "B2车库",
+              "description": "已成行",
+              "dtStart": "18:10",
+              "dtEnd": "18:50"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "calendar-carpool-003",
+              "title": "周末拼车",
+              "eventLocation": "南站口",
+              "description": "取消",
+              "dtStart": "20:30",
+              "dtEnd": "21:00"
+            }
+          ],
+          "itemSchema": {
+            "type": "object",
+            "description": "单条拼车日程。",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程内容类别。",
+                "sampleValue": "calendar"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于查看详情或识别勾选项。",
+                "sampleValue": "calendar-carpool-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "拼车日程标题。",
+                "sampleValue": "东门拼车"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "拼车集合地点。",
+                "sampleValue": "东门集合"
+              },
+              "description": {
+                "type": "string",
+                "description": "拼车状态展示文本，例如失败、取消或已成行。",
+                "sampleValue": "失败"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "拼车开始时间，今天内为 HH:MM。",
+                "sampleValue": "07:40"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "拼车结束时间，今天内为 HH:MM。",
+                "sampleValue": "08:20"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "checked": {
+        "type": "array",
+        "description": "固定三项样例的勾选状态辅助字段。",
+        "sampleValue": [
+          false,
+          true,
+          false
+        ]
+      },
+      "statusColor": {
+        "type": "array",
+        "description": "固定三项状态文本颜色辅助字段，失败或取消使用告警色。",
+        "sampleValue": [
+          "#ffed6f21",
+          "#99000000",
+          "#ffed6f21"
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,113 @@
+{
+  "userQuery": "出差总忘记提前充电，上次飞机上手机没电差点误事。帮我做低电管理卡，上方大区域显示电量和\"距离下次会议还有3小时\"倒计时感信息，下面纵向排列今天日程每条前面勾选框双向绑定可勾选，底部按钮跳系统省电设置，深色舞台配夜晚渐变，5%以下红色超限告警纯文字色块。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "power": {
+      "levelText": {
+        "type": "string",
+        "description": "当前手机电量展示文本。",
+        "sampleValue": "4%"
+      },
+      "levelValue": {
+        "type": "number",
+        "description": "当前手机电量百分比数值。",
+        "sampleValue": 4
+      },
+      "nextMeetingCountdownText": {
+        "type": "string",
+        "description": "距离下一场会议的倒计时展示文本。",
+        "sampleValue": "距离下次会议还有3小时"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "低于百分之五时展示的纯文字告警。",
+        "sampleValue": "5%以下超限告警"
+      },
+      "alertColor": {
+        "type": "string",
+        "description": "低电告警文字和色块使用的状态色。",
+        "sampleValue": "#ffdb6b42"
+      }
+    },
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天日程列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "title": "客户方案会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            },
+            {
+              "entityId": "calendar-event-002",
+              "title": "登机前确认",
+              "dtStart": "17:20",
+              "dtEnd": "17:40"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程。",
+            "sampleValue": {
+              "entityId": "calendar-event-001",
+              "title": "客户方案会",
+              "dtStart": "14:30",
+              "dtEnd": "15:00"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符。",
+                "sampleValue": "calendar-event-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "客户方案会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "14:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "15:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "checks": {
+        "type": "array",
+        "description": "日程勾选框的双向绑定状态。",
+        "sampleValue": [
+          false,
+          true
+        ],
+        "items": {
+          "type": "boolean",
+          "description": "单条日程是否已勾选。",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

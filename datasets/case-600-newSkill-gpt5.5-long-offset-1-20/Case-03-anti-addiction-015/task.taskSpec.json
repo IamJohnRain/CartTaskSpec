@@ -1,0 +1,98 @@
+{
+  "userQuery": "做个儿童管控卡片，左边是信息区右边是动作区，背景按区域用稍微不同的底色分开，不要渐变。左边用纵向重复排列的方式列出“周一游戏1小时”、“周二视频2小时”这些选项，旁边加个警示的叹号语义图标。因为我家孩子今天游戏时间超限了，要在顶部显示红色的“已超时20分钟”告警状态。右边动作区放几个可以勾选的惩罚任务选项，比如“做家务解锁10分钟”，还要有个按钮能直接跳到系统设置里修改应用时长，数据你先随便填点静态的。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "status": {
+      "alertText": {
+        "type": "string",
+        "description": "顶部红色告警状态文本，表示今日游戏时长已经超过限制。",
+        "sampleValue": "已超时20分钟"
+      },
+      "alertIcon": {
+        "type": "string",
+        "description": "用于表达警示语义的叹号文本图标。",
+        "sampleValue": "!"
+      }
+    },
+    "limits": {
+      "items": {
+        "type": "array",
+        "description": "左侧管控规则列表，只在小卡中展示前两条。",
+        "items": {
+          "type": "object",
+          "description": "单条管控规则。",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "规则展示文案。",
+              "sampleValue": "周一游戏\n1小时"
+            }
+          }
+        },
+        "sampleValue": [
+          {
+            "label": "周一游戏\n1小时"
+          },
+          {
+            "label": "周二视频\n2小时"
+          }
+        ]
+      }
+    },
+    "tasks": {
+      "items": {
+        "type": "array",
+        "description": "右侧可勾选的惩罚任务选项，只在小卡中展示前两条。",
+        "items": {
+          "type": "object",
+          "description": "单条惩罚任务。",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "惩罚任务展示文案。",
+              "sampleValue": "家务10分"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "惩罚任务是否已经被勾选。",
+              "sampleValue": false
+            }
+          }
+        },
+        "sampleValue": [
+          {
+            "label": "家务10分",
+            "selected": false
+          },
+          {
+            "label": "阅读10分",
+            "selected": true
+          }
+        ]
+      }
+    },
+    "action": {
+      "settingsLabel": {
+        "type": "string",
+        "description": "跳转到系统健康使用 App 设置页的短按钮文案。",
+        "sampleValue": "改"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_timing.png",
+      "description": "防沉迷计时图标，可用于表达应用时长、超时和儿童管控场景。"
+    }
+  ]
+}

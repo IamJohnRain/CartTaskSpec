@@ -1,0 +1,116 @@
+{
+  "userQuery": "上次那张卡片背景太素了，重新做一张低电卡片，背景要那种像夜空延伸出来的感觉。左边信息区显示日历日程和电量状态，电量低了橙色警告。右边动作区横向排几个可勾选的小卡片，勾完跳到系统设置里的省电、屏幕、电池优化这些。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "smart_charge_battery_health"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "title": {
+              "type": "string",
+              "description": "下一条日历日程标题",
+              "sampleValue": "项目复盘"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "下一条日程开始时间",
+              "sampleValue": "19:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "下一条日程结束时间",
+              "sampleValue": "20:00"
+            }
+          }
+        ]
+      },
+      "battery": {
+        "percentText": {
+          "type": "string",
+          "description": "当前电量百分比展示文本",
+          "sampleValue": "12%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "低电量状态提示",
+          "sampleValue": "低电"
+        },
+        "level": {
+          "type": "number",
+          "description": "当前电量数值",
+          "sampleValue": 12
+        },
+        "total": {
+          "type": "number",
+          "description": "电量进度总量",
+          "sampleValue": 100
+        },
+        "isLow": {
+          "type": "boolean",
+          "description": "是否处于低电量警告状态",
+          "sampleValue": true
+        }
+      },
+      "actions": {
+        "savePowerSelected": {
+          "type": "boolean",
+          "description": "省电动作卡片是否已勾选",
+          "sampleValue": true
+        },
+        "screenSelected": {
+          "type": "boolean",
+          "description": "屏幕设置动作卡片是否已勾选",
+          "sampleValue": false
+        },
+        "optimizeSelected": {
+          "type": "boolean",
+          "description": "电池优化动作卡片是否已勾选",
+          "sampleValue": false
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_schedule.png",
+      "description": "日程图标，适合在低电卡片的信息区标识日历日程。"
+    },
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "电池图标，适合标识低电模式下的电量状态。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "省电图标，适合标识系统省电设置入口。"
+    }
+  ]
+}

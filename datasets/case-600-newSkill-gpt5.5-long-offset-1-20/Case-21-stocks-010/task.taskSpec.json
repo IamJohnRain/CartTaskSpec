@@ -1,0 +1,156 @@
+{
+  "userQuery": "基金网点卡,横向三个并排的小卡片,每个大字数值如'国泰+1.2%''华夏-0.3%''易方达+0.8%',点一下能地图导航到对应线下网点,带天气'晴',失败告警的显示红色背景,不同底色区分,上面大标题'附近基金网点',纯文字色块,不要图不要渐变",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/fundOutlets/0/location/latitude} }}",
+            "longitude": "{{ ${/fundOutlets/0/location/longitude} }}"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/fundOutlets/1/location/latitude} }}",
+            "longitude": "{{ ${/fundOutlets/1/location/longitude} }}"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/fundOutlets/2/location/latitude} }}",
+            "longitude": "{{ ${/fundOutlets/2/location/longitude} }}"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "fundOutlets": {
+      "type": "array",
+      "description": "附近基金线下网点列表，固定展示前三个网点。",
+      "sampleValue": [
+        {
+          "name": "国泰",
+          "changeText": "+1.2%",
+          "addressShort": "人民路网点",
+          "valueColor": "#ff64bb5c",
+          "location": {
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+          }
+        },
+        {
+          "name": "华夏",
+          "changeText": "-0.3%",
+          "addressShort": "中山路网点",
+          "valueColor": "#ffed6f21",
+          "location": {
+            "latitude": "31.2280",
+            "longitude": "121.4670"
+          }
+        },
+        {
+          "name": "易方达",
+          "changeText": "+0.8%",
+          "addressShort": "世纪大道网点",
+          "valueColor": "#ff64bb5c",
+          "location": {
+            "latitude": "31.2397",
+            "longitude": "121.4998"
+          }
+        }
+      ],
+      "items": {
+        "type": "object",
+        "description": "单个基金网点展示与导航信息。",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "基金公司简称。",
+            "sampleValue": "国泰"
+          },
+          "changeText": {
+            "type": "string",
+            "description": "基金网点展示的大字涨跌幅文本。",
+            "sampleValue": "+1.2%"
+          },
+          "addressShort": {
+            "type": "string",
+            "description": "线下网点短地址或网点名。",
+            "sampleValue": "人民路网点"
+          },
+          "valueColor": {
+            "type": "string",
+            "description": "涨跌幅文本颜色，正值为确认色，负值为告警色。",
+            "sampleValue": "#ff64bb5c"
+          },
+          "location": {
+            "type": "object",
+            "description": "地图导航目标坐标。",
+            "properties": {
+              "latitude": {
+                "type": "string",
+                "description": "导航目标纬度。",
+                "sampleValue": "31.2304"
+              },
+              "longitude": {
+                "type": "string",
+                "description": "导航目标经度。",
+                "sampleValue": "121.4737"
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询地区名称。",
+            "sampleValue": "附近"
+          }
+        },
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "晴"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "天气或服务失败告警状态；失败时卡片背景显示红色。",
+            "sampleValue": "正常"
+          }
+        }
+      }
+    },
+    "status": {
+      "isFailure": {
+        "type": "boolean",
+        "description": "是否处于失败告警状态，失败时用于切换红色背景。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

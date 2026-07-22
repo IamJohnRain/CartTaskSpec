@@ -1,0 +1,1 @@
+已生成并保存 `task.taskSpec.json`、`card.dsl.jsonl`、`card.cardspec.json`，两项校验都已通过。

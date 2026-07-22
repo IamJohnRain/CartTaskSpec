@@ -1,0 +1,128 @@
+{
+  "userQuery": "做个水电缴费卡,横向并排两组:电费\"已缴 ¥128\"绿色对勾,水费\"待缴 ¥47\"橙色提示,水表上还显示日历日程里\"距离截止还有2天\"。整卡主题蓝紫色背景,内嵌一个小面板,跳到时钟应用,横向多列排开。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "utility": {
+        "title": {
+          "type": "string",
+          "description": "卡片标题，表示当前为水电缴费状态摘要。",
+          "sampleValue": "水电缴费"
+        },
+        "electric": {
+          "label": {
+            "type": "string",
+            "description": "电费账单名称。",
+            "sampleValue": "电费"
+          },
+          "amount": {
+            "type": "string",
+            "description": "电费账单金额展示文本。",
+            "sampleValue": "¥128"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "电费缴费状态。",
+            "sampleValue": "已缴 OK"
+          },
+          "statusMark": {
+            "type": "string",
+            "description": "电费已缴状态的短标记。",
+            "sampleValue": "OK"
+          }
+        },
+        "water": {
+          "label": {
+            "type": "string",
+            "description": "水费账单名称。",
+            "sampleValue": "水费"
+          },
+          "amount": {
+            "type": "string",
+            "description": "水费账单金额展示文本。",
+            "sampleValue": "¥47"
+          },
+          "statusText": {
+            "type": "string",
+            "description": "水费缴费状态。",
+            "sampleValue": "待缴 !"
+          },
+          "statusMark": {
+            "type": "string",
+            "description": "水费待缴状态的短标记。",
+            "sampleValue": "!"
+          },
+          "deadlineText": {
+            "type": "string",
+            "description": "从日历日程提取或归一化后的水费截止倒计时展示文本。",
+            "sampleValue": "距离截止还有2天"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "与缴费截止相关的日历日程列表。",
+          "items": {
+            "type": "object",
+            "description": "单条缴费截止日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识。",
+                "sampleValue": "calendar-water-bill-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "水费缴费截止"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间。",
+                "sampleValue": "09:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间。",
+                "sampleValue": "09:30"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "entityId": "calendar-water-bill-001",
+              "title": "水费缴费截止",
+              "dtStart": "09:00",
+              "dtEnd": "09:30"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/bolt_fill.svg",
+      "description": "闪电实心图标，用于电费账单识别；黑色 SVG，适合放在浅色图标底板上。"
+    },
+    {
+      "src": "resources/base/media/drop_1.svg",
+      "description": "水滴图标，用于水费账单识别；黑色 SVG，适合放在浅色图标底板上。"
+    },
+    {
+      "src": "resources/base/media/clock.svg",
+      "description": "时钟线框图标，用于跳转时钟应用或表达截止倒计时入口；黑色 SVG，适合放在浅色底板上。"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "userQuery": "我想要个行程倒计时的卡,顶部大字号显示距离出发还有1天12小时,底下横向并列三个小块:第一个读天气,第二个是下一个航段,第三个是再下一个航段,每块都能点进日历看详情。卡片底色简洁素净,加夜间渐变,图标用文字画。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前天气温度的短展示文本，用于行程天气小块。",
+            "sampleValue": "26°"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象的短文本，用于行程天气小块。",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "与出发行程相关的日历项，按展示顺序包含天气提醒、下一个航段和再下一个航段。",
+          "items": {
+            "type": "object",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历项唯一标识，用于点击进入日历详情。",
+                "sampleValue": "trip-weather-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日历项标题，航段项可使用短航班号或简短航段名。",
+                "sampleValue": "MU512"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日历项开始时间或航段出发时间的短展示文本。",
+                "sampleValue": "09:20"
+              }
+            }
+          },
+          "sampleValue": [
+            {
+              "entityId": "trip-weather-001",
+              "title": "出发天气",
+              "dtStart": "明早"
+            },
+            {
+              "entityId": "flight-next-001",
+              "title": "MU512",
+              "dtStart": "09:20"
+            },
+            {
+              "entityId": "flight-next-002",
+              "title": "CA984",
+              "dtStart": "13:40"
+            }
+          ]
+        }
+      },
+      "trip": {
+        "countdownText": {
+          "type": "string",
+          "description": "距离出发的倒计时主展示文本。",
+          "sampleValue": "1天12小时"
+        },
+        "caption": {
+          "type": "string",
+          "description": "倒计时上方的行程提示标题。",
+          "sampleValue": "距离出发还有"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

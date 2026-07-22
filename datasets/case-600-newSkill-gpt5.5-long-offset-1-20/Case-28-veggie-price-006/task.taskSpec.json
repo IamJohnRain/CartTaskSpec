@@ -1,0 +1,141 @@
+{
+  "userQuery": "周末想跑一趟便宜的菜场,做个卡。左边主视觉显示天气和菜场,右边横排三个勾选项(朝阳、海淀、丰台三家),勾完按按钮直接导航去选中的那家。简洁风,夜晚蓝紫渐变,字符做图标,横向重复。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "39.9219",
+            "longitude": "116.4436"
+          },
+          "trafficpe": "Bus"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询对应的区县名称",
+            "sampleValue": "朝阳"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询对应的城市名称",
+            "sampleValue": "北京"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "21°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始的每日天气预报",
+          "sampleValue": [
+            {
+              "weekday": "周末",
+              "condition": "多云",
+              "temperatureRangeText": "18° / 26°"
+            }
+          ],
+          "items": {
+            "weekday": {
+              "type": "string",
+              "description": "预报星期文本",
+              "sampleValue": "周末"
+            },
+            "condition": {
+              "type": "string",
+              "description": "白天天气现象",
+              "sampleValue": "多云"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "当日温度范围展示文本",
+              "sampleValue": "18° / 26°"
+            }
+          }
+        }
+      }
+    },
+    "markets": {
+      "type": "array",
+      "description": "可选菜场列表",
+      "sampleValue": [
+        {
+          "name": "朝阳",
+          "priceText": "低价",
+          "glyph": "朝",
+          "selected": true
+        },
+        {
+          "name": "海淀",
+          "priceText": "平价",
+          "glyph": "海",
+          "selected": false
+        },
+        {
+          "name": "丰台",
+          "priceText": "实惠",
+          "glyph": "丰",
+          "selected": false
+        }
+      ],
+      "items": {
+        "name": {
+          "type": "string",
+          "description": "菜场所在区名称",
+          "sampleValue": "朝阳"
+        },
+        "priceText": {
+          "type": "string",
+          "description": "菜场价格印象短标签",
+          "sampleValue": "低价"
+        },
+        "glyph": {
+          "type": "string",
+          "description": "用于字符图标的单字",
+          "sampleValue": "朝"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "当前是否选中该菜场",
+          "sampleValue": true
+        }
+      }
+    },
+    "selection": {
+      "name": {
+        "type": "string",
+        "description": "当前选中的菜场区名",
+        "sampleValue": "朝阳"
+      },
+      "latitude": {
+        "type": "string",
+        "description": "当前选中菜场的导航目的地纬度",
+        "sampleValue": "39.9219"
+      },
+      "longitude": {
+        "type": "string",
+        "description": "当前选中菜场的导航目的地经度",
+        "sampleValue": "116.4436"
+      }
+    }
+  },
+  "assetCandidates": []
+}

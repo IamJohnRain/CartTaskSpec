@@ -1,0 +1,120 @@
+{
+  "userQuery": "晚间复盘卡来一张,横向排几个板块每个基金一个,显示'收盘倒计时2小时,今日盈亏+580元'这种拼接,内嵌面板块不同底色。读取日历里明天的复盘会议日程,天气数据也读一下,状态用黄色提醒某基金接近止损。背景用深蓝到浅紫的夜晚倒计时渐变,全部用纯文字和色块别用图片。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-review-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "funds": {
+        "items": [
+          {
+            "name": {
+              "type": "string",
+              "description": "基金简称，用于横向板块标题。",
+              "sampleValue": "沪深300"
+            },
+            "summary": {
+              "type": "string",
+              "description": "基金晚间复盘拼接摘要，包含收盘倒计时和今日盈亏。",
+              "sampleValue": "收盘倒计时2小时, 今日盈亏+580元"
+            },
+            "status": {
+              "type": "string",
+              "description": "基金风险或持仓状态提示。",
+              "sampleValue": "稳健"
+            },
+            "panelColor": {
+              "type": "string",
+              "description": "该基金内嵌面板底色。",
+              "sampleValue": "#263E74"
+            }
+          },
+          {
+            "name": {
+              "type": "string",
+              "description": "基金简称，用于横向板块标题。",
+              "sampleValue": "科技成长"
+            },
+            "summary": {
+              "type": "string",
+              "description": "基金晚间复盘拼接摘要，包含收盘倒计时和今日盈亏。",
+              "sampleValue": "收盘倒计时2小时, 今日盈亏-120元"
+            },
+            "status": {
+              "type": "string",
+              "description": "基金风险或持仓状态提示。",
+              "sampleValue": "接近止损"
+            },
+            "panelColor": {
+              "type": "string",
+              "description": "该基金内嵌面板底色。",
+              "sampleValue": "#5A4A2A"
+            }
+          }
+        ]
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历日程唯一标识，用于打开明天复盘会议详情。",
+              "sampleValue": "calendar-review-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "明天复盘会议标题。",
+              "sampleValue": "明日复盘会议"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "明天复盘会议开始时间。",
+              "sampleValue": "明天 19:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "明天复盘会议结束时间。",
+              "sampleValue": "20:00"
+            }
+          }
+        ]
+      },
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称。",
+            "sampleValue": "浦东"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "28°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量等级。",
+            "sampleValue": "良"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

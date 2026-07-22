@@ -1,0 +1,1 @@
+已完成，`task.taskSpec.json`、`card.dsl.jsonl`、`card.cardspec.json` 都已生成并通过校验。

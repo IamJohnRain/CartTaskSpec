@@ -1,0 +1,149 @@
+{
+  "userQuery": "我想做一张今晚整理相册的提醒卡,深色舞台风那种。手机里照片堆了快 2000 张,再不清理就乱套了。最上面用大号 🖼️ 字符合主视觉,旁边写'今日待清理 28 张'。再下面横向排三个时间段,比如'21:00-21:30'、'21:30-22:00'、'22:00-22:30',每个前面有勾选框,我勾选哪个时段就定哪个,两边要双向绑定。每个时段右侧要能读到日历当天的日程事件摘要。点整张卡能跳到时钟应用去设闹钟。状态用红色告警'本月已超出清理配额 12%',纯文字色块,不要渐变,字符合图标就行。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "cleanup": {
+      "title": {
+        "type": "string",
+        "description": "今日相册待清理数量展示文本。",
+        "sampleValue": "今日待清理 28 张"
+      },
+      "totalPhotosText": {
+        "type": "string",
+        "description": "手机相册照片堆积规模的简短提示。",
+        "sampleValue": "近 2000 张"
+      },
+      "alertText": {
+        "type": "string",
+        "description": "本月清理配额超出状态告警文本。",
+        "sampleValue": "本月已超出清理配额 12%"
+      }
+    },
+    "slots": [
+      {
+        "time": {
+          "type": "string",
+          "description": "第一个相册整理候选时间段。",
+          "sampleValue": "21:00-21:30"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "第一个时间段是否被选中。",
+          "sampleValue": true
+        }
+      },
+      {
+        "time": {
+          "type": "string",
+          "description": "第二个相册整理候选时间段。",
+          "sampleValue": "21:30-22:00"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "第二个时间段是否被选中。",
+          "sampleValue": false
+        }
+      },
+      {
+        "time": {
+          "type": "string",
+          "description": "第三个相册整理候选时间段。",
+          "sampleValue": "22:00-22:30"
+        },
+        "selected": {
+          "type": "boolean",
+          "description": "第三个时间段是否被选中。",
+          "sampleValue": false
+        }
+      }
+    ],
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历事件唯一标识符。",
+              "sampleValue": "cal-photo-2100"
+            },
+            "title": {
+              "type": "string",
+              "description": "当天日历事件标题摘要。",
+              "sampleValue": "家庭通话"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "当天日历事件开始时间。",
+              "sampleValue": "21:10"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "当天日历事件结束时间。",
+              "sampleValue": "21:25"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历事件唯一标识符。",
+              "sampleValue": "cal-photo-2130"
+            },
+            "title": {
+              "type": "string",
+              "description": "当天日历事件标题摘要。",
+              "sampleValue": "无冲突"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "当天日历事件开始时间。",
+              "sampleValue": "21:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "当天日历事件结束时间。",
+              "sampleValue": "22:00"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日历事件唯一标识符。",
+              "sampleValue": "cal-photo-2200"
+            },
+            "title": {
+              "type": "string",
+              "description": "当天日历事件标题摘要。",
+              "sampleValue": "备份完成"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "当天日历事件开始时间。",
+              "sampleValue": "22:10"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "当天日历事件结束时间。",
+              "sampleValue": "22:20"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标，适合表达相册整理、清理堆积照片和待处理任务的主视觉。"
+    }
+  ]
+}

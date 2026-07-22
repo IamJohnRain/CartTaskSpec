@@ -1,0 +1,125 @@
+{
+  "userQuery": "通勤卡横向排几个日程,每个带时间和地点,点哪个直接导航,显示今天步数,从图片延伸的视觉风格,中间嵌个面板显示下一个日程,事故告警色,交通图标",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/data/calendar/items/0/latitude} }}",
+            "longitude": "{{ ${/data/calendar/items/0/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "{{ ${/data/calendar/items/1/latitude} }}",
+            "longitude": "{{ ${/data/calendar/items/1/longitude} }}"
+          },
+          "trafficpe": "Drive"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天通勤相关日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-001",
+              "title": "客户晨会",
+              "dtStart": "08:30",
+              "dtEnd": "09:00",
+              "eventLocation": "科创中心",
+              "latitude": "31.2304",
+              "longitude": "121.4737"
+            },
+            {
+              "entityId": "calendar-002",
+              "title": "项目同步",
+              "dtStart": "10:15",
+              "dtEnd": "10:45",
+              "eventLocation": "园区B座",
+              "latitude": "31.2240",
+              "longitude": "121.4762"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个通勤日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识。",
+                "sampleValue": "calendar-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题。",
+                "sampleValue": "客户晨会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，今天内使用HH:MM格式。",
+                "sampleValue": "08:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，今天内使用HH:MM格式。",
+                "sampleValue": "09:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程地点。",
+                "sampleValue": "科创中心"
+              },
+              "latitude": {
+                "type": "string",
+                "description": "日程地点纬度，用于发起导航。",
+                "sampleValue": "31.2304"
+              },
+              "longitude": {
+                "type": "string",
+                "description": "日程地点经度，用于发起导航。",
+                "sampleValue": "121.4737"
+              }
+            }
+          }
+        }
+      },
+      "commute": {
+        "stepsText": {
+          "type": "string",
+          "description": "今天累计步数展示文本。",
+          "sampleValue": "6,842步"
+        },
+        "trafficAlert": {
+          "type": "string",
+          "description": "通勤路况事故告警短文案。",
+          "sampleValue": "事故"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/location_north_up_right_fill.svg",
+      "description": "方向导航实心图标，适合表达地图导航、路线规划和点击后前往目的地。"
+    },
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合表达步数统计和健康运动数据。"
+    }
+  ]
+}

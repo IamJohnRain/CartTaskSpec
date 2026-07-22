@@ -1,0 +1,130 @@
+{
+  "userQuery": "做张医院候诊的准备任务卡,磨砂质感的,左右分区:左边是候诊信息(科室、号码、状态),右边是动作按钮区(扫码签到、查看路线)。顶部几个勾选项:\"我已到达\"\"病历本已带\"\"空腹已准备\",要能勾能取消那种双向的。点中间要能跳进我那条预约日程。用夜间倒计时的渐变,提示准备就绪。纯文字加色块,不要任何图。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "appt-20260716-001"
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hospital://appointment/checkin"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "39.9042",
+            "longitude": "116.4074"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "tasks": {
+      "arrived": {
+        "label": {
+          "type": "string",
+          "description": "到院确认项文案",
+          "sampleValue": "我已到达"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "到院确认项是否已勾选",
+          "sampleValue": true
+        }
+      },
+      "record": {
+        "label": {
+          "type": "string",
+          "description": "病历本携带确认项文案",
+          "sampleValue": "病历本已带"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "病历本携带确认项是否已勾选",
+          "sampleValue": true
+        }
+      },
+      "fasting": {
+        "label": {
+          "type": "string",
+          "description": "空腹准备确认项文案",
+          "sampleValue": "空腹已准备"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "空腹准备确认项是否已勾选",
+          "sampleValue": true
+        }
+      }
+    },
+    "queue": {
+      "department": {
+        "type": "string",
+        "description": "医院候诊科室名称",
+        "sampleValue": "心内科候诊"
+      },
+      "number": {
+        "type": "string",
+        "description": "当前预约或排队号码",
+        "sampleValue": "A-127"
+      },
+      "status": {
+        "type": "string",
+        "description": "候诊准备状态",
+        "sampleValue": "准备就绪"
+      },
+      "countdownText": {
+        "type": "string",
+        "description": "夜间候诊倒计时提示",
+        "sampleValue": "距候诊 18 分钟"
+      }
+    },
+    "appointment": {
+      "title": {
+        "type": "string",
+        "description": "预约日程入口标题",
+        "sampleValue": "预约日程"
+      },
+      "time": {
+        "type": "string",
+        "description": "预约日程开始时间",
+        "sampleValue": "21:40"
+      },
+      "entityId": {
+        "type": "string",
+        "description": "用于打开预约日程详情的日程唯一标识符",
+        "sampleValue": "appt-20260716-001"
+      }
+    },
+    "hospital": {
+      "location": {
+        "latitude": {
+          "type": "string",
+          "description": "院区路线目标纬度",
+          "sampleValue": "39.9042"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "院区路线目标经度",
+          "sampleValue": "116.4074"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

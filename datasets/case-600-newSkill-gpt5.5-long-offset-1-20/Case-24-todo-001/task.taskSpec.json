@@ -1,0 +1,187 @@
+{
+  "userQuery": "想要个横着排的待办卡片,左边一块大色块当主视觉,右边并排三个小卡片,每张显示一项待办和完成百分比,比如\"还剩 2/5\"这种动态数。背景分区用不同底色,任务区浅蓝、提醒区浅黄那种,整体再来个清爽的运动风渐变,蓝到青。要显示当前电量,点一下能跳到系统设置里的电池页面。今天日历里的日程也要拉过来,已完成的任务标\"已完成\"绿色。纯文字色块就行,别用图。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "overview": {
+        "type": "object",
+        "description": "卡片左侧主摘要信息",
+        "sampleValue": {
+          "title": "今日待办",
+          "progressText": "2/5",
+          "scheduleText": "09:30 产品例会",
+          "batteryText": "电量 78%"
+        },
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "左侧主标题",
+            "sampleValue": "今日待办"
+          },
+          "progressText": {
+            "type": "string",
+            "description": "今日完成进度数字",
+            "sampleValue": "2/5"
+          },
+          "scheduleText": {
+            "type": "string",
+            "description": "今天最近一条日程的时间和标题",
+            "sampleValue": "09:30 产品例会"
+          },
+          "batteryText": {
+            "type": "string",
+            "description": "当前电量展示文本",
+            "sampleValue": "电量 78%"
+          }
+        }
+      },
+      "todoCards": {
+        "type": "object",
+        "description": "右侧三张待办小卡",
+        "sampleValue": {
+          "items": [
+            {
+              "title": "晨跑",
+              "progressText": "还剩 2/5"
+            },
+            {
+              "title": "拉伸",
+              "progressText": "还剩 1/4"
+            },
+            {
+              "title": "补水",
+              "progressText": "已完成"
+            }
+          ]
+        },
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "右侧待办卡片列表",
+            "sampleValue": [
+              {
+                "title": "晨跑",
+                "progressText": "还剩 2/5"
+              },
+              {
+                "title": "拉伸",
+                "progressText": "还剩 1/4"
+              },
+              {
+                "title": "补水",
+                "progressText": "已完成"
+              }
+            ],
+            "items": {
+              "type": "object",
+              "description": "单张待办卡片",
+              "sampleValue": {
+                "title": "晨跑",
+                "progressText": "还剩 2/5"
+              },
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "待办标题",
+                  "sampleValue": "晨跑"
+                },
+                "progressText": {
+                  "type": "string",
+                  "description": "待办进度文本",
+                  "sampleValue": "还剩 2/5"
+                }
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "type": "object",
+        "description": "今天日程结果",
+        "sampleValue": {
+          "items": [
+            {
+              "entityId": "cal-001",
+              "title": "产品例会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "A01",
+              "description": "晨会同步"
+            }
+          ]
+        },
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "今天的日程列表",
+            "sampleValue": [
+              {
+                "entityId": "cal-001",
+                "title": "产品例会",
+                "dtStart": "09:30",
+                "dtEnd": "10:00",
+                "eventLocation": "A01",
+                "description": "晨会同步"
+              }
+            ],
+            "items": {
+              "type": "object",
+              "description": "单条日程",
+              "sampleValue": {
+                "entityId": "cal-001",
+                "title": "产品例会",
+                "dtStart": "09:30",
+                "dtEnd": "10:00",
+                "eventLocation": "A01",
+                "description": "晨会同步"
+              },
+              "properties": {
+                "entityId": {
+                  "type": "string",
+                  "description": "日程唯一标识",
+                  "sampleValue": "cal-001"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "日程标题",
+                  "sampleValue": "产品例会"
+                },
+                "dtStart": {
+                  "type": "string",
+                  "description": "日程开始时间",
+                  "sampleValue": "09:30"
+                },
+                "dtEnd": {
+                  "type": "string",
+                  "description": "日程结束时间",
+                  "sampleValue": "10:00"
+                },
+                "eventLocation": {
+                  "type": "string",
+                  "description": "日程地点",
+                  "sampleValue": "A01"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "日程描述",
+                  "sampleValue": "晨会同步"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

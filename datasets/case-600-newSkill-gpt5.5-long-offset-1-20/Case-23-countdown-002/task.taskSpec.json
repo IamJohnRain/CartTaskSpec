@@ -1,0 +1,157 @@
+{
+  "userQuery": "急需一张生日倒计时卡片!背景用图片延伸的视觉风格,氛围渐变像晚霞那种。卡片内嵌几个小面板块,纵向排三个,每个都有勾选框让我打勾标记\"礼物买了\"\"蛋糕订了\"\"场地定了\",环形进度中心叠一个天数。点击卡片能进入日历看详细日程,顺便读取今天天气,搞完显示\"全部就绪\"绿色正向状态。图标用文字符号就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "countdown": {
+      "title": {
+        "type": "string",
+        "description": "生日倒计时标题",
+        "sampleValue": "生日倒计时"
+      },
+      "daysText": {
+        "type": "string",
+        "description": "距离生日剩余天数展示文本",
+        "sampleValue": "12"
+      },
+      "progressValue": {
+        "type": "number",
+        "description": "生日准备进度当前值",
+        "sampleValue": 72
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "生日准备进度总值",
+        "sampleValue": 100
+      },
+      "unit": {
+        "type": "string",
+        "description": "倒计时单位",
+        "sampleValue": "天"
+      }
+    },
+    "todos": {
+      "gift": {
+        "label": {
+          "type": "string",
+          "description": "礼物准备项标签",
+          "sampleValue": "礼物买了"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "礼物准备项是否完成",
+          "sampleValue": true
+        }
+      },
+      "cake": {
+        "label": {
+          "type": "string",
+          "description": "蛋糕准备项标签",
+          "sampleValue": "蛋糕订了"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "蛋糕准备项是否完成",
+          "sampleValue": true
+        }
+      },
+      "venue": {
+        "label": {
+          "type": "string",
+          "description": "场地准备项标签",
+          "sampleValue": "场地定了"
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "场地准备项是否完成",
+          "sampleValue": true
+        }
+      }
+    },
+    "status": {
+      "readyText": {
+        "type": "string",
+        "description": "所有生日准备完成后的正向状态文案",
+        "sampleValue": "全部就绪"
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称",
+            "sampleValue": "朝阳区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "28°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "生日相关日历日程列表",
+          "sampleValue": [
+            {
+              "entityId": "birthday-plan-001",
+              "title": "生日当天安排",
+              "dtStart": "18:30",
+              "dtEnd": "21:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符",
+                "sampleValue": "birthday-plan-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "生日当天安排"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "18:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "21:30"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/sunny.png",
+      "description": "彩色太阳天气图标，适合作为晚霞渐变背景中的明亮图片视觉锚点。"
+    }
+  ]
+}

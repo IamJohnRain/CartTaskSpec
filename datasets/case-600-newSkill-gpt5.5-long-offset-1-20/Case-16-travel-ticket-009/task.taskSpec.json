@@ -1,0 +1,102 @@
+{
+  "userQuery": "做个旅行计划的小卡片,纯文字色块没有真图。左边竖着排几个文字图标✈🚄🏨,右边放'开启行程提醒'开关。卡片有多个行程段纵向排列,主题色背景加睡眠音乐那种柔和渐变,从日历里读数据,固定文案就行。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "从本地日历读取的旅行行程段列表，用于纵向展示多个行程节点。",
+          "sampleValue": [
+            {
+              "entityId": "trip-flight-001",
+              "title": "飞往杭州",
+              "eventLocation": "T3 航站楼",
+              "dtStart": "08:30",
+              "dtEnd": "10:45"
+            },
+            {
+              "entityId": "trip-rail-002",
+              "title": "高铁去湖州",
+              "eventLocation": "杭州东站",
+              "dtStart": "13:20",
+              "dtEnd": "14:05"
+            },
+            {
+              "entityId": "trip-hotel-003",
+              "title": "酒店入住",
+              "eventLocation": "湖畔客栈",
+              "dtStart": "15:00",
+              "dtEnd": "15:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个旅行行程段。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历日程的唯一标识符，可用于打开日程详情。",
+                "sampleValue": "trip-flight-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "行程段标题。",
+                "sampleValue": "飞往杭州"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "行程段地点或交通站点。",
+                "sampleValue": "T3 航站楼"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "行程段开始时间，展示为 HH:MM。",
+                "sampleValue": "08:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "行程段结束时间，展示为 HH:MM。",
+                "sampleValue": "10:45"
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "reminderEnabled": {
+        "type": "boolean",
+        "description": "行程提醒开关的样例选中状态。",
+        "sampleValue": true
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞本地 SVG 图标，适合表达航班出发行程段，黑色图形需放在浅色图标底板上。"
+    },
+    {
+      "src": "resources/base/media/tram_fill.svg",
+      "description": "有轨电车本地 SVG 图标，适合表达铁路或公共交通行程段，黑色图形需放在浅色图标底板上。"
+    },
+    {
+      "src": "resources/base/media/house_fill.svg",
+      "description": "房屋本地 SVG 图标，适合表达酒店入住或住宿行程段，黑白图形需放在浅色图标底板上。"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "userQuery": "做一个恋爱纪念日倒计时卡,深色舞台风,左右分区:左边信息区上面夜景蓝紫渐变叠着文字'恋爱纪念日还有12天',下面动态显示'今日已走8743步';右边动作区两个按钮'查看日程'和'设为重要'。最下面一个可滚动列表展示接下来5个纪念日:相识、表白、在一起、订婚、结婚,全部绿色'已标记'状态。不要用图片,纯文字色块,图标用♥、✓这种字符。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "summary": {
+        "countdownText": {
+          "type": "string",
+          "description": "恋爱纪念日倒计时展示文本",
+          "sampleValue": "恋爱纪念日还有12天"
+        },
+        "stepsText": {
+          "type": "string",
+          "description": "今日步数展示文本",
+          "sampleValue": "今日已走8743步"
+        },
+        "heartMark": {
+          "type": "string",
+          "description": "恋爱纪念日字符标记",
+          "sampleValue": "♥"
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "接下来纪念日列表",
+          "sampleValue": [
+            {
+              "entityId": "anniv-meet",
+              "title": "相识",
+              "dtStart": "08-02",
+              "dtEnd": "08-02",
+              "description": "已标记"
+            },
+            {
+              "entityId": "anniv-confess",
+              "title": "表白",
+              "dtStart": "09-12",
+              "dtEnd": "09-12",
+              "description": "已标记"
+            },
+            {
+              "entityId": "anniv-together",
+              "title": "在一起",
+              "dtStart": "10-01",
+              "dtEnd": "10-01",
+              "description": "已标记"
+            },
+            {
+              "entityId": "anniv-engage",
+              "title": "订婚",
+              "dtStart": "12-24",
+              "dtEnd": "12-24",
+              "description": "已标记"
+            },
+            {
+              "entityId": "anniv-marry",
+              "title": "结婚",
+              "dtStart": "05-20",
+              "dtEnd": "05-20",
+              "description": "已标记"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个纪念日日程",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识",
+                "sampleValue": "anniv-meet"
+              },
+              "title": {
+                "type": "string",
+                "description": "纪念日名称",
+                "sampleValue": "相识"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "纪念日日期",
+                "sampleValue": "08-02"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "纪念日结束日期",
+                "sampleValue": "08-02"
+              },
+              "description": {
+                "type": "string",
+                "description": "纪念日标记状态",
+                "sampleValue": "已标记"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

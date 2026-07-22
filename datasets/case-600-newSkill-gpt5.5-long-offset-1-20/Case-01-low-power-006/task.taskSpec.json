@@ -1,0 +1,68 @@
+{
+  "userQuery": "最近出差总忘充电,手机经常用到一半就弹低电量提醒好烦。帮我做个深色背景的卡片,中间要那种环形进度图,环里显示\"剩余47%\"这种百分比数字,外面包一层\"低电量提醒\"固定标题。卡片里再嵌一个浅色面板,横着排几项:剩余电量、预计可用时间、当前充电状态。底部按钮可以跳到系统设置开启省电模式,数据先填静态的演示一下。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "battery"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "battery": {
+      "percent": {
+        "type": "number",
+        "description": "当前剩余电量百分比数值，用于环形进度图。",
+        "sampleValue": 47
+      },
+      "remainingText": {
+        "type": "string",
+        "description": "当前剩余电量的展示文本。",
+        "sampleValue": "剩余47%"
+      },
+      "availableTime": {
+        "type": "string",
+        "description": "按当前耗电状态估算的剩余可用时间。",
+        "sampleValue": "约3小时20分"
+      },
+      "chargingStatus": {
+        "type": "string",
+        "description": "当前手机充电状态展示文本。",
+        "sampleValue": "未充电"
+      },
+      "statusHint": {
+        "type": "string",
+        "description": "低电量状态的短提示文案。",
+        "sampleValue": "建议开启省电"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/icon_charge.png",
+      "description": "低电模式充电闪电图标，适合用于电量状态识别。"
+    },
+    {
+      "src": "resources/base/media/icon_save_power.png",
+      "description": "低电模式省电图标，适合用于省电模式动作入口。"
+    },
+    {
+      "src": "resources/base/media/icon_electricity.png",
+      "description": "低电模式电池图标，适合用于剩余电量识别。"
+    }
+  ]
+}

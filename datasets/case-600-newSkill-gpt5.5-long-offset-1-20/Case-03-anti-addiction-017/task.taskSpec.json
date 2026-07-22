@@ -1,0 +1,136 @@
+{
+  "userQuery": "做个深色舞台风格的防沉迷卡片，左边放主视觉区域，右边横向排列好几项App的动态耗电和使用时长数据。因为我今天提前完成了控制时长的目标，所以卡片要显示绿色的正向达成状态。一定要用纯文字和色块，不要用图片，中间放个素材库里的“奖杯”语义图标，再放个切换“深色模式”的系统开关，顺便在旁边读取一下今天的天气数据，不用渐变。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 0
+        }
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "parent_control"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "summary": {
+      "title": {
+        "type": "string",
+        "description": "防沉迷卡片标题",
+        "sampleValue": "防沉迷达成"
+      },
+      "statusText": {
+        "type": "string",
+        "description": "今日控制时长目标完成状态",
+        "sampleValue": "已提前达成"
+      },
+      "goalText": {
+        "type": "string",
+        "description": "今日控制时长目标摘要",
+        "sampleValue": "控制目标 120 分钟"
+      },
+      "savedText": {
+        "type": "string",
+        "description": "相对目标节省的使用时长",
+        "sampleValue": "少用 28 分钟"
+      },
+      "trophyText": {
+        "type": "string",
+        "description": "纯文字奖杯语义标识",
+        "sampleValue": "奖杯"
+      },
+      "darkModeLabel": {
+        "type": "string",
+        "description": "深色模式开关标签",
+        "sampleValue": "深色模式"
+      },
+      "darkModeEnabled": {
+        "type": "boolean",
+        "description": "深色模式开关当前选中状态",
+        "sampleValue": true
+      }
+    },
+    "apps": {
+      "type": "array",
+      "description": "App 今日动态耗电和使用时长摘要",
+      "sampleValue": [
+        {
+          "name": "短视频",
+          "usageText": "26分钟",
+          "powerText": "3.1%"
+        },
+        {
+          "name": "游戏",
+          "usageText": "18分钟",
+          "powerText": "2.4%"
+        },
+        {
+          "name": "社交",
+          "usageText": "14分钟",
+          "powerText": "1.8%"
+        }
+      ],
+      "items": {
+        "name": {
+          "type": "string",
+          "description": "App 名称",
+          "sampleValue": "短视频"
+        },
+        "usageText": {
+          "type": "string",
+          "description": "App 今日使用时长展示文本",
+          "sampleValue": "26分钟"
+        },
+        "powerText": {
+          "type": "string",
+          "description": "App 今日动态耗电展示文本",
+          "sampleValue": "3.1%"
+        }
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询区县名称",
+            "sampleValue": "朝阳区"
+          },
+          "prefectureName": {
+            "type": "string",
+            "description": "天气查询城市名称",
+            "sampleValue": "北京"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象",
+            "sampleValue": "多云"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "天气更新时间",
+          "sampleValue": "09:30"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

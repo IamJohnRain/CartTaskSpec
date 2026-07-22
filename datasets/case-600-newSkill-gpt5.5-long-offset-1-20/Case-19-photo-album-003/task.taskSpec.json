@@ -1,0 +1,126 @@
+{
+  "userQuery": "相册清理提醒卡:横向并排三个时间段块(今天/明天/本周),每个是\"距离自动清理还有 X 天\"的固定文字加动态数值,前面可勾选跳过这次提醒。能跳到时钟/闹钟App设置提醒时间,读日程知道哪天有空整理,磨砂质感左边放主视觉,暖色氛围渐变(类似睡眠那种橙黄到粉),纯文字色块不插图,不用特殊状态色。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.clock",
+        "abilityName": "com.huawei.hmos.clock.phone",
+        "uri": ""
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "cleanup": {
+        "title": {
+          "type": "string",
+          "description": "相册自动清理提醒标题",
+          "sampleValue": "相册清理"
+        },
+        "heroLabel": {
+          "type": "string",
+          "description": "左侧主视觉文字标签",
+          "sampleValue": "清理提醒"
+        },
+        "periods": {
+          "type": "array",
+          "description": "三个固定时间段的清理倒计时",
+          "sampleValue": [
+            {
+              "label": "今天",
+              "daysText": "0",
+              "skip": false
+            },
+            {
+              "label": "明天",
+              "daysText": "1",
+              "skip": false
+            },
+            {
+              "label": "本周",
+              "daysText": "4",
+              "skip": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个时间段的倒计时和跳过状态",
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "时间段名称",
+                "sampleValue": "今天"
+              },
+              "daysText": {
+                "type": "string",
+                "description": "距离自动清理的剩余天数文本",
+                "sampleValue": "0"
+              },
+              "skip": {
+                "type": "boolean",
+                "description": "是否跳过本次提醒",
+                "sampleValue": false
+              }
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "近期日程列表，用于判断空闲整理时间",
+          "sampleValue": [
+            {
+              "entityName": "日程",
+              "entityId": "calendar-sample-001",
+              "title": "整理照片",
+              "dtStart": "周四 19:30",
+              "dtEnd": "20:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程",
+            "properties": {
+              "entityName": {
+                "type": "string",
+                "description": "日程类别",
+                "sampleValue": "日程"
+              },
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识",
+                "sampleValue": "calendar-sample-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "整理照片"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "周四 19:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "20:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日程数据是否加载中",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

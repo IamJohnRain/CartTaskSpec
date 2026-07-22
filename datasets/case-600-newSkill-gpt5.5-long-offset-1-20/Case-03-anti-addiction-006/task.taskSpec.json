@@ -1,0 +1,93 @@
+{
+  "userQuery": "做个纯文字和色块拼成的极简防沉迷卡片，上面大字显示\"今日屏幕剩余47%\"，下面纵向堆着几个横向并排的时长数据，要是超时了整个背景变成危险告警的红色，背景就弄成全黑的夜空氛围，不用渐变和图片，卡片里放上外面的天气数据，再给我加个一键开启勿扰模式的开关就行了。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "intelligent_scene_entry"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "screen": {
+      "remainingText": {
+        "type": "string",
+        "description": "今日屏幕可用时长剩余比例的主展示文本。",
+        "sampleValue": "今日屏幕剩余47%"
+      },
+      "isOverLimit": {
+        "type": "boolean",
+        "description": "今日是否已经超过防沉迷时长限制，超时时用于切换危险告警背景。",
+        "sampleValue": false
+      },
+      "rows": {
+        "type": "array",
+        "description": "卡片下方横向并排展示的屏幕时长数据行。",
+        "sampleValue": [
+          {
+            "label": "已用",
+            "duration": "1小时36分"
+          },
+          {
+            "label": "剩余",
+            "duration": "1小时24分"
+          },
+          {
+            "label": "限制",
+            "duration": "3小时"
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单条屏幕时长数据。",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "时长数据标签。",
+              "sampleValue": "已用"
+            },
+            "duration": {
+              "type": "string",
+              "description": "时长数据展示值。",
+              "sampleValue": "1小时36分"
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "dndSwitchText": {
+        "type": "string",
+        "description": "开启勿扰模式动作的按钮展示文本。",
+        "sampleValue": "开启勿扰"
+      }
+    },
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询位置的区县名称。",
+            "sampleValue": "当前位置"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "26°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "多云"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

@@ -1,0 +1,1 @@
+已生成并校验通过：`task.taskSpec.json`、`card.dsl.jsonl`、`card.cardspec.json`。两项校验均通过，Card 校验结果为 `polished`、`100` 分。

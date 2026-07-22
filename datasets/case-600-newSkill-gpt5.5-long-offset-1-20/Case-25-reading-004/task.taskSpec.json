@@ -1,0 +1,93 @@
+{
+  "userQuery": "我老忘去图书馆还书,书架上那本《三体》还有2天到期心里慌,做个提醒卡顶上放一个超大的书形图标当主视觉(用色块做就行,别真放图,就是从这种图延伸出来的柔和风格),下面横着排4本书每本前面带个勾选框能勾'已读完',最下面红字提示'《三体》还剩2天即将逾期',点这个提示能直接跳地图导航去市图书馆,纯文字色块不要照片,示例数据填上。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "StartNavigate",
+        "params": {
+          "dstLocation": {
+            "latitude": "31.230416",
+            "longitude": "121.473701"
+          },
+          "trafficpe": "Walk"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "hero": {
+      "src": {
+        "type": "string",
+        "description": "书形色块主视觉素材路径，用于提醒卡顶部 Image 组件。",
+        "sampleValue": "resources/base/media/alarm_fill_1.svg"
+      }
+    },
+    "books": {
+      "type": "array",
+      "description": "书架上需要跟踪的图书列表。",
+      "sampleValue": [
+        {
+          "title": "三体",
+          "finished": false
+        },
+        {
+          "title": "活着",
+          "finished": true
+        },
+        {
+          "title": "边城",
+          "finished": false
+        },
+        {
+          "title": "小王子",
+          "finished": true
+        }
+      ],
+      "items": {
+        "title": {
+          "type": "string",
+          "description": "图书名称。",
+          "sampleValue": "三体"
+        },
+        "finished": {
+          "type": "boolean",
+          "description": "该书是否已读完。",
+          "sampleValue": false
+        }
+      }
+    },
+    "warning": {
+      "text": {
+        "type": "string",
+        "description": "即将逾期的还书提醒文案。",
+        "sampleValue": "《三体》还剩2天即将逾期"
+      }
+    },
+    "library": {
+      "name": {
+        "type": "string",
+        "description": "导航目的地图书馆名称。",
+        "sampleValue": "市图书馆"
+      },
+      "latitude": {
+        "type": "string",
+        "description": "市图书馆导航目的地纬度。",
+        "sampleValue": "31.230416"
+      },
+      "longitude": {
+        "type": "string",
+        "description": "市图书馆导航目的地经度。",
+        "sampleValue": "121.473701"
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/alarm_fill_1.svg",
+      "description": "素材库声明的闹钟提醒图标，适合用于还书到期提醒卡顶部的大号主视觉。",
+      "bindTo": "/hero/src"
+    }
+  ]
+}

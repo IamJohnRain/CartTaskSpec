@@ -1,0 +1,129 @@
+{
+  "userQuery": "菜价卡用大蔬菜图标做视觉主体。纵向重复排列几家超市的价格,一行写\"距离下次采购还有2天\"点进去看具体日程,磨砂质感。提示有菜快下架,文字图标",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "sample-calendar-event-id"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下次采购相关日程列表",
+          "sampleValue": [
+            {
+              "entityId": "veg-buy-20260719",
+              "title": "周末采购蔬菜",
+              "dtStart": "09:30",
+              "dtEnd": "10:30"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "采购日程项",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于点击查看具体日程",
+                "sampleValue": "veg-buy-20260719"
+              },
+              "title": {
+                "type": "string",
+                "description": "采购日程标题",
+                "sampleValue": "周末采购蔬菜"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "采购日程开始时间",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "采购日程结束时间",
+                "sampleValue": "10:30"
+              }
+            }
+          }
+        }
+      },
+      "veggiePrice": {
+        "title": {
+          "type": "string",
+          "description": "菜价比价卡标题",
+          "sampleValue": "菜价比价"
+        },
+        "mainGlyph": {
+          "type": "string",
+          "description": "蔬菜文字图标",
+          "sampleValue": "菜"
+        },
+        "purchaseCountdownText": {
+          "type": "string",
+          "description": "距离下次采购的倒计时展示文本",
+          "sampleValue": "距离下次采购还有2天"
+        },
+        "warningText": {
+          "type": "string",
+          "description": "蔬菜临期提醒文案",
+          "sampleValue": "有菜快下架"
+        },
+        "markets": {
+          "type": "array",
+          "description": "超市菜价比价列表",
+          "sampleValue": [
+            {
+              "name": "盒马",
+              "price": "上海青 ¥3.9/斤"
+            },
+            {
+              "name": "永辉",
+              "price": "上海青 ¥4.2/斤"
+            },
+            {
+              "name": "沃尔玛",
+              "price": "上海青 ¥4.5/斤"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单家超市的菜价",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "超市名称",
+                "sampleValue": "盒马"
+              },
+              "price": {
+                "type": "string",
+                "description": "蔬菜价格展示文本",
+                "sampleValue": "上海青 ¥3.9/斤"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/battery_leaf_fill.svg",
+      "description": "电池与绿叶组合实心图标，可作为蔬菜、绿色采购或保鲜相关的主视觉叶片符号。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表示采购日程入口。"
+    },
+    {
+      "src": "resources/base/media/bell_fill.svg",
+      "description": "铃铛实心图标，适合表示临期或下架提醒。"
+    }
+  ]
+}

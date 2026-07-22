@@ -1,0 +1,157 @@
+{
+  "userQuery": "我需要个深色舞台风格的卡片，背景图上叠加大号字体。横向排列几个今天开会的日程事件，要能点进去看详情。里面嵌一块内存监控面板，放几个勾选项让我选清理哪些残留文件，空间占用已经标红警告了，加点紧迫感的渐变色，用垃圾桶图标标一下。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的日历会议事件列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-1001",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "3F 会议室"
+            },
+            {
+              "entityId": "calendar-event-1002",
+              "title": "项目同步会",
+              "dtStart": "14:00",
+              "dtEnd": "14:30",
+              "eventLocation": "线上会议"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个日历会议事件",
+            "sampleValue": {
+              "entityId": "calendar-event-1001",
+              "title": "产品评审会",
+              "dtStart": "09:30",
+              "dtEnd": "10:00",
+              "eventLocation": "3F 会议室"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程事件唯一标识，用于打开详情",
+                "sampleValue": "calendar-event-1001"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "产品评审会"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，当天事件为 HH:MM 格式",
+                "sampleValue": "09:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间，当天事件为 HH:MM 格式",
+                "sampleValue": "10:00"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程发生位置",
+                "sampleValue": "3F 会议室"
+              }
+            }
+          }
+        }
+      }
+    },
+    "cleanup": {
+      "usageText": {
+        "type": "string",
+        "description": "内存空间占用告警展示文本",
+        "sampleValue": "92% 已占用"
+      },
+      "usedPercent": {
+        "type": "number",
+        "description": "内存空间占用百分比",
+        "sampleValue": 92
+      },
+      "warningText": {
+        "type": "string",
+        "description": "内存清理紧急提示",
+        "sampleValue": "残留堆积"
+      },
+      "options": {
+        "type": "array",
+        "description": "可选择清理的残留文件类型",
+        "sampleValue": [
+          {
+            "label": "缓存",
+            "value": "cache",
+            "selected": true
+          },
+          {
+            "label": "安装包",
+            "value": "apk",
+            "selected": true
+          }
+        ],
+        "items": {
+          "type": "object",
+          "description": "单个清理选项",
+          "sampleValue": {
+            "label": "缓存",
+            "value": "cache",
+            "selected": true
+          },
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "清理选项名称",
+              "sampleValue": "缓存"
+            },
+            "value": {
+              "type": "string",
+              "description": "清理选项值",
+              "sampleValue": "cache"
+            },
+            "selected": {
+              "type": "boolean",
+              "description": "清理选项是否默认勾选",
+              "sampleValue": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合用于今天会议日程的识别入口。"
+    },
+    {
+      "src": "resources/base/media/icon_clear.png",
+      "description": "清除图标，适合用于内存清理、残留文件清理和垃圾清理语义标识。"
+    }
+  ]
+}

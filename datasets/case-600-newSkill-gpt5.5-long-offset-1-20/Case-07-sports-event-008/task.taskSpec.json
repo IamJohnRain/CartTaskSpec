@@ -1,0 +1,227 @@
+{
+  "userQuery": "我是AC米兰球迷，下周有场意甲。帮我做个观赛准备卡：背景用球场氛围图延伸，纵向排列四个信息块——距离比赛还有3天（固定文字+动态数字）、比赛日天气晴22℃（点进去跳天气App）、赛前日程已同步到日历（点进日程事件）、训练目标完成85%显示\"已达标\"。中间叠一个环形仪表盘，中心大字显示3天作为视觉焦点。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "match": {
+      "type": "object",
+      "description": "AC米兰下场意甲比赛的观赛准备摘要。",
+      "sampleValue": {
+        "teamName": "AC米兰",
+        "competition": "意甲",
+        "daysRemaining": 3,
+        "calendarStatusText": "日程已同步"
+      },
+      "properties": {
+        "teamName": {
+          "type": "string",
+          "description": "球迷关注的球队名称。",
+          "sampleValue": "AC米兰"
+        },
+        "competition": {
+          "type": "string",
+          "description": "比赛所属赛事名称。",
+          "sampleValue": "意甲"
+        },
+        "daysRemaining": {
+          "type": "number",
+          "description": "距离比赛开始还剩的天数。",
+          "sampleValue": 3
+        },
+        "calendarStatusText": {
+          "type": "string",
+          "description": "赛前日程同步状态展示文本。",
+          "sampleValue": "日程已同步"
+        }
+      }
+    },
+    "training": {
+      "type": "object",
+      "description": "观赛前个人训练目标完成情况。",
+      "sampleValue": {
+        "progressPercent": 85,
+        "progressText": "85%",
+        "statusText": "已达标"
+      },
+      "properties": {
+        "progressPercent": {
+          "type": "number",
+          "description": "训练目标完成百分比数值。",
+          "sampleValue": 85
+        },
+        "progressText": {
+          "type": "string",
+          "description": "训练目标完成百分比展示文本。",
+          "sampleValue": "85%"
+        },
+        "statusText": {
+          "type": "string",
+          "description": "训练目标完成状态文本。",
+          "sampleValue": "已达标"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "端侧天气与日历能力写入的数据根节点。",
+      "sampleValue": {
+        "weather": {
+          "current": {
+            "condition": "晴",
+            "temperatureText": "22℃"
+          },
+          "location": {
+            "districtName": "米兰"
+          }
+        },
+        "calendar": {
+          "items": [
+            {
+              "entityId": "cal_match_001",
+              "title": "AC米兰 意甲观赛",
+              "dtStart": "20:45",
+              "dtEnd": "22:45"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "weather": {
+          "type": "object",
+          "description": "比赛日天气概要。",
+          "sampleValue": {
+            "current": {
+              "condition": "晴",
+              "temperatureText": "22℃"
+            },
+            "location": {
+              "districtName": "米兰"
+            }
+          },
+          "properties": {
+            "current": {
+              "type": "object",
+              "description": "比赛日天气实况。",
+              "sampleValue": {
+                "condition": "晴",
+                "temperatureText": "22℃"
+              },
+              "properties": {
+                "condition": {
+                  "type": "string",
+                  "description": "比赛日天气现象。",
+                  "sampleValue": "晴"
+                },
+                "temperatureText": {
+                  "type": "string",
+                  "description": "比赛日温度展示文本。",
+                  "sampleValue": "22℃"
+                }
+              }
+            },
+            "location": {
+              "type": "object",
+              "description": "天气查询地区。",
+              "sampleValue": {
+                "districtName": "米兰"
+              },
+              "properties": {
+                "districtName": {
+                  "type": "string",
+                  "description": "天气查询区县或城市名称。",
+                  "sampleValue": "米兰"
+                }
+              }
+            }
+          }
+        },
+        "calendar": {
+          "type": "object",
+          "description": "赛前日历事件查询结果。",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "cal_match_001",
+                "title": "AC米兰 意甲观赛",
+                "dtStart": "20:45",
+                "dtEnd": "22:45"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "匹配到的赛前日程事件列表。",
+              "sampleValue": [
+                {
+                  "entityId": "cal_match_001",
+                  "title": "AC米兰 意甲观赛",
+                  "dtStart": "20:45",
+                  "dtEnd": "22:45"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "赛前日程事件。",
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日程事件唯一标识，用于打开日程详情。",
+                    "sampleValue": "cal_match_001"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "日程事件标题。",
+                    "sampleValue": "AC米兰 意甲观赛"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "日程事件开始时间。",
+                    "sampleValue": "20:45"
+                  },
+                  "dtEnd": {
+                    "type": "string",
+                    "description": "日程事件结束时间。",
+                    "sampleValue": "22:45"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/sunny.png",
+      "description": "彩色太阳天气图标，适合表示比赛日晴天。"
+    },
+    {
+      "src": "resources/base/media/checkmark_calendar_fill.svg",
+      "description": "带对勾的日历图标，适合表示赛前日程已同步到日历。"
+    },
+    {
+      "src": "resources/base/media/figure_run.svg",
+      "description": "跑步人物图标，适合表示训练目标或运动准备状态。"
+    }
+  ]
+}

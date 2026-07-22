@@ -1,0 +1,157 @@
+{
+  "userQuery": "做个快递管理卡,信息分两组用横线分开,上面'今日到达 5 件',嵌入小天气面板显示明天天气因为下雨要提前安排。下面'待处理 2 件',两组用不同底色,上面浅绿下面浅黄。点待处理项能进日历看派送时间,可滚动列表纯文字色块,不需图片也不用渐变,已签收的绿色块标出来。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "express": {
+        "arrivals": {
+          "title": {
+            "type": "string",
+            "description": "今日到达分组标题。",
+            "sampleValue": "今日到达"
+          },
+          "countText": {
+            "type": "string",
+            "description": "今日到达件数展示文本。",
+            "sampleValue": "5 件"
+          }
+        },
+        "pending": {
+          "title": {
+            "type": "string",
+            "description": "待处理分组标题。",
+            "sampleValue": "待处理"
+          },
+          "countText": {
+            "type": "string",
+            "description": "待处理件数展示文本。",
+            "sampleValue": "2 件"
+          }
+        },
+        "items": {
+          "type": "array",
+          "description": "快递条目摘要列表，用于渲染纯文字色块。",
+          "sampleValue": [
+            {
+              "statusText": "待派送",
+              "summary": "09:30 东门派送"
+            },
+            {
+              "statusText": "已签收",
+              "summary": "11:20 已签收"
+            }
+          ],
+          "items": {
+            "statusText": {
+              "type": "string",
+              "description": "快递条目状态文本。",
+              "sampleValue": "待派送"
+            },
+            "summary": {
+              "type": "string",
+              "description": "快递条目短摘要。",
+              "sampleValue": "09:30 东门派送"
+            }
+          }
+        }
+      },
+      "weather": {
+        "daily": {
+          "type": "array",
+          "description": "从今天开始的天气预报列表，第二项用于显示明天天气。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "多云",
+              "temperatureRangeText": "26° / 33°",
+              "rainProbabilityPercent": "30%"
+            },
+            {
+              "weekday": "明日",
+              "condition": "小雨",
+              "temperatureRangeText": "25° / 31°",
+              "rainProbabilityPercent": "80%"
+            }
+          ],
+          "items": {
+            "weekday": {
+              "type": "string",
+              "description": "预报对应星期或日期短文本。",
+              "sampleValue": "明日"
+            },
+            "condition": {
+              "type": "string",
+              "description": "白天天气现象。",
+              "sampleValue": "小雨"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "当天温度范围展示文本。",
+              "sampleValue": "25° / 31°"
+            },
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "白天降雨概率百分比。",
+              "sampleValue": "80%"
+            }
+          }
+        }
+      },
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "派送相关日历事件列表。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-delivery-001",
+              "title": "东门派送",
+              "dtStart": "09:30",
+              "dtEnd": "10:00"
+            }
+          ],
+          "items": {
+            "entityId": {
+              "type": "string",
+              "description": "日历事件唯一标识，用于跳转查看派送时间。",
+              "sampleValue": "calendar-delivery-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "派送日历事件标题。",
+              "sampleValue": "东门派送"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "派送日历事件开始时间。",
+              "sampleValue": "09:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "派送日历事件结束时间。",
+              "sampleValue": "10:00"
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "数据加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

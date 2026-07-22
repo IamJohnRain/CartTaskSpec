@@ -1,0 +1,60 @@
+{
+  "userQuery": "帮我做一张菜价比价提醒卡,左边放个🥬小图标当主视觉,右边竖着堆几行信息,每行横着排三四种蔬菜和它今天的价格,固定文字就行。底色要那种淡淡的绿色,顶部要能读到日历里'本周日早市采购'的日程,整体夜晚看的渐变感,文字表情做图标就行,别整太花哨。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "本周日早市采购相关日程列表",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-sunday-market",
+              "title": "本周日早市采购",
+              "dtStart": "07:30",
+              "dtEnd": "09:00"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识符，用于打开日程详情",
+                "sampleValue": "calendar-event-sunday-market"
+              },
+              "title": {
+                "type": "string",
+                "description": "日程标题",
+                "sampleValue": "本周日早市采购"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间",
+                "sampleValue": "07:30"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "日程结束时间",
+                "sampleValue": "09:00"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

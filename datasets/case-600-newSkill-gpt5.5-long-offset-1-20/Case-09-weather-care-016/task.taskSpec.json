@@ -1,0 +1,119 @@
+{
+  "userQuery": "帮我做个极简风格的天气关怀卡片，加个晴天的氛围渐变，中间放个大太阳的图标，卡片里嵌个小的天气组件。下面做个能滚动的列表，把接下来几天的天气和感冒指数列出来，要是温度有异常记得变色，点一下就能跳到天气应用。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "districtName": {
+            "type": "string",
+            "description": "天气查询的区县名称。",
+            "sampleValue": "朝阳区"
+          }
+        },
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "29°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "晴"
+          },
+          "coldLevel": {
+            "type": "string",
+            "description": "当前感冒指数。",
+            "sampleValue": "较低"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "晴",
+              "temperatureRangeText": "24° / 32°",
+              "coldLevel": "较低"
+            },
+            {
+              "weekday": "明天",
+              "condition": "晴转多云",
+              "temperatureRangeText": "25° / 36°",
+              "coldLevel": "中等"
+            },
+            {
+              "weekday": "周六",
+              "condition": "多云",
+              "temperatureRangeText": "23° / 30°",
+              "coldLevel": "低"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单日天气预报条目。",
+            "properties": {
+              "weekday": {
+                "type": "string",
+                "description": "星期或日期短文本。",
+                "sampleValue": "今天"
+              },
+              "condition": {
+                "type": "string",
+                "description": "白天天气现象。",
+                "sampleValue": "晴"
+              },
+              "temperatureRangeText": {
+                "type": "string",
+                "description": "当天温度范围展示文本。",
+                "sampleValue": "24° / 32°"
+              },
+              "coldLevel": {
+                "type": "string",
+                "description": "当天感冒指数。",
+                "sampleValue": "较低"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "temperatureColors": {
+        "day0": {
+          "type": "string",
+          "description": "第一条预报温度文字颜色，异常温度时使用强调色。",
+          "sampleValue": "#E5000000"
+        },
+        "day1": {
+          "type": "string",
+          "description": "第二条预报温度文字颜色，异常温度时使用强调色。",
+          "sampleValue": "#FFE84026"
+        },
+        "day2": {
+          "type": "string",
+          "description": "第三条预报温度文字颜色，异常温度时使用强调色。",
+          "sampleValue": "#E5000000"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/sunny.png",
+      "description": "彩色太阳图标，适合用于晴天天气卡片的主视觉。"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "userQuery": "下周出差行程卡片左右并排三四段每段不同底色,夜间深蓝渐变背景,延误或临近就标橙色待办,能点进看详情,纯文字色块。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "下周出差相关日历事件列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "trip-001",
+              "title": "飞往深圳",
+              "eventLocation": "T3 航站楼",
+              "dtStart": "07/20 08:20",
+              "dtEnd": "10:45"
+            },
+            {
+              "entityId": "trip-002",
+              "title": "客户评审会",
+              "eventLocation": "南山科技园",
+              "dtStart": "07/21 14:00",
+              "dtEnd": "15:30"
+            },
+            {
+              "entityId": "trip-003",
+              "title": "返程高铁",
+              "eventLocation": "深圳北站",
+              "dtStart": "07/23 18:36",
+              "dtEnd": "22:10"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条出差行程日历事件。",
+            "sampleValue": {
+              "entityId": "trip-001",
+              "title": "飞往深圳",
+              "eventLocation": "T3 航站楼",
+              "dtStart": "07/20 08:20",
+              "dtEnd": "10:45"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日历事件唯一标识，用于打开事件详情。",
+                "sampleValue": "trip-001"
+              },
+              "title": {
+                "type": "string",
+                "description": "出差行程标题。",
+                "sampleValue": "飞往深圳"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "出差行程地点。",
+                "sampleValue": "T3 航站楼"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "行程开始日期和时间展示文本。",
+                "sampleValue": "07/20 08:20"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "行程结束时间展示文本。",
+                "sampleValue": "10:45"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "cardTitle": {
+        "type": "string",
+        "description": "卡片标题。",
+        "sampleValue": "下周出差"
+      },
+      "weekRange": {
+        "type": "string",
+        "description": "下周日期范围。",
+        "sampleValue": "7/20-7/26"
+      },
+      "summary": {
+        "type": "string",
+        "description": "出差行程摘要。",
+        "sampleValue": "3 段行程"
+      },
+      "primaryStatus": {
+        "type": "string",
+        "description": "临近或延误时显示的待办状态。",
+        "sampleValue": "临近待办"
+      },
+      "detailLabel": {
+        "type": "string",
+        "description": "查看详情入口短文案。",
+        "sampleValue": "看详情"
+      },
+      "item0Status": {
+        "type": "string",
+        "description": "第一段行程状态短标签。",
+        "sampleValue": "待办"
+      },
+      "item1Status": {
+        "type": "string",
+        "description": "第二段行程状态短标签。",
+        "sampleValue": "延误"
+      },
+      "item2Status": {
+        "type": "string",
+        "description": "第三段行程状态短标签。",
+        "sampleValue": "待办"
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历数据是否仍在加载。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": []
+}

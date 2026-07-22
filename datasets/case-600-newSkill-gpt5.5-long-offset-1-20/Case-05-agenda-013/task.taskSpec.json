@@ -1,0 +1,136 @@
+{
+  "userQuery": "每天通勤经常忘了下午的外出日程，帮我做个浅色调卡片，左边放个大大的云朵图标和当前实时的PM2.5数值，右边把日历里今天所有外出日程横向排开，加上定位图标，点一下能查看或进入具体的日程事件详情，结合天气数据提醒我带伞。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-event-001"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-event-002"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "current": {
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象，用于判断通勤外出是否需要带伞。",
+            "sampleValue": "小雨"
+          },
+          "pm25Text": {
+            "type": "string",
+            "description": "当前实时PM2.5数值展示文本。",
+            "sampleValue": "36"
+          },
+          "airQuality": {
+            "type": "string",
+            "description": "当前空气质量等级。",
+            "sampleValue": "良"
+          }
+        },
+        "daily": [
+          {
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "今天白天降雨概率百分比。",
+              "sampleValue": "76%"
+            }
+          }
+        ]
+      },
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第一条外出日程唯一标识符。",
+              "sampleValue": "calendar-event-001"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第一条外出日程开始时间。",
+              "sampleValue": "14:30"
+            },
+            "title": {
+              "type": "string",
+              "description": "第一条外出日程标题。",
+              "sampleValue": "客户拜访"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "第一条外出日程地点。",
+              "sampleValue": "南山科技园"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第二条外出日程唯一标识符。",
+              "sampleValue": "calendar-event-002"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第二条外出日程开始时间。",
+              "sampleValue": "16:00"
+            },
+            "title": {
+              "type": "string",
+              "description": "第二条外出日程标题。",
+              "sampleValue": "场地勘查"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "第二条外出日程地点。",
+              "sampleValue": "会展中心"
+            }
+          },
+          {
+            "entityId": {
+              "type": "string",
+              "description": "第三条外出日程唯一标识符。",
+              "sampleValue": "calendar-event-003"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "第三条外出日程开始时间。",
+              "sampleValue": "18:20"
+            },
+            "title": {
+              "type": "string",
+              "description": "第三条外出日程标题。",
+              "sampleValue": "晚间取件"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "第三条外出日程地点。",
+              "sampleValue": "地铁站"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/cloudy.png",
+      "description": "彩色云朵天气图标，适合浅色调天气和通勤出行卡片中的主视觉。"
+    },
+    {
+      "src": "resources/base/media/local_fill.svg",
+      "description": "黑色定位图标，适合标注日程地点和当前位置。"
+    }
+  ]
+}

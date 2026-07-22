@@ -1,0 +1,72 @@
+{
+  "userQuery": "上周航班被取消我差点误机,必须搞个深色舞台风的盯航班卡片,左边放大的航班主视觉,右边横向重复排几个时间节点(起飞/登机/到达),哪一程取消了就直接红色告警标\"已取消\",警告三角和铃铛图标都加上,点了能跳进日程详情。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "flight-calendar-001"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": [
+          {
+            "entityId": {
+              "type": "string",
+              "description": "日程索引项唯一标识符，用于跳转日程详情。",
+              "sampleValue": "flight-calendar-001"
+            },
+            "title": {
+              "type": "string",
+              "description": "航班日程标题，用作卡片中的航班号或航班对象。",
+              "sampleValue": "MU5123"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "航班日程开始时间，可作为起飞时间展示。",
+              "sampleValue": "08:40"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "航班日程结束时间，可作为到达时间展示。",
+              "sampleValue": "11:35"
+            },
+            "description": {
+              "type": "string",
+              "description": "航班日程补充描述，可作为登机时间展示。",
+              "sampleValue": "08:10"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "航班相关地点或航站楼信息。",
+              "sampleValue": "T2"
+            }
+          }
+        ]
+      }
+    },
+    "state": {
+      "loading": {
+        "type": "boolean",
+        "description": "日历航班数据加载状态。",
+        "sampleValue": false
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞图标，适合用于航班盯飞卡片的主视觉。"
+    },
+    {
+      "src": "resources/base/media/bell_fill.svg",
+      "description": "铃铛实心图标，适合用于航班取消或日程提醒告警。"
+    }
+  ]
+}

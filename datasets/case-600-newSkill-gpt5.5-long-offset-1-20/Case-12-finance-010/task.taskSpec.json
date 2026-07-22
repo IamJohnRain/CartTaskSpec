@@ -1,0 +1,72 @@
+{
+  "userQuery": "想做一个自动续费管理的记账卡片,左边放个醒目的\"!\"图标作主视觉,中间显示\"待处理 3 笔\"动态数字,卡片整体柔和磨砂质感,下面纵向列出那些订阅名和扣费日期(从日历读的),有几笔快到期用橙红色那种紧迫感渐变高亮。点卡片能跳到系统设置里去看应用扣费详情。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "com.huawei.hmos.settings",
+        "abilityName": "com.huawei.hmos.settings.MainAbility",
+        "uri": "subscription_payment_details"
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "subscriptionSummary": {
+        "pendingCountText": {
+          "type": "string",
+          "description": "自动续费待处理笔数的展示文本。",
+          "sampleValue": "待处理 3 笔"
+        },
+        "alertLabel": {
+          "type": "string",
+          "description": "订阅到期紧迫状态提示。",
+          "sampleValue": "近期待扣"
+        }
+      },
+      "calendar": {
+        "items": [
+          {
+            "title": {
+              "type": "string",
+              "description": "从日历读取的订阅扣费事项名称。",
+              "sampleValue": "视频会员"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "从日历读取的扣费日期或时间展示文本。",
+              "sampleValue": "7月18日"
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "从日历读取的订阅扣费事项名称。",
+              "sampleValue": "云盘套餐"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "从日历读取的扣费日期或时间展示文本。",
+              "sampleValue": "7月21日"
+            }
+          }
+        ]
+      },
+      "assets": {
+        "calendarIcon": {
+          "type": "string",
+          "description": "日历图标素材路径，用于提示订阅日期来自日历。",
+          "sampleValue": "resources/base/media/calendar_fill.svg"
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，黑色，适合在自动续费管理卡片中提示扣费日期来自日历。",
+      "bindTo": "/data/assets/calendarIcon"
+    }
+  ]
+}

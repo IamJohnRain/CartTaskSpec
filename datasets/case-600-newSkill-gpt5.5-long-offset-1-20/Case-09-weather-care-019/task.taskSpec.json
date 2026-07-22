@@ -1,0 +1,109 @@
+{
+  "userQuery": "帮我做个天气关怀卡片，背景全部用紫色的主题色，不要渐变。左右排列信息，左边是个大圆环显示湿度百分比，中间要把“剩余XX%”拼起来显示动态数值。右边横向多放几个圆圈，把未来几天的天气列出来，如果遇到暴雨降温就显示注意的风险状态，配上专属的降雨图标，整个卡片点进去能打开天气APP看详细数据。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "hww://www.huawei.com/totemweather?enterType=share&cityCode="
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "weather": {
+        "location": {
+          "cityCode": {
+            "type": "string",
+            "description": "城市代码，用于天气应用详情页定位城市。",
+            "sampleValue": "60814"
+          },
+          "districtName": {
+            "type": "string",
+            "description": "当前查询的区县名称。",
+            "sampleValue": "青浦区"
+          }
+        },
+        "current": {
+          "humidityPercent": {
+            "type": "number",
+            "description": "当前相对湿度百分比。",
+            "sampleValue": 68
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雨"
+          },
+          "alertLevel": {
+            "type": "string",
+            "description": "当前天气预警信息。",
+            "sampleValue": "暴雨降温注意"
+          }
+        },
+        "daily": {
+          "type": "array",
+          "description": "从今天开始按日期升序排列的每日预报。",
+          "sampleValue": [
+            {
+              "weekday": "今天",
+              "condition": "暴雨",
+              "temperatureRangeText": "21° / 27°",
+              "rainProbabilityPercent": "90%",
+              "coldLevel": "降温"
+            },
+            {
+              "weekday": "明天",
+              "condition": "中雨",
+              "temperatureRangeText": "22° / 28°",
+              "rainProbabilityPercent": "70%",
+              "coldLevel": "偏凉"
+            },
+            {
+              "weekday": "周六",
+              "condition": "小雨",
+              "temperatureRangeText": "23° / 30°",
+              "rainProbabilityPercent": "55%",
+              "coldLevel": "舒适"
+            }
+          ],
+          "items": {
+            "weekday": {
+              "type": "string",
+              "description": "预报对应的星期文本。",
+              "sampleValue": "今天"
+            },
+            "condition": {
+              "type": "string",
+              "description": "白天天气现象。",
+              "sampleValue": "暴雨"
+            },
+            "temperatureRangeText": {
+              "type": "string",
+              "description": "当天温度范围展示文本。",
+              "sampleValue": "21° / 27°"
+            },
+            "rainProbabilityPercent": {
+              "type": "string",
+              "description": "当天白天降雨概率百分比。",
+              "sampleValue": "90%"
+            },
+            "coldLevel": {
+              "type": "string",
+              "description": "当天感冒或降温体感提示。",
+              "sampleValue": "降温"
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/rain.png",
+      "description": "云朵和雨滴组合的彩色天气图标，适合表达降雨、暴雨和天气关怀风险提示。"
+    }
+  ]
+}

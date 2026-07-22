@@ -1,0 +1,108 @@
+{
+  "userQuery": "这周喂食完成度卡，中间环显示\"完成度87%\"绿色\"表现优秀\"正向状态，下面滚动的喂食历史列表（07:30早餐30g✓ 12:30午餐25g✓ 18:30晚餐30g✓ 22:00夜宵20g✓），点哪条进日程详情，环境氛围渐变背景，纯文字色块别用图",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/feeding/history/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/feeding/history/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/feeding/history/2/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/feeding/history/3/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "feeding": {
+      "title": {
+        "type": "string",
+        "description": "本周宠物喂食卡片标题",
+        "sampleValue": "本周喂食"
+      },
+      "completion": {
+        "value": {
+          "type": "number",
+          "description": "本周喂食完成度百分比数值",
+          "sampleValue": 87
+        },
+        "total": {
+          "type": "number",
+          "description": "完成度总量基准",
+          "sampleValue": 100
+        },
+        "label": {
+          "type": "string",
+          "description": "完成度环内展示文本",
+          "sampleValue": "完成度87%"
+        },
+        "status": {
+          "type": "string",
+          "description": "本周喂食完成度正向状态文案",
+          "sampleValue": "表现优秀"
+        }
+      },
+      "history": {
+        "type": "array",
+        "description": "喂食历史条目列表",
+        "sampleValue": [
+          {
+            "label": "07:30早餐30g✓",
+            "entityId": "feed-breakfast-0730"
+          },
+          {
+            "label": "12:30午餐25g✓",
+            "entityId": "feed-lunch-1230"
+          },
+          {
+            "label": "18:30晚餐30g✓",
+            "entityId": "feed-dinner-1830"
+          },
+          {
+            "label": "22:00夜宵20g✓",
+            "entityId": "feed-snack-2200"
+          }
+        ],
+        "items": {
+          "label": {
+            "type": "string",
+            "description": "喂食历史条目的时间、餐次、克重和完成状态",
+            "sampleValue": "07:30早餐30g✓"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "用于跳转日程详情的日程实体标识",
+            "sampleValue": "feed-breakfast-0730"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

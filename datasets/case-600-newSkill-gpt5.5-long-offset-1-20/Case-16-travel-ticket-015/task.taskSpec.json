@@ -1,0 +1,149 @@
+{
+  "userQuery": "这周末两段行程一个高铁一个飞机,做一张能垂直列表显示的卡片,每段行程用分隔线分组,左边放个小卡片缩略,中间倒计时环形比如高铁还剩2小时15分航班还剩5天8小时,两段底色不同,飞机那段标红因为延误了,高铁那段标黄说快到检票时间,右上角动态显示手机电量68%,我要能直接点进每一段看详情,麻烦用文字图标,素净点别搞太复杂。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "周末两段票务行程列表，按出发时间排序。",
+          "sampleValue": [
+            {
+              "entityName": "calendar",
+              "entityId": "trip-rail-20260718",
+              "title": "高铁 G102",
+              "dtStart": "10:30",
+              "dtEnd": "13:12",
+              "eventLocation": "上海虹桥站",
+              "description": "还剩2小时15分",
+              "senderName": "Calendar",
+              "oneClickServiceType": "rail"
+            },
+            {
+              "entityName": "calendar",
+              "entityId": "trip-flight-20260720",
+              "title": "航班 MU515",
+              "dtStart": "18:40",
+              "dtEnd": "21:05",
+              "eventLocation": "浦东T2",
+              "description": "还剩5天8小时",
+              "senderName": "Calendar",
+              "oneClickServiceType": "flight"
+            }
+          ],
+          "items": {
+            "entityName": {
+              "type": "string",
+              "description": "日程实体类别。",
+              "sampleValue": "calendar"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "日程唯一标识，用于点击进入对应详情。",
+              "sampleValue": "trip-rail-20260718"
+            },
+            "title": {
+              "type": "string",
+              "description": "票务行程标题或车次航班号。",
+              "sampleValue": "高铁 G102"
+            },
+            "dtStart": {
+              "type": "string",
+              "description": "行程开始时间。",
+              "sampleValue": "10:30"
+            },
+            "dtEnd": {
+              "type": "string",
+              "description": "行程结束时间。",
+              "sampleValue": "13:12"
+            },
+            "eventLocation": {
+              "type": "string",
+              "description": "出发站点、航站楼或行程地点。",
+              "sampleValue": "上海虹桥站"
+            },
+            "description": {
+              "type": "string",
+              "description": "行程倒计时或状态补充说明。",
+              "sampleValue": "还剩2小时15分"
+            },
+            "senderName": {
+              "type": "string",
+              "description": "日程来源应用名称。",
+              "sampleValue": "Calendar"
+            },
+            "oneClickServiceType": {
+              "type": "string",
+              "description": "行程服务类型，用于区分高铁或航班。",
+              "sampleValue": "rail"
+            }
+          }
+        }
+      }
+    },
+    "device": {
+      "batteryText": {
+        "type": "string",
+        "description": "手机电量展示文本。",
+        "sampleValue": "电量68%"
+      }
+    },
+    "ui": {
+      "railStatusText": {
+        "type": "string",
+        "description": "高铁行程提醒状态展示文本。",
+        "sampleValue": "检票临近"
+      },
+      "flightStatusText": {
+        "type": "string",
+        "description": "航班延误状态展示文本。",
+        "sampleValue": "延误"
+      },
+      "railProgressValue": {
+        "type": "number",
+        "description": "高铁倒计时环形进度值。",
+        "sampleValue": 78
+      },
+      "flightProgressValue": {
+        "type": "number",
+        "description": "航班倒计时环形进度值。",
+        "sampleValue": 34
+      },
+      "progressTotal": {
+        "type": "number",
+        "description": "倒计时环形进度总值。",
+        "sampleValue": 100
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，黑色，适合表示高铁票务行程或日程缩略。"
+    },
+    {
+      "src": "resources/base/media/airplane_departure.svg",
+      "description": "飞机起飞图标，黑色，适合表示航班行程缩略。"
+    }
+  ]
+}

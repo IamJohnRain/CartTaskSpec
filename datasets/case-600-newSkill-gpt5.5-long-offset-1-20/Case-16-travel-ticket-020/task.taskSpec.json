@@ -1,0 +1,179 @@
+{
+  "userQuery": "我想做一张出行的准备仪表盘,纯白底简洁素净风格,中间环形图显示准备完成度是焦点,周围几个固定文字标签(签证、行李、值机、证件)。每个标签前面有个可勾选方框,勾上环形就涨一截。如果某项临近截止就用橙色字提示风险,点击某项能跳进日历看对应日程,数据从日历读。倒计时数字用夜晚渐变,纯文字色块不要图片,不用列表。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-visa"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-bag"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-checkin"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "calendar-doc"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "completionPercent": {
+          "type": "number",
+          "description": "出行准备完成度百分比，由日历中的准备事项完成状态归一化得到。",
+          "sampleValue": 50
+        },
+        "completedText": {
+          "type": "string",
+          "description": "已完成准备项数量展示文本。",
+          "sampleValue": "2/4"
+        },
+        "countdownLabel": {
+          "type": "string",
+          "description": "距离出发或最近关键节点的倒计时标签。",
+          "sampleValue": "距出发"
+        },
+        "countdownDaysText": {
+          "type": "string",
+          "description": "倒计时天数字符串。",
+          "sampleValue": "D-06"
+        },
+        "items": [
+          {
+            "title": {
+              "type": "string",
+              "description": "准备事项固定标签名称。",
+              "sampleValue": "签证"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "可跳转到日历详情的日程唯一标识。",
+              "sampleValue": "calendar-visa"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "准备事项是否已完成，用于勾选框与完成度计算。",
+              "sampleValue": true
+            },
+            "riskText": {
+              "type": "string",
+              "description": "临近截止风险提示短文案。",
+              "sampleValue": "完成"
+            },
+            "riskColor": {
+              "type": "string",
+              "description": "风险提示文字颜色，临近截止时使用橙色，否则使用中性弱文字色。",
+              "sampleValue": "#66000000"
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "准备事项固定标签名称。",
+              "sampleValue": "行李"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "可跳转到日历详情的日程唯一标识。",
+              "sampleValue": "calendar-bag"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "准备事项是否已完成，用于勾选框与完成度计算。",
+              "sampleValue": false
+            },
+            "riskText": {
+              "type": "string",
+              "description": "临近截止风险提示短文案。",
+              "sampleValue": "临期"
+            },
+            "riskColor": {
+              "type": "string",
+              "description": "风险提示文字颜色，临近截止时使用橙色，否则使用中性弱文字色。",
+              "sampleValue": "#ffe84026"
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "准备事项固定标签名称。",
+              "sampleValue": "值机"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "可跳转到日历详情的日程唯一标识。",
+              "sampleValue": "calendar-checkin"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "准备事项是否已完成，用于勾选框与完成度计算。",
+              "sampleValue": false
+            },
+            "riskText": {
+              "type": "string",
+              "description": "临近截止风险提示短文案。",
+              "sampleValue": "临期"
+            },
+            "riskColor": {
+              "type": "string",
+              "description": "风险提示文字颜色，临近截止时使用橙色，否则使用中性弱文字色。",
+              "sampleValue": "#ffe84026"
+            }
+          },
+          {
+            "title": {
+              "type": "string",
+              "description": "准备事项固定标签名称。",
+              "sampleValue": "证件"
+            },
+            "entityId": {
+              "type": "string",
+              "description": "可跳转到日历详情的日程唯一标识。",
+              "sampleValue": "calendar-doc"
+            },
+            "checked": {
+              "type": "boolean",
+              "description": "准备事项是否已完成，用于勾选框与完成度计算。",
+              "sampleValue": true
+            },
+            "riskText": {
+              "type": "string",
+              "description": "临近截止风险提示短文案。",
+              "sampleValue": "完成"
+            },
+            "riskColor": {
+              "type": "string",
+              "description": "风险提示文字颜色，临近截止时使用橙色，否则使用中性弱文字色。",
+              "sampleValue": "#66000000"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "assetCandidates": []
+}

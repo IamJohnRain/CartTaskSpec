@@ -1,0 +1,118 @@
+{
+  "userQuery": "通勤路上用的,深色背景晚上看不刺眼,左边主视觉放当前在听的书(用文字符号),右边横向排几个日程事件\"7:30 晨间读书\"\"12:00 午间听书\"\"21:30 睡前阅读\",每条显示\"还剩 X 分钟\"动态数据。带个暖色调的环境渐变,适合晚上那种氛围,已完成的任务显示\"✓\"正向状态,点每条能进入日程详情。",
+  "size": "2x2",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
+        }
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今日阅读和听书日程列表，按时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "reading-0730",
+              "title": "晨间读书",
+              "displayTitle": "7:30 晨读",
+              "dtStart": "7:30",
+              "remainingText": "✓",
+              "statusMark": "✓"
+            },
+            {
+              "entityId": "reading-1200",
+              "title": "午间听书",
+              "displayTitle": "12:00 听书",
+              "dtStart": "12:00",
+              "remainingText": "还剩58分钟",
+              "statusMark": ""
+            },
+            {
+              "entityId": "reading-2130",
+              "title": "睡前阅读",
+              "displayTitle": "21:30 阅读",
+              "dtStart": "21:30",
+              "remainingText": "还剩628分钟",
+              "statusMark": ""
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条阅读日程。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程详情跳转所需的唯一标识符。",
+                "sampleValue": "reading-0730"
+              },
+              "title": {
+                "type": "string",
+                "description": "阅读或听书日程标题。",
+                "sampleValue": "晨间读书"
+              },
+              "displayTitle": {
+                "type": "string",
+                "description": "适配 2x2 卡片宽度的日程展示标题，保留时间和阅读听书语义。",
+                "sampleValue": "12:00 听书"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "日程开始时间，使用当天 HH:mm 展示格式。",
+                "sampleValue": "7:30"
+              },
+              "remainingText": {
+                "type": "string",
+                "description": "距离该日程开始的动态剩余时间；已完成时可展示正向完成状态。",
+                "sampleValue": "还剩58分钟"
+              },
+              "statusMark": {
+                "type": "string",
+                "description": "已完成任务的正向完成标记，未完成为空字符串。",
+                "sampleValue": "✓"
+              }
+            }
+          }
+        }
+      },
+      "reading": {
+        "currentGlyph": {
+          "type": "string",
+          "description": "当前在听的书的文字符号主视觉。",
+          "sampleValue": "听"
+        },
+        "currentTitle": {
+          "type": "string",
+          "description": "当前通勤听书状态短标题。",
+          "sampleValue": "通勤听书"
+        }
+      }
+    }
+  },
+  "assetCandidates": []
+}

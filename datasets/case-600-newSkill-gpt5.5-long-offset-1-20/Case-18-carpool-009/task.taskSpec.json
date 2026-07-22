@@ -1,0 +1,147 @@
+{
+  "userQuery": "我每天上下班有多个拼车时段,做一个日程卡横向一排展示三个今天的拼车计划,每块左边信息\"08:00 望京→上地 已成行\",右边动作按钮\"导航出发\"或\"联系\"。上次那个版本按钮挤在一起根本点不准,这次要把动作区拉宽一点。整体沿用清晨天空图的视觉风格,加一点从浅蓝到淡橙的氛围渐变,三个都标绿色\"已就绪\",图标用文字字符,数据从日历日程读。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "{{ ${/data/calendar/items/0/oneClickServiceLink} }}"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "{{ ${/data/calendar/items/1/oneClickServiceLink} }}"
+      }
+    },
+    {
+      "call": "clickToDeeplink",
+      "args": {
+        "bundleName": "",
+        "abilityName": "",
+        "uri": "{{ ${/data/calendar/items/2/oneClickServiceLink} }}"
+      }
+    },
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "ViewCalendarEvent",
+        "params": {
+          "entityId": ""
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "data": {
+      "calendar": {
+        "items": {
+          "type": "array",
+          "description": "今天的拼车日历日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "carpool-0800",
+              "title": "拼车上班 已成行",
+              "eventLocation": "望京→上地",
+              "description": "已成行",
+              "dtStart": "08:00",
+              "dtEnd": "08:45",
+              "oneClickServiceType": "导航出发",
+              "oneClickServiceLink": "hmosmaps://navigation?dst=shangdi"
+            },
+            {
+              "entityId": "carpool-1230",
+              "title": "午间拼车 已成行",
+              "eventLocation": "上地→望京",
+              "description": "已成行",
+              "dtStart": "12:30",
+              "dtEnd": "13:10",
+              "oneClickServiceType": "联系",
+              "oneClickServiceLink": "tel://13800000000"
+            },
+            {
+              "entityId": "carpool-1830",
+              "title": "拼车下班 已成行",
+              "eventLocation": "上地→望京",
+              "description": "已成行",
+              "dtStart": "18:30",
+              "dtEnd": "19:15",
+              "oneClickServiceType": "导航出发",
+              "oneClickServiceLink": "hmosmaps://navigation?dst=wangjing"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单个拼车日程。",
+            "sampleValue": {
+              "entityId": "carpool-0800",
+              "title": "拼车上班 已成行",
+              "eventLocation": "望京→上地",
+              "description": "已成行",
+              "dtStart": "08:00",
+              "dtEnd": "08:45",
+              "oneClickServiceType": "导航出发",
+              "oneClickServiceLink": "hmosmaps://navigation?dst=shangdi"
+            },
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "日程唯一标识，用于打开对应日程或服务。",
+                "sampleValue": "carpool-0800"
+              },
+              "title": {
+                "type": "string",
+                "description": "拼车日程标题，包含通勤方向或成行摘要。",
+                "sampleValue": "拼车上班 已成行"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "拼车路线或集合地点展示文本。",
+                "sampleValue": "望京→上地"
+              },
+              "description": {
+                "type": "string",
+                "description": "拼车成行状态描述。",
+                "sampleValue": "已成行"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "当天日程开始时间，HH:MM 格式。",
+                "sampleValue": "08:00"
+              },
+              "dtEnd": {
+                "type": "string",
+                "description": "当天日程结束时间，HH:MM 格式。",
+                "sampleValue": "08:45"
+              },
+              "oneClickServiceType": {
+                "type": "string",
+                "description": "日程关联的一键服务动作名称。",
+                "sampleValue": "导航出发"
+              },
+              "oneClickServiceLink": {
+                "type": "string",
+                "description": "日程关联的一键服务跳转链接。",
+                "sampleValue": "hmosmaps://navigation?dst=shangdi"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/partly_cloudy.png",
+      "description": "彩色云朵与太阳组合，适合表达清晨天空和出行日程的柔和视觉锚点。"
+    },
+    {
+      "src": "resources/base/media/calendar_fill.svg",
+      "description": "日历实心图标，适合表达今天日程和日历事件列表。"
+    }
+  ]
+}
