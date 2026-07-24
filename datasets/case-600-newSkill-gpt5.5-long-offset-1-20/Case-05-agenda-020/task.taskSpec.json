@@ -7,7 +7,7 @@
       "args": {
         "intentName": "ViewCalendarEvent",
         "params": {
-          "entityId": "cal-night-001"
+          "entityId": "{{ ${/data/calendar/items/0/entityId} }}"
         }
       }
     },
@@ -16,7 +16,7 @@
       "args": {
         "intentName": "ViewCalendarEvent",
         "params": {
-          "entityId": "cal-night-002"
+          "entityId": "{{ ${/data/calendar/items/1/entityId} }}"
         }
       }
     },
@@ -25,7 +25,7 @@
       "args": {
         "intentName": "ViewCalendarEvent",
         "params": {
-          "entityId": "cal-night-003"
+          "entityId": "{{ ${/data/calendar/items/2/entityId} }}"
         }
       }
     }
@@ -33,81 +33,55 @@
   "dataModelSchema": {
     "data": {
       "calendar": {
-        "items": [
-          {
-            "entityId": {
-              "type": "string",
-              "description": "第一场日程事件的唯一标识，用于跳转到日程详情。",
-              "sampleValue": "cal-night-001"
+        "items": {
+          "type": "array",
+          "description": "今天剩余的夜间日程列表，按开始时间升序排列。",
+          "sampleValue": [
+            {
+              "entityId": "calendar-event-001",
+              "dtStart": "19:30",
+              "eventLocation": "A-301 会议室"
             },
-            "dtStart": {
-              "type": "string",
-              "description": "第一场日程事件的当天开始时间，格式为 HH:MM。",
-              "sampleValue": "19:30"
+            {
+              "entityId": "calendar-event-002",
+              "dtStart": "20:15",
+              "eventLocation": "B-204 会议室"
             },
-            "dtEnd": {
-              "type": "string",
-              "description": "第一场日程事件的当天结束时间，格式为 HH:MM。",
-              "sampleValue": "20:00"
-            },
-            "eventLocation": {
-              "type": "string",
-              "description": "第一场日程事件的会议室号或地点。",
-              "sampleValue": "会议室 A301"
+            {
+              "entityId": "calendar-event-003",
+              "dtStart": "21:00",
+              "eventLocation": "线上会议室 3"
             }
-          },
-          {
-            "entityId": {
-              "type": "string",
-              "description": "第二场日程事件的唯一标识，用于跳转到日程详情。",
-              "sampleValue": "cal-night-002"
-            },
-            "dtStart": {
-              "type": "string",
-              "description": "第二场日程事件的当天开始时间，格式为 HH:MM。",
-              "sampleValue": "20:15"
-            },
-            "dtEnd": {
-              "type": "string",
-              "description": "第二场日程事件的当天结束时间，格式为 HH:MM。",
-              "sampleValue": "20:45"
-            },
-            "eventLocation": {
-              "type": "string",
-              "description": "第二场日程事件的会议室号或地点。",
-              "sampleValue": "会议室 B206"
-            }
-          },
-          {
-            "entityId": {
-              "type": "string",
-              "description": "第三场日程事件的唯一标识，用于跳转到日程详情。",
-              "sampleValue": "cal-night-003"
-            },
-            "dtStart": {
-              "type": "string",
-              "description": "第三场日程事件的当天开始时间，格式为 HH:MM。",
-              "sampleValue": "21:10"
-            },
-            "dtEnd": {
-              "type": "string",
-              "description": "第三场日程事件的当天结束时间，格式为 HH:MM。",
-              "sampleValue": "21:40"
-            },
-            "eventLocation": {
-              "type": "string",
-              "description": "第三场日程事件的会议室号或地点。",
-              "sampleValue": "会议室 C118"
+          ],
+          "items": {
+            "type": "object",
+            "description": "单条日程事件。",
+            "properties": {
+              "entityId": {
+                "type": "string",
+                "description": "用于打开日程详情的事件唯一标识。",
+                "sampleValue": "calendar-event-001"
+              },
+              "dtStart": {
+                "type": "string",
+                "description": "当天日程的固定开始时间文字，格式为 HH:MM。",
+                "sampleValue": "19:30"
+              },
+              "eventLocation": {
+                "type": "string",
+                "description": "日程的会议室号或线上会议室名称。",
+                "sampleValue": "A-301 会议室"
+              }
             }
           }
-        ]
+        }
       }
     }
   },
   "assetCandidates": [
     {
       "src": "resources/base/media/moon_circle_fill.svg",
-      "description": "月亮圆形实心图标，黑白双色，适合表达夜间会议时间线左侧的小星月语义锚点。"
+      "description": "月亮圆形实心图标，用作夜间会议时间轴的语义锚点。"
     }
   ]
 }

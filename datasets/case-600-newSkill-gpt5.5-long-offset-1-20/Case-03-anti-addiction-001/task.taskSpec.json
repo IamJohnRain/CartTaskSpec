@@ -1,0 +1,72 @@
+{
+  "userQuery": "帮我做个睡前防沉迷打卡卡片，整体要有氛围背景，不要渐变，纯文字和色块拼。左右分区弄成不同底色，结合外面的天气情况，如果太冷就提示风雪图标。横向重复排列几个像“放下手机”、“喝热牛奶”的可勾选选项，上面显示固定文字加动态数值“距离睡觉还有45分钟”的预警状态，再加个开关帮我直接关掉省电模式或者勿扰模式。",
+  "size": "2x4",
+  "eventCandidates": [
+    {
+      "call": "clickToIntent",
+      "args": {
+        "intentName": "SetSettingSwitch",
+        "params": {
+          "appBundleName": "com.huawei.hmos.settings",
+          "itemName": "battery_saving_mode",
+          "switchFlag": 1
+        }
+      }
+    }
+  ],
+  "dataModelSchema": {
+    "bedtime": {
+      "minutesRemainingText": {
+        "type": "string",
+        "description": "距离计划睡觉时间的剩余分钟展示文本。",
+        "sampleValue": "45分钟"
+      }
+    },
+    "checklist": {
+      "phoneDownSelected": {
+        "type": "boolean",
+        "description": "是否已完成放下手机打卡。",
+        "sampleValue": false
+      },
+      "milkSelected": {
+        "type": "boolean",
+        "description": "是否已完成喝热牛奶打卡。",
+        "sampleValue": false
+      }
+    },
+    "settings": {
+      "batterySavingOn": {
+        "type": "boolean",
+        "description": "省电模式当前是否开启，用于显示开关状态。",
+        "sampleValue": true
+      }
+    },
+    "data": {
+      "weather": {
+        "current": {
+          "temperatureText": {
+            "type": "string",
+            "description": "当前温度展示文本。",
+            "sampleValue": "-3°C"
+          },
+          "condition": {
+            "type": "string",
+            "description": "当前天气现象。",
+            "sampleValue": "小雪"
+          },
+          "coldLevel": {
+            "type": "string",
+            "description": "当前感冒或寒冷指数。",
+            "sampleValue": "体感寒冷"
+          }
+        }
+      }
+    }
+  },
+  "assetCandidates": [
+    {
+      "src": "resources/base/media/snow.png",
+      "description": "彩色雪花天气图标，适合在低温、小雪或风雪提醒中作为寒冷状态提示。"
+    }
+  ]
+}

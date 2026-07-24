@@ -1,4 +1,4 @@
-{
+﻿{
   "userQuery": "越野赛下个月开，我最近训练老跟不上，之前自己列清单总忘。帮我做张深色舞台风的训练清单卡，整张卡片用警示橙到深红的渐变，左边信息区显示倒计时和赛事信息，右边动作区纵向排列多项训练计划（间歇跑、爬坡跑、核心训练），每项后面叠一个完成度环。没完成的用红色标\"未达标告警\"，点任意项跳运动健康App开练，整体要有那种紧迫感催我动起来。",
   "size": "2x4",
   "eventCandidates": [
@@ -13,137 +13,169 @@
   ],
   "dataModelSchema": {
     "data": {
-      "calendar": {
-        "items": {
-          "type": "array",
-          "description": "用户本地日历中与越野赛相关的赛事日程列表。",
-          "sampleValue": [
+      "type": "object",
+      "description": "日历赛事数据容器",
+      "sampleValue": {
+        "calendar": {
+          "items": [
             {
-              "entityName": "calendar",
-              "entityId": "race-20260816",
-              "title": "山地越野赛",
-              "eventLocation": "北山越野公园",
-              "description": "18公里山地越野组",
-              "dtStart": "08-16 07:30",
-              "dtEnd": "08-16 11:30"
+              "entityId": "trail-race-2026-08-18",
+              "title": "青云山越野挑战赛",
+              "dtStart": "08月18日 07:30"
             }
-          ],
-          "items": {
-            "type": "object",
-            "description": "单条赛事日程。",
-            "properties": {
-              "entityName": {
-                "type": "string",
-                "description": "日程实体类别。",
-                "sampleValue": "calendar"
-              },
-              "entityId": {
-                "type": "string",
-                "description": "日程唯一标识。",
-                "sampleValue": "race-20260816"
-              },
-              "title": {
-                "type": "string",
-                "description": "赛事日程标题。",
-                "sampleValue": "山地越野赛"
-              },
-              "eventLocation": {
-                "type": "string",
-                "description": "赛事地点。",
-                "sampleValue": "北山越野公园"
-              },
-              "description": {
-                "type": "string",
-                "description": "赛事组别或简短说明。",
-                "sampleValue": "18公里山地越野组"
-              },
-              "dtStart": {
-                "type": "string",
-                "description": "赛事开始时间展示文本。",
-                "sampleValue": "08-16 07:30"
-              },
-              "dtEnd": {
-                "type": "string",
-                "description": "赛事结束时间展示文本。",
-                "sampleValue": "08-16 11:30"
+          ]
+        }
+      },
+      "properties": {
+        "calendar": {
+          "type": "object",
+          "description": "越野赛事的日历查询结果",
+          "sampleValue": {
+            "items": [
+              {
+                "entityId": "trail-race-2026-08-18",
+                "title": "青云山越野挑战赛",
+                "dtStart": "08月18日 07:30"
+              }
+            ]
+          },
+          "properties": {
+            "items": {
+              "type": "array",
+              "description": "下个月的赛事日程列表",
+              "sampleValue": [
+                {
+                  "entityId": "trail-race-2026-08-18",
+                  "title": "青云山越野挑战赛",
+                  "dtStart": "08月18日 07:30"
+                }
+              ],
+              "items": {
+                "type": "object",
+                "description": "单条越野赛事日程",
+                "sampleValue": {
+                  "entityId": "trail-race-2026-08-18",
+                  "title": "青云山越野挑战赛",
+                  "dtStart": "08月18日 07:30"
+                },
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "日历日程唯一标识",
+                    "sampleValue": "trail-race-2026-08-18"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "越野赛事名称",
+                    "sampleValue": "青云山越野挑战赛"
+                  },
+                  "dtStart": {
+                    "type": "string",
+                    "description": "越野赛事开始时间展示文本",
+                    "sampleValue": "08月18日 07:30"
+                  }
+                }
               }
             }
           }
         }
       }
     },
-    "countdownText": {
-      "type": "string",
-      "description": "距离越野赛开赛的倒计时展示文本。",
-      "sampleValue": "31天"
-    },
-    "urgencyLabel": {
-      "type": "string",
-      "description": "训练紧迫状态短标签。",
-      "sampleValue": "开练倒计时"
-    },
-    "trainingPlans": {
-      "type": "array",
-      "description": "训练计划及完成度摘要。",
-      "sampleValue": [
-        {
-          "name": "间歇跑",
-          "progress": 42,
-          "total": 100,
-          "status": "未达标告警"
+    "ui": {
+      "type": "object",
+      "description": "卡片受控的倒计时和训练清单展示数据",
+      "sampleValue": {
+        "countdownText": "25天",
+        "plans": [
+          {
+            "name": "间歇跑",
+            "statusText": "未达标告警",
+            "progressValue": 40,
+            "progressTotal": 100
+          },
+          {
+            "name": "爬坡跑",
+            "statusText": "未达标告警",
+            "progressValue": 55,
+            "progressTotal": 100
+          },
+          {
+            "name": "核心训练",
+            "statusText": "未达标告警",
+            "progressValue": 20,
+            "progressTotal": 100
+          }
+        ]
+      },
+      "properties": {
+        "countdownText": {
+          "type": "string",
+          "description": "距离越野赛事开赛的倒计时文本",
+          "sampleValue": "25天"
         },
-        {
-          "name": "爬坡跑",
-          "progress": 35,
-          "total": 100,
-          "status": "未达标告警"
-        },
-        {
-          "name": "核心训练",
-          "progress": 68,
-          "total": 100,
-          "status": "未达标告警"
-        }
-      ],
-      "items": {
-        "type": "object",
-        "description": "单项训练计划。",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "训练项目名称。",
-            "sampleValue": "间歇跑"
-          },
-          "progress": {
-            "type": "number",
-            "description": "训练完成度数值。",
-            "sampleValue": 42
-          },
-          "total": {
-            "type": "number",
-            "description": "训练完成度总值。",
-            "sampleValue": 100
-          },
-          "status": {
-            "type": "string",
-            "description": "训练达标状态。",
-            "sampleValue": "未达标告警"
+        "plans": {
+          "type": "array",
+          "description": "固定展示的三项越野备赛训练计划",
+          "sampleValue": [
+            {
+              "name": "间歇跑",
+              "statusText": "未达标告警",
+              "progressValue": 40,
+              "progressTotal": 100
+            },
+            {
+              "name": "爬坡跑",
+              "statusText": "未达标告警",
+              "progressValue": 55,
+              "progressTotal": 100
+            },
+            {
+              "name": "核心训练",
+              "statusText": "未达标告警",
+              "progressValue": 20,
+              "progressTotal": 100
+            }
+          ],
+          "items": {
+            "type": "object",
+            "description": "单项训练计划的告警与完成度",
+            "sampleValue": {
+              "name": "间歇跑",
+              "statusText": "未达标告警",
+              "progressValue": 40,
+              "progressTotal": 100
+            },
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "训练计划名称",
+                "sampleValue": "间歇跑"
+              },
+              "statusText": {
+                "type": "string",
+                "description": "未完成训练的红色告警文本",
+                "sampleValue": "未达标告警"
+              },
+              "progressValue": {
+                "type": "number",
+                "description": "训练计划当前完成度数值",
+                "sampleValue": 40
+              },
+              "progressTotal": {
+                "type": "number",
+                "description": "训练计划完成度总值",
+                "sampleValue": 100
+              }
+            }
           }
         }
-      }
-    },
-    "asset": {
-      "runIcon": {
-        "type": "string",
-        "description": "跑步训练图标路径。",
-        "sampleValue": "resources/base/media/icon_run.png"
       }
     }
   },
   "assetCandidates": [
     {
       "src": "resources/base/media/icon_run.png",
-      "description": "运动/跑步图标，适合越野赛训练清单的运动识别。"
+      "description": "跑步图标，用于标识越野备赛训练场景"
     }
   ]
 }

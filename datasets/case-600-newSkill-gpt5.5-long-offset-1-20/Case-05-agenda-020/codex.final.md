@@ -1,7 +1,6 @@
-完成。已生成并保存：
+已完成并保存：
+- `task.taskSpec.json:1`
+- `card.dsl.jsonl:1`
+- `card.cardspec.json:1`
 
-- `task.taskSpec.json`
-- `card.dsl.jsonl`
-- `card.cardspec.json`
-
-两个指定校验均已通过：`valid: true`，`status: polished`，`qualityScore: 100`，无 error/warning。
+校验结果：TaskSpec 引用校验 `valid: true`；卡片校验 `polished`、质量分 `100`、零错误零警告。
