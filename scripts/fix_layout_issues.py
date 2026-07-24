@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -15,17 +17,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from detect_layout_issues import (
-    ISSUE_KEYS,
-    call_minimax_once,
-    configure_logging,
-    encode_png,
-    load_minimax_config,
-    normalize_result,
-    parse_json_response,
-    positive_int,
-    write_json,
-)
+try:
+    import requests
+except ImportError:  # pragma: no cover
+    requests = None
 
 
 SOURCE_DSL_NAME = "card.dsl.jsonl"
@@ -44,6 +39,11 @@ EXPECTED_MESSAGES = (
     "createSurface",
     "updateComponents",
     "updateDataModel",
+)
+ISSUE_KEYS = (
+    "text_occlusion",
+    "layout_overflow",
+    "icon_background_visibility",
 )
 FIX_ISSUE_KEYS = ISSUE_KEYS + ("spacing_aesthetic",)
 
@@ -92,6 +92,190 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深修复专家�
 
 规则：四类问题全部为 false 时 improved_dsl 必须为 null；任一为 true 时 improved_dsl 必须是恰好三个合法 JSON 字符串组成的数组。即使文字仍可辨认，只要贴近卡片边缘、进入圆角风险区或整体空间明显失衡，也不能判定已经解决。
 """
+
+
+def positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("必须是大于 0 的整数")
+    return parsed
+
+
+def configure_logging() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)-8s | %(threadName)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+
+def parse_env(path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    if not path.is_file():
+        return values
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key.strip()] = value.strip().strip("\"'")
+    return values
+
+
+def load_minimax_config(env_path: Path | None) -> dict[str, str]:
+    resolved_env = env_path or (Path(__file__).resolve().parents[1] / ".env")
+    file_env = parse_env(resolved_env)
+
+    def get_value(name: str, default: str | None = None) -> str | None:
+        return os.environ.get(name) or file_env.get(name) or default
+
+    api_url = get_value("MINIMAX_API_URL")
+    api_key = get_value("MINIMAX_API_KEY")
+    model = get_value("MINIMAX_MODEL", "MiniMax-M3")
+    if not api_url or not api_key or not model:
+        raise RuntimeError(
+            "MiniMax 配置不完整，请设置 MINIMAX_API_URL、"
+            "MINIMAX_API_KEY 和 MINIMAX_MODEL"
+        )
+    return {"url": api_url, "key": api_key, "model": model}
+
+
+def encode_png(path: Path) -> str:
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def parse_json_response(content: str) -> dict[str, Any]:
+    cleaned = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
+    cleaned = re.sub(r"```(?:json)?", "", cleaned).replace("```", "").strip()
+    start = cleaned.find("{")
+    if start < 0:
+        raise ValueError("响应中没有 JSON 对象")
+    parsed, _ = json.JSONDecoder().raw_decode(cleaned[start:])
+    if not isinstance(parsed, dict):
+        raise ValueError("响应 JSON 顶层必须是对象")
+    return parsed
+
+
+def extract_non_stream_content(response: Any) -> str:
+    payload = response.json()
+    base_resp = payload.get("base_resp") or {}
+    if base_resp.get("status_code", 0) != 0:
+        raise RuntimeError(f"MiniMax base_resp 错误: {base_resp}")
+    choices = payload.get("choices") or []
+    if not choices:
+        raise RuntimeError("响应中缺少 choices")
+    message = choices[0].get("message") or {}
+    return message.get("content") or message.get("reasoning_content") or ""
+
+
+def extract_stream_content(response: Any) -> str:
+    content_chunks: list[str] = []
+    reasoning_chunks: list[str] = []
+    for raw_line in response.iter_lines(decode_unicode=True):
+        if not raw_line:
+            continue
+        line = (raw_line.strip() if isinstance(raw_line, str)
+                else raw_line.decode("utf-8", "ignore").strip())
+        if not line.startswith("data:"):
+            continue
+        data = line[5:].strip()
+        if data == "[DONE]":
+            break
+        try:
+            event = json.loads(data)
+        except json.JSONDecodeError:
+            continue
+        base_resp = event.get("base_resp") or {}
+        if base_resp.get("status_code", 0) != 0:
+            raise RuntimeError(f"MiniMax base_resp 错误: {base_resp}")
+        if event.get("error"):
+            raise RuntimeError(f"MiniMax 流式错误: {event['error']}")
+        choices = event.get("choices") or []
+        if not choices:
+            continue
+        delta = choices[0].get("delta") or {}
+        if delta.get("content"):
+            content_chunks.append(delta["content"])
+        if delta.get("reasoning_content"):
+            reasoning_chunks.append(delta["reasoning_content"])
+    return "".join(content_chunks).strip() or "".join(reasoning_chunks).strip()
+
+
+def call_minimax_once(
+    config: dict[str, str], payload: dict[str, Any], timeout: int,
+) -> str:
+    if requests is None:
+        raise RuntimeError("缺少 requests 依赖，请执行 pip install requests")
+    headers = {
+        "Authorization": f"Bearer {config['key']}",
+        "Content-Type": "application/json",
+    }
+    with requests.post(
+        config["url"],
+        json=payload,
+        headers=headers,
+        timeout=(15, timeout),
+        stream=True,
+    ) as response:
+        if response.status_code == 429 or response.status_code >= 500:
+            raise RuntimeError(
+                f"可重试 HTTP {response.status_code}: {response.text[:300]}"
+            )
+        if response.status_code != 200:
+            raise RuntimeError(f"HTTP {response.status_code}: {response.text[:500]}")
+        content_type = response.headers.get("Content-Type", "").lower()
+        content = (
+            extract_stream_content(response)
+            if "text/event-stream" in content_type
+            else extract_non_stream_content(response)
+        )
+    if not content:
+        raise RuntimeError("MiniMax 响应内容为空")
+    return content
+
+
+def normalize_result(raw: dict[str, Any], case_id: str) -> dict[str, Any]:
+    raw_issues = raw.get("issues")
+    if not isinstance(raw_issues, dict):
+        raise ValueError("响应缺少 issues 对象")
+    issues: dict[str, dict[str, Any]] = {}
+    for issue_key in ISSUE_KEYS:
+        issue = raw_issues.get(issue_key)
+        if not isinstance(issue, dict):
+            raise ValueError(f"响应缺少 issues.{issue_key}")
+        detected = issue.get("detected")
+        confidence = issue.get("confidence")
+        evidence = issue.get("evidence")
+        if not isinstance(detected, bool):
+            raise ValueError(f"issues.{issue_key}.detected 必须是布尔值")
+        if not isinstance(confidence, (int, float)) or isinstance(confidence, bool):
+            raise ValueError(f"issues.{issue_key}.confidence 必须是数字")
+        if not 0 <= float(confidence) <= 1:
+            raise ValueError(f"issues.{issue_key}.confidence 必须在 0 到 1 之间")
+        if not isinstance(evidence, str) or not evidence.strip():
+            raise ValueError(f"issues.{issue_key}.evidence 必须是非空字符串")
+        issues[issue_key] = {
+            "detected": detected,
+            "confidence": round(float(confidence), 4),
+            "evidence": evidence.strip(),
+        }
+    summary = raw.get("summary")
+    if not isinstance(summary, str) or not summary.strip():
+        raise ValueError("summary 必须是非空字符串")
+    return {
+        "case_id": case_id,
+        "has_issue": any(item["detected"] for item in issues.values()),
+        "issues": issues,
+        "summary": summary.strip(),
+    }
+
+
+def write_json(path: Path, value: Any) -> None:
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def parse_args() -> argparse.Namespace:
