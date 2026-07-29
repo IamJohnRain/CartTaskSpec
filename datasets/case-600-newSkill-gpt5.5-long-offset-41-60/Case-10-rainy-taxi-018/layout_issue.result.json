@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-10-rainy-taxi-018",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "天气文字、排队/等待文字、司机姓名与底部告警文字均无被图标、按钮、装饰或背景覆盖，全部清晰可读"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "所有组件均位于 300x140 卡片内部，文字笔画完整，告警文字虽靠近下边缘但未被圆角裁切"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.97,
+      "evidence": "icon_weathe2.png 在蓝到雾灰渐变底板的蓝色段上对比清晰，云雨闪电轮廓与黄色高光均可识别"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "底部告警'⚠ 当前叫车已超时'距卡片下边缘目测约 9-10px，而顶部天气胶囊距上边缘约 14px，上下留白存在约 4px 不对称；该问题已在前 4 轮保守调整 padding (12→14→16→14→18) 后仍然复现，根因是布局引擎在等量 padding 下仍把额外空间偏向顶部，导致底部告警视觉上更贴边"
+    }
+  },
+  "summary": "信息层级、渐变氛围、点击区、模板表达式解析、图标可读性均已成立，唯一残留问题是底部告警相对顶部天气胶囊仍存在约 4px 的上下留白不对称，且已在前 4 轮保守微调 padding 后仍然复现。本轮改用非对称 padding 根治：通过把 root padding 从均匀 18 改为 {top:14, bottom:22, left:18, right:18}，在总高 140 严格不变的前提下给底部多预留 8px 安全区，补偿布局引擎的顶部偏向。"
+}

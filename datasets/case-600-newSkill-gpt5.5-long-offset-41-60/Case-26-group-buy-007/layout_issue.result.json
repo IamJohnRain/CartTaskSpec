@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-26-group-buy-007",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "顶部白色天气按钮内的'看天气冷不冷'六个汉字在 fontSize 12 下笔画完整、无水平贯穿线切割，所有字符清晰可辨；改用 Stack 组合（白底 Row + 独立 Text + 透明 Button 仅承担点击）后彻底规避了 Button label 的内置贯穿线样式问题。拼单三行的商品名、人数文案与'距离成团还差N单'也均完整、无遮挡。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "三行拼单（鲜果礼盒/暖绒围巾/即热饮品）均完整显示在卡片可视区，第三行'即热饮品'底部与卡片圆角之间留有约 6-8px 安全空白，未被裁切。header 26h + panel 26h + list 56h + 2×4 itemMargin = 116h，padding 12×2 = 24h，合计 140h 严格闭合。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "courier_box.png 在白色 panel 底色上轮廓清晰，色彩识别度高；person_3_fill.svg 在首行白色 deal_row 底色上深色三人组图标对比充足、形态可辨；两个深色/暖色图标均只放在浅色白底背板上，符合 recommended_background 推荐。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "整体纵向分布均衡：header 26h / panel 26h / list 56h 比例为约 1:1:2，符合'标题-总进度-列表'主次层级。header 内 title 110w + button 144w + 8 margin = 262w < 276w，spaceBetween 留出约 14w 左右平衡空白。panel 内 product_icon 20w + margin 8 + progress_col 240w = 268w 内部对齐稳定。deal 三行均 18h、space 1，行内 name(56) + margin4 + people(40) + margin4 + gap(132) + padding left/right 8 = 252w < 276w 留 24w 安全余量。渐变行通过 left padding 24 与首行 name 起始线视觉对齐，主次信息层级（图标-商品名-人数-缺口）清晰稳定。"
+    }
+  },
+  "summary": "上一轮整体重构 weather_button 为 Stack 组合（白底 Row + 独立 Text + 透明 Button 仅承担 onClick）后，贯穿线 text_occlusion 问题已被彻底根治；同步收紧 panel 与 list 高度预算维持 140h 严格闭合，三行拼单条目均完整可见、底部圆角安全区充足；courier_box 与 person_3_fill 两个深色图标继续置于浅色白底背板，对比识别度达标；header/panel/list 比例与行内对齐均衡，左右呼吸感良好。四类问题均已解决，无需再次修复。"
+}

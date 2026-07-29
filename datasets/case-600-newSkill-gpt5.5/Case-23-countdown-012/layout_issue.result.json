@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-23-countdown-012",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "两个任务行已采用 check_holder(36w) | text_col(62w) 两列结构，Checkbox 与标题文本分配到不同水平区域，'提交周报'的'提'字与'买纪念礼物'的'买'字都明确从 check_holder 右侧外开始，与绿色选中态或空态描边都有清晰视觉间隔，不再被压字；'需注意'黄色和'已完成'浅灰状态文字位于 text_col 内右对齐，也未被 Checkbox 遮挡。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "内容总高度 18+4+32+4+58=116 精确等于 root 内可用区，未越出 140×140 边界；hero_row 32h 容纳 30h 的'5'主指标，tasks_panel 58h 内含 6+20+6+20+6=58h 完全等于背板内高；所有文字、图标、按钮都在 root padding 12 的安全区内，距圆角裁切区有充足留白。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "header 中 calendar_icon 由 18×18 #33ffffff 半透明白底圆角板托起，在紫渐变上轮廓清晰；run_icon 为白色矢量，落在紫色渐变上对比充足；两个素材均无与背景融合或对比不足的问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.82,
+      "evidence": "header 行 18h 内三件对齐：18(图标板)+4+62(标题)+4+24(徽章)=112≈116，垂直居中；hero 行 116w 内 '5'(32w) + '天/步数'(36w) + 跑步鞋(22w) + 2×6=122... 实际是 32+6+36+6+22=102，留 14px 视觉缓冲；任务行 104w 内 36+6+62=104 精确填满，title/status 在 text_col 内上下堆叠层级清晰。整体左右内边距一致，主指标、状态、支撑信息层级稳定，'5'字号 26 仍是大号，'需注意'黄色在 7pt 字号下可读。"
+    }
+  },
+  "summary": "本轮为第 5 轮修复。前 4 轮反复在'checkbox 与任务首字重叠'上失败，关键原因是把 Checkbox、title、status 三件横排放入同一 Row，无论 itemMargin 怎么调，Checkbox 渲染边界都会向 title 方向延伸。上一轮改为 check_holder(36w) | text_col(62w) 两列结构后，Checkbox 与 title 分配到不同水平区域，问题被根本解决。当前截图显示：'提交周报'/'买纪念礼物'标题清晰可读、绿色选中态不再压住首字、'需注意'黄色和'已完成'浅灰状态文字可辨，header 的 calendar icon 配白底板、hero 的'5'+'天/步数'+跑步鞋三层结构、tasks_panel 毛玻璃背板都按设计落地，渐变氛围、deeplink、勾选联动、黄色警示状态色全部到位，无四类问题。"
+}

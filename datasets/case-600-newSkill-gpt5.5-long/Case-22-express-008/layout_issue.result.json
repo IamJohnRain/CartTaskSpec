@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-22-express-008",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "三个复选框的 label '猫粮/咖啡/纸巾' 在 v0.9 Checkbox 默认大字号(约 24-26pt)下渲染成巨型黑字,与右侧 10pt days/8pt status 形成 2-3 倍字号倒挂;复选框方块因 unSelectedColor=#00000000 透明而完全不可见,只剩巨型 label 浮在面板左侧;红色'包裹异常待处理'与下一行'剩余3天送达'纵向间距仅 1-2px,几乎粘连。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "巨型 Checkbox label 实际行高约 28-30px,导致每行右侧 right column 的 '剩余X天送达' 与下方下一行的巨型 label 顶部严重重叠;'包裹异常待处理'红色文字与下方'剩余3天送达'在 y 方向上几乎贴合,触底风险明显;底部'运输中'距 package_panel 圆角内边距仅 2-3px。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "Checkbox 的 unSelectedColor 设为 #00000000 完全透明,导致未勾选时复选框方块不可见,用户根本看不到 ☐ 的视觉锚点;只有 label 巨型黑字在深色面板上显得突兀,丢失了'勾已签收'的交互语义。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "Checkbox 巨型 label(约 26pt)与右列 days(10pt)/status(8pt)形成 3 倍字号差,主次信息比例严重倒挂;左列巨型 label 在视觉上极重,右列小字号信息被压扁,'剩余X天送达' 应为主信息却被挤压成副信息;左包裹面板密度过载而右日历面板大段留白,左右视觉重量失衡。"
+    }
+  },
+  "summary": "第 4 轮 DSL 仍使用 v0.9 Checkbox 组件承载包裹名,但 v0.9 的 Checkbox label 似乎忽略 styles.fontSize 而强制使用默认大字号(24-26pt),导致 '猫粮/咖啡/纸巾' 渲染成巨型黑字并彻底挤占右侧 10/8pt 小字号信息;同时 unSelectedColor=#00000000 让复选框方块完全透明不可见,☐ 视觉锚点丢失。这是历史 0-3 轮反复尝试 56/60/64/90/120 各种 checkbox 宽度均失败的同一根因:Checkbox label 字号不可控。第 5 轮必须彻底放弃 Checkbox 组件,改用 Stack+Column 自定义复选框方块(14x14 白边+11x11 条件填色),用独立 Text 承载包裹名以获得完全字号控制权。"
+}

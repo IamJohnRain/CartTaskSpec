@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-28-veggie-price-019",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "「查看运动记录」按钮的浅灰半透明底色明显覆盖了第一条比价记录「青菜 3.2/斤 省5」所在的 y 区域，按钮背景与文字在同一水平带发生 z 轴叠加，第一条记录被按钮底色压住、笔画与底色对比严重下降。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.96,
+      "evidence": "纵向总预算 28+1+12+1+12+1+22+6 itemMargin=83px 落在 top_section 98px 内看似足够，但 record_list 实际行高（fontSize 7→约 11-12px/行）超过声明的 10px，2 行 + space 2 实际占 26-28px 而非 22px，导致列表底部向下挤出 top_section，与 action_button 发生 y 方向重叠；第二条记录「番茄 4.8/斤 省8」下沿与卡片底圆角切线几乎贴合。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.35,
+      "evidence": "跑步图标已有 16×16 白色底板+borderRadius 4+padding 1，在浅绿渐变上能清晰识别黑色线性轮廓，对比基本到位。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "上半部分 hero(28)+3×Divider(3)+2×stats(24)=55px 已较重，下半部分 record_list 实际行高超标把 action_button 推入记录区域，下半视觉重心完全错位：按钮与记录 z 轴重叠、底部第二条记录贴边、左右内边距因 hero 第二行「320大卡✓」末位 ✓ 紧贴 96px 文字容器右沿而失衡。"
+    }
+  },
+  "summary": "本轮渲染再次复现了前 4 轮的核心失败模式：action_button 与 record_list 在 top_section 底部发生 z 轴/纵向碰撞。根本原因是 record_list 的 List 组件实际行高（fontSize 7 行高约 11-12px）持续超出声明的 10px，加上 6 像素 itemMargin 让 top_section 实际占用接近 90px，超过 98px 安全预算的 83px 并不多但 List 实际行高让缓冲被吞掉。需要彻底重做纵向预算分配，把 record_list 实际行高纳入计算并显著扩大缓冲，同时收紧 hero 字号防止 ✓ 横向贴边。"
+}

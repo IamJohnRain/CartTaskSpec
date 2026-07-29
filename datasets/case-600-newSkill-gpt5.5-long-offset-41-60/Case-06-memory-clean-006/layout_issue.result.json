@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-06-memory-clean-006",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "截图未见文字、图标、按钮或装饰元素之间发生明显重叠或覆盖，所有文本均可清晰辨认。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "左列图标框、'存储空间不足'（自然两行折行）、'已用 235GB'，以及右列 items_row、warning_badge、action_button 全部位于 140x140 卡片内（root padding 12 留出安全边距），'已用 235GB' 底距卡片底部约 26px，无明显贴近或越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "左上 icon_clear.png 在 #19ffffff 浅底板 + 红/橙描边内清晰可见；右中 warning_badge 内同款图标在 #19ffffff 底板 + 红色 #ffd94838 描边下对比度充足，无融入背景或难以识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "左右两列底部对齐到同一基线（used_text 底 y=102、action_button 底 y=102），左列内容总高 88px（icon 32 + title 32 + used 16 + 2 间距 8）与右列内容总高 88px（items 24 + warning 28 + button 28 + 2 间距 8）严格一致，列内层级与组距层级合理，'存储空间不足' 因 50px 列宽自然两行换行属于合理排版结果而非失衡。"
+    }
+  },
+  "summary": "经过第 1 轮整体重构后，卡片完全满足 2x2 画布的所有约束：左 50 / 右 62 双列对称布局，title 与 used_text 单/两行可读，'微信/相册/音乐' 三个 20px 类别名完整显示，warning_badge 红框 + 图标 + '超限' 对比度充足，'联系管家' 一键拨号按钮采用红橙渐变；事件 clickToCallPhone 950800、DataModel 路径 /data/memoryClean/*、深色舞台渐变背景、TaskSpec 已声明 icon_clear.png 全部保留且未越界。无四类视觉问题，结构无需再次调整。"
+}

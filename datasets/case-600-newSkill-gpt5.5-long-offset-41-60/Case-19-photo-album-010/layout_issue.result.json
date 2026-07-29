@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-19-photo-album-010",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "告警条白字、标题、姓名、关系、电话按钮文字均完整可读，无重叠覆盖。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "告警条、标题行、联系人行、右侧电话按钮均落在卡片内容区内，未触及 22px 圆角裁切带。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "蓝色勾选框、彩色姓名缩写块、绿色电话按钮在浅灰底上对比清晰，可正常识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "每条联系行中部出现明显空洞：left_group 宽 228 但实际内容 16+4+22+4+80+4+60=190，末尾留 38px 死区，textAlign:end 让'家人'停在 x≈168-190、'电话'按钮贴在 x=228-276，二者之间留下约 38-50px 空白带，使关系标签视觉上浮空在行中央、既不贴姓名也不靠拨号按钮；同时勾选框与首字母色块之间 4px itemMargin 过窄，视觉上几乎贴边。"
+    }
+  },
+  "summary": "已修复电话按钮溢出与告警条颜色问题，但每条联系行中部仍留大空洞，关系标签像浮空。需要把 left_group 内容总宽精确拉满到 228，让 relation 容器右端正好贴住 call 按钮左端，同时收紧 name 容器并加大 itemMargin，消除关系标签的悬空感与勾选-色块的贴边感。"
+}

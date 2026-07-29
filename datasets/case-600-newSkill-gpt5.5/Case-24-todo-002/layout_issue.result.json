@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-24-todo-002",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "截图中'待办清单'、'同步会'、'09:30 - 10:00'、'危险 临近截止' 各文本相互独立，无互相覆盖或被图标/复选框/告警条遮挡的现象，笔画完整可读。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "所有元素均位于 140x140 卡片内：header 26 + 间距5 + event_title 26 + 间距5 + time_row 18 + 间距5 + alert_row 30 = 115，加上 root padding 12*2=24 共 139 < 140，底部留有约 13px 安全留白。time_row 已成功拆分为 start_text/separator/end_text 三个独立求值节点，渲染出 '09:30 - 10:00' 完整居中，无裁切。告警条 width 108 在 116 内宽中居中，左右各 4px margin，加上 root 12px padding 与 18 borderRadius 无冲突。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.97,
+      "evidence": "左上角 24x24 深色 #1e293b icon_tile 包裹浅色 schedule 图标，浅色图标在深底板上轮廓清晰，对比度足够，符合 TaskSpec 推荐的 #1F1F1F/#263238 深色背景策略。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "header_row 三段 24+56+28=116 与 itemMargin 4*2=8 之和等于 116，正好填满行宽；视觉上图标、标题、复选框起始与结束基线整齐，左右各有 12px root padding 呼吸空间。'同步会' 18px 主指标居中突出，'09:30 - 10:00' 12px 辅助信息居中紧凑，'危险 临近截止' 红色胶囊条作为视觉底锚，层级梯度清晰。告警条内 itemMargin 6 让 '危险' 与 '临近截止' 之间形成自然分隔，无压迫感。整体左中右三段无单侧过密或空洞现象。"
+    }
+  },
+  "summary": "当前渲染结果在四类视觉问题上均已通过：深色 icon_tile 解决了图标可见性；time_row 拆分为三独立 Text 解决了多表达式拼接不求值的渲染缺陷，渲染出完整的 '09:30 - 10:00'；alert_row 高度 30 + 圆角 15 配合总高 115+24=139 让底部恢复 12px 安全留白；header_row 内 icon_tile 24 + 间距4 + title 56 + 间距4 + checkbox 28=116 与 116 行宽刚好对齐，主指标/时间/告警三层信息层级梯度合理，无需进一步调整。"
+}

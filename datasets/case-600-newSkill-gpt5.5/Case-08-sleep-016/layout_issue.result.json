@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "四个 metric 列底部的勾选框声明 8x8 但视觉渲染约 50x50，与紧贴其上的中文/英文标签(深睡、浅睡、REM、清醒)首字直接接触或半覆盖，深睡紫色填充方框覆盖住'深'字右半部、清醒空心方框与'清'字首笔几乎完全重叠；四轮反复调 checkbox 尺寸均无法收敛。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "免打扰行右侧 18x18 checkbox 实际渲染约 50x50，视觉上超出 24h 的 dnd_control 高度并向上挤入 meters 行底部、向下接近卡片底边；metric 列底部的 50x50 checkbox 也已超出 26h 的 check_col 高度并部分覆盖 dnd 行。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "左上角睡眠月亮图标为浅色/近白，放在深蓝紫渐变背景上对比度充足，识别清晰。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "四列底部 Checkbox 实际视觉尺寸远大于声明尺寸，把原本的 12px metric itemMargin 和 6px 表间留白全部吞掉，组内距与组间距无层级；免打扰行 checkbox 同样过大，让胶囊行下边缘被视觉填满，整张卡底部密度异常拥挤。"
+    }
+  },
+  "summary": "前四轮已把时长文字从环内移到环下、并把勾选行从 Row 改为 Column，但 Checkbox 组件始终按 ~50x50 渲染，无论声明 14/12/10/8 都不能收敛，导致勾选框始终贴住或压住其上方的中文/英文标签首字，免打扰行也因 18x18 声明却 50x50 渲染而贴边。本轮放弃用 Checkbox 表达勾选状态，整体重构为 10x10 Stack+Text 自绘迷你勾选盒：用 backgroundColor 三元式切换填充/透明、check mark 用 opacity 三元式切换显隐、borderColor 保持阶段主色，垂直方向彻底避免溢出；环回升到 22x22，时长 fontSize 10，标签 fontSize 10 + 10x10 指示器并列居中；免打扰行同步替换为 16x16 自绘勾选盒，与 16h 标签/状态文字基线对齐。"
+}

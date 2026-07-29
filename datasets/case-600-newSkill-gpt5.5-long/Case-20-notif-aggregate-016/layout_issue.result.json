@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-20-notif-aggregate-016",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "截图显示所有文字完整可读：'家长群通知'/'2条待看' 标题区清晰，'19:30'/'家长会'/'待看' 和 '明天'/'体测反馈'/'待看' 两行通知时间、标题、状态均无重叠或被遮挡，'查看体质' 按钮文字完整显示在圆角安全区内。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "通知行 time 32px / title 48px / status 22px + itemMargin 4×2=8 共 110px 恰好对齐 notif_card 110px 内容宽，'19:30' 5 字符完整显示不再被裁切；底部按钮 116×24 起于 y=104，结束 y=128，距 root 底边 y=140 留 12px 安全缓冲，远离 borderRadius 18 圆角裁切区；header、category、notif_card、button 四个分段高度 24+16+34+24+6=104 完全落在 116 安全区内，无任何元素贴边或越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "person_3_fill.svg 深色三人组图标在 #fff5f7fa 浅灰底上轮廓清晰可识别；📚/✉️/🔔 三个 emoji 在浅色背景上色彩饱和、对比度充足，无融合或识别困难。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "整体视觉层级清晰：header（图标+标题+计数）→ category（3 个 emoji 等距分布）→ notif_card（白底圆角容器内两条橙色待看通知）→ button（浅灰胶囊 CTA），自上而下信息密度递减、留白均衡；通知行 time/title/status 三段左对齐、状态居中对齐，行间 2px 间距、段间 2px itemMargin，无局部拥挤或空洞；底部按钮留有合适上下内边距，CTA 锚点完整。"
+    }
+  },
+  "summary": "当前卡片渲染良好：header 区人物图标与两行文字组合清晰，emoji 分类 (📚✉️🔔) 完整显示符合 query 要求，通知行 '19:30/明天 + 家长会/体测反馈 + 待看' 三段配比合理且全部完整，橙色 #ffed6f21 待看状态醒目，底部 '查看体质' 按钮完整显示在圆角安全区内。修复轮 3 关于时间列 24px 太窄导致 '19:30' 被裁切的问题已通过将 message_time 列从 24px 扩到 32px 解决；修复轮 2 关于按钮被圆角裁切的问题也已通过整体压缩上半段高度并让 button 起始 y 提前到 104 解决。四类视觉问题均已解决，无需继续修复。"
+}

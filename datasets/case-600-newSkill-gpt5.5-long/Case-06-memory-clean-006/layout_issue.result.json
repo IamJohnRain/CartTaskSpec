@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-06-memory-clean-006",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "环形仪表盘内的'92%'主指标文字未在38x38容器中垂直居中，字形落在环的上半部，环顶弧线擦过数字'9'顶部笔划；Stack alignContent:center对38x38满铺Text无效，缺少将Text居中的Column包裹。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "所有元素均落在140x140画布安全区内，root padding 12与borderRadius 18无贴边裁切风险。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.86,
+      "evidence": "感叹号圆形文字图标在橙色实心底上对比清晰；calendar_fill.svg在浅灰面板上虽为深色但尺寸足够小可辨。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "顶部folder_row使用无children的Column做色条，渲染引擎未绘制背景色，导致顶部三色色条（橙/黄/青）完全不可见，呈现空洞顶部；用户明确要求'上面横着排开几个文件夹占用比例的色条'连续两轮未满足，纵向视觉密度严重失衡。"
+    }
+  },
+  "summary": "2x2存储清理卡片整体框架（顶部色条区/危险状态行/中央仪表盘/底部CTA）结构合理，无越界与图标不可见问题。但顶部folder_row的三色色条因使用无children的Column做背景渲染连续两轮失败，顶部色块空洞违反用户核心需求；仪表盘内'92%'主指标在38x38容器中未垂直居中，环顶弧线擦过数字顶部笔划。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-010",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "右侧橙色面板中部 '待缴提醒' 4 字在 width=72 / fontSize=11 / fontWeight=800 条件下，'缴' 与 '提'、'提' 与 '醒' 字符之间笔画几乎相切，肉眼可辨认为字符间没有清晰间距，是上几轮反复修过但仍未根治的中文加粗字符膨胀问题。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "左侧环形 64x64、三个 chip 60x24、右侧 panel 84x116 及其内部 date_block 72x44 均在 root padding 12 安全区内显示完整，'6月20日'、'268元'、'电46%'、'水33%'、'气21%' 等关键文本未被圆角裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "电/水/气三个 chip 中图标均坐落在 16x16 不透明白色圆底上，在深色舞台背景下轮廓清晰可辨，对比度足够，无融合或不可辨识问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.7,
+      "evidence": "右侧 '待缴提醒' 作为视觉锚点因字符贴压失去呼吸感，与左侧 268 元主指标的视觉重量略有失衡；右栏 5 行信息密度偏高，需要更明确的 CTA 锚点形式以拉开层级。"
+    }
+  },
+  "summary": "本轮左侧布局（环形已用 68% 两行排版、268 元主指标、3 个水电气 chip、缴费日 header）已经基本合格，主要问题集中在右侧操作面板：'待缴提醒' 4 字在 fontSize=11 / fontWeight=800 / width=72 下字符贴压，5 轮局部字号 / 宽度调整都未能根治该问题。历史表明继续微调 Text 的 width / fontSize 不会有效，需要从组件类型上做结构性改变：把 right_status 从 Text 改成 Button 组件（白底深橙字），让系统 Button 自身的 padding 处理 '待缴提醒' 4 字符的安全间距，同时将 CTA 升级为真正的可点击按钮形式，符合语义（待缴提醒 = 行动提示）。"
+}

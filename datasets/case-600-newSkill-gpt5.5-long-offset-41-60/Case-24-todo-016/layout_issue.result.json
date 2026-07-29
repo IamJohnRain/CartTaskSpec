@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-24-todo-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "两个 todo_row 中白色 time_badge 内圆明显压在了 Checkbox 的右边缘上，第一行白框勾选框的右侧边线被白色圆盘覆盖，第二行绿色勾选框的右半部分也被白色圆盘部分遮挡，Checkbox 的完整轮廓无法辨认。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "itemMargin 仅 5，但 time_badge 12x12 与 Checkbox 12x12 在视觉上紧贴粘连成同一团浅色形状，紫色外环与背景渐变同色导致圆环不可见，白色内圆与白框勾选框紧贴产生边界溢出，时间图标视觉上已不在其声明的 12x12 边界内。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.86,
+      "evidence": "icon_time.png 在白色内圆上时钟面与指针可辨认，icon_alarm_clock.png 黄色钟在蓝色按钮上对比清晰，不受影响。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "白色 time_badge 圆盘与紧邻的 Checkbox（未勾选行白框、勾选行绿底）在视觉明度上同属浅色且无清晰间距，'勾选状态—时间标记—任务文字'三段式主次边界被破坏；紫色外环与卡片紫色渐变终点色完全相同导致 1px 环隐形，徽章失去轮廓。"
+    }
+  },
+  "summary": "第 5 轮渲染后布局宽度预算、事件绑定、DataModel 与文字可读性已稳定，但 time_badge 与 Checkbox 的水平粘连问题在 4 轮调整底色/环色/尺寸后仍未解决。根因是 12x12 time_badge 与 12x12 Checkbox 在 5px itemMargin 下视觉边界必然粘连，单纯调色无法解决空间问题，需要改变组件层级让 time_badge 远离 Checkbox。"
+}

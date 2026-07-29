@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-17-queue-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "第一行橙色已选中勾选框实际渲染约 16-20px（远超 DSL 标注的 10x10），右缘紧贴「湖滨店」首字「湖」左侧笔画，橙色填充体直接覆盖「湖」字左半部分，文字被勾选框明显遮挡导致首字难以辨认。第二行未选中细边框方块虽未完全覆盖，但同样贴近「万」字左缘。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.75,
+      "evidence": "底部 24x24 环形 Progress 左缘 x=12 在 y=104 处距 root 圆角裁切中心 (18,122) 约 13.4px，虽在 18px 安全半径内，但环形左下外缘在 y=116 处接近裁切边界；行末 12x12 天气图标在 item_bottom 内与 eta 文字仅 6px 间距，右侧距圆角裁切区约 14px，偏紧。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.78,
+      "evidence": "天气图标使用 #ffffff 底板 + borderRadius 3，在浅色磨砂容器 (#19ffffff) 上可清晰识别太阳与云朵轮廓；勾选框橙色已选态与浅灰未选态在磨砂背景上对比度充足。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "queue_row 内 check+name+status 与 wait+eta+weather 采用单行 Row 布局，勾选框引擎最小渲染尺寸约 16-20px，与 name 之间 6-8px itemMargin 被引擎渲染吃掉，第一行橙色勾选框几乎完全压上「湖」字；item_top 与 item_bottom 内 4px itemMargin 在 9-10pt 中文字符下也被字距吞噬，组内呼吸为零；底部「28分」与环形之间水平距离不足，视觉重心偏左。"
+    }
+  },
+  "summary": "2x2 卡片整体三段式结构（标题+两行排队+底部环形）合理，磨砂玻璃容器、紧迫感橙色渐变、点击天气图标事件与 icon_weather1.png 素材语义均保留。核心问题在于引擎对 Checkbox 组件有最小渲染尺寸限制（约 16-20px），历史五轮无论将 DSL 中 checkbox 设为 6/8/10/12 都无法阻止引擎将其放大并覆盖「湖」字。本轮必须放弃「在 Row 内调 itemMargin」的局部打补丁循环，转向将 checkbox 封装到独立的 check_col Column 容器中，赋予其固定的 24w 安全空间，让 text content 从 x=40 开始，彻底脱离 checkbox 实际渲染区；同时将 wait/eta 降至 8pt 以保证 4 字符文本在 32w 容器内完整显示。"
+}

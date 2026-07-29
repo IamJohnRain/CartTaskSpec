@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-002",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "截图中文本「睡眠日历 / 23:00 / 睡眠提醒 / 已连接」均位于左半区 (x=12 起) 的 content_col 内，月亮图标位于 (84,64)-(128,108) 的右下角，文字与月亮白色区域无任何像素级重叠，笔画完整可辨。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "content_col 显式 margin {top:12,left:12}，受保护文字最左 x=12、最右 x=92（实际短文本更短），距左圆角安全区足够；月亮右下端点 (128,108) 距 card 右下角 (140,140) 距离 sqrt(12²+32²)≈34.2，远超 18px borderRadius 裁切区；「已连接」胶囊底端 y=108，距卡底 32px 留白充足，无越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "月亮图标白色剪影在 RightBottom 方向的 #191a1c→#634794 深紫渐变上对比度充足，月牙与「Z」字符轮廓清晰，无融合或消失风险。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.78,
+      "evidence": "左半区四层文字（标题 10px / 主时间 24px / 事件 11px / 状态 10px）由 itemMargin 4 串联形成清晰层级；「23:00」主指标居中突出，「已连接」胶囊与月亮在 y=64-108 区段形成左右呼应；右上角虽无元素但与左密右疏的视觉节奏一致，主次平衡，组内距与组间距层级合理，未出现「明显不合理」的空旷或挤压。"
+    }
+  },
+  "summary": "本轮渲染已成功解决前两轮的遮挡与贴边问题。文字与月亮分层不重叠，content_col 显式 margin 让 12px 安全内边距真正生效，所有受保护文字（标题/时间/事件/CTA）笔画完整且远离圆角裁切区；主指标 23:00 以 24px 粗体居中突出，「已连接」绿色胶囊与月亮在底部分别落在左右两侧形成视觉锚点对位。整体 2x2 节奏平衡，符合睡眠监督卡片的主次信息层级。"
+}

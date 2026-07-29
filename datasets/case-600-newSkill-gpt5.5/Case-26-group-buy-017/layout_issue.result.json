@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-26-group-buy-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "右侧 schedule_panel 底部的 schedule_end 文本显示为「至 {{ ${/data/calenda」并被面板右边界明显裁切，表达式未被求值，原文字符串过长直接被圆角面板裁掉约一半内容，「r/items/0/dtEnd} }} 结束」部分完全不可见。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "schedule_end 实际内容为字面量字符串「至 {{ ${/data/calendar/items/0/dtEnd} }} 结束」（约 30 字符），在 fontSize 10 + width 96 下渲染约 180px，远超 96px 内宽，文本横向溢出 schedule_panel 圆角边界并被 panel 的 clip 裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "music_icon 在 #FFF5F5F5 不透明浅色圆形底板上轮廓清晰，checkbox 紫色填充与白色描边在深色渐变背景上对比度足够。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.72,
+      "evidence": "右侧日历面板底部出现被裁切的「至 {{ ${/data/calenda」半截残文，破坏了该面板内部的文字收束节奏；左侧 2x3 网格与右侧面板之间纵向对齐良好，但右侧文案残缺让整体节奏失衡。"
+    }
+  },
+  "summary": "上一轮已成功用 2 列 × 3 行网格把 6 个口味完整排进 64h 内容区并解决列表裁切与 action_row 重叠问题，但右侧 schedule_panel 末行的 schedule_end 文本使用了「至 {{ ${...} }} 结束」这种表达式夹在普通文本中间的写法，引擎未对该片段进行求值、把整段字面量当作静态文本渲染，结果约 180px 长的字符串在 96px 内宽下被面板圆角裁掉约一半。需要把 schedule_end 改写成与 schedule_text 同样的完整 {{ ... }} 字符串拼接表达式，让「至 15:00 结束」能正确求值并在 96px 内单行完整显示。"
+}

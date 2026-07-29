@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-01-low-power-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "两个'详情'按钮内部文字被严重截断变形，截图中按钮内仅能看到类似':i青'的残缺笔画，'详'字的讠偏旁被按钮内部左 padding 挤出可视区，'情'字退化为'青'状残画，文字完全无法被识别为'详情'。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "整体三段（电池行 40 + 间距 4 + 天气 12 + 间距 4 + 待办面板 60 = 120...实际 40+2+12+2+60=116）严格落在 root padding 12 的 116×116 内容区内，无越界或圆角裁切风险。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "icon_electricity.png 浅色闪电图形已置于 #ff263238 深色圆角徽章内，主视觉清晰可辨，符合 TaskSpec recommended_background 约束。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "底部两个'详情'按钮因文字渲染为不可读残画，破坏了待办行'勾选-标题-操作'三段层级的清晰度；待办标题'晨会'/'取快递'左竖笔仍贴近复选框右边缘，视觉上像被切掉一笔；按钮渲染异常导致整体行右侧视觉重量崩塌。"
+    }
+  },
+  "summary": "2x2 卡片顶部电池主视觉（深色徽章托起浅色闪电图标）、'18%'主指标、橙色'低电提醒'、天气文本均已达标。但底部两个'详情'按钮因 Button 组件内部 padding 与中文字符渲染冲突，'详情'二字连续 4 轮（width 32→36→44，fontSize 10→11）均被截断变形为':i青'类残画，属于 Button 组件对中文 label 的渲染缺陷而非单纯宽度不足。需要彻底放弃'详情'文本按钮方案，改用单字符 chevron '›' 按钮规避中文渲染问题，同时为待办标题腾出更宽的显示空间。"
+}

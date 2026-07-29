@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-007",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "三条睡眠中心的名称、地址、距离和导航图标均完整可读，未被任何元素遮挡。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.91,
+      "evidence": "所有内容均在卡片边界内，三个列表行完整显示在浅蓝面板中，未被圆角或卡片边界裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "深色渐变上的浅色月亮图标清晰；白色行内的深色导航箭头加 #3310A5F7 浅蓝圆形底板，对比度充足。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "三条列表行内的地址文字（如\"人民路 88 号\"\"健康大道 16 号\"\"瑞宁路 6 号\"）底部紧贴白色行底边，前四轮已分别尝试压缩 Column 内容、放大行高到 24/26/28，但 Text 高度等于 fontSize（9）导致字形填满容器、descender 紧贴 Text 底边，进而贴住行底；本轮需换用\"addr 高度 11 + fontSize 8 + Column itemMargin 1\"的方案，使地址 Text 内部留出 1.5px 底部内边距，从而在行底与字形之间形成约 3.5px 可见呼吸空间。"
+    }
+  },
+  "summary": "当前卡片的主要内容（标题、红色告警、三条睡眠中心列表、导航按钮、深蓝紫黑渐变、浅蓝面板）均已正确呈现，但列表行内地址文字底部贴行底的问题连续四轮未根本解决，根因是 Text 高度等于 fontSize 导致字形填满容器、descender 紧贴 Text 底边。本轮放弃前几轮\"压缩 Column 内容贴近行内可用空间\"和\"仅放大行高但 Column 仍贴底\"的局部方案，整体重构地址文字的 Text 容器高度（9→11）并降低字号（9→8），同时在 Column 中加入 1px itemMargin 让 name 与 addr 之间有清晰分隔，使地址 Text 内部留出 1.5px 底部内边距，最终在字形底部与白色行底之间形成约 3.5px 可见呼吸空间。"
+}

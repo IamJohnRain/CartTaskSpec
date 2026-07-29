@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-03-anti-addiction-015",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "右下角蓝色按钮内的'设置'字符在 Button 组件中渲染异常，'设'的讠/殳两部件与'置'的罒/直两部件均呈现独立笔画观感，'设'封闭部件的右半被截断，整字失去单字连贯性，与同卡片内其他清晰可读的中文文案相比，该 CTA 主文案识别度明显不足"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "所有组件高度在 140 卡片内，告警条 20、左右面板 88 匹配；左右面板宽 52/58 与中间间距 6 之和 116 匹配 body_row 宽度；左右面板内 padding 4、内容居中对齐，文字未贴近圆角切边"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "左面板'管控'标题前的蓝色圆形底板（#ff0a59f7）使白色 icon_timing.png 清晰可见；右侧未选勾选框为白底蓝边实色框（borderWidth 1.5 + borderColor #ff0a59f7），与已选蓝色 ✓ 框形成明确对比；左侧橙色叹号图标、告警条叹号图标在各自底色上识别度良好"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "左右面板宽度 52/58 比例合理，告警条与下方 body_row 通过 8px itemMargin 分层清晰；右面板内两任务行 24 + 4 + 24 + 4 + 24 = 80 + 8 padding = 88 恰好填满；左右两侧标题-内容-操作的纵向节奏一致，整体留白与对齐良好"
+    }
+  },
+  "summary": "前几轮已成功解决左面板 icon_timing 浅色图标融入底色（加蓝色圆形底板）、右面板未选勾选框对比度低（白底蓝边实色框）、左右面板比例失衡、规则列表截断等问题。但本轮右下角'设置'按钮内的文字渲染异常持续存在：'设'的讠/殳两部件和'置'的罒/直两部件在 Button 组件中均出现严重笔画分裂/截断，呈现为类似独立'H'与'T'笔画的观感。历史 5 轮记录（fontSize 12/14/15、fontWeight 500/700、单字'改'、双字'设置'）一致证明：含多部件结构的中文汉字在 Button 组件中必然出现字形处理异常，这是 Button 组件对中文复合结构汉字的结构性 bug，继续在字号/字重/单双字方向微调无解。本轮必须彻底放弃 Button 渲染中文文案，改用单字形 Unicode 符号。"
+}

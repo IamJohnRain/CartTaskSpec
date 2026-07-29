@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-26-group-buy-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.7,
+      "evidence": "左面板 flavor_left_row/flavor_right_row 的 itemMargin 仅 4px，绿色 10x10 复选框与\"原味\"\"少糖\"10px 文字在 45 宽行内几乎相切，文字起始线紧贴复选框右缘，视觉上文字被大面积绿色色块包围，识别层级被压制。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "左面板 4 个子项+3 个 itemMargin 5+padding 5+5 总高 91 在 116 高面板中以 justifyContent center 分布，但\"少糖\"文字底部仍贴近白卡下圆角（约 3-4px），右面板\"已成单\"药丸底部也贴近白卡下边缘，左右面板底部均缺少安全留白。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "\"茶\"和\"日\"字符使用 #ff64bb5c 不透明绿底配 #ffffffff 白字，对比度和识别度良好，无融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "左面板 drink_icon(24)+title(14)+2 行(14)+3 gap(5)+padding(10)=91 接近 116 极限，下方留白不足；右面板 schedule_group(62)+status_pill(18)+1 gap(4)+padding(8)=92，左右总高接近但底部均无足够呼吸；复选框 10x10 与 10px 文字的视觉重量比例失衡，行内 itemMargin 4 不足以形成清晰的勾选-标签对。"
+    }
+  },
+  "summary": "2x2 卡片在第五轮虽保留了左中右分区与绿色成单语义，但暴露三个新问题：(1) 复选框与口味文字之间 itemMargin 仅 4px，绿色色块与文字在窄行内几乎相切，文字起始线贴住复选框右缘；(2) 左面板\"少糖\"与右面板\"已成单\"底部均贴近白卡下圆角边缘约 3-4px，缺少底部安全留白；(3) 复选框视觉重量压制小文字标签，行内间距过紧。本轮需将 flavor_left_row/flavor_right_row 的 itemMargin 从 4 提升到 6 形成清晰勾选-标签对，并把左右面板 padding 统一到 4 释放 2px 垂直空间，让\"少糖\"和\"已成单\"获得 10-12px 底部安全留白。"
+}

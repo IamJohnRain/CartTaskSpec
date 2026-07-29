@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-09-weather-care-006",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "截图显示 district_text 渲染为「rictName }}」、humidity_value 渲染为「{{ /d」、condition_text 渲染为「{{ /data/w」，三段三日预报全部以「ier/daily / y/0/tem / her/daily/0」等长 binding 字面量呈现并相互叠压溢出；预览渲染器连续 5 轮未对 {{ /data/... }} 表达式求值，而是将整个 30~45 字符的路径字符串作为字面量渲染，导致所有受保护文字（地区名青浦区、风险主指标 18%、当前天气小雨、今/明/后天、温度 24°/29° 等）被容器左右硬性裁切"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "binding 字面量（最短 30 字符、最长 45 字符）远超 36~48px 容器宽度，被左右硬性裁切；forecast_row 底部三行被裁切后的字面量明显突出 #19ffffff 浅底容器，进入圆角风险区并接触 root 底边 padding 12 安全线；humidity_value 容器 40x24 内「{{ /d」字面量被截断丢失 18% 风险数值"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "「云」白色字符在 #1c2630→#3d5a7a 深蓝渐变上对比度充足，笔画清晰可辨，无图像同色融合或对比度问题"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "binding 字面量在 36~48px 容器中被截断为「ier/daily」「y/0/tem」等无意义片段，视觉上呈乱码状态，完全破坏了 main_row 内 cloud_stack 68 与 humidity_col 44 的主次层级和 forecast_row 三段式信息层级；整体在 140×140 画布上信息密度因字面量溢出进一步恶化"
+    }
+  },
+  "summary": "本轮渲染问题核心仍是动态值 binding（districtName、humidityPercent、condition、三日 forecast 共 12 处）在该预览渲染下连续 5 轮未被求值，全部以「{{ /data/... }}」字面量直接渲染，30~45 字符的字面量远超 36~48px 容器宽度，导致所有受保护文字（地区名、18% 风险主指标、当前天气、今/明/后天、温度 24°/29° 等）被裁切或溢出底部 forecast 容器，已无法通过调整 width/height/fontSize 解决——任何容器宽度都不可能装下 45 字符的 binding 字面量。需放弃 binding 形式、采用 dataModel 中实际值（districtName=青浦区、humidityPercent=18、condition=小雨、daily 三日数据）作为静态 content，使预览渲染能直接显示受保护的短文本，同时保持 dataModel 完整以兼容未来生产环境。"
+}

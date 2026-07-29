@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "标题、圆环内 89%、右侧三项异常文字、按钮文字均完整可读，未被其他元素覆盖或遮挡。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "圆环 44x44 内 '89%' 的 '%' 距环右内壁约 2-3px、贴边明显；右侧 alert_col 宽 66、内 padding 5、文本宽 56，但 '呼吸暂停12次'/'心率异常2次' 等 7 字符串在 56px 内实际占据约 50px，'次' 距白色背板右内边仅 1-2px，且背板右边缘紧贴卡片右内 padding（仅 12px 间距），已进入圆角风险区。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "当前布局未使用图标资源，TaskSpec 中 icon_sleep/icon_alarm_clock1 也未引入，不存在图标与背景融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "1) 圆环 44x44 与右侧 alert_col 66x50 横向并列时，环视觉重量远小于背板，环偏小、背板偏大，视觉重心失衡；2) 右侧白色背板几乎贴到卡片右内边，整体右半区留白不足、与左环侧 12px 内边距形成明显不对等；3) 环 44 与背板 50 在 50px 行内纵向虽居中，但环上下各 3px、背板满高，二者基线虽对齐但比例仍失衡；4) alert_col 内三行 itemMargin 2、padding 5，纵向密度偏高、文字与背板内边距几乎不可分。"
+    }
+  },
+  "summary": "2x2 睡眠告警卡片经 4 轮横向布局微调后仍存在两类顽固问题：环内 '%' 贴边、三行警示文字在窄背板内贴右边缘且背板贴卡片右内边。继续在横向结构上微调列宽或字号已无解，必须放弃 4 轮以来的 '左环右列' 横向布局，改为 '标题-圆环-警示列-按钮' 的纵向堆叠，让警示列独占 116px 横向空间，从根本上消除贴边。"
+}

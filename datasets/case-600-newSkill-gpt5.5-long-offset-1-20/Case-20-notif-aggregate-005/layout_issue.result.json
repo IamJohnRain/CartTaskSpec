@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-20-notif-aggregate-005",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "截图所有文字均可清晰辨认：天气入口'天 多云 26°C'完整呈现；'日程 6个'、'未读 15条'的数值与单位完整无残影；'聚''合'两字在蓝色色块中清晰可读；状态入口'会/信/待'清晰可见；模板 size() 已被替换为 count 字段后，'6个'渲染正常，无字面残留"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "左侧色块中'聚''合'两字通过 Column+padding{top:32,bottom:32}+justifyContent:center 方案实现了稳定居中：两字组中心落在 y=58（色块几何中心），上下各保留约 32px 留白，完全脱离 16px 圆角裁切区。右栏 68 宽内三段（21+65+20 + 2×5 gap = 116）严格对齐，schedule_row/unread_row 在 68 宽行内通过 spaceBetween 使'6个''15条'贴右显示且不溢出"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "天气入口的'天'字在 #19000000 浅灰胶囊底板上对比度足够；状态入口'会/信/待'在 #0c000000 浅灰圆角底板上 #e5000000 深色文字可清晰识别，未出现深色图标融入背景的问题"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "整体画布分配合理：左 40 视觉块（蓝色色块+聚/合双字）+ 8px itemMargin + 右 68 信息面板；右栏自上而下为天气入口(21) + 5 gap + 指标面板(65) + 5 gap + 状态入口(20) = 116，与 content_row 高度精确对齐。'日程 6个'与'未读 15条'通过 spaceBetween 实现标签左值右的稳定层级，数值字号 16 在 40 宽行内不拥挤；状态入口 3×18+2×7=68 精确填满右栏宽度，视觉等距不贴边。根 padding 12 提供了 6px 的圆角安全余量"
+    }
+  },
+  "summary": "本轮截图显示前两轮的两个核心缺陷已彻底解决：(1) 模板 size() 不可用问题已通过在 dataModel 中预置 count 字段修复，'6个'渲染完整无字面残留；(2) '聚'字偏下问题已通过将单字改为'聚''合'双字竖排、利用 Column+padding{top:32,bottom:32}+justifyContent:center 方案根除，字符组中心精确落在色块几何中心 58px 处，上下留白对称且远离 16px 圆角风险区。天气入口、指标区、状态入口三段层级清晰、宽高对齐、视觉平衡，达到'够大气'的设计目标。"
+}

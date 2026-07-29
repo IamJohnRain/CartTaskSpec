@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-005",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "缴费按钮内'缴费'两字严重叠压成类似'缴筝'状，'缴'字左半贝字旁与'费'字左半贝字旁互相覆盖，字符边界完全粘连难以辨认。历史5轮已尝试Button宽度48/52/60/62/68/76六种方案均失败，根因不在宽度，而在Button组件label渲染对中文双字内部字间距偏紧。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "各组件整体仍在140x140画布内，标题、金额、到期日等受保护文字均完整可辨，未观察到越界、贴边或圆角裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "闪电、水滴、火焰三张SVG图标在白色tile背景上轮廓清晰、对比度足够，可正常识别为电/水/气语义。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "缴费Button在76px宽度+fontSize 10下承载'缴费'两字仍叠压，说明Button组件内部padding/字间距渲染对中文label存在结构性偏紧问题；电费小卡head行mark已成功移除，三张tile视觉密度一致，整体布局和留白除按钮外均合理。"
+    }
+  },
+  "summary": "本轮核心问题仍是缴费Button的'缴费'两字持续叠压遮挡（历史6种宽度/字号组合均失败，已确认是Button label渲染中文的结构性bug而非参数问题）。电费小卡head行mark已移除，三张tile视觉密度一致，逾期状态通过金额和到期日的#ffe84026红橙色文字+header的'1项逾期'红色badge双重视觉锚点传达，整体无越界、无贴边。"
+}

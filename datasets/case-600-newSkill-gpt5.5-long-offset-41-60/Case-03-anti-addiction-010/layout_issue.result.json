@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-03-anti-addiction-010",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.94,
+      "evidence": "底部蓝色'应用限额'按钮文字顶部明显被按钮上沿裁切，只能看到字符下半部分笔画；hero 面板内'学习模式'标题顶部笔画贴近渐变面板上沿，垂直安全留白不足。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "action_button 实际渲染高度被 fontSize 10 约束（约 18-20px），远小于声明的 32px，导致中文 CTA 文字顶部被按钮边界裁切；hero_panel 高度 32 内塞 11+2+13=26 标题与倒计时，标题与倒计时基线不齐；任务行 12 高容纳 12×12 checkbox 仅 0px 上下间距。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "橙色 hero 面板上的白色计时图标对比清晰，绿色勾选框与绿色 ✓ 在浅灰底色上可辨识，calendar_fill.svg 在 #F1F3F5 底色上轮廓清楚，无明显融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "纵向预算 32/36/50 分配下 bottom_panel 塞 10+4+32=46 内容后 button 被压扁；任务行 checkbox 12×12 在 12 高 Row 中无上下呼吸空间，与 label 视觉粘连；hero 标题与倒计时纵向挤压，整体三段比例失衡。"
+    }
+  },
+  "summary": "历史五轮修复均未解决 button 文字被裁切的核心问题（声明高度 20→22→24→28→32 仍裁），说明 Button 组件的实际文本渲染高度受 fontSize 主导而非声明高度。本轮采用根本性策略：把 button 字体从 fontSize 10 降至 fontSize 9（中文渲染高度从 ~14 降至 ~12），同时将 button 声明高度提升至 32、bottom_panel 加高至 50，从两端同时增大文本安全区。同步将 hero 加高至 36 解决标题顶部贴边问题，checkbox 缩至 10×10、mark 缩至 6 减少视觉侵入，任务行 itemMargin 提升至 10 彻底分离 checkbox 与 label。"
+}

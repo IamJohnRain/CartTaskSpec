@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-20-notif-aggregate-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "第三条会议行的'14:00 项目例会'与'总部三层 待出发'虽然位于大型蓝色复选框右侧，但文字起始线与蓝色色块右边缘之间存在明显水平间距，未观察到实际笔画被覆盖"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.82,
+      "evidence": "第三条行的'待出发'虽贴近白色背板下沿，但文字字身字脚完整、未被圆角裁切区切掉；白色背板底沿距卡片底部圆角仍有约 12px 根 padding 安全距离"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "前两行未选中态复选框在白色背板上仅呈现为约 8-10px 的细小弧形/C 形标记，unSelectedColor #33000000（20% 不透明黑）对比度过低，几乎无法识别为标准方形复选框；选中态第三行则呈现为视觉约 28-30px 的完整蓝色实心方块配白色对勾，组内一致性严重破坏，视觉权重失衡达 3 倍以上"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "三行复选框视觉尺寸严重不一致（未选中 ~8-10px vs 选中 ~28-30px），导致第二条行的留白节奏与第三条行完全脱节；Stack 20x20 clip:true 未能约束选中态实际渲染尺寸，body 宽度 82 在视觉上被选中态 checkbox 的大色块挤压；前两行 checkbox 区域几乎不可见也使整张卡片的主次信息层级混乱"
+    }
+  },
+  "summary": "当前 2x2 卡片的核心视觉问题是 Checkbox 组件在选中/未选中两种状态下的实际渲染尺寸严重不一致：未选中态因 unSelectedColor #33000000（20% 不透明黑）对比度过低且声明尺寸 16x16 被渲染为约 8-10px 的细小弧形标记；选中态则突破 Stack 20x20 clip 边界渲染为约 28-30px 的完整蓝色实心方块。连续四轮减小声明尺寸和增加 clip 都未能修复组内一致性。需要在保持 Checkbox 交互能力的前提下，通过扩大 Stack 尺寸并加白色背板让两个状态都有清晰可见的容器边界，同时提升 unSelectedColor 对比度。"
+}

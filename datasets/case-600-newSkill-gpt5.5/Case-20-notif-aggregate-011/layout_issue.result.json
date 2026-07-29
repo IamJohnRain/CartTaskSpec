@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-20-notif-aggregate-011",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "截图左上方「群消息聚合」标题首字「群」左侧竖笔明显被卡片左上角圆角裁掉，根因是当前 root padding 仅为 3px，title_text 左缘 x≈3，而 borderRadius 22 的圆角曲线在 y≈12 处的可见边界为 x≈2.4，文字与圆角仅 0.6px 缓冲，负字距直接将首字左侧笔画推到圆角外；右上「时钟」按钮内「时」字顶部横笔紧贴按钮上沿（仅 1-2px），10pt 字号在 18px 按钮配 2px 上下内边距时 ascender 几乎顶到按钮边框。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "标题「群」字被卡片左上角圆角裁切，文字笔画进入圆角裁切区；当前 root 总和 padding(3)+itemMargin(2)+header(18)+itemMargin(2)+list(112)+padding(3) = 140px 数值上虽等于卡片高度，但 padding 仅 3 让标题与圆角安全距离不足；list 底部的「家庭群: 晚饭改七点」行与「07:55」时间贴近 list 底沿，list borderRadius 10 在该 y 处的曲线已逼近最后一行的左缘。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "Checkbox 仍使用受控尺寸 Column 色块（10x10），未选/选中/告警三态颜色（#ffededed / #ff0a59f7 / #ffe53935）在白色背板上对比清晰，语义可识别，无装饰灰块化问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "标题「群消息聚合」紧贴卡片左圆角曲线，缺乏圆角安全留白；右上「时钟」按钮内 10pt 文字与按钮 18px 高度 + 2px 内边距比例失调，ascender 几乎贴到按钮上沿；底部「家庭群」行距 list 圆角下沿的安全距离偏小，list 圆角 10 在 y=133 处的曲线 x≈6.86 与行左缘 x≈7 仅 0.14px 缓冲，存在被圆角裁切风险。"
+    }
+  },
+  "summary": "本轮 4 类问题中 3 类复现：(1) 标题「群」字被卡片左上圆角裁切，根因是 root padding 3px 过小，title 起始 x=3 与圆角曲线 x≈2.4 仅 0.6px 缓冲；(2) 列表底部「家庭群」行与 list 左下圆角曲线距离仅 0.14px，存在被裁切风险；(3) 「时钟」按钮 10pt 文字 ascender 贴按钮上沿。Checkbox 色块方案本轮正常。历史 4 轮均通过减少 padding/list 高度来腾空间，但每次都让标题与圆角缓冲更紧张；本轮反向操作：把 root padding 从 3 提升到 4，让 4+18+2+112+4=140 精确等于卡片高度，title 缓冲从 0.6px 提升到约 2.07px，同时保持 list 高度 112 不变、内容 105px 与可用 106px 仍有 1px 缓冲。"
+}

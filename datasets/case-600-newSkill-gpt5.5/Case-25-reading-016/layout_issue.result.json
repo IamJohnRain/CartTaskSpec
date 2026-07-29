@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-25-reading-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "书单行内 book_text 实际渲染宽度超过 64px 容器，'《雪》剩余8%'、'《山》剩余6%' 的 '%' 字符直接顶到右侧 '室内听/户外听' 的 '室'、'户' 字左缘，二者几乎无可见间隙；同时第 3 行《灯》被按钮上缘裁切，checkbox 圆角和行底色被截断。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "list 高度 66、row 高度 24、space 2，自然内容高度 3×24+2×2=76 超出 list 容器 10px，导致第 3 行《灯》下半部被按钮和 clip 边界裁掉；当前结构在任何一项 24 行的方案下都装不下 3 整行，必须整体重算纵向预算。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "music_icon 在白底卡片上呈中等蓝紫色音符，对比度足够；天气文字「多云」为半透明黑置于白底，可读；checkbox 选中/未选中两态轮廓与填充色对比明显，均可识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "行内 4+12+4+64+4+24=112 恰好等于 row 宽，零缓冲使 book_text 与 book_tip 文字首尾相接；3 行可见承诺与 66 list 高度矛盾，造成第 3 行被拦腰截断，破坏可滚动列表应有的整齐节奏。"
+    }
+  },
+  "summary": "2x2 听书单卡片经过四轮微调后，按钮文字已居中、3 行滚动可用，但书单行内 book_text 64px 容器无法容纳 '《雪》剩余8%' 在 fontSize 10 下的实际渲染宽度，'%/6%' 与 '室/户' 字左缘直接相接；同时 list 66 / row 24 / space 2 的预算下，自然内容 76px 超出容器 10px，第 3 行被按钮和 clip 上沿裁切。需要整体重构纵向预算：把 row 降到 22、list 加到 70 让 3 行恰好完整显示，按钮收到 28 同时把 fontSize 12 文字的上下内边距维持在 8px，并把 book_text 字号降到 9 让 '《雪》剩余8%' 真正落在 60px 容器内、左右留出 9px 缓冲，根除文字粘连。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-16-travel-ticket-011",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "标题'出发提醒'、计数'共2趟'、环形中心'3✈'/'9✈'、'距离出发'与'还有X天'均未被其他元素覆盖，文字与图标均可完整辨认"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "头部 count_text 已修正为基于 /data/calendar/countText 的短串'共2趟'，宽度 50px 容器内完整显示；两趟小卡宽度 54px、padding 6 内部可用 42px，下方'还有3天'/'还有9天'均落在 42px 容器内且未触及小卡圆角；环形 40x40 居中，Stack 内容宽度 24px 小于环内孔约 28px，无溢出"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "✈字符为黑色(fontColor #e5000000)，环形内为白色背景，对比度充足，字符可清晰识别"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "头部 Row 用 spaceBetween 让'出发提醒'与'共2趟'形成稳定两端对齐；两小卡以 8px itemMargin 水平居中排列；小卡内部 Column 40(环)+3+12+3+14=72，余 18px 由 padding 与对齐均匀吸收；'距离出发'(fontSize 9 灰)与'还有X天'(fontSize 11 粗)层级清晰，整体视觉密度均衡"
+    }
+  },
+  "summary": "上一轮将 count_text 由 size() 函数改为基于预注入 /data/calendar/countText 的字符串拼接后，头部溢出问题已解决，标题与计数两端对齐恢复稳定。环形内'数字+✈'组合宽度 24px 严格落在 40x40 环的内孔内，未被弧线裁切；两小卡布局对称、下方'距离出发'/'还有X天'两行均在小卡 42px 内容区内完整显示，未触及圆角；✈字符与白底对比度足够，识别无障碍。综合判断四类视觉问题均已解决，无需再次修复。"
+}

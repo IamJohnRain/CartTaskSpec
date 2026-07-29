@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-24-todo-013",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "16x16 勾选框（实际渲染 16x16）塞在 18px 高的 todo 行里仅剩 1px 上下内边距，截图中收快递绿框顶部压入洗衣服行灰色底、浇花深灰框顶部压入收快递蓝底、红色行白框顶部压入浇花黄底，四个勾选框全部跨过行边界与上一行底色重叠形成视觉串扰。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "right_column 116 被 header 30 + margin 2 + list 72 吃满后 list 底部 y=128 紧贴 borderRadius 22 圆角起点 y=118，第 4 条红色「下雨收衣服」行底边已位于圆角曲线范围内、行右下角被卡片圆角裁切，且与卡片底边完全贴合无安全留白。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "第 3 条「浇花」底色 #FFFFE082（浅黄）与勾选框 unSelectedColor #FF333333（深灰透）对比不足，截图中该勾选框几乎只剩极淡的暗轮廓、未勾选状态难以辨认；其他三行勾选框因 16x16 过大反而挤压了文字与底色对比。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.8,
+      "evidence": "todo_list space=0 让 4 条 todo 颜色块完全贴合、没有行间呼吸；右列纵向 116 被完全占满、底行紧贴圆角起点；title_group 内 title 14 + 2 + summary 12 = 28 与 header_row 30 几乎贴满，主指标 27°C/今日待办 与 4 条 todo 列表之间层级留白不足、整张右列密度过高、缺少稳定节奏。"
+    }
+  },
+  "summary": "经过 4 轮修复，4 条 todo 已全部可见、绿底冲突已解决，但 16x16 勾选框在 18px 行里只留 1px 内边距导致每个勾选框顶部跨行边界与上一行底色重叠（text_occlusion）；right_column 116 被完全吃满、红色警告行底边紧贴 borderRadius 22 圆角起点（layout_overflow）；浇花浅黄底上的 #FF333333 描边对比仍不足（icon_background_visibility）；space=0 让 4 条 todo 颜色块贴合、缺少层级留白（spacing_aesthetic）。本轮需整体重构右列纵向预算：缩小勾选框到 14x14 解决行内边距问题、压缩 header 与 rain_summary 高度腾出底部 23px 安全区、给浇花勾选框换纯黑描边保证黄底可读、加 1px 行间距给 4 条 todo 视觉呼吸。"
+}

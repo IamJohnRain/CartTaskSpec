@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-23-countdown-014",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "截图内'已坚持健身'、'28'、'天'、'蹲/跑/拉'、'72/64/86'与左侧浅灰 pill、三组橙色环之间无直接覆盖或穿插遮挡，文字本身可读。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.82,
+      "evidence": "'天'位于主列底部 y≈100，'72/64/86'同理，距卡底约 28px，borderRadius 18 圆角裁切区从 y=122 开始，未进入风险区；caption 距卡顶 32px 安全。虽紧凑但未越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.78,
+      "evidence": "icon_panel 使用 #ffe5e5e5 浅灰底板，icon_run 浅色奔跑人形在浅灰底板上有清晰轮廓可辨，不算难以识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "左侧 28x40 浅灰 pill 在 60 高的 main_row 中仅占 40 高，垂直居中后上下各留 10px 空白，形成孤立漂浮的小色块；与中部 primary_column 40x60（caption+value+unit 填满 52 高）和右侧 metrics_row 40x60（ring+label+value 填满 38 高）形成明显的'轻飘|饱满|饱满'三段重量失衡；右侧 metrics 数值'72/64/86'在 12px 窄列中以 7px 字号渲染实际宽约 14px 已超列宽，存在贴边溢出风险；整体左右节奏与垂直对齐仍不理想。"
+    }
+  },
+  "summary": "当前设计在 140x140 极小画布内维持横向三段 [icon 28x40 pill | primary 40x60 | metrics 40x60] 结构，但左侧浅灰 pill 在深色画布上视觉权重过重且高度仅 40 漂浮在 60 高 main_row 中段，与中右两段饱满内容形成明显重量差；右侧 metrics 数值列宽 12px 装不下 7px 字号的'72/64/86'双字符。本轮整体重构：放弃浅灰底板方案，将 icon_panel 改为 24x40 + #ff333333 深灰底板（视觉权重减半，与深色画布融合但仍可定义图标区），同时把 metrics_row 从 40 加宽到 44，3 列各 14 宽 + 1px 间隔，让 ring 12x12 + label 6px + value 7px 三层信息在 14px 列中完整无溢出；primary_column 维持 40x60 不变保证主指标'28'视觉权重。三段宽度预算 24+4+40+4+44=116 精确填满 root 12 padding 后内容区。"
+}

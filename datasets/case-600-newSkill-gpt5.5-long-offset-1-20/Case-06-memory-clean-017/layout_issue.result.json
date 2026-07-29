@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-06-memory-clean-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "右侧信息列 app_check_1（声明 6×6 实际渲染约 15-17px 红色实心方块带白色对勾）右边缘直接压住「视频 2.4G」首字「视」的提手旁笔画，红色背板完全覆盖「视」字左侧；app_check_2（白色实心方块）同样压住「聊天 1.8G」首字「聊」左侧提手旁；底部 power_button 高度 24 但「超级省电」四字底横仍贴底裁切"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "app_row 高 14 内 checkbox 实际渲染约 15-17px 已超出 row 容器高度并在水平方向侵占文字起始位；schedule_row 13h 与下方 clean_row 22h 之间仅 2px itemMargin 缺乏呼吸；apps_column 高 48 内部堆叠三行导致纵向密度过高"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.72,
+      "evidence": "scan_icon（clean_fill 深色 + 白底）、trash_icon（icon_clear 浅色 + #ff2c3e50 深底）、power_icon（icon_save_power 浅色 + #ff2c3e50 深底）三枚图标与蓝绿渐变背景对比度尚可，图形细节基本可辨，未达不可识别阈值"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "四轮连续修复均未解决 checkbox 文字首字被覆盖的本质问题（6→8→11→12 收窄都失败），说明 Checkbox 组件实际渲染尺寸远大于声明尺寸；右侧 apps_column 78 宽不足以容纳 Checkbox 实际渲染宽度 + 安全间距 + 完整文字；power_button 文字底部贴底破坏底部视觉完整性"
+    }
+  },
+  "summary": "Round 4 渲染中 Checkbox 组件声明 6×6 仍以约 15-17px 实际尺寸压住「视频」「聊天」首字，底部「超级省电」在 24h 按钮里贴底裁切。本轮放弃逐步缩框方案（历史四轮 12→12→11→6 均失败），整体重构为：Check 提升到 14×14 声明（实际渲染约 15-16px 是 Checkbox 组件最小有效尺寸）、itemMargin 强制拉到 8、apps_column 加宽到 76 容纳勾选框+安全间距+完整文字，app_row 加高到 17 让勾选框垂直居中不再溢出，power_button 保持 24h 高度但加宽到 92 让「超级省电」四字充分居中不再贴底，环形提升到 40×40 增强主指标视觉权重。"
+}

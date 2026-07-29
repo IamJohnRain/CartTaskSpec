@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.97,
+      "evidence": "右上角「设提醒」按钮在 80w + 7pt 下完全看不到可识别文字，只剩红色椭圆内的残缺笔画；左上角「缴费提醒」标题在 32w + 7pt 下也呈现挤压破碎、几乎无法辨认的状态。3 条账单的「立即缴费」按钮在 88w 下右侧「费」字笔画仍被按钮右沿裁切。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "v0.9 Form Button 内部水平 padding 约 30px 每侧，reminder_button 80w 扣除 60px padding 后文本区仅 20px，远小于「设提醒」21px 文字宽度；pay_button 88w 扣除后仅 28px，等于「立即缴费」28px 文字宽度，零安全余量导致右侧笔画贴边；title_text 32w 在 7pt 下 4 字「缴费提醒」28px 也几乎零余量。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "本卡无图标资源，⚠ 符号随账单名称文字使用，在红底白字/白底红字行中对比清晰，无融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "Button 文字溢出导致按钮视觉破碎、标题与按钮均贴边无呼吸感；bill_name 26w 与 pay_button 88w 的旧分配让名称区与按钮区都接近零余量，主次信息比重失衡。连续 5 轮局部调宽收窄都未根本解决 Button 内部 padding 预算问题，需整体重构宽度分配。"
+    }
+  },
+  "summary": "2x2 缴费提醒卡整体垂直结构（header 18h + primary 24h + list 70h）合理，3 行账单完整显示、主标题醒目、逾期行红底白字对比清晰。但所有 Button 文字（设提醒、立即缴费×3）仍被按钮右沿裁切：reminder_button 80w + 7pt 让「设提醒」完全不可见；title_text 32w + 7pt 让「缴费提醒」呈现破碎状态；pay_button 88w + 7pt 让「立即缴费」右侧「费」字贴边。已确认 v0.9 Form Button 内部 padding 约 30px 每侧（60px 总量），需整体重构宽度分配以彻底解决裁切。"
+}

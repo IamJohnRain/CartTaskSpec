@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-03-anti-addiction-011",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "天气文字、设置按钮、任务标题与第一个复选框标签之间无重叠或被遮挡。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.96,
+      "evidence": "右侧任务面板中第二个复选框标签'休息眼睛10分钟'被截断显示为'休息眼睛10分...'，末尾'钟'字被省略号掩盖，Checkbox 组件默认 label 渲染区域不足以容纳长任务文本。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "太阳+云朵天气图标在 #fff1f3f5 浅灰底上对比清晰，黄色环形仪表色彩鲜明，复选框勾选状态区分明显。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "左侧 meter_value 文本'今日已用42分'在 110px 列中左右各约 8px 安全边距尚可，但右侧任务面板因 Checkbox 截断导致视觉信息不完整，左右列宽 110:158 下右侧密度失衡。"
+    }
+  },
+  "summary": "前四轮反复调整左右列宽（88↔100↔112↔110）与任务面板内边距（10→6→4）均无法解决 Checkbox 组件长任务标签被截断的问题，根因是 Checkbox 组件内部 mark + 内边距占用过多空间，留给 label 的渲染区域不可控。本轮放弃 Checkbox 组件，改用 Row + Stack + Text 自定义可勾选任务项，从根本上保证 label 区域宽度可控；同时重新分配左右列宽为 100:168，使左侧主指标获得足够呼吸感、右侧任务面板有 160px 完整宽度承载 7 字长标签。"
+}

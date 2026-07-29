@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-07-sports-event-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "在截图中，红色'警'角标出现在卡片正中央，直接覆盖在主指标'还有32天'的'32'字符上——v0.9 Form的Stack不支持角落绝对定位，alert_overlay按默认居中布局落在primary_panel(116x40)内，导致关键倒计时文字被遮挡约30%宽度，'32'无法完整辨认，违反'Stack不得遮挡文字、CTA或主数值'规则。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "虽然'警'角标在视觉上侵入主指标区域，但其本身坐标约在x=65-73、y=55-66（140逻辑坐标），仍在卡片140x140边界内；训练行标题'8km轻松跑/6km节奏跑'右端在x≈110处，距右圆角边界(x=122)约12px，未出现明显的圆角裁切或边界溢出。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "icon_run.png为白色轮廓图，在#0cffffff的暗色半透明行背景上对比度充足，两条训练行的小跑步图标清晰可辨；header和primary区域无图标显示需求。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "红色'警'角标出现在主指标'还有32天'正中央，破坏了该区域作为视觉焦点的层级——倒计时是用户最关心的信息却被告警装饰喧宾夺主；header区域相对空泛（只有title+weather），而primary_panel却因角标叠加而显得拥挤，左中右视觉重量严重失衡；这种'内容局部拥挤而其他区域空泛'的布局违反了主次信息平衡原则。"
+    }
+  },
+  "summary": "本轮主要问题是上一版采用Stack将alert_overlay叠加在primary_stack（主指标面板）上以实现角落定位的方案失败：v0.9 Form的Stack不支持绝对定位/角落对齐，子组件按默认居中布局，导致红色'警'角标直接覆盖在'还有32天'的'32'字符上，造成严重的文字遮挡（text_occlusion）并破坏主次信息平衡（spacing_aesthetic）。需要放弃Stack方案，将告警pill放回header_row并通过精确的列宽分配确保其与卡片右圆角之间有≥18px的安全留白，同时不挤压天气文字的显示。"
+}

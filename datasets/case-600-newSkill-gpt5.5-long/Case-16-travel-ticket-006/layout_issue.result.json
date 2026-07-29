@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-16-travel-ticket-006",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "截图显示第4、5项（买当地电话卡、兑换当地货币）完全不可见，仅在白色卡片底缘残留极细的灰色横线；第3项「下载离线地图」文字下半部分被白色容器底边硬切；按钮「同步运动目标」白字在绿底上笔画出现明显叠影/重影，关键CTA文字无法干净辨认。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "checklist_column 声明高度70，但5条 check_item 实际渲染行高约18px（受 Stack+Text 默认行高撑开），5×18=90远超70，第4-5项方框与文字被粗暴裁掉；按钮与白色清单底边几乎相切，无任何呼吸空间。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "airplane_departure.svg 在白色圆角底板中与绿到黄渐变背景对比清晰，识别无碍。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "header 20 + gap 2 + list 70 + gap 2 + button 22 = 116 看似填满，但因 check_item 实际行高被 Stack 内 Text 默认 line-height 撑到18px，列表实际占用90px，把按钮挤到与列表底缘相切；按钮字笔画叠影进一步破坏整体节奏，左中右视觉密度严重失衡。"
+    }
+  },
+  "summary": "卡片配色、信息分组、事件绑定基本正确，但五次尝试均未解决 checklist_column 内部子项被 Stack/Text 默认行高撑开导致实际高度超标的问题：3项完整、2项被裁；按钮文字在绿底白字小字号下出现叠影。本轮彻底放弃「Column套Row套Stack套Text」的多层嵌套（每次嵌套都会叠加默认行高），改用 List 组件承载 5 个紧凑的 Row 项，并显式给 Text 设置 height/width 锁定行高，从根上消除撑高与裁切；按钮改用更大行高与更小字号确保笔画清晰。"
+}

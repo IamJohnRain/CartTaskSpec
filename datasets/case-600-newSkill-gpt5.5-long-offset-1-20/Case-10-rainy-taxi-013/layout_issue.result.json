@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-10-rainy-taxi-013",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "各文字组件（小雨、距上车还有、12分钟、告警 等候20分钟、沪A8K21/沪B6P09/沪D3M72 及其距离）虽密集但无相互覆盖，文字本身可辨认。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.72,
+      "evidence": "底部车辆列表面板底边 y≈128，距卡片内容底仅 12px，深色面板在视觉上贴近卡片 18px 圆角裁切区起始线 y=122；列表面板 borderRadius=10 的底角弧线与卡片 18px 圆角弧线在底部叠合，末行'沪D3M72 760m'基线进入面板圆角内侧。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "local_fill.svg 深色定位图标在 #33ffffff 浅色磨砂面板上对比清晰，轮廓完整可辨，未出现融合或不可识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "车号'沪'字'氵'左点紧贴列表面板 borderRadius=10 圆角弧线内侧（list padding 12 仍不够安全）；#10000000 深色面板在底部形成明显下沉重压感，与上方浅蓝渐变及磨砂面板失衡；上半区 40+4+14=58px 留白较舒展，下半区 54px 面板挤压形成头轻脚重；末行文字距面板底仅 8px 缺乏呼吸。"
+    }
+  },
+  "summary": "2x2 卡片上半区（地图+ETA）信息层级清晰，磨砂底与浅蓝渐变配合雨天场景成立，红字告警醒目。但前 5 轮在保留深色列表面板的前提下反复压缩 main_row 和微调 padding，均未根本解决问题：面板始终贴近卡片底边圆角风险区，'沪'字始终贴面板圆角，深色面板在底部形成固定的下沉重压。本轮彻底放弃带背景面板的列表方案，改用无背景 Column+Dividers 重组车列表。"
+}

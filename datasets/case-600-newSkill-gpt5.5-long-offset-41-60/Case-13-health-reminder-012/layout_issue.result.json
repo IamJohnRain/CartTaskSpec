@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-13-health-reminder-012",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "标题第一行'今日已喝1200ml'字符顶部紧贴卡片上沿,首行'今'、'日'、'已'、'喝'以及'1'、'2'、'0'、'0'、'm'、'l'的笔画上半部分被卡片圆角(clip=true + borderRadius 18)裁切,无法完整辨认;这是连续第五轮出现该症状,说明 headline_wrapper paddingTop 20 在该渲染器中未被实际应用到子组件定位。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.94,
+      "evidence": "headline_text 设置 height 30、fontSize 13、maxLines 2,根容器无 paddingTop,headline_wrapper paddingTop 20 未生效,首行字符顶部被卡片上沿圆角切除;同时 headline 包裹 50px 高度 + metric 22 + reminder 44 + 2×2 itemMargin = 120 已用满底部,垂直节奏上挤下松。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "水滴/心形图标在 #B3E0F2 浅蓝磁贴上轮廓清晰,闹钟图标在 #40FFFFFF 磨砂白条上对比度良好,无明显融合或不可识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "标题首行被裁,顶部安全区几乎为 0,而底部 paddingBottom 10 与 reminder_column 44px 内容贴边,整体垂直节奏上挤下松;headline 在 116px 宽度内自然换行,把'✓已完成'拆成两行,断行点极不自然(✓ 在行尾、已完成在行首),主标题被削弱为两个碎片。"
+    }
+  },
+  "summary": "当前 2x2 卡片的核心遗留问题是 headline 首行被卡片圆角上沿裁切,根容器无 paddingTop 且 headline_wrapper 的 paddingTop 20 在该渲染器中连续五轮未生效(12→16→20→24 均失败)。同时标题在 116px 宽度内自然换行,把'✓已完成'拆成两行,断行点极不自然。指标磁贴和提醒行在之前轮次已验证合格,本轮放弃 wrapper/padding 路径,改用 Divider 显式占位 + 双 Text 显式断行,彻底解决顶部裁切与换行点问题。"
+}

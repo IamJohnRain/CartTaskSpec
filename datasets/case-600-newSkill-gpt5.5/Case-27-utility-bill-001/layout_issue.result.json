@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-001",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "「电量」「多云 26°C」「剩余」「32度」「快欠费」「拨客服」各文字自身可读，未发现文字互相压盖"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "「32度」以 fontSize 22 渲染在 60px 容器中，距 value_col 右缘约 12px，未贴卡片圆角；白色 chart_box 完整在主区域内，未越界"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.98,
+      "evidence": "主区域左侧白色 chart_box 内部仍完全看不到任何柱体：5 根 Text 柱在当前引擎下即使 content=\"·\"（中圆点）也未绘制 backgroundColor 背景，蓝色 #ff1976d2 与红色 #ffe84026 全部退化为底部约 2-3px 高的极短水平线段，柱图整体被白底吞没，用户明确要求的「柱状图」彻底不可见"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.94,
+      "evidence": "由于柱体仅剩 2-3px 高的水平线段，chart_box 整片呈空白块，与右侧「剩余 32度」形成左空右密的严重失衡；主区域视觉重心完全偏右，作为核心可视化的柱图沦为无意义留白，整体主次信息分配不合理"
+    }
+  },
+  "summary": "第四轮把柱体 content 改为中圆点 \"·\" 后，5 根 Text 柱在当前渲染引擎下仍只渲染出 2-3px 高的极短线段，蓝色与红色 backgroundColor 几乎完全被白底吞没，柱图在视觉上仍然不可见。前四轮所有「在 Text 上调背景色 / 调 content 字符」的尝试都失败，问题根源是 Text 的 backgroundColor 只对字符字形区域有效，无法形成稳定的实色柱体。"
+}

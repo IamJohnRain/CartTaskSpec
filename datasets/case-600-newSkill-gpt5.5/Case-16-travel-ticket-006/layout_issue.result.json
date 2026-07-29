@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-16-travel-ticket-006",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.08,
+      "evidence": "左上角飞机图标已缩小为 16x16 并放入 24x24 白色圆角底板，与右侧 'CZ3125 航班' 文字之间有 8px itemMargin 间隔，图标与文字无视觉重叠或压线；'深圳-北京'、'13:20 - 16:35'、'B12'、'查看详情' 等所有受保护文字均完整可读。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.18,
+      "evidence": "根 300x140 padding 12，main_row 276x116 内左栏 150 + 间距 10 + 右栏 116 = 276 水平无越界；左栏四行总高 18+28+20+16 + 3*8 = 106 < 116，右栏 12+24+18+32+3*4+20=118 理论上比 116 多 2px，但渲染实际显示按钮完整贴于白色卡片底部，无可见裁切或贴边。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.05,
+      "evidence": "airplane_departure.svg 现置于 24x24 白色圆角底板 (#ffffffff) 内，符合素材 recommended_background 推荐的浅色背景，深色图标轮廓在白底上对比清晰、可识别性高。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.12,
+      "evidence": "时间行 depart_time(textAlign right) + dash(textAlign center) + arrive_time(textAlign left) 在 justifyContent center 下，两侧文字到 '-' 的视觉间距对称；左栏 itemMargin 8、Row 内左对齐 + Row 整体 24 高，顶部行视觉密度均匀；右栏 10 内边距下登机口标签、主数值 B12、座位行、CTA 按钮层级稳定，与左栏主信息 '深圳-北京' 在视觉权重上形成平衡。整体左密右白卡片形成稳定双栏节奏，无明显贴边或局部拥挤。"
+    }
+  },
+  "summary": "本轮针对上轮三类问题（图标过大压文字、'-' 间距不对称、黑色图标缺底板）的整体重构已完成并验证有效：飞机图标缩为 16x16 并放入 24x24 白色圆角底板，时间行采用 textAlign right/center/left + justifyContent center 实现视觉对称，整体左右双栏布局在 2x4 画布内比例合理、文字完整、留白舒适。"
+}

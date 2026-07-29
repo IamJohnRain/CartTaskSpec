@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-26-group-buy-014",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "右下角\"免漏单\"提示文字与\"通知设置\"按钮文字发生明显重叠——从截图可清晰看到淡白色的\"免漏单\"字样直接叠加在白色按钮的\"通知设置\"字样上，两段文字笔画互相穿插、均难以辨认。原因是上一轮采用Stack+position:absolute(bottom:38)定位action_hint，但渲染引擎在alignContent:flexEnd的Stack中并未按预期将两个绝对定位子项分开放置，而是将hint叠加到了button所在区域。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "所有组件均位于300x140卡片内部，倒计时、76%数字、橙色进度条、待处理徽章、三条拼单动态的右边缘和底边都保留有合理留白（root padding 12），未见裁切或越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.94,
+      "evidence": "秒表（28px白底）、三人组和带对勾日历（16px白底）三个图标在蓝紫渐变背景上对比度充足，轮廓和填充色清晰可辨。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "右下角动作区因Stack绝对定位渲染异常，导致免漏单提示与通知设置按钮在视觉上完全叠合为一个混乱的色块，组内文字层级、上下间距、视觉锚定全部失效；与左侧三条紧密排列的动态列形成强烈对比，左中右信息密度严重失衡。"
+    }
+  },
+  "summary": "拼单监控卡整体三段式信息层次合理、夜晚蓝紫渐变氛围到位、三个图标在白底板上识别度高、待处理徽章与通知设置按钮均采用白底橙字的高对比CTA语言。但右下角动作区上一轮采用的Stack+position:absolute方案在渲染时出现bug：action_hint(bottom:38)未被正确分离到按钮上方，而是与action_button(bottom:0)叠加在同一区域，造成免漏单提示与通知设置按钮文字严重重叠，CTA完全无法识别。"
+}

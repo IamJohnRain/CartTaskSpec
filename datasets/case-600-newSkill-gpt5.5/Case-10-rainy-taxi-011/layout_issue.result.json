@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-10-rainy-taxi-011",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "截图未观察到任何文字被前景元素覆盖或压住：'腿快废了'、'8200步'、'今日步数'、'18°C/湿92%/等12分'、'注意:可能延迟'、'去地铁' 全部清晰可读，无图标、按钮、装饰元素遮挡文字。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.78,
+      "evidence": "'8200步' 在 16pt bold 下的实际渲染宽度约 60-66px，info_col 78px 容器右边缘在 x=128（root padding 12 内边界），'步'字右竖画约在 x=112-115，距内容区右边界约 13-16px，距圆角裁切区起点（x=122）约 7-10px，未进入圆角风险区。'注意:可能延迟' 7 字 8pt ≈ 52px，在 60px 容器内不折行。metric_row 三个 32px 段、action_row 60+6+50=116px 均在 116px 内容区宽度内，垂直预算 44+4+20+4+32=104px 在 116px 预算内留有 12px 底部缓冲。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "rain.png 主体为白色云朵+蓝色水滴（dominant #F0F0F0 占 55%、#B0D0D0 占 12%），在 #564af7→#46b1e3 蓝紫渐变背景上轮廓清晰可识别，云朵白色与渐变深紫形成足够对比，未出现图标融入底色或难以辨认的问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.72,
+      "evidence": "header_row 中 rain_icon(32px) + gap(6px) + info_col(78px) = 116px 精准填满内容区；info_col 内左对齐的 '腿快废了'(9pt≈36px)、'今日步数'(9pt≈36px) 在 78px 容器内留白 42px，'8200步'(16pt≈65px) 留白 13px，右安全留白虽不充裕但仍达 12px 基线。metric_row 三段 32px 等距分布，padding 2 居中，无不均挤压。action_row 中红色 notice 与蓝色 button 通过 space-between 形成 1 文+1 按钮的对称布局，主次信息层次清晰。整体未出现一侧过密一侧空洞的明显失衡。"
+    }
+  },
+  "summary": "经过三轮迭代修复（首轮 rain_icon 36→32、info_col 74→78 拓宽列宽；第二轮维持列宽但将 steps_text fontSize 18→16），当前渲染结果已将'8200步'主指标的'步'字控制在 info_col 78px 容器内，右安全留白约 13-16px，距圆角裁切区约 7-10px，达到 12px root padding 最低安全基线。文字未被任何前景元素遮挡，rain.png 在蓝紫渐变上清晰可辨，metric_row 三段等距、action_row 红字+蓝按钮布局对称，无明显一侧过密一侧空洞的失衡。整体四类视觉问题均已解决。"
+}

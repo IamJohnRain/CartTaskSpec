@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-24-todo-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.96,
+      "evidence": "主任务区primary_check(14x14白色方框)右侧边缘与'项目评审'的首字'项'起笔位置距离仅约4px，视觉上方框边缘几乎贴住'项'字首笔；闹钟动作区按钮只渲染出橙色色块，'闹钟'文字在40x16+fontSize9下被完全裁掉、不可辨认（按钮文字渲染失败）。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "闹钟按钮'闹钟'文字在40x16+fontSize9的临界尺寸下被截断成乱码点状符号（已连续4轮复现该问题）；主任务区check(14)+info(48)+action(44)+margin6横向预算让方框与文字起始产生像素级碰撞；任务列表前两个白色勾选框在18h行+space2下视觉上仍显紧凑、容易粘连成块。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "primary_check和check_1/check_2的unSelectedColor为#ffffffff纯白，在#80ffffff(50%白)和#66ffffff(40%白)磨砂半透底板上叠加后与橙红渐变混合为浅橙色调，白色勾选框轮廓模糊需贴近才能辨认；与check_3选中态#64bb5c绿色形成强烈视觉断层，3个勾选框视觉权重严重不一致。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "主任务行三段式横向密度过高(14+6+48+6+44=118+padding8=126挤压panel内部宽度124)，primary_check与primary_label的水平间距过窄让方框压字；任务列表行间space=2+18h行在橙红渐变+半透白底板上信息密度仍偏高、前两个白色勾选框视觉粘连；闹钟按钮宽度等于action面板内宽(44-4padding=40)，按钮贴边动作面板边界、呼吸感不足。"
+    }
+  },
+  "summary": "第4轮修复后4类问题均未根除：(1)主任务区Checkbox(14x14)与'项目评审'(48w fontSize10)水平间距仅6px导致方框覆盖首字；(2)闹钟按钮'闹钟'在40x16+fontSize9下文字溢出成乱码点（连续4轮复现）；(3)任务列表三个勾选框因白色填充在浅磨砂底板上几乎不可见且视觉粘连；(4)主任务行横向密度过高、按钮贴边。需要彻底重构：缩小勾选框到12x12并改用深灰#333333提升对比、增大勾选与文字间距到6px、放大闹钟按钮到42x18+fontSize11确保文字渲染、扩大动作面板内边距。"
+}

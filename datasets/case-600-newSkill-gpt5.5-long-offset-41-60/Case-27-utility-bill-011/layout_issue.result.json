@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-011",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "首行「雨 雷阵雨 28°C」、副标题「同步设置」以及三条勾选项「✓ 关闭待机」「✓ 调高空调」「□ 关闭热水器」之间无任何重叠覆盖，所有文字笔画清晰可辨。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "首行「28°C」末字「C」在截图中位于 x≈458 像素，对应逻辑坐标约 x=129，距卡片右缘仅 11 逻辑单位；weather_temp 容器 width=32 不足以容纳 fontSize 12 下「28°C」的实际渲染宽度（约 30-33 逻辑单位），textOverflow:none 导致文字向右溢出容器，紧邻 borderRadius 18 圆角裁切风险区。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "「雨」字与「✓」「□」符号在白→浅蓝→紫色渐变背景上均为深色（#E5000000 / #99000000），对比度充足，无融合或不可识别现象。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "首行左右留白严重不对称：左侧「雨」距卡片左缘 12px 留白舒适，右侧「28°C」末位距卡片右缘仅 11 逻辑单位；三段总宽 98 在 116 行宽内产生 18 单位右侧空隙被温度文字溢出吞没，视觉重心明显左偏，右端压迫感强，整体空间分配失衡。"
+    }
+  },
+  "summary": "前 4 轮均尝试通过调整首行三段的 width/fontSize 组合来解决右侧贴边问题，但都忽略了 weather_temp 容器的实际可容纳宽度与文字自然宽度的匹配，导致 textOverflow:none 下文字溢出容器向右延伸。本轮采用更激进的整体降字号策略：把 glyph/condition/temp 三段统一降到 fontSize 14/12/12，并给 temp 分配 width=34（足够容纳实际文本 30 单位且留 4 单位余量），同时收窄 glyph 宽度到 14，确保首行三段总占用 94 在 116 行宽内留下 22 单位明确安全余量，「C」字距右缘 38 逻辑单位，彻底脱离圆角风险区。"
+}

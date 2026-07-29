@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-25-reading-002",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.72,
+      "evidence": "环内'47%'文字宽度（约28-30px）相对于40x40环的内径净空（约32px）仍偏紧，'4'与'7'底部笔画与紫色环内壁发生轻微重叠；progress_label以44宽度对齐到44x44环心，但视觉上'47%'明显偏向环的左外侧，未真正居中叠在环内。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.75,
+      "evidence": "progress_ring 44x44 + margin right 8 撑在 hero_panel 右上角，环上沿 y=16、下沿 y=60 紧贴 hero_panel 上下内沿；环右沿 x=280 距 hero_panel 右内沿仅 8px、距卡片右内边距仅 20px，且环右下弧线与 hero_panel 圆角内壁（圆角16）几乎相连，缺乏呼吸缓冲。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.1,
+      "evidence": "绿色✓圆形与紫色环在黑底与深灰hero_panel上对比度足够，'47%'白色文字虽被环壁轻微压住但仍可辨认，非识别困难。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "overlay_row将环独立浮在hero_panel之上，环占据hero_panel整个52px高度并贴齐右沿，右半侧视觉过密；环与hero_panel圆角内壁之间几乎无安全留白；环内'47%'与环壁重叠破坏整体视觉平衡。前四轮反复在'缩小环→放大环'之间摇摆仍无法同时解决'文字超内径'与'环贴边'两个核心问题，本质是overlay方案本身让环缺乏稳定的内部约束。"
+    }
+  },
+  "summary": "本轮核心问题仍是右上角进度环在overlay方案下与hero_panel的边界关系无法稳定控制：环偏小导致'47%'超内径、环偏大导致贴边、环居中偏移导致文字偏离环心。前四轮在40-48px之间反复缩放均未根本解决，说明overlay_row方案本身不适合该2x4画布的高度预算。本轮改为彻底重构：放弃overlay_row、把环下沉为hero_panel内部Row的子组件，用spaceBetween布局让环稳定落在hero_panel右半区，受hero_panel自身padding和圆角约束。"
+}

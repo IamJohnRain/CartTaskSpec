@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.97,
+      "evidence": "三个橙色'立即缴费'按钮内文字被按钮内部巨大内边距裁切，截图可见仅'⌐即缴费'样式，首字'立'被切为三角形残影、次字'即'严重残缺，文字几乎无法完整辨认；'设提醒'按钮54px对3字fontSize 10虽勉强可读但已贴边。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "'立即缴费'按钮宽76px对fontSize 8的4个汉字明显不足，按钮内部文本可视区约30-36px，无法容纳40px的文字宽度，文字溢出按钮文本可视区；逾期行displayName'⚠水费'在30px名字区中贴右边线。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "本卡未使用图标/图片资源，⚠文字符号在逾期行红底白字下清晰可见，无识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "按钮文字被裁切后视觉上更像色块而非可读按钮，破坏整体节奏；账单名(30px)与按钮(76px)比例约28:72，按钮视觉权重过重，账单名空间被严重挤压。历史4轮均尝试加宽按钮+降字号（50→60→68→76px, fontSize 10→8）但问题持续复现，说明该Button组件的内部padding远大于预期，单纯加宽和降字号无法解决。"
+    }
+  },
+  "summary": "本卡整体结构合理，标题、设提醒按钮、三个账单行、逾期⚠标记、紫渐变背景均已落地。但'立即缴费'按钮宽76px对4字fontSize 8仍不足，文字被切至'⌐即缴费'（首两字被裁）；历史4轮均尝试加宽按钮（50→60→68→76px）但问题持续复现，说明该Button组件的内部padding远大于预期（约25-30px/侧），单纯加宽无法解决。需彻底放弃Button直显文字的方案，改用Stack组合：底层Button提供点击事件和橙色背景，顶层Text用textAlign center渲染'立即缴费'，Text不受Button内部padding影响。同时将名字区从30px扩至36px，使用fontSize 10让'电费/⚠水费/燃气费'完整显示。"
+}

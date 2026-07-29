@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-19-photo-album-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.75,
+      "evidence": "置信度行'置信度67%'中'置'字顶部横画在height 20、fontSize 12、fontWeight 500的紧空间内被轻微裁切，X emoji与文本起始线紧贴使'置'字顶部笔画贴近行上沿。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "DataModel中title'3张照片建议\\n重新拍摄'的\\n在数据值中被渲染为空格而非换行，导致第一行变为'3张照片建议 重新'8个字符，'新'字右端已紧贴ambient_panel右内边距并进入圆角风险区；连续4轮微调字号与文本宽度均未能根治此由\\n失效引发的结构性贴边问题。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "⭕❌⏰三个系统彩色emoji在深色橙红渐变背景上对比清晰可辨；氛围O已缩小到20x22/透明度#1affffff正确退到背景层，不干扰主信息识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "标题因\\n失效被意外拆为不规则两行（'3张照片建议 重新'+'拍摄'），主指标信息层级因断行不可控而混乱；置信度row height 22偏紧使'置'字顶部有压迫感；标题与置信度之间itemMargin 6在两行标题下视觉节奏局促。"
+    }
+  },
+  "summary": "emoji语义⭕❌⏰、事件链路clickToIntent、橙红渐变氛围层与3行Row结构均已正确，但DataModel中title的\\n在数据值绑定中未作为换行符执行，被渲染为空格，导致标题'3张照片建议 重新'+'拍摄'的意外断行，首行'新'字贴边进入圆角风险区。连续4轮在fontSize与text width上的微调均无法根治因\\n失效引发的结构性问题。本次必须放弃\\n策略，改用单行fontSize 11渲染完整10字符标题，从根本上消除换行不确定性，同时修复置信度行高不足导致的'置'字顶部轻微裁切。"
+}

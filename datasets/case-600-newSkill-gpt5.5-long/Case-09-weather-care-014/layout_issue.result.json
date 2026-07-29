@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-09-weather-care-014",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "截图显示顶栏右下 '降温12°' 的 '°' 符号底端已紧贴橙色面板底边内边距，'8°C' 的 'C' 字底部同样贴住面板底内边距，两行受保护文字笔画进入视觉裁切风险区。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "顶栏 header '危险告警' 与 body '降温12°' 结束线距卡片右边缘约 22 逻辑单位，正压在 22px borderRadius 圆角起切线上；顶栏高度 74 + 内层 padding 10 导致 8°C/danger_text 底端贴底、进入裁切带；底栏 '看她步数' 按钮右边缘距卡片右边约 30 逻辑单位，仍偏紧。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "底部复选框 unSelectedColor 为不透明深灰 #ff555759，在 #f1f3f5 浅灰底上轮廓清晰，可识别为可点击控件；按钮白底深字也清晰可见。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "顶栏内层 Row 宽 236 填满 256 内部可用区，右列 caption_col 宽 130 直接贴右内边距，'降温12°' 与 '阴·添衣保暖' itemMargin 仅 2 几乎贴在一起；8°C 下方留白、'降温12°' 贴底的纵向节奏失衡，左右信息密度与圆角安全留白层级混乱。"
+    }
+  },
+  "summary": "本轮重点解决前四轮反复失败的同一类问题：顶栏右列文字结束线压在 22px 圆角起切线、'降温12°' 贴底、'8°C' 下方留白过大、右列两行节奏过密、底栏按钮距右下圆角偏紧。复选框可见性已合格，本轮放弃'内层 Row 232~256 拉满 + caption_col 100~140 右对齐'的局部方案，整体把顶栏高度从 74 抬到 82、内边距从 10 抬到 12，使受保护文字 (8°C、危险告警、降温12°) 真正落在 16px 圆角安全带以内；内层 Row 改用 252 宽 + space-between + alignItems:center，让 8°C 与右列 caption_col 在垂直方向上同基线对齐，'降温12°' 与 '阴·添衣保暖' itemMargin 保持 2 但整体下移以增加底部缓冲；底栏高度 38 缩到 30、padding 0，按钮宽度 120 + justifyContent center 让按钮右边缘距卡片右边约 33 逻辑单位，避开 22 圆角裁切区。"
+}

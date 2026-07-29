@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-15-smart-home-012",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "主视觉Stack中'灯'字底部'丶'点画明显穿过了外圈'○'的底部弧线，灯字与圆圈争夺底部空间，视觉上不够干净；当前hero_lamp fontSize 18 + hero_circle fontSize 42 在50x50盒子内间距仅约5-6px，火字旁底部点画下沿基本贴合圆圈下边缘。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "顶部右端'78%'实际渲染为' 8%'——'7'被裁切，battery_text仅18w装不下fontSize 10的'78%'（约19-20px），且textAlign=end导致文本左溢出后被right_group边界裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "白色'灯'/'○'/'云'在深蓝#0a59f7底色对比度充足；省电未选中#aaffffff与任务区未选中复选框在蓝底描边清晰；打扫选中绿高亮。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "顶部单行4元素（●全部已连接/78%/省电/☐）间距3-4px，'已连接'与'78%'视觉间距约6px，整体被挤压成信息带；右半区纵向4层（78%+省电□+任务+三checkbox）相对左半区（'全部已连接'+○灯hero）信息密度差约40%。"
+    }
+  },
+  "summary": "本轮主要两类问题：(1) '灯'字底部点画与圆圈底部弧线发生text_occlusion；(2) '78%'被裁切为' 8%'，battery_text宽度不足导致layout_overflow。同时右半区纵向4层相对左半区2层密度差约40%，需整体重新分配顶部信息带与主视觉区空间。"
+}

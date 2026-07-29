@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-16-travel-ticket-010",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "标题'G7次 北京南→上海虹桥'两行完整可读，'10:24 出发'与时钟图标并列无覆盖，'已耗时 02:13'与'还剩 47 分钟'两行清晰可辨，三个底部tile的'检票口/B12'、'座位/12车08A'、'餐车/已售罄'标签与数值均完整显示且无相互覆盖"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "main_row 62 + itemMargin 4 + tile_row 50 = 116 恰好匹配 root 116 内容区，title_text 28px 容纳 fontSize 11 两行，seat_value/dining_value 在 30px 高度内 2 行(fontSize 9-10)完整呈现，关键信息 B12/12车/08A/已售/罄 均未截断，root 圆角裁切区内无内容"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "tram_fill.svg 在 34x62 白色圆角面板内，对比强烈；clock_fill.svg 在 12x12 白色圆形底板(borderRadius 6)上，在紫色渐变背景上轮廓清晰可识别"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "主行62、底行50的纵向比例约55:45较前一轮66:46更平衡，title(28)+start_row(12)+elapsed(9)+remain(9)+3×1px 间距=61 在62px内紧凑而规整，底部三块小卡28x42内容区(label 10 + value 30)层级清晰、组内对齐工整，root 12px padding 保留安全留白，整体视觉密度合理"
+    }
+  },
+  "summary": "2x2行程卡经过三轮迭代后布局已达稳定状态：主行采用62px(视觉面板34x62 + 信息列78x62)承载火车主视觉与四级文本(标题/出发/已耗时/还剩)，底行采用50px三块小卡(检票口+座位+餐车)通过 label+value 两段式 Column 实现清晰层级，value 高度30px 保证'12车/08A'与'已售/罄'两行不被裁切，所有受保护文字(车次标题、时间、CTA、关键编号)完整呈现，无文字遮挡、无边界溢出、无图标融合问题。"
+}

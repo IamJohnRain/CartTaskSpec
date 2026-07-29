@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-19-photo-album-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "第一张生日卡中蓝色checkbox明显脱离所属白色卡片边界，整体漂移到第一张与第二张卡片之间的gap区域，与'小明'文字产生视觉分离，checkbox不再隶属于任何一张卡片；第二、三张的未选中checkbox也紧贴各自卡片的右边缘，视觉上'莉娜'/'阿姨'与对应checkbox各自孤立在卡片最右缘"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "第一张卡片的蓝色checkbox渲染位置明显在64px宽卡片右边缘之外，进入相邻卡片之间的7px gap区域；其余两张卡片的checkbox也贴在卡片最右缘，已进入圆角裁切风险区。history显示checkbox尺寸从18→16→14→10连续四轮缩小仍无法阻止溢出，因为根本原因是checkbox在Row+itemMargin框架下被推到header_row最右端，其实际视觉尺寸（蓝色填充+白色勾）大于声明的10×10"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "calendar_fill.svg深色图标在白色icon_box内对比清晰；checkbox选中态蓝色与未选态浅灰描边均可辨"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "history显示header区域checkbox-name间距已从3→5→8→16px、布局从左checkbox+右name改为space-between再到固定itemMargin，连续五轮在同一区域反复出现问题；当前蓝色checkbox脱离卡片边界进入gap，三张卡片的视觉节奏被严重破坏，蓝色checkbox与'小明'之间出现明显空白带"
+    }
+  },
+  "summary": "当前布局描述文字两行排布正常、warning_badge黄色醒目，但checkbox溢出问题在连续5轮修复中均未根治。根本原因在于checkbox被放在header_row的Row中，无论itemMargin多大，checkbox的右边缘始终贴着card的右内壁，而checkbox的实际视觉尺寸（蓝色填充+白色勾+可能的组件内部padding）大于声明的10×10，导致溢出。本轮放弃在原(header_row内Row+itemMargin)框架上继续打补丁，改为将checkbox从header_row中完全分离出来，单独放在卡片顶部的独立Row中，并通过paddingRight 6将checkbox的右边缘从卡片的右内壁向内拉6px，无论checkbox实际渲染多大都不会越界。"
+}

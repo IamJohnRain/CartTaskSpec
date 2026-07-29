@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-21-stocks-011",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.96,
+      "evidence": "标题行右端 '分红: 7月15日' 被卡片右缘裁切到只剩 '分红: 7月'，'15日' 完全消失在卡片边界外；paper_panel 底部 '清盘警告' 红色徽章下半截被 paper_panel 圆角切线切掉，徽章文字仅顶部可见。受保护的日历文字与告警文字均出现可读性破坏。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.97,
+      "evidence": "paper_panel 内 4 张 ETF 卡虽然已全部渲染，但第 3 张告警卡底部的 '清盘警告' 红色徽章向下溢出 paper_panel 的圆角切线，进入应在徽章下方的安全区；标题行 dividend_text 宽 190、textAlign end 后 '7月15日' 仍被 root 的 clip 在右缘外切掉。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.75,
+      "evidence": "已渲染的 '农/证/能/红' 单字图标在浅蓝/浅红底板上对比度可接受，'$' 标题图标在蓝底白字下清晰，未见明显融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "标题行内 title_text 70 + dividend_text 190 的分配让 '7月15日' 紧贴卡片右缘、贴边被裁；告警卡 4 段内容 (16+14+22+16=68h) 紧贴 card 底缘，徽章底部压上 paper_panel 圆角切线、未保留 2-3px 底部安全区，左右内边距与边缘安全留白不足。"
+    }
+  },
+  "summary": "本轮 4 类问题中 3 类仍存在：1) 标题行 dividend_text '分红: 7月15日' 被截到只剩 '分红:'，'7月15日' 消失在卡片右缘外；2) 第 3 张告警卡底部 '清盘警告' 红色徽章被 paper_panel 圆角切线裁切下半截；3) 标题行右端与告警徽章底部均贴边，边缘安全留白不足。根因是 header_row 把 dividend_text 放在 190dp 容器内 textAlign end，但实际渲染时中文字符宽度超过预期、被 root clip 在右缘；告警卡 4 段堆叠 68h 紧贴 84h inner 底部、徽章被切。"
+}

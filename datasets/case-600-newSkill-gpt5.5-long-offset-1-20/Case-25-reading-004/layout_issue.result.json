@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-25-reading-004",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "第 2 个胶囊'活着'中绿色 checkbox 块右缘与'活'字左缘几乎相切/微叠；第 4 个胶囊'小王子'中绿色 checkbox 块右缘同样紧贴'小'字左缘。itemMargin=6 在绿色 #64BB5C 高饱和实心填充的视觉膨胀下无法形成清晰呼吸，与前 4 轮同样问题复现。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.7,
+      "evidence": "第 4 个胶囊'小王子'三字在 108px 文本槽中渲染宽度约 32px，'子'字右缘距胶囊右内壁约 70px（充裕），但左缘'小'字紧贴绿色 checkbox 块右缘；胶囊 134px 内部预算 3+12+6+108+3=132 几乎无组内水平呼吸。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "闹钟 SVG 嵌入 32x32 #FFF1E0 暖色块中，深色图标在暖白底色上轮廓清晰，无对比度或融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "已选绿色实心 checkbox（视觉约 20px）与未选灰色空心 checkbox（视觉约 14-16px）宽度不一致，加上 itemMargin=6 不足，导致同一行四列起始节奏不齐；左列'三体/边城'的灰框与文字有 10px 呼吸，右列'活着/小王子'的绿块与文字几乎相切，视觉权重严重失衡。"
+    }
+  },
+  "summary": "本轮是第 5 轮，2x2 网格骨架（每格 134px）已正确建立，但格子内部 checkbox→text 的水平间距仍按 1x4 时代的 6px itemMargin 设置，导致绿色已选 checkbox 视觉膨胀后与标题字首字紧贴/相切。根因是 Checkbox 组件在选中态的视觉宽度（绿块+白对勾）远超 spec 的 12px，而 itemMargin=6 无法补偿这一渲染增量。本轮保留 2x2 骨架，专项放大 cell 内 checkbox-to-text 间距，并把 title 槽同步收窄以让 3 字书名仍有充裕右安全边距。"
+}

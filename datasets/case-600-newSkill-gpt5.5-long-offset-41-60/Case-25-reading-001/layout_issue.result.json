@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-25-reading-001",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "截图显示第一行 Checkbox 实际渲染体积约 30×30px，远大于 12×12 样式约束，橙色填充紧贴「深夜书房」的「深」字左侧几乎无呼吸；右侧「即将到期」被截断为「即将到」，右半部分贴到圆角内壁被裁切。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "① book_warn_split_0 只有 40px 宽，「即将到期」右端被圆角裁切；② book_check_wrap 28×14 容器被 30px Checkbox 撑爆，垂直方向侵入 book_row 上下边界；③ note_panel 22px 高度里 14px 图标底板 + 8pt 文字几乎贴边。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "「月光小径」前未勾选 Checkbox 受 28×14 wrapper 挤压，#ffffffff 边框在深紫蓝渐变上仅剩一像素淡灰描边，无法识别为可勾选控件；note_panel 中 14px 图标底板虽然在，但 #33ffffff 浅面板与 #1e3a8a 深蓝渐变对比度低。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "book_list 32px 内塞 2 行 14px Checkbox + 9pt 文字 + 8pt 警告，row 内 4px 间距被实际大尺寸 Checkbox 完全吃掉；header/main/book/note 四块纵向 14+34+32+22+3×3=115px 紧贴安全基线，主区与书单分层靠 9pt 副文案维系，视觉层级偏弱。"
+    }
+  },
+  "summary": "本轮 2x2 卡片在 Checkbox 实际渲染尺寸失控（始终 ~30px 撑爆 14px 高的 wrapper，导致橙色覆盖书名首字）、「即将到期」被圆角裁切、未勾选态在深色渐变上几乎不可见、纵向高度预算过紧四类问题上同时失分，且 review 1-4 反复用 9-12px Checkbox 样式 + 14-28px wrapper 都无法约束。需要本轮放弃 Checkbox 组件（它无视 styles.width/height），改用 Text 渲染「☑/☐」字符配合三元模板 {{ completed ? '☑' : '☐' }} 避开渲染尺寸问题，并把警告拆为 warn_icon+warn_text 两个独立 Text 杜绝模板裸露，同时给书单更多垂直空间和留白。"
+}

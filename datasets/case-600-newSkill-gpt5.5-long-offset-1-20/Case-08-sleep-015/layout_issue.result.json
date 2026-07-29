@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-015",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "底部'呼叫同事'绿色按钮中白色'呼''叫''同''事'四字底部笔画被明显裁切，'呼'字下横、'叫'字底部、'同'字底横、'事'字底横均缺失，文字下半部分几乎不可见"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "按钮 height=36 borderRadius=18 形成的完美胶囊形在 x=12 边缘处的实际可绘制底部上移到 y≈103，但文字底部延伸到 y≈110，超出按钮实际绘制区并被卡片 clip=true 在圆角裁切区附近截断"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "黄色圆形'!'徽章和三个紫色色块内白色'√'勾选标记在深紫渐变背景上对比清晰，识别度良好"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "底部按钮贴边且文字被裁切导致整体呼吸感不足；root padding 12 在 140x140 内分配给四组内容+按钮后底部仅剩 19px 缓冲，被按钮自身 borderRadius 18 进一步吞噬"
+    }
+  },
+  "summary": "140x140 卡片连续五轮修复仍未解决底部'呼叫同事'按钮文字被截断的问题。根因是按钮 height=36 borderRadius=18 形成的完美胶囊形在水平边缘处的实际可绘制区远小于名义矩形（borderRadius=18 意味着边缘处底部上移 18px），导致 textAlign='center' 的文字底部延伸到按钮实际绘制区之外，被卡片 clip=true 截断。需要在第 5 轮彻底放弃 pill 形按钮策略，改为 borderRadius 8 的轻圆角+合理高度的组合，并配合 justifyContent='center' 让内容整体居中。"
+}

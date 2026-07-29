@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-23-countdown-007",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "卡片所有受保护文字（标题'结婚纪念日'、主指标'已在一起1825天'、状态'礼物已准备'、天气'朝阳区 21°C 晴'、CTA'查看日程'、徽章'已绑定'）均完整可读，无任何文字被其他组件、图标、装饰或背景覆盖；中心胶囊中的勾选框与'礼物已准备'文字垂直对齐良好，徽章与主标题在同一基线。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.94,
+      "evidence": "主指标'已在一起1825天'在 fontSize 22 + textAlign center + width 276 下实际渲染宽度约 180-190px，相对 300px 卡片宽度两侧各保留约 55-60px 对称安全留白，'已'字左笔与'天'字右笔均明显回退到 root padding 12 内部，未进入圆角裁切风险区；其他组件（title_group、binding_badge、center_status 胶囊 180px、weather_panel 168px、action_button 88px）均在父容器宽度内，无贴边或越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "calendar_icon 白底黑图标在紫粉渐变上对比清晰、轮廓明确；sunny.png 橙色太阳在紫色背景区可识别、亮度足够；绿色 checkbox 在白色胶囊上高对比无融合；'已绑定'黑底白字徽章在亮色渐变上清晰可读；'查看日程'深色半透按钮在亮色渐变上对比充分。所有图标在深色或复杂背景上均无融合或识别困难。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "四段式 Column（top_row 20 + itemMargin 2 + primary_value 28 + itemMargin 2 + center_status 26 + itemMargin 2 + bottom_row 30 = 110 ≤ 116）整体高度预算合理；主指标'已在一起1825天'居中后左右留白对称均衡，无一侧贴边一侧空旷；顶部 title_group 左对齐与 binding_badge 右对齐在 20px 高度内基线整齐；中心'礼物已准备'胶囊宽度 180 居中偏左、底部 weather_panel 168 与 action_button 88 通过 spaceBetween 在 276 内容区两端均匀分布，左右密度平衡；垂直方向顶部 root padding 12、底部 root padding 12 与各 row 间距形成稳定层级，无压迫感。"
+    }
+  },
+  "summary": "当前渲染的四类视觉问题均已解决：主指标'已在一起1825天'在 fontSize 22 + textAlign center 下呈现适中的视觉权重（约 180-190px 实际宽度），左右对称留白均约 55-60px，未贴边；中心'礼物已准备'白色胶囊完整显示勾选框与文字；顶部 title+badge、底部 weather_panel+action_button 对齐与间距良好；图层叠加语义（night gradient 背景 + 前景大数字 + 中心勾选胶囊）、双素材（checkmark_calendar_fill.svg、sunny.png）、clickToIntent 事件与所有 DataModel 路径均完整保留。历史已尝试 32→28→24→20 单 Text 降字号、三段式 Row（因 daysText 已是完整串导致文字重复与 308>276 溢出）两种失败方案，本轮采用单 Text 居中适中字号策略彻底解决了反复碰壁的贴边问题。"
+}

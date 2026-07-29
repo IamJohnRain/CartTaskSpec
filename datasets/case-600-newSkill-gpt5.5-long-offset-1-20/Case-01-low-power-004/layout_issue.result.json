@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-01-low-power-004",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.96,
+      "evidence": "右侧'省电'动作卡片中，选中态的橙色 Checkbox 视觉框明显大于指定的 8x8（实际渲染约 24x24），白色 checkmark 笔画外延覆盖在'省'字左半部分上，导致'省电'二字被部分遮挡、难以辨认；'屏幕''优化'两卡的 Checkbox 右缘也压住 label 左缘，'屏''优'首笔与框线几乎相切。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "右侧 action_col 60px 内的 8x8 Checkbox 选中态视觉外延越界进入 label 区域；左侧 info_col 48px 中 battery_percent 宽度 24 容纳 fontSize 11 的'12%'虽勉强可读，但与图标间距 3px 偏紧。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "日程图标、电池闪电图标在深紫蓝渐变上对比度充足；选中态的橙色 Button 填充与白色 mark 在深色背景上清晰可辨，未出现图标融入底色的情况。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "右侧三张 action 卡片内 Checkbox 选中态视觉外延侵入 label 起始区域，组内文字起始/结束线参差不齐；左侧 5 行内容在 116px 列中分布尚可但与右侧 Checkbox 异常放大的视觉重心不匹配，整体卡片重心略偏右上。"
+    }
+  },
+  "summary": "本轮根因仍是 Checkbox 组件在 8x8 规格下选中态视觉框被放大到约 2x（约 24x24），白色 checkmark 覆盖'省电'文字起始区域。前 4 轮反复调整 Checkbox 尺寸、mark size、列宽配比均未根治渲染引擎对 Checkbox 的最小视觉尺寸约束。本轮彻底弃用 Checkbox，改用 Button + Text 的方案：Button 的 backgroundColor/borderColor 用动态模板表达式响应选中态，Text 的 content 用三元表达式在选中时前缀'✓'符号，从根本上规避 Checkbox 渲染异常。"
+}

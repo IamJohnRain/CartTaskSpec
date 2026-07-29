@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-20-notif-aggregate-018",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "当前可见文字（工作消息、项目复盘·紧急、距离截止还有1天、周报确认·跟进、已读82%、通勤天气）均未被其他元素覆盖遮挡"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "标题'工作消息'位于 root padding 12 后的 y=12 紧贴卡片顶部圆角安全区，文字顶部几乎压在上圆角裁切边缘；第一条黄橙渐变面板块中'项目复盘·紧急'贴面板顶边、'距离截止还有1天'贴底边，因面板内 padding 3+3 配 14px 文字容器偏紧，文字笔画接近面板圆角"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "本设计为纯文字面板块，无图标元素"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "root padding 仅 12，标题高度 16 文字与上边缘无安全留白；消息面板内 padding 3+3 使 10pt 标题与 9pt 详情与面板圆角边缘几乎贴边，视觉密度过高；header(16)+list(72)+button(24)=112 加 4px gap 后垂直预算已被压满，列表条目与按钮互相挤压"
+    }
+  },
+  "summary": "经过 4 轮迭代已让 3 条消息在列表中布局（第三条通过 list clip 隐藏可滚动），但当前方案仍存在两个未解决问题：(1) 标题'工作消息'在 root padding 12 下位于 y=12 处紧贴卡片顶部圆角安全区，文字顶部进入圆角裁切风险区；(2) 消息面板块内 padding 3+3 配 14px 文字容器使 10pt 标题与 9pt 详情与面板圆角边缘几乎贴边，视觉密度过高。需要整体重构垂直预算与边缘安全区：root padding 提升到 14 释放顶部安全留白，header 从 16 提升到 18 为 12pt 标题提供 6px 垂直呼吸空间，面板从 34 微降到 32 并将 detail 高度从 14 降到 12 以换取更合理的内边距，button 从 24 微降到 22 平衡总预算。"
+}

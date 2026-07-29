@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-19-photo-album-004",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "截图中'还差53张'、'照片已准备47%'、'三亚出发前'、'日云预报'、'点圆环看预报'、'距离出发还有8天'均无互相覆盖或被色条遮挡。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "环底'照片已准备47%'以margin[80,0,0,0]落在ring_touch底部y=80-88，卡片y=115-123，距底部浅青色条y=125仅2px，视觉上已贴底色条、进入卡片底部圆角裁切风险区。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "icon_bg采用#FF2C5A6B深青底，partly_cloudy.png的浅灰主体在深底上云朵太阳轮廓清晰，本项已解决。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "环内'还差53张'以margin[38,0,0,0]+height12落在ring_touch y=38-50（计算中心y=44=环几何中心y=44），但Text默认顶部对齐且lineHeight>fontSize导致文字visual center比环几何中心偏低约2-3px，主指标偏离环圆心；环底caption紧贴bottom_band使环内主指标与环底说明层级互相挤压，整体环内垂直中线错位。"
+    }
+  },
+  "summary": "当前卡片整体骨架（Column四层纵向+顶/底浅蓝浅青细色条+倒计时+左右双栏）已稳定，倒计时可见、icon在深青底上清晰、信息面板层级合理。但圆环内部出现两处空间失衡：环中心'还差53张'因Text默认lineHeight与环几何中心产生2-3px的视觉错位，主指标偏离环圆心；环底'照片已准备47%'以margin[80]贴住ring_touch底部，距卡片底部浅青色条仅2px，视觉上已贴边进入圆角风险区。需要整体重构环内布局，把'照片已准备47%'从环底移到环顶作为环caption，既让环底与底色条恢复4-5px安全呼吸，也彻底分离环内主指标（'还差53张'）与环说明（'照片已准备47%'）的视觉层级。"
+}

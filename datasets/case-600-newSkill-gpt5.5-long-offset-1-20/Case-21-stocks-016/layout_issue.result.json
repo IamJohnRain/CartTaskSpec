@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-21-stocks-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.97,
+      "evidence": "截图显示 rise_cb2 标签 '科技成长' 被截断为 '科技...'，plan_cb2 标签 '均衡配置' 被截断为 '均衡...'，4 字汉字名称末尾的'长'/'配置'被省略号覆盖遮挡，文字被控件内部 ellipsis 强行遮盖。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "rise_cb2 和 plan_cb2 宽度仅 92px，但 HarmonyOS Checkbox 组件在 9pt 字号下含勾选图标(约 16-18px)+ 文本 padding(约 18-24px) + 4 字汉字名（约 36-40px），实际需要 ≥110-120px 才能完整显示，92px 严重不足，文字在 Checkbox 内部被强制截断。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "Checkbox 勾选方框（蓝色实心和灰色空心）、⚠ 警告字符、'去设置'按钮在 #fff1f3f5 浅灰背景上对比度足够，可清晰识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.75,
+      "evidence": "rise_cb1(124w) 与 rise_cb2(92w) 宽度不一致、plan_cb1(124w) 与 plan_cb2(92w) 宽度不一致，同组内两个 Checkbox 宽窄不一导致视觉节奏断裂；同时 '涨幅榜' 标题与勾选行、勾选行与 divider 之间纵向间距过小，局部显得拥挤。"
+    }
+  },
+  "summary": "当前 2x4 卡片的根本问题是 review 4 引入的'不对称宽度'策略（cb1=124 / cb2=92）失败：92px 无法容纳 4 字汉字名 '科技成长' 和 '均衡配置'，被强制截断为 '科技...' 和 '均衡...'。这是历史 review 0/1/2/3/4 中'两 checkbox 同行平铺'策略下各种宽度组合（64/80/82/106/92/124）反复失败的延续。回顾历史：review 1 attempt 2 用 108px 对称宽度（标题独占行+下方双 cb）成功让 5 个基金名全部完整可读，本轮必须放弃不对称方案，回到'108+4+108=220 等宽对称'结构，并通过更舒展的纵向留白修复 review 2 提出的密度问题。"
+}

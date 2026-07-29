@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-24-todo-005",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "第三条任务文案\"整理风险和下周计划\"在 176px 宽的 Checkbox 中被截断显示为\"整理风险和下周...\"，末两字\"计划\"被省略号掩盖，用户完全无法读取完整任务内容（该任务为 9 个汉字，所需 label 宽度约 126px，但当前 Checkbox 实际可用 label 区仅约 86-100px，明显不足）。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "右侧 warning_panel(60x54) 与 weather_button(60x36) 宽度与父容器 right_panel(74) 之间没有内边距，黄色色块与浅蓝色块的右边缘直接顶在内容区右边界 x=278 处，与右圆角起点重合，几乎贴住卡片右圆角，缺乏安全留白。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "\"!\"字符在 #F5DC62 黄底上为 #E5000000 深色，对比度充足；☼ 字符和\"天气\"在 #190A59F7 浅蓝底上为 #FF0A59F7 蓝色，可清晰识别。两个文字图标均无视觉融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "右侧 right_panel(74) 内部子元素宽度与父容器完全相同（均 60），未在右栏内部留出任何视觉安全边距，导致黄色面板与浅蓝按钮的右侧、上下角都直接顶在 root 内边距 22 处；左 176 / 右 74 加上 itemMargin 6 的画布权重虽能用，但右栏\"色彩边界\"与\"卡片边界\"几乎重合，整体右半部被压扁，主次信息视觉权重与左右安全余量不对称。"
+    }
+  },
+  "summary": "当前 2x4 卡片截图显示，第三条 9 字任务\"整理风险和下周计划\"在 176px 宽的 Checkbox 中被截断为\"整理风险和下周...\"，用户无法读取完整内容；同时右侧 warning_panel 与 weather_button 的宽度与父容器相同（均 60 vs 74），黄色与浅蓝色块的右边缘直接顶在内容区右边界 x=278，与右圆角起点重合，缺乏 6-8px 的视觉安全留白。历史五轮修复分别在 left_panel=186/80、178/80、192/70、176/74 与 padding 12/16/22 之间反复试探，始终未同时解决\"左 8/9 字任务截断\"与\"右栏贴圆角\"两个问题。本轮放弃局部尺寸微调，整体重新分配画布。"
+}

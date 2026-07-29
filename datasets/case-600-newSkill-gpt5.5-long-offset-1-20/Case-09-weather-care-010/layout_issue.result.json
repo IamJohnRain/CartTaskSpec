@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-09-weather-care-010",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.97,
+      "evidence": "右侧'暴雨预警'、'不宜出行'、'当前位置'、三行预报（今天/雷雨/24°/29°、明天/暴雨/23°/28°、后天/大风/22°/27°）以及'查看天气详情'均清晰可读，无任何遮挡；左侧'危险告警'红色文字位于雷雨图标下方，未被图标覆盖；上一轮 temp_2 绑定表达式书写错误（路径多空格、'}}}' 缺位）已修复为标准 '{{ ${/data/weather/daily/2/temperatureRangeText} }}'，后天温度 22°/27° 完整渲染。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "根容器 300x140、padding 12，内层 276x116；hero_panel 88x116 内容区 72x100，内置 weather_icon 48x48 + itemMargin 6 + status_text 72x18 = 72px，Column 居中后顶部与底部各留 14px 安全留白，status_text 底部 y≈106，距卡片底部 y=140 仍有约 34px；右侧 info_panel 176x116 + padding 6，title_row 34 + itemMargin 4 + forecast_list 42 + itemMargin 4 + entry_text 14 = 98px，在 104px 内容区上下各留 3px，无溢出风险；三行预报左中右三段 32/40/76 宽合计 148+6+6=160，Row itemMargin 6+6 加上 day/condition/temp 实际占位 32+6+40+6+76=160，与 width 164 仅差 4px 处于安全容差内，无贴边裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "thunderstorm.png 48x48 作为主体图标压于 60x60 的 cloudy.png 之上，hero_panel 底色 #331c1f24（约 20% 不透明深灰）与根底色 #ff191a1c 形成清晰对比层，雷雨闪电轮廓在深底上识别度高；上一轮'云把图标吞掉'的过度曝光问题已通过缩小 thunderstorm 到 48x48、降低 hero_panel 底色不透明度得到解决。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "左 88 / 右 176 的列宽分配与内容密度匹配：左侧单一图标+状态简洁、右侧三层信息（标题区 34px / 三日预报 42px / CTA 14px）层次清晰；title_row 内 '暴雨预警'+'不宜出行' 左对齐 104 宽组与 '当前位置' 右对齐 52 宽组之间用 8px itemMargin + spaceBetween，垂直基线对齐良好；三行预报 day(32) + condition(40) + temp(76) 横向配比合理，温度列右对齐与 '查看天气详情' 形成稳定的右轴线；hero_panel 内上下 14px 对称留白让图标与红色告警视觉重心居中。"
+    }
+  },
+  "summary": "经过两轮整体重构后，卡片已达到稳定可用状态：暗黑氛围由根底色 #ff191a1c 承担，cloudy.png 退化为 hero_panel 内部衬层、thunderstorm.png 作为 48x48 主体图标居中放置并配以红色 13pt 加粗'危险告警'；右侧 title_row / forecast_list / entry_text 三段式结构清晰完整，三日预报全部正确绑定并渲染（含上一轮缺失的后天 22°/27°），CTA '查看天气详情' 落位于右下收尾。四类视觉问题均已解决，无需再调整。"
+}

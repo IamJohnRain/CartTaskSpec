@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-26-group-buy-005",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "「辣巷」白底深蓝字清晰可读，「下班 18:30」「差7元」「快凑够起送」「脆皮豆腐 ¥7」「冰粉 ¥6」白字在深蓝到血红渐变上对比充分，无被图标/装饰覆盖的笔画。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "product_list 声明 width 116 height 36 padding 2 borderRadius 4，左下角圆弧在 (4,32) 为中心、半径 4 的四分之一圆，在 x=2 处的圆弧延伸到 y≈35.46，与第二行「冰粉 ¥6」checkbox（x=2~14, y=20~32，底边 y=32）相切，导致 12x12 rounded_square 的底缘左半（x=2~8, y=32 区域）被 list 圆角裁切，截图里冰粉行 checkbox 与第一行橙色 checkbox 的对称圆角明显不同，呈现左下缺角。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "store_button 白底深蓝字、橙色 selected checkbox、白色 unselected checkbox 在深蓝到血红渐变上均清晰可辨，无低对比融合。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "List 高度 36 = padding 2 + 2×16 完全贴满，第二行底缘 y=34 紧贴 list 下沿 y=36，配合 borderRadius 4 圆角造成 1~2px 切角；root 三段 18+1+60+1+36=116 满预算，段间仅 1px 间距缺乏呼吸，整体中下两块贴得过紧。"
+    }
+  },
+  "summary": "第 5 轮 2x2 拼单焦虑卡 store_button 文字、深色环内「差7元」、caption 均已可读，渐变紧迫感到位；唯一硬伤是 product_list borderRadius 4 在左下角形成的 4x4 圆弧切入第二行「冰粉 ¥6」checkbox 底缘，造成与第一行橙色 checkbox 不对称的左下缺角。R1(20+48+40) / R2(18+60+34+深色柱) / R3(16+60+30) / R4(18+60+34) 四轮均反复在「List 贴底裁切」上失败，本轮判定无需重画三段分配，仅需把 list 圆角从 4 降到 2，让圆弧范围缩小到 y=34~36 的 2px 安全带，完全避开 checkbox 底缘（y=32）和 text 底缘（y=34），同时保留 2px 下边距的视觉呼吸。"
+}

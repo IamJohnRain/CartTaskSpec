@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-29-elderly-care-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.75,
+      "evidence": "右按钮'打电话''提醒她'两行文字渲染完整，'已服'和'待服用'状态徽章文字均清晰可读；时段标签'早/中/晚'未被任何元素真正覆盖"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "所有元素均在卡片边界内，左药丸面板和右绿色按钮均完整显示，圆角裁切区无文字贴边"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "勾选框在深色#0c000000面板上对比清晰，绿色选中态#ff64bb5c与白色未选中态辨识度足够；黄色'待服用'徽章在深色底色上对比鲜明"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "左药丸面板第一行'早'字时段标签视觉上紧贴绿色选中勾选框右边缘，勾选框10px + margin 2px + 时间容器16px（字符居中后实际仅留5px到勾选框的视觉间距），零余量设计导致'早'字与绿色块产生压迫性贴边；第二、三行'中''晚'字符虽未被覆盖，但同样距勾选框过近，整体三段式checkbox→时段→状态层级因间距不足而显拥挤，缺少舒展节奏"
+    }
+  },
+  "summary": "当前2x2卡片在spacing_aesthetic维度仍有明显问题：左药丸面板三行的勾选框与时段标签之间间距过小，第一行'早'字紧贴绿色选中勾选框右边缘，视觉压迫感强；'中''晚'虽未贴边但同样局促。根因是row内itemMargin仅2px、时间标签容器仅16px，字符居中后到勾选框的视觉间距仅约5px，无法形成清晰的checkbox→time→status三段式层级。需整体重构行布局列宽分配以释放足够的呼吸空间。"
+}

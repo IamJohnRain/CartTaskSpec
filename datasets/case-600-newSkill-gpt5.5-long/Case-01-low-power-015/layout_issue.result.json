@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-01-low-power-015",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "三个 Checkbox 标签「降亮度」「关后台同步」「限后台活动」以及底部「勾选后立即生效」「省电模式」在截图中均完整显示，笔画清晰，未被其他元素覆盖。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "所有内容均在 300x140 卡片安全留白内，文字未贴边、未被圆角裁切，纵向三 Checkbox 行宽 276 完整容纳 5 字中文标签。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "顶部白色省电电池图标在 #1c1d20 深色底上对比清晰；三个 Checkbox 的绿色 mark 块在浅玻璃药丸底板上可识别度高；省电模式主开关的绿 check + 蓝紫底对比鲜明。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.86,
+      "evidence": "三个 Checkbox 行（18px checkbox + 8px 间距 + 短标签）实际视觉内容仅占约 60–110px，但每行强制 276px 全宽，导致中部三行右半侧约 150–210px 完全空泛；用户原话「横着排三个」的横向布局诉求在前三轮失败后被改为纵向堆叠，虽解决裁切但导致中部区域出现严重的「左密右空」比例失衡，主次信息在中部区域的视觉密度分布不合理。"
+    }
+  },
+  "summary": "2x4 低电模式卡片在第五轮渲染中文字裁切已彻底解决，三个 5 字中文 Checkbox 标签在纵向 276 全宽容器内可完整显示。但本轮暴露用户原始需求「横着排三个」与当前纵向堆叠结构的偏差：中段三个 Checkbox 行实际视觉内容仅占左 1/3，右 2/3 全部空泛，形成明显的左密右空比例失衡。需要整体重构中部布局，采用 3 列等宽网格（checkbox 在上、label 在下）的横向三栏结构，既兑现用户「横着排三个」诉求，又通过 92px 等宽三列把视觉密度均匀铺满 276px 行宽，彻底消除右半侧空泛。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-29-elderly-care-001",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "所有文字均清晰可见，标题'看护巡逻'与天气'15°C 阴'左右分置且间距充足，主指标'2处异常待查看'独占一行不被任何元素遮挡，缩略图标签'客厅/厨房/楼道'与图标垂直分组清晰，'3路缩略画面同步'胶囊文字居中不被压盖。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "所有内容均位于300x140卡片内部。root padding 12确保内容距边12px，'15°C 阴'右端距卡边12px，'3路缩略画面同步'胶囊右端距卡边12px、底部距卡边12px。borderRadius 22的圆角裁切区经几何计算：胶囊底角(288,128)距bottom-right corner center(278,118)为14.14px < 22px，'楼道'瓦片底角(288,106)距corner center 15.62px < 22px，均处于圆角内部而非裁切区，文字笔画未被裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "院子house_fill.svg、客厅lamp_ceiling_light.svg、厨房flame_fill.svg、楼道location_north_up_right_fill.svg均放置在不透明白色(#FFFFFFFF)圆角底板上，深色SVG主色与白底形成强对比，四个图标轮廓清晰可辨，无视觉融合或对比度不足。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.86,
+      "evidence": "header两行布局层级清晰：上行'看护巡逻'(12pt,左)与'15°C 阴'(12pt,右)用space-between左右分离，无贴撞；下行'2处异常待查看'独占276宽16pt bold左对齐成为视觉锚点。main区域院子面板92宽(白底padding 8)与右侧column 176宽按主次权重分配合理；三缩略图56宽等宽三列间距4px均匀对齐，sync胶囊与上方缩略图组保持4px组间距，文字起始线与图标中心线整齐，左右视觉重量虽不对称但与主次语义匹配。"
+    }
+  },
+  "summary": "本轮整体重构后的2x4巡逻看板卡片在视觉上达到要求：header拆为两行Column解决了原版标题与主指标贴撞问题，main区域按院子大面板+三缩略图+同步胶囊的比例合理分配空间。经截图与几何复核，缩略图与sync胶囊虽贴近右内边距12px，但经borderRadius 22的圆角裁切区计算确认所有内容均位于圆角内部、未被裁切。文字、图标、圆角胶囊均清晰可读，无溢出、无遮挡、无对比度问题，间距层级合理，四个核心问题均已解决。"
+}

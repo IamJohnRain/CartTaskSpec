@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-21-stocks-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "底部基金列表中的 fund_divider_0 与 fund_divider_1 仍然横向切穿「沪深300指数」的『指』『数』下半笔画，以及「稳健债券增强」的『健』『券』『增』下半笔画，呈现为文字下沿有横线贯穿的伪影，肉眼可辨且构成明显遮挡。前四轮微调 List 行高（15→16→17→18h）和列表高度（58→60→64h）均未根治分隔线贴住 12px 文字底部的问题。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "「可用」chip 宽度 40、textAlign center 时右缘距根容器右内边距 12px，与 22px 圆角风险区视觉距离过近；右侧「多云 29°C」weather_text 宽度 110、textAlign end 同样紧贴右安全内边距；列表底部 fund_row_2 距卡片下圆角风险区仅 4px。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.99,
+      "evidence": "本设计为纯文字色块，未使用任何图标，无可识别性问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "列表内 18h 行高在 12px 字体 + 15h Text 容器下，文字底部与 1px 分隔线在视觉上几乎贴合，行间节奏紊乱；List 组件的内部 padding 加上紧贴的 row 高度无法让分隔线与文字产生清晰间距，需要放弃 List 改用 Column+Divider 显式 itemMargin 才能根治。"
+    }
+  },
+  "summary": "本轮 2x4 基金卡整体三段式布局（主指标+状态 / 闹钟+天气 / 持仓列表）结构合理且已被前几轮接受，但底部基金列表在 List 组件下反复出现分隔线横向切穿「沪深300指数」「稳健债券增强」文字底部的贯穿伪影。已尝试 4 轮微调行高（15→16→17→18h）和列表高度（58→60→64h）均未根治，根因是 List 组件内 row 边界与 1px 分隔线紧贴 12px 文字底部。需要放弃 List 改用 Column 显式控制 itemMargin，让分隔线与文字有 5h 清晰间距；同时微调三段高度让 header/tools 各 22h、fund_section 64h（22+4+22+4+64=116）。"
+}

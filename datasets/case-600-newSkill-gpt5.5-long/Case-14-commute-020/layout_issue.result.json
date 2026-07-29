@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-14-commute-020",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "白色'回家'按钮实际渲染高度约 55-65px(远超声明的 56px),向上侵入 todo_block 区域,把第二条 todo'交周报'整行文字压在白色圆角矩形下,只能看到'周报'两字且笔画贴边,'交'字被按钮白色填充覆盖,无法完整辨认;第一个 todo'回邮件'的下边缘也被按钮上沿切到。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.96,
+      "evidence": "Button 实际渲染尺寸(~60px)显著超过声明的 56px,向上挤压并覆盖 todo_block 的下半部分;右侧三块(meeting 27h + div 1h + todo 25h + div 1h + button 56h + itemMargin 2h = 112h)加上按钮膨胀后约 170px,远超右面板可用 116h。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "第二个 todo(交周报)的 Checkbox 因被白色按钮完全压住,只能看到一个孤立的蓝色对勾漂浮在白色按钮填充上,checkbox 本体方框与对勾的语义关系被破坏,无法识别为勾选框组件;'日'字底板 #66ffffff 在蓝到青渐变上可见但对比度偏弱。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "右侧三块在 67×116 区域内严重失衡:meeting 27 + div 1 + todo 25 + div 1 + button 56 声明总高 110px,但按钮实际渲染 ~60px 吞并 todo 底部 14px;meeting/todo 背景色深浅差异(19ffffff vs 40ffffff)过于微妙,视觉层级仅靠 1px divider 勉强维持;组内距为 0(meeting/todo 块内 padding 仅 0px),左密右空、上下压迫,缺乏安全留白。"
+    }
+  },
+  "summary": "2x2 卡片右侧三块布局中,Button 组件第五次出现实际渲染高度显著超过声明高度的问题(声明 56h,实际 ~60h),向上侵入 todo_block,把第二条 todo'交周报'及其 Checkbox 完全压在白色圆角矩形下;meeting/todo/button 三者总高远超右面板可用 116h,组内距 0、组间仅 1px divider,层级与安全留白全部失效。需要彻底重构右面板的高度预算,为按钮预留超大空间并确保即使膨胀也不侵入 todo。"
+}

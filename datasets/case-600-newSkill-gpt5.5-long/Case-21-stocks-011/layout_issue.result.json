@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-21-stocks-011",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "中央主环（62x62）内 '总收益率' 上沿笔画与绿色环线内壁明显相切重叠，'+12.4%' 的 '%' 字符下沿也被环线内壁压住；底部三个小环（28x28）内 '股8/债3/混6' 文字宽度 14 几乎等于环内径，左侧笔画与紫色环线贴合。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "右上 '省电' 按钮在 width=60、fontSize=10、fontWeight=500 下，'省' 字渲染为几乎不可见的细横线（疑似 Button 内部 padding 将首字符左缘裁切），仅 '电' 字完整可见，CTA 文案被破坏；主环内 primary_value 在 fontSize=10 weight=700 下 '+12.4%' 实际宽度约 36-38px，紧贴 40px 容器边缘，'%' 已进入环线笔画区。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "无图标素材，按用户要求用文字替代，绿色主环与紫色小环在浅紫到浅蓝渐变上对比清晰，可识别度良好。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "按钮 '省' 字渲染异常导致头行右侧视觉空洞，主环内文字与环线之间缺乏呼吸感；底部小环 28x28 容纳 fontSize=6 文字虽勉强可见，但纵向行高 28+头行 18+主环 62+分隔 1+padding 24=133 仍偏紧，整体环内文字层级被压扁。"
+    }
+  },
+  "summary": "经过四轮失败，核心问题仍是两个：(1) Button 组件在窄宽高下 '省' 字符左缘被内部 padding 裁切，渲染为细横线，破坏 CTA 完整性；(2) 主环 62x62 容纳 fontSize=10 加粗的 '+12.4%' 与环线相切。底部小环 28x28 文字宽度 14 接近内径同样贴边。本轮放弃继续微调字号，改用不同的整体结构：放大按钮到 62 并改 fontWeight=700、背景降到 #b3ffffff 解决字符裁切；主环扩到 64、text_group 缩到 36x24、value 字号 9/caption 字号 7，让出环内安全留白；小环收到 26 同步压缩纵向预算。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-22-express-011",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "所有文字（'李师傅取件'、'运费已付¥12'、'派送状态'、'剩余派送中2件'、'打电话'、'查物流'、两条历史包裹）均清晰可读，无重叠或被图标/装饰覆盖的情况。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "卡片三段布局（主指标 44h + 间距 6 + 按钮 32h + 间距 6 + 历史 28h = 116h，加 root 上下 padding 12 各 12，总计 140h）完全填满且无越界；'剩余派送中2件'右端与白色半透面板右内边距之间保留约 8-10px 安全距离；底部两条历史条目距卡片下边缘有 12px 根 padding 保护。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "快递箱图标（#B09050/#D09070 橙棕色）位于半透明白色面板（#19ffffff）上，对比度充足，箱体轮廓与正面贴标可清晰辨识，在深紫渐变舞台上识别度良好。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "卡片视觉重心已修复：顶部主指标左右对称且由 Divider 居中分隔；中部两按钮以 12px 间距横排分离，'打电话'绿色实心 + '查物流'禁用半透明形成清晰主次层级；底部两条历史条目以圆点 + 文字垂直等距堆叠，组内距 4、组间距 6 形成稳定层级；左右内边距一致（root padding 12），无贴边、压迫或比例失衡。"
+    }
+  },
+  "summary": "本轮修复已成功解决第 0 轮反馈的 L 形不对称问题：移除冗余标题，将历史改为两行项目符号等距垂直堆叠；同时压缩 main_panel 高度、扩展 history_list 高度，使三段布局（主指标 44h / 按钮 32h / 历史 28h）按 6px itemMargin 在 140h 根容器内均衡分布。视觉上：顶部主指标左右对齐有分割线；中部两按钮以 12px 间距清晰分离，绿色主按钮 vs 半透明禁用按钮层级分明；底部历史条目上下留白合理，文字、图标均远离圆角裁切区。四类视觉问题均已解决，无需进一步调整。"
+}

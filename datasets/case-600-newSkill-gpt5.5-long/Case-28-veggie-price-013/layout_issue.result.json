@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-28-veggie-price-013",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "底部状态文字'已比价完成价格合理可放心购买'在 108px 宽、fontSize 9 下被强制 2 行换行，第二行仅剩'购买'2 个孤立字符，'购'字左缘 x≈16、底部 y≈114 紧贴卡片 borderRadius 18 圆角内切区起点，'购'字下缘笔画已进入圆角裁切风险区，视觉上被圆角弧线侵入。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "bottom_panel 高 60、padding 4，状态文字 height 22 落在面板底部区域 y=98-114，面板底边 y=120 与卡片 borderRadius 18 圆角内切区起点距离仅 4px，状态文字底部 y=114 紧贴圆角裁切线，存在被裁切风险。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "日程图标 icon_schedule.png 白色填充在紫色渐变背景上对比度可识别，12x12 尺寸足够，无需深色底板。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "底部 trend(11px)+schedule(10px)+status(9px 折行)三行在 padding 4 的 60px 面板内紧密堆叠，'购买'2 字孤立悬底且底部贴近卡片左下圆角起点，节奏断裂；上方 18px 标题与 28px 比价区宽松，底部却极紧，整体失衡；'购买'第二行虽 2 字但孤立悬底，视觉压迫感强。"
+    }
+  },
+  "summary": "卡片顶部 18px 大号标题、左右比价毛玻璃方块、夜晚倒计时紫色渐变布局良好。核心问题仍在底部状态文字：前 4 轮微调 panel 高度/padding/字号均未根治，根因是 14 字状态文案'已比价完成价格合理可放心购买'在任何可读字号下都无法在 ~108px 宽度内获得均衡的 2 行断行——fontSize 9 得 12+2、fontSize 10 得 11+3，第二行永远 2-3 字孤立悬底。本轮彻底放弃 2 行布局与 bottom_panel 圆角策略，将根 Column 展平为 5 段直接子组件（title/compare/trend/schedule/status），去掉 bottom_panel 包裹，状态文字改为 fontSize 8 单行 maxLines 1 占据完整 116px 内容宽度，14 字 × 8px = 112px 刚好单行容纳，底部 y=100-112 距卡片底 28px、距左下圆角中心 15.2px 充裕安全，彻底消除'购买'2 字孤立悬底和贴圆角两大根因问题。"
+}

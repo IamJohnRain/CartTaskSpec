@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-15-smart-home-002",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "第一项已选中的绿色 Checkbox 与『扫地』文字之间保留约 6px 视觉安全间距，『扫』字左半部分笔画未被覆盖，文字完整可辨认；前 3 轮反复出现的遮挡问题已彻底解决，第二三项的 Checkbox 与文字之间也有清晰间距。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.8,
+      "evidence": "checklist_panel 高度 92 减去 padding 4(顶)+4(底)=8 后内部高度 84，3 个 24h item 加上 2 个 4h itemMargin 共占 80px，仅剩 4px 净空；第三项『倒垃圾 / 待清洁』的 Checkbox 底边距 panel 底部圆角裁切区（borderRadius 10）仅约 4-5px，存在贴边风险，底部圆角裁切区可能侵入第三项 Checkbox 视觉范围。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.1,
+      "evidence": "clean_fill.svg 深色图标位于卡片顶部浅色渐变起始区（#f1f3f5），对比度足够可清晰辨认；Checkbox 选中态绿色与未选中态深灰在浅色 panel 底板上均可清晰识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.75,
+      "evidence": "checklist_panel 顶部有 4px 净空 + 4px padding = 8px 呼吸感，但底部仅 4px 净空 + 4px padding = 8px 视觉贴边；header 高 24 与 panel 高 92 比例约 1:3.8，但 panel 内部实际使用空间 80px 几乎填满 84px 净空，上下视觉密度分布不均，第三项明显比第一项更靠近容器底边。"
+    }
+  },
+  "summary": "本轮 2x2 清洁清单卡片已成功解决前 3 轮 Checkbox 选中态视觉外扩压住『扫地』文字的核心遮挡问题（text_occlusion=false），但 checklist_panel 内部净空仅 4px 导致第三项 Checkbox 底边贴齐 panel 圆角内壁（layout_overflow=true），且 header 24h 偏大加剧了 panel 上下视觉密度不均（spacing_aesthetic=true）。本轮通过将 header 从 24 降到 20（节约 4px）让 panel 从 92 提升到 96，使 panel 内部净空从 4px 提升到 8px，叠加 4px 底部 padding 后第三项到底边圆角裁切区视觉距离达 12px，从根本上消除贴边风险并改善头轻脚重比例。"
+}

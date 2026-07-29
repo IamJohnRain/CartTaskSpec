@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-19-photo-album-016",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "三个 Checkbox(12x12) 在 22px 高的 Row 中垂直居中（y≈5-17），而下方 count 文字「5张待整理」「3张待整理」「2张待整理」位于 y≈11-22，两者在垂直方向上重叠 6px，使得方框右沿与 count 首字「5」「3」「2」在同一水平线相切，count 文字的左边缘几乎贴到方框右边缘，视觉上 count 像是从方框右侧冒出来的。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.72,
+      "evidence": "右侧 album_list 宽 70px，text_col 仅 50px，「5张待整理」5 个字在 fontSize 9 下约 45px，贴到 text_col 右边缘只有 5px 缓冲；22px 高的 Row 同时容纳 12px 居中 Checkbox 与 22px 文字 Column，垂直空间被 12+22=34 的内容压在 22px 容器里，必然产生严重重叠。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.72,
+      "evidence": "三个 Checkbox 方框虽然使用不透明 #1f1f1f 在白底上可见，但因与下方 count 文字垂直重叠 6px，视觉上方框被 count 文字的水平基线『切割』，勾选控件的语义锚点被弱化，『可勾选相册类型』的可交互感被折叠成『文字标签+数字』的纯文本结构。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "Checkbox 垂直居中导致其与 count 文字处于同一视觉行，打破了『勾选框 + 名称 + 数量』的清晰三段式层级；正确语义应是 Checkbox 与名称配对（用户点勾选框是勾选某个相册），count 仅作为副信息位于名称下方。当前布局让 Checkbox 看起来像是在勾选『几张待整理』，逻辑混乱。"
+    }
+  },
+  "summary": "卡片整体三区结构（左 40 日期色块 + 右 70 相册列表 + 底 116x38 天气按钮）经过历史五轮验证已经稳定且合理，Checkbox 不可见问题已在第 5 轮通过切换为不透明 #1f1f1f 解决。当前核心痛点是 Row 的 alignItems: center 让 12px Checkbox 在 22px 行中垂直居中（y=5-17），而 count 文字位于 y=11-22，二者垂直重叠 6px，视觉上 Checkbox 与 count 文字被绑定在同一行，破坏了『勾选-名称』配对 + 下方数量的清晰层级。修复方案仅需将三个 album_row 的 alignItems 从 center 改为 start，让 Checkbox 顶部对齐名称文字。"
+}

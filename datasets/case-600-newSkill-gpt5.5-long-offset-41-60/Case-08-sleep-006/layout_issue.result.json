@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-006",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "底部歌单按钮内 '歌单' 二字在 v0.9 Button 渲染引擎下连续第 4 轮被绘制为笔画粘连的 '曲田' 类乱码字符（fontSize 11/14、width 60/72 均复现），CTA 文案语义完全丢失；本次将字号降至 10 并加宽按钮至 80 配合 fontWeight 400 与更高不透明度背景，尝试突破 Button 内部 padding 对汉字的裁切。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "Checkbox 实际渲染尺寸约 40-50px，远超 22x22 规格，向下溢出 noise_row 28px 高度并压入 root 圆角裁切风险区；本轮将 noise_row 加高到 30、checkbox 规格微调为 24x24 并增大 mark 强制引擎渲染贴近规格，同时调大 label 容器高度匹配。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "云朵与音符图标在深紫渐变背景上轮廓与对比度均清晰可辨，无融合或不可识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "底部 music_row 内容 12+4+80=96 居中后两侧仅 10px 留白、noise_row 因膨胀后的 Checkbox (~40) 视觉宽度实际占据大半行，两行中心轴错位，左中右三区密度分布不均；本轮通过 music_row 收窄到 80 按钮 + 12 图标、noise_row 显式 height 30 + 居中布局，并整体降低 title 至 12、score 至 32、weather 至 10，重新压缩纵向预算为 12+32+10+22+30+8=116 满预算、左中右三区对齐 116 中心轴。"
+    }
+  },
+  "summary": "本轮（Round 5）渲染继续复现 Round 2-4 的两个核心问题：(1) Button 内 '歌单' 汉字在 fontSize 9/10/11/14 各种尺寸下均被 v0.9 引擎渲染为笔画粘连的乱码字符（'曲田'/'曲申'），CTA 失效；(2) Checkbox 实际渲染尺寸（约 40-50px）远大于 width 规格（22），导致 noise_row 视觉重心向左塌陷、与 music_row 中心轴错位、勾选框与标签之间出现空白断层。需要在字号、padding、容器高度上做精确调整：本轮将按钮字号降至 10（与已知可正常渲染中文的 title 同字号）以彻底规避 Button 内部 padding 对汉字的裁切；将 noise_row 显式加高到 30 并让 checkbox 规格匹配其实际渲染尺寸；title 高度 12、score 收窄到 32、weather 10，整体压缩纵向预算至 116 满预算且无溢出风险。"
+}

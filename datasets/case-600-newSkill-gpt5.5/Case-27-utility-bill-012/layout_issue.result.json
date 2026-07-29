@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-012",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.94,
+      "evidence": "截图各区域文字（'水电缴费'、'已用电量327度'、'余额充足'、'已确认'、'本月电费已缴'、三色指标'电/水/燃气'、'水电'标签）均未被其他文字、图标、色块或装饰元素遮挡，可正常辨认。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.84,
+      "evidence": "中部白色信息背板 '已用电量327度' 末位 '度' 字右笔画距白板右内边距约 4–6px，贴右内边距；右侧浅蓝状态板 '余额充足' 末位 '足' 字右笔画距浅蓝板右内边距约 3–5px，贴右内边距。两处文字笔画虽仍可读，但已贴近各自背板的安全边距基线，borderRadius 12 的圆角进一步压缩有效水平空间。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "蓝色水滴色块白字 '水'、三色指标胶囊（黄底黑字/蓝底白字/绿底白字）、状态板绿色 '余额充足' 与各背板对比清晰，无视觉融合或对比度不足问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.8,
+      "evidence": "中部主指标 '已用电量327度' 11pt 8 字符在 100px 宽文本容器内虽可放下但右贴边；右侧 '余额充足' 11pt 4 字符在 64px 宽文本容器内右贴边。两处均因 status_panel 偏窄（84px）且 borderRadius 10 较大，导致有效水平安全边距仅约 3px，整体右侧信息区呼吸感不足。"
+    }
+  },
+  "summary": "整体 2x4 三栏（蓝水滴 / 白信息板 / 浅蓝状态板）+ 三色指标行 + 底部说明的组件树结构合理，但连续四轮局部尺寸微调都未真正解决 '已用电量327度' 贴白板右内边距、'余额充足' 贴浅蓝板右内边距两个问题。本轮放弃继续微调字号的局部方案，转为在 top_section 总宽 276 不变的前提下重新分配 drop_panel 与 right_split 列宽（drop 56→52 让出 4px, right_split 212→216 拿回 4px），同时在 right_split 内重分配 info/status 列宽（info 120→128, status 84→80），统一加宽 info_panel padding 到 10/10/10/10、把 usage_text 字号回升到 12pt 以获得更好的可读性与 14–16px 安全边距。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-17-queue-017",
+  "has_issue": false,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "环形内部已无叠层大字干扰，'12人'主指标与'等位'caption 分行清晰排列，'12'与'人'笔画完整不重叠；天气徽章中'天'与'多云 26°C'无穿插；左侧'当前叫到/A12/请留意叫号'三行之间留白合理；右侧'电 改约联系'与'拨号'按钮也未发生重叠。所有文字与图标均可独立辨识。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "root padding 12 的安全基线得到严格遵守：标题'素甲空间'左缘距卡边 12px，'A12'距左缘 12px，'拨号'按钮右缘距卡边 12px，天气徽章右缘距卡边 12px；底部三胶囊整体在 276px 画布内居中，左右各留 4px 余量。文字笔画、按钮、圆角均未进入圆角裁切风险区，140px 高度下 22+4+62+4+22=114px 留出顶部 1px、底部 1px 的安全余量。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "右上角'天'字图标在 #0c000000 浅灰胶囊上以 #99000000 字色呈现，12pt 粗体，识别度高；左侧'A12'主数字为 20pt 粗体 #e5000000，纯白底上对比强烈；拨号按钮绿底白字对比充足。'电'字虽然在白色背景上偏淡，但它是 hint 文案的一部分而非独立图标，不构成难识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "整体布局形成清晰的视觉层级：标题栏（22px）—主信息环（62px）—辅助信息行（22px），比例 1:2.8:1，环形作为视觉锚点突出；中环列宽 86+8+84+8+90=276 与 header/fact_row 严格对齐；左中右三列通过 alignItems:center 垂直居中于 62px 高的 center_row，基线整齐；底部三胶囊以 8px 等距排列并居中于 276px 行内，左右各 4px 余量对称；环形 Progress 62×62 居中于 84×62 Stack，中心 54×40 文案列提供 16px 横向安全间距。无贴边、压迫或比例失衡现象。"
+    }
+  },
+  "summary": "上一轮整体重构已成功解决 text_occlusion 和 spacing_aesthetic 两大问题：移除了 40pt 的'等位'背景叠层大字后，环形内部'12人'主指标获得了干净背景，'等位'语义下沉为 caption 不再与主数字争抢视觉中心；电话提示合并为'电 改约联系'后消除了孤立'电'字的断点。当前截图四类视觉问题均为 false，render_result 为 success，布局可以接受，无需再次修复。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-10-rainy-taxi-019",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.94,
+      "evidence": "右侧设闹钟按钮（46x56、borderRadius 4、fontSize 10）内'设'字左侧'讠'旁被按钮左缘紧贴裁切，截图可见'设'字左半部笔画缺失，与'闹''钟'三字呈现不齐，文字已进入圆角风险区"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "设闹钟按钮46px宽在fontSize 10下'设闹钟'三字约30px，扣圆角后安全区不足，'设'字越界；同时左栏三个tile 20x52（1:2.6）仍为竖向细长pill，明显贴边"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "本卡片无图标元素，全部为文字与色块，不存在图标被背景融合的问题"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "左栏三个tile为20x52竖向长条（1:2.6），比例严重失调；右栏按钮46x56过窄过高与左栏三个细长tile视觉权重不匹配；左右栏之间密度不均衡"
+    }
+  },
+  "summary": "连续5轮迭代都困在'左信息区+右按钮区'的横向二分结构里，46px宽的右栏无论如何调整字号/圆角都无法让'设闹钟'三字在borderRadius约束下完整显示，左栏三个tile也被挤压成竖向长条pill。140x140的2x2画布已无法同时满足'3个会议块横向独立+完整CTA按钮在右'两个目标。必须放弃左右二分结构，整体重构为竖向Column布局：标题+提示在顶行，3个会议tile占满中间，底部行承载'记得带伞'+'设闹钟'按钮（按钮位于底行右侧），从而把按钮从46px扩到60px、把tile从20x52扩到38x40近方形，彻底解决历次复发的设字裁切和tile竖向长条问题。"
+}

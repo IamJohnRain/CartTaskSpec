@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-29-elderly-care-002",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "标题'朝阳 雷阵雨'在左上(12-72,12-28)，温度'35°C'在中心左(12-108,31-63)，太阳图标在右上(90-134,4-48)；标题与太阳图标水平不重叠，温度与太阳图标仅有约5x11像素的极小边缘接触，文字笔画完全可读，未被明显遮挡"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "底部去设置按钮位于 y≈90-114，距 18px 圆角裁切起点 y=122 有 8px 缓冲；红警胶囊和按钮均 116 宽严格落在 116 内容区预算内；标题 12px/温度 24px/红警 11px/按钮 11px 字号阶梯无贴边风险"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.82,
+      "evidence": "右上角 sun_icon 50x50 以 opacity 0.4 呈现，作为清晰的天气视觉锚点（太阳+云朵）可被一眼识别为天气场景；与主文字区无视觉争夺"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "卡片左、上、下三边出现约 12px 宽的深蓝色 #1e3a5f 边框带，与中心 scrim 区（#05090E 左右）形成明显色差窗框效应——这是 Stack padding 12 让 root 背景透过 bg_image/scrim 约束到 116x116 内容区所导致的不均匀挤压；该深蓝边框非设计意图，破坏了'文字压在背景图上'的整版沉浸感，右侧因 sun_icon_col 撑满 140x140 而无边框，左/上/下三边出现不对称留白，整体空间分配不均衡"
+    }
+  },
+  "summary": "上一轮把太阳图标重定位到右上角 50x50 装饰位成功解决了图标中心与 °C 的重叠，布局层次（标题/温度/红警/按钮）四层清晰、底部距圆角 8px 安全。但卡片左、上、下三边出现约 12px 宽的深蓝 #1e3a5f 边框带——这是 root Stack padding 12 导致 bg_image(140x140)/scrim(140x140) 被约束到 116x116 内容区、padding 区直接透出 root 背景色的典型窗框效应。必须将 root 背景色压暗到与 scrim 有效色匹配的近黑深色，让 padding 区域与 scrim 区域几乎不可区分，消除不均匀挤压感。"
+}

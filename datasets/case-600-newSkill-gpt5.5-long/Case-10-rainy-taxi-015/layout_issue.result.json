@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-10-rainy-taxi-015",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "右栏三张灰色联系卡只包裹了名字行（爸妈/姐姐/邻居），detail_line 文本'01家门'/'02东门'/'03楼下'被渲染到灰色卡片的下方空白处（itemMargin 区域），与下一张卡片的灰色背景视觉粘连，名字与详情在视觉上脱节、不在同一卡片内，'03楼下'末字'下'与白卡下边缘几乎相切。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "contact_row 设置高度 30px、contact_info 高度 30px，但 11pt 名字（实际行高约 14-16px）+ 7pt 详情（实际行高约 10-12px）总渲染高度约 24-28px，叠加 Column 默认子项间距后第二行详情被推出 contact_row 灰色背景之外，进入 itemMargin 区域；最底部'03楼下'也因溢出被进一步推近白卡下圆角，进入圆角裁切风险区。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "左侧蓝卡天气图标（云+闪电）和右侧三个绿色圆角按钮上的白色电话图标对比度充足，识别无障碍。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "三张联系卡的视觉单元被拆成'灰卡名字 + 白色间隙详情'两部分，主次信息（名字+电话短号+地址）不在同一个视觉盒子里，破坏了一键拨号卡片的整体感；左蓝卡内容垂直居中良好，右白卡却因行高不足导致信息错位，左右密度与对齐不统一。"
+    }
+  },
+  "summary": "当前 30px contact_row 无法稳定容纳 11pt 名字 + 7pt 详情两行文本的实际渲染高度（受字体行高影响约 24-28px，但叠加 Column 子项布局后第二行文本被推出灰色背景），导致 detail_line 溢出灰色卡片底部、跑到 itemMargin 区域与下一张卡粘连，名字与详情视觉分离，破坏了'姓名+电话短号+地址+拨号按钮'的卡片整体性。最底行'03楼下'也因溢出被进一步压向白卡下圆角。需要重做右栏行高：把 contact_row 加高到 31px、contact_info 加高到 29px、name/detail 文本框分别给到 15/14px，让两行文字完整落在灰色卡片内，并保留 3px 底部安全留白。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-19-photo-album-001",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "三个任务行'去处理'按钮中的'处'字在fontSize 9 fontWeight 400渲染下,'卜'部件横画与下方'夂'部件视觉上粘连形成'去外理/去0理'的伪删除线效果,'处'字结构被破坏,受保护CTA文案辨识度严重下降。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "所有组件尺寸在140×140边界内,root padding 12有效,任务按钮54w未贴边,垂直预算12+2+22+2+76=114(共138留2底),整体未越界。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "使用文字符号□和×代替图标,在深蓝渐变背景上半透明白底行内对比度足够,可清晰识别。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.75,
+      "evidence": "上一轮task_row列宽start 8+title 38+end 6+button 60+margin 6=118,实际超出116w内容区2px,虽渲染时未明显裁切但数学上存在溢出差;统计列48w与设置按钮62w在视觉重量上略不对称,统计列内11+9=20与外层22h贴边无留白。"
+    }
+  },
+  "summary": "2x2 140×140卡片核心问题是'去处理'按钮的'处'字渲染异常:前4轮在fontSize 7-9、fontWeight 400-700、按钮宽度50-64w的不同组合下,'卜'部件横画与'夂'部件始终产生视觉粘连形成'去外理/去0理'伪字符。本轮策略:重新精确分配task_row列宽(解决2px数学溢出差)并改用fontSize 10+fontWeight 400进一步拉开'卜'与'夂'的笔画间距,同时保持按钮宽度54w给'去处理'3字足够留白。"
+}

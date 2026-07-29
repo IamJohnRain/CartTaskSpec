@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-012",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "标题'睡眠质量：差'采用Row拆分为两个Text元素（title_prefix width=60 + itemMargin=2 + status_text width=14），title_prefix在60px盒中textAlign:left导致'睡眠质量：'文字后留出空白，与status_text的'差'之间形成约15px可见间隙，视觉上标题被截断为'睡眠质量：'和'差'两段；按钮'查看详情'在88x20按钮中文字几乎贴近左右边缘，'查'与'情'字笔画与按钮内边距相切。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "标题'差'字被Row justifyContent:center推至Row中后部，'差'字右侧与内容区右padding仅剩约15-18px，'差'字已进入圆角风险区；按钮88x20宽度对fontSize 10的'查看详情'四字偏紧，文字左右两侧几乎触底。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "圆环白色（#ccffffff）与深蓝紫渐变背景对比充足，'4.2h'字号11在50x50圆环中清晰可读；按钮半透白底在深色背景上可识别，无融合或难以辨认问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "标题'睡眠质量：差'在Row布局下'睡眠质量：'与'差'之间出现明显视觉分离间隙，破坏整体居中感与阅读连贯性；圆环50x50约占卡片36%宽度，作为唯一视觉焦点尺寸合理但环内'4.2h'占比略小；按钮88x20偏窄，文字在按钮内几乎无留白。"
+    }
+  },
+  "summary": "本轮Review 4渲染结果延续了Review 3的核心问题：标题'睡眠质量：差'在Row拆分方案下出现明显的字间分离间隙（两个Text元素各自的textAlign:left在固定宽度盒内产生内边距），破坏标题连贯性；按钮88x20宽度对'查看详情'四字偏紧，文字接近贴边。需要整体重构header回退到单一Text方案以彻底消除间距问题，并放宽按钮尺寸。"
+}

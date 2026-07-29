@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-16-travel-ticket-018",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "底部三颗蓝色「导航」按钮中的白色文字渲染异常，只能看到类似 'SI' 的残缺笔画或极细的白色横线，完整「导航」二字不可辨认。即使按钮右边缘在 x=264 已避开圆角裁切区，按钮内部的文字仍被 Button 组件以过小的有效区域渲染，导致笔画被压扁或裁切。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "trip_list 宽 252、按钮右边缘 x=264，距根 borderRadius 22 起点 278 有 14px 安全留白，未进入圆角裁切区；列表三行均在 64 高内完整显示，未被裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "左侧飞机图标在 #190a59f7 浅蓝圆角底板上对比清晰；行程字形 glyph（接/餐/车）为白底蓝字圆角徽章，识别度良好；环形与橙色倒计时文字在浅渐变上可读。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.72,
+      "evidence": "底部列表 info 列 180 偏宽，meta 文字仅占约 80px，info 右侧到按钮之间存在约 90px 空白区，造成「文字—大段空白—按钮」的断裂感，视觉密度左密右空；按钮内文字不可读进一步加重了右端的视觉空洞。"
+    }
+  },
+  "summary": "上一轮将 trip_list 收到 252 后按钮右边缘已避开圆角裁切区，但 Button 组件在 48×18 尺寸下对 10pt 中文 label 的渲染异常，文字被压成极细残缺笔画。同时 info 列 180 偏宽，文字与按钮之间留白过大，形成左密右空的断裂感。本轮需在保留 252 列表宽度的前提下，把按钮改用 Row+Text 自渲染（保留点击区外观与圆角）以彻底绕开 Button 组件的文字渲染问题，同时把信息列适度收窄、按钮适度加宽，压缩中间空白、改善视觉密度与左右平衡。"
+}

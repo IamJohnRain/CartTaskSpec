@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-20-notif-aggregate-010",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "底部蓝色『设置』按钮的 10pt 文字下半部笔画被按钮底边裁切，截图里『设』『置』二字只能看到上半横画，下半部竖钩/撇捺完全不可见，文字被 Button 组件 20h 高度硬性截断。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.78,
+      "evidence": "settings_button 声明 20h 但 10pt 文字实际行高约 13.3px，叠上 Button 内部 padding 后文字底部笔画贴齐甚至超出按钮下边沿；footer_row 仅 22h 也无法再给 button 更多垂直空间。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "顶部 bell_fill.svg 白圆底板、底部 bell_slash_fill.svg 浅米色圆底板对比充分；勾选指示器绿底白勾和灰底深灰圆点区分清晰，可识别度合格。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.7,
+      "evidence": "垂直预算 16+24×3+22+4×1=114 虽入框，但 footer 22h 不足以容纳 20h 按钮+按钮内 padding+完整文字行高，造成垂直基线断裂；其他三组 group 内部 label/apps 对齐与左右内边距合格。"
+    }
+  },
+  "summary": "2x2 通知聚合卡主体布局（header bell+title+红徽章 / 工作全白底 / 家庭+订阅半透明白底 / 自定义 Text 勾选指示器+8pt app 文字）已经稳定可用，唯独底部 footer 的『设置』按钮 20h 高度不足以容纳 10pt 文字，文字下半部被按钮底边裁切。需要把 footer_row 从 22 抬到 24、settings_button 从 20 抬到 22，让出 2px 垂直空间确保文字完整渲染。"
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-008",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "三块磁贴和底部按钮之间没有文字被其他元素覆盖或遮挡，磁贴之间留有 6px 间距，CTA 与磁贴之间留有 4px 间距，整体没有文字叠压。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "第三块磁贴双行'卧室到公司12 / 公里'的'公里'底缘距磁贴下沿仅约 4-5px，几乎贴住 borderRadius 16 的圆角底边，笔画已进入圆角裁切风险区；首块磁贴红色'已睡5.2小时'在 justifyContent 'center' + value 容器 20px 下文本偏中下部，底缘距磁贴下沿约 8-10px，虽未越界但已略显压迫。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "本卡为纯文字磁贴，没有图标元素，不存在图标被背景融合的问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "三块磁贴的 Column 使用 justifyContent 'center'，但 sleep/commute 磁贴因 value 容器 20/28px 与实际文本高度不匹配，导致视觉上'已睡5.2小时'被推到磁贴中下部、'卧室到公司12公里'被推到磁贴底部，而 weather 磁贴的'18°C'因字号大几乎填满容器相对居中，三块磁贴视觉密度不一致；通勤磁贴底缘贴边进一步加剧了底重顶轻的失衡感。"
+    }
+  },
+  "summary": "睡眠卡整体结构（横向 3 磁贴 + 底部白色 CTA）符合用户需求，但连续四轮在垂直预算与对齐方式上反复失败：前两轮压磁贴保按钮导致磁贴底部贴边，第三轮压磁贴保按钮导致按钮文字被圆角裁切，第四轮（当前）虽按钮 28px 正常，但 justifyContent 'center' 下通勤磁贴'公里'底缘仍距磁贴下沿仅 4-5px，进入 borderRadius 16 圆角裁切风险区，三块磁贴视觉密度也不一致。这是同一结构性问题在四轮不同尺寸/对齐组合下的反复复发，必须放弃当前 84/28 + center 的方案，采用 84/28 + start 的整体重构。"
+}

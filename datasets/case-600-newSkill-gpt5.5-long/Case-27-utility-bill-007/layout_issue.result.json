@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-27-utility-bill-007",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.93,
+      "evidence": "顶部 due_title_row 中 '水费' 的 '水' 字左缘紧贴未选中 Checkbox 右侧圆角；底部 paid_title_row 中 '电费' 的 '电' 字左缘与蓝色已选 Checkbox 右缘重叠，蓝色色块和白色 '✓' 对勾明显侵入 '电' 字左竖笔空间。两处文字与勾选框之间在水平方向上没有可见安全间距。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "due_title_row 内容总宽 = 20(包装) + 6(margin) + 40(标题) + 6(margin) + 44(徽章) = 116 严格不超，但视觉渲染中 12x12 Checkbox 实际视觉宽度超过声明尺寸，导致 '水'/'电' 与 Checkbox 视觉重叠；'即将逾期' 红色徽章右缘刚好落在 row 右边界 116，距 root padding 12 内壁仅 0 像素缓冲，紧贴右内壁；'已缴' 灰徽章同样贴右。"
+    },
+    "icon_background_visibility": {
+      "detected": true,
+      "confidence": 0.85,
+      "evidence": "蓝色已选 Checkbox 在 selectedColor #ff0a59f7 + mark size 6 + strokeWidth 2 的组合下，白色 '✓' 对勾视觉直径约 10px，几乎填满 12x12 方框且在渲染中明显向右溢出至 '电' 文字区域，与标题文字发生视觉融合；未选中 Checkbox 在 #99000000 下可辨但同样存在被 row 浅色背景稀释的问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "Checkbox 与标题之间 6px itemMargin 在视觉上几乎被压缩为 0；'水费' 与 '电费' 与各自 Checkbox 紧贴造成视觉侵入；'7/15'/'7/05' 日期缩进 26 与上方 Checkbox wrapper 20 视觉宽度未严格对齐，日期起点相对标题起点略偏左；'已缴' 标签与已缴行距离过近，整体垂直节奏被压扁。"
+    }
+  },
+  "summary": "2x2 水电清单卡主体结构（header + 待缴标题/日期 + 分割线 + 已缴标签 + 已缴标题/日期）合理，但 due_title_row 与 paid_title_row 内部的 Checkbox 实际视觉渲染明显大于声明尺寸（特别是已选状态下 '✓' 对勾向右溢出），导致 '水费'/'电费' 标题左缘与 Checkbox 视觉重叠；'即将逾期' 红色徽章紧贴 root padding 12 右内壁无安全留白；两个标题行 itemMargin 6 不足以在 Checkbox 与文字之间建立可见安全间距。需要整体重建：把 Checkbox 缩到 10x10 + 极小 mark（size 4 / strokeWidth 1.5），并用 20x20 包装 Column 隔离视觉溢出，同时把 itemMargin 提升到 8，徽章宽度按字数精准分配避免贴边，日期 indent 与 wrapper+margin 严格对齐。"
+}

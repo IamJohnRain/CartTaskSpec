@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-14-commute-010",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "三条路线右侧蓝色'导航'按钮内的'导'字顶部横画和'航'字'艹'部首第一横仍贴按钮上沿/被圆角切角，笔画仅保留下半部分；连续五轮（height 22/24/26/30/28 配 fontSize 10/9/9/10/8）通过单纯放大 button 仍未解决，问题出在 Button 组件内部 padding 不被 height 抵消。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.9,
+      "evidence": "button 文字顶部稳定被按钮上沿裁切，等价于按钮内容区垂直溢出；底部 calendar_row 高 14 距卡底 14px，处于 18px borderRadius 的圆角安全风险区下沿。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.93,
+      "evidence": "路线图标使用 #ffe5e5ea 浅色圆形底板叠在深紫渐变上，方向针轮廓清晰；底部日历图标在白色日历条上对比充分，无融合或不可识别问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.8,
+      "evidence": "底部白色 calendar_row 紧贴卡底圆角安全区；右侧按钮文字贴上沿使视觉重心略偏上；左中右三栏比例（icon 10 + texts 60 + btn 34）基本合理但 btn 区文字贴边削弱了整体观感。"
+    }
+  },
+  "summary": "卡片整体信息架构（三条路线+底部日程）、渐变配色与按钮事件均符合用户需求，图标清晰、左右分区不同底色的视觉层次成立。但 Button 组件在所有尺寸/字号组合下都存在文字顶部被上沿裁切的问题，连续五轮局部打补丁均失败；底部日历条也贴近圆角安全区。本轮放弃继续调整 Button 尺寸的局部策略，改用 Stack + Column 包裹 Text 的结构性方案，将可见'导航'标签从 Button 内部迁移到独立的 Text 组件，彻底绕开 Button 内置 padding 对字形的压迫。"
+}

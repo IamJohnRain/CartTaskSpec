@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-15-smart-home-001",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.92,
+      "evidence": "绿色'导航'按钮上的'导航'二字仍被一条横贯的水平线贯穿（与 review 2、3、4 完全一致），textDecoration: 'none' 连续三轮未能消除该伪线/line-through 渲染，说明 Button 组件对中文文本的默认文字样式无法通过单一属性覆盖。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.9,
+      "evidence": "header_row 宽 96 居中后图标距左边距约 22px，'6'在 34px 宽组件内未越界，'台设备'在 58px 宽组件内未越界，按钮 76x30 在 116 content 区居中，所有元素处于 root padding 12 安全区内，未触发圆角裁切。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "house_fill.svg 主色深灰 #101010，在白→浅青 #92d6cc 渐变背景上轮廓清晰，对比度充足，无融合问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "header_row 宽 96 居中后图标距左边距约 22px，'导航'按钮上的伪横线进一步破坏 CTA 视觉层级；metric_block 100px 内 '6' 28pt 与 '台设备' 11pt 两端 11px 留白后视觉断点略明显，整体左侧'家居地图'标题与右侧'6 台设备'纵向锚点需对齐。"
+    }
+  },
+  "summary": "当前 2x2 家居地图卡连续三轮使用 Button 组件承载'导航'中文文本，textDecoration: 'none' 无法消除横贯文字的伪线/line-through 渲染，text_occlusion 顽固复发；metric_block 两端各 11px 居中留白导致主指标与单位视觉断裂。需彻底放弃'用 Button 自身渲染中文 CTA 文字'的方案，改用 Stack 叠加：底层 Button 仅承担 onClick 与绿色背景（其文字设为背景同色使其不可见），上层 Text 单独渲染'导航'白字，从结构上彻底规避 Button 对中文文本的渲染异常，同时收紧 metric_block 让'6 台设备'贴邻成组。"
+}

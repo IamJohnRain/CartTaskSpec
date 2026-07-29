@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-13-health-reminder-019",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": false,
+      "confidence": 0.95,
+      "evidence": "左侧 💧 字符图标与右侧红色倒计时文字左右分区清晰，底部 早餐/午餐/晚餐/睡前 四个标签相互独立，无文字与图标、文字互相覆盖。"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.88,
+      "evidence": "倒计时文字 '距离晚八点吃药' / '还有 32 分钟' 与底部四个标签均在 140x140 卡片安全区内，未触达圆角裁切区；'药''钟' 距右沿约 12px，勉强可读但偏紧。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.96,
+      "evidence": "💧 emoji 在 #fff1f3f5 浅灰底上呈蓝色水滴，轮廓完整、对比清晰、可识别度高。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.94,
+      "evidence": "top_row 高 64 但内部 icon_text 用 lineHeight 64 将 32px emoji 垂直居中在容器中部（y≈28-60），而 countdown_text 2 行 lineHeight 18=36px 紧贴顶部（y≈12-48），导致图标与文字不在同一视觉基线、top_row 下半出现约 16px 空带；再加 itemMargin 8 + reminder_row 44 上方留白 + 下方 14px 留白，使卡片中部累计约 38px 连续空白带，整体上密下空、上下两块被中部空白强行撕开，重心失衡明显。"
+    }
+  },
+  "summary": "字符图标与红色风险色提示对比正常，文字未被遮挡，元素均在安全区内。但当前 top_row(64) + itemMargin(8) + reminder_row(44) 的双行结构存在两类视觉问题：1) top_row 内 icon 居中（lineHeight 64）与 text 顶部对齐（lineHeight 18×2）造成 icon 与 text 不在同一基线，top_row 内部就出现 16px 空带；2) hero 下沿到 reminder 上沿再到 reminder 下沿累计约 38px 中段空白带，上下两块被撕开，头重脚轻。需要把 top_row 压到 44px 并让 icon 与 text 共享底基线、reminder_row 抬到 64px 增加底部视觉权重，彻底消除中段空白带。"
+}

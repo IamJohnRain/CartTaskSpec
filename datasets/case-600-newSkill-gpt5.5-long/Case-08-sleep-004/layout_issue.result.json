@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-08-sleep-004",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "底部'设闹钟'按钮在截图中呈现为一个完全空心的紫色胶囊形——按钮形状可见但内部文字'设闹钟'完全缺失，原因是当前 alarm_button 高度仅 13px，低于 fontSize 10 文字所需的 ~12px 行高+内边距，导致中文 label 被垂直裁切无法渲染。受保护的 CTA 文字必须完整显示，这是当前最严重的渲染失败。"
+    },
+    "layout_overflow": {
+      "detected": true,
+      "confidence": 0.8,
+      "evidence": "阶段区四行文本中，深睡/REM 两行警告文本（'深睡 0.6h ⚠不足'、'REM 0.4h ⚠偏少'）尾字已贴到 116px 内容区右边缘（text width 104 + icon 9 + gap 3 = 116，无右安全边距），距离 12px 内边距视觉带不足 6px；底部'设闹钟'按钮的缺失也表明该组件未在 116px 容器内正确布局。"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "REM 行 icon_sleep.png 在 #FFD94838 红实底上白色 Z 形可辨；其余三行深色 SVG（moon_z_fill_1/moon_circle_fill/clock_fill）在 #FFFFFFFF 白色圆底上轮廓清晰。四枚图标均能识别，未发现明显融合或不可见问题。"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.88,
+      "evidence": "底部 bottom_col 高度 28px 内塞下 weather_row(12) + gap(3) + alarm_button(13)，但 alarm_button 实际仅 13px 高，比 weather 文字基线还矮，按钮被压扁成空心胶囊后与上方天气行比例严重失衡；按钮与上方天气行之间虽有 3px 间隙，但因按钮过矮视觉上仍显挤压。整体底部区上下比例 12:13，缺乏主从层级。"
+    }
+  },
+  "summary": "经过 5 轮迭代，REM 红底白 Z 修复有效，但底部'设闹钟'按钮在第 5 轮采用 stack 上下布局后被压缩到 13px 高度，导致中文 label 被裁切为不可见；同时阶段区两行警告文本贴右边界。需做一次底部行的高度重分配：让 alarm_button 至少获得 22-24px 高度以稳定渲染中文 label，同时压缩 hero/phase 区域让出空间。"
+}

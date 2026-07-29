@@ -1,0 +1,27 @@
+{
+  "case_id": "Case-12-finance-017",
+  "has_issue": true,
+  "issues": {
+    "text_occlusion": {
+      "detected": true,
+      "confidence": 0.95,
+      "evidence": "右上角'调上限'按钮内文字明显被异常渲染,左侧可识别'调'字,中间'上'和右侧'限'字呈现为类似 Latin 残缺字符(看起来像'FHB'/'FRB'方块),完全无法识别为完整 CTA 文字,严重影响右上角告警按钮的可读性和可点击性"
+    },
+    "layout_overflow": {
+      "detected": false,
+      "confidence": 0.85,
+      "evidence": "右侧 4 行分类(食/行/娱/购)均完整可见,按钮本体未被圆角裁切,所有文字均在卡片安全区内;按钮右缘距 right_panel 右内壁仅 8px 偏紧但未越界,未触发真实裁切"
+    },
+    "icon_background_visibility": {
+      "detected": false,
+      "confidence": 0.92,
+      "evidence": "字形图标'食/行/娱/购'白色叠在右栏半透明白色面板+深紫渐变背景上清晰可见,¥ 字符与'预算告警'白色叠在 hero_panel 上清晰可见,月亮置于 #F0F0F8 浅色背板上对比清晰,均无对比度或融合问题"
+    },
+    "spacing_aesthetic": {
+      "detected": true,
+      "confidence": 0.82,
+      "evidence": "title_row 中标题 48px + 按钮 108px + 间距 14px 的分配让按钮被撑得极宽呈长条胶囊形,与 4 字标题的视觉权重严重倒挂;按钮右缘紧贴 right_panel 右内壁,距 borderRadius 16 圆角裁切区 8px,视觉上挤压感强且与红色告警胶囊的语义占比不匹配"
+    }
+  },
+  "summary": "卡片整体左右分栏、4 行分类全部可见、红色告警与深蓝渐变渲染正确,主要问题集中在右上角 CTA 按钮:'调上限'3 个汉字被 Button 组件连续 5 轮异常渲染为'调'+Latin 风格残缺字符无法识别,且按钮宽 108px 与 48px 标题宽度比例严重倒挂呈长条胶囊形。本轮放弃继续微调 Button 字号/宽度(已证明无效),整体重构 title_row 区域:把 Button 替换为 Stack+Text 自定义按钮结构(消除 Button 文本渲染异常)、缩窄按钮到 92px、borderRadius 9 与 18px 高度形成协调胶囊、扩大标题到 62px + 间距 16,让 3 字 CTA 完整清晰渲染且远离右内壁圆角裁切风险区"
+}
