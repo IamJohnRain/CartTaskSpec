@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import tempfile
 import time
+import tomllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,6 +30,7 @@ FIX_DSL_NAME = "fix.card.dsl.jsonl"
 FIX_PNG_NAME = "fix.card.dsl.png"
 RESULT_NAME = "layout_issue.result.json"
 SUMMARY_NAME = "fix_layout_issues.summary.json"
+DEFAULT_MEDIA_MANIFEST = Path("references/media/media_manifest.json")
 CONTEXT_FILES = (
     "query.txt",
     "task.taskSpec.json",
@@ -57,7 +59,7 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深修复专家�
 3. icon_background_visibility：图标因背景颜色、背景图片、对比度不足或视觉融合而难以识别。
 4. spacing_aesthetic：空间分配、留白、对齐或视觉密度明显不合理。重点检查文字和图标是否远离卡片圆角与边缘安全区、左右内边距是否一致、行列是否对齐、组内距与组间距是否有层级、内容是否局部拥挤而其他区域空泛、主次信息是否平衡。元素没有真正越界，但贴边、压迫、基线混乱或比例失衡时也必须判为 true。
 
-若任一问题存在，必须生成修复后的完整三行 DSL。修复必须遵守：
+若任一问题存在，必须生成修复后的完整三行 DSL。不要默认在原 DSL 上做保守微调：当组件树、信息分组、主次关系、Row/Column 方向、区域比例或素材策略本身不合理时，应整体重建 updateComponents，重新分配完整 2x2/2x4 画布。修复必须遵守：
 - 截图是视觉问题的最终依据，DSL 用于交叉确认层级和数值布局。
 - 保留用户需求、DataModel、事件和素材语义，不虚构数据、事件或资源。
 - 只使用 v0.9 Form 组件：Text、Image、Divider、Progress、Button、Checkbox、Row、Column、List、Stack。
@@ -71,7 +73,9 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深修复专家�
 - 优先通过重新分配列宽、增加局部 padding、缩短弱文案、降低非主信息字号或删除弱装饰解决拥挤；不得用缩到难读、强行贴边或不均匀挤压来换取表面上的完整显示。
 - 修复后要从截图整体复核视觉平衡：左中右区域不能一侧过密一侧空洞，同组文本起始线与数值结束线应整齐，主指标、状态和支撑信息要有稳定层级。
 - 深色或复杂背景上的黑色/深色图标应增加不透明浅色底板、换用已声明且清晰的资源，或删除非必要图标。
-- 改动应聚焦四类目标问题，不做无关的大规模重设计。
+- 若历史记录表明局部修改仍导致问题复现，必须放弃该局部方案，改用不同的整体结构；不要重复历史中已经失败的尺寸、分组或素材组合。
+- 可以大幅调整组件树、区域顺序、对齐方式、视觉层级、背景和素材，只要严格保留用户事实、DataModel 路径、合法事件能力及关键业务语义。
+- 素材只能从随请求提供的“本 Case TaskSpec 已声明素材清单”中选择，并使用清单中的 src 原值；结合分辨率、主色、推荐背景和 recommended_use 判断用作背景还是 Logo/图标。清单为空时不得新增素材，也不要为了使用素材破坏布局预算。
 
 输出严格 JSON，不要输出 Markdown、思考过程或额外文字：
 {
@@ -83,6 +87,7 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深修复专家�
     "spacing_aesthetic": {"detected": true或false, "confidence": 0到1, "evidence": "中文具体证据"}
   },
   "summary": "中文总结",
+  "redesign_strategy": "中文说明本轮采用局部修复还是整体重构、参考了哪些历史失败、如何重新分配空间与素材",
   "improved_dsl": null 或 [
     "第一行完整 JSON：createSurface",
     "第二行完整 JSON：updateComponents",
@@ -90,7 +95,7 @@ SYSTEM_PROMPT = """你是 HarmonyOS A2UI Form 服务卡片的资深修复专家�
   ]
 }
 
-规则：四类问题全部为 false 时 improved_dsl 必须为 null；任一为 true 时 improved_dsl 必须是恰好三个合法 JSON 字符串组成的数组。即使文字仍可辨认，只要贴近卡片边缘、进入圆角风险区或整体空间明显失衡，也不能判定已经解决。
+规则：四类问题全部为 false 时 improved_dsl 必须为 null；任一为 true 时 improved_dsl 必须是恰好三个合法 JSON 字符串组成的数组。即使文字仍可辨认，只要贴近卡片边缘、进入圆角风险区或整体空间明显失衡，也不能判定已经解决。redesign_strategy 每轮都必须给出；问题结构性明显时必须明确采用整体重构，而不是只改一两个 width/height。
 """
 
 
@@ -122,16 +127,52 @@ def parse_env(path: Path) -> dict[str, str]:
     return values
 
 
-def load_minimax_config(env_path: Path | None) -> dict[str, str]:
-    resolved_env = env_path or (Path(__file__).resolve().parents[1] / ".env")
-    file_env = parse_env(resolved_env)
+def parse_toml_config(path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    if not path.is_file():
+        return values
+    with path.open("rb") as file:
+        config = tomllib.load(file)
+    for section_name, section in config.items():
+        if not isinstance(section, dict):
+            continue
+        prefix = section_name.upper()
+        for key, value in section.items():
+            if isinstance(value, (str, int, float, bool)):
+                values[f"{prefix}_{key.upper()}"] = str(value)
+    return values
 
-    def get_value(name: str, default: str | None = None) -> str | None:
-        return os.environ.get(name) or file_env.get(name) or default
 
-    api_url = get_value("MINIMAX_API_URL")
-    api_key = get_value("MINIMAX_API_KEY")
-    model = get_value("MINIMAX_MODEL", "MiniMax-M3")
+def load_minimax_config(
+    env_path: Path | None, model_override: str | None = None,
+) -> dict[str, str]:
+    repository_root = Path(__file__).resolve().parents[1]
+    resolved_env = env_path or (repository_root / ".env.toml")
+    print(model_override)
+    if not resolved_env.is_file() and env_path is None:
+        resolved_env = repository_root / ".env"
+    file_env = (
+        parse_toml_config(resolved_env)
+        if resolved_env.suffix.lower() == ".toml"
+        else parse_env(resolved_env)
+    )0
+    def get_value(prefix: str, default_prefix: str | None = None) -> tuple[str, str, str] | None:
+        if model_override:
+            prefix = model_override.upper()
+        api_url = file_env.get(f"{prefix}_API_URL") or (
+            file_env.get(f"{default_prefix}_API_URL") if default_prefix else None
+        )
+        api_key = file_env.get(f"{prefix}_API_KEY") or (
+            file_env.get(f"{default_prefix}_API_KEY") if default_prefix else None
+        )
+        model = file_env.get(f"{prefix}_MODEL") or (
+            file_env.get(f"{default_prefix}_MODEL") if default_prefix else None
+        )
+        if api_url and api_key and model:
+            return api_url, api_key, model
+        return None
+
+    api_url, api_key, model = get_value("MINIMAX_API_URL")
     if not api_url or not api_key or not model:
         raise RuntimeError(
             "MiniMax 配置不完整，请设置 MINIMAX_API_URL、"
@@ -339,11 +380,19 @@ a2ui-render 成功生成图片后，才会成对替换正式 fix.* 文件。
     )
     parser.add_argument(
         "-e", "--env", type=Path, default=None,
-        help="MiniMax 环境配置文件；默认仓库根目录 .env。",
+        help="配置文件；默认仓库根目录 .env.toml，也兼容旧 .env。",
+    )
+    parser.add_argument(
+        "--model", type=str, default=None,
+        help="覆盖 MiniMax 模型名，优先级高于环境变量和配置文件。",
     )
     parser.add_argument(
         "--debug", action="store_true",
         help="把每次 API 调用的 request/response JSON 保存到对应 Case 目录。",
+    )
+    parser.add_argument(
+        "--media-manifest", type=Path, default=DEFAULT_MEDIA_MANIFEST,
+        help="完整素材清单路径，默认 references/media/media_manifest.json。",
     )
     return parser.parse_args()
 
@@ -423,6 +472,86 @@ def has_clean_layout_result(case_dir: Path) -> bool:
     return True
 
 
+def load_media_manifest(path: Path) -> tuple[dict[str, Any], int]:
+    resolved = path.resolve()
+    if not resolved.is_file():
+        raise RuntimeError(
+            f"素材清单不存在: {resolved}；请先运行 "
+            "python scripts/build_media_manifest.py"
+        )
+    try:
+        manifest = json.loads(resolved.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"素材清单解析失败: {resolved}: {exc}") from exc
+    assets = manifest.get("assets")
+    if not isinstance(assets, list) or not assets:
+        raise RuntimeError(f"素材清单缺少非空 assets 数组: {resolved}")
+    declared_count = manifest.get("asset_count")
+    if declared_count != len(assets):
+        raise RuntimeError(
+            f"素材清单计数不一致: asset_count={declared_count}, assets={len(assets)}"
+        )
+    return manifest, len(assets)
+
+
+def collect_taskspec_asset_sources(value: Any) -> list[str]:
+    sources: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key == "assetCandidates" and isinstance(child, list):
+                for candidate in child:
+                    if isinstance(candidate, dict) and isinstance(candidate.get("src"), str):
+                        sources.append(candidate["src"].replace("\\", "/"))
+            else:
+                sources.extend(collect_taskspec_asset_sources(child))
+    elif isinstance(value, list):
+        for child in value:
+            sources.extend(collect_taskspec_asset_sources(child))
+    return sources
+
+
+def build_case_media_context(
+    case_dir: Path, manifest: dict[str, Any],
+) -> tuple[str, int]:
+    taskspec_path = case_dir / "task.taskSpec.json"
+    sources: list[str] = []
+    parse_error: str | None = None
+    if taskspec_path.is_file():
+        try:
+            taskspec = json.loads(taskspec_path.read_text(encoding="utf-8"))
+            sources = collect_taskspec_asset_sources(taskspec)
+        except Exception as exc:  # noqa: BLE001
+            parse_error = str(exc)
+    unique_sources = list(dict.fromkeys(sources))
+    index = {
+        asset.get("src"): asset
+        for asset in manifest.get("assets", [])
+        if isinstance(asset, dict) and isinstance(asset.get("src"), str)
+    }
+    selected = [index[source] for source in unique_sources if source in index]
+    missing = [source for source in unique_sources if source not in index]
+    context = {
+        "source": "task.taskSpec.json.assetCandidates",
+        "declared_asset_count": len(unique_sources),
+        "matched_asset_count": len(selected),
+        "allowed_src": unique_sources,
+        "assets": selected,
+        "missing_from_manifest": missing,
+        "taskspec_parse_error": parse_error,
+        "constraint": (
+            "只能使用本清单 allowed_src 中由 TaskSpec 声明的素材；不得从全量素材库"
+            "自行新增其他路径。若列表为空，则本 Case 不得新增素材。"
+        ),
+    }
+    return json.dumps(context, ensure_ascii=False, separators=(",", ":")), len(selected)
+
+
+def build_history_context(history: list[dict[str, Any]]) -> str:
+    if not history:
+        return "（首次检查，无历史修改）"
+    return json.dumps(history, ensure_ascii=False, indent=2)
+
+
 def build_request(
     case_id: str,
     dsl_path: Path,
@@ -431,6 +560,8 @@ def build_request(
     model: str,
     iteration: int,
     feedback: str | None,
+    history_context: str,
+    media_manifest_context: str,
 ) -> dict[str, Any]:
     dsl = dsl_path.read_text(encoding="utf-8").strip()
     feedback_text = feedback or "（无；请直接检查当前截图与 DSL）"
@@ -439,9 +570,14 @@ def build_request(
         f"当前修复轮次: {iteration}\n\n"
         f"=== 当前 card DSL ===\n{dsl}\n\n"
         f"{context}\n\n"
+        f"=== 历史检查与修改记录（必须用于避免重复失败方案） ===\n"
+        f"{history_context}\n\n"
+        f"=== 本 Case 的 TaskSpec 已声明素材清单（路径、尺寸、主色、推荐背景与用途） ===\n"
+        f"{media_manifest_context}\n\n"
         f"=== 上一候选失败反馈 ===\n{feedback_text}\n\n"
         "请先检查随附的当前渲染截图。若仍存在任一目标问题，生成可以完整替换"
-        "当前文件的三行 improved_dsl；若三类问题均已解决，返回 null。"
+        "当前文件的三行 improved_dsl。若当前结构本身不合理，不要局部打补丁，"
+        "应整体重建布局；若四类问题均已解决，返回 null。"
     )
     return {
         "model": model,
@@ -540,6 +676,10 @@ def normalize_review(raw: dict[str, Any], case_id: str) -> dict[str, Any]:
     base["has_issue"] = any(
         base["issues"][key]["detected"] for key in FIX_ISSUE_KEYS
     )
+    redesign_strategy = raw.get("redesign_strategy")
+    if not isinstance(redesign_strategy, str) or not redesign_strategy.strip():
+        redesign_strategy = base["summary"]
+    base["redesign_strategy"] = redesign_strategy.strip()
     result = base
     improved = raw.get("improved_dsl")
     if result["has_issue"]:
@@ -564,9 +704,12 @@ def request_review(
     debug_dir: Path | None,
     round_number: int,
     proposal_attempt: int,
+    history_context: str,
+    media_manifest_context: str,
 ) -> dict[str, Any]:
     payload = build_request(
-        case_id, dsl_path, png_path, context, config["model"], iteration, feedback
+        case_id, dsl_path, png_path, context, config["model"], iteration, feedback,
+        history_context, media_manifest_context,
     )
     last_error: Exception | None = None
     for attempt in range(1, retries + 1):
@@ -608,7 +751,7 @@ def request_review(
 
 
 def run_renderer(
-    renderer: Path,
+    renderer: Path | None,
     dsl_path: Path,
     output_dir: Path,
     output_name: str,
@@ -690,8 +833,9 @@ def process_case(
     case_dir: Path,
     case_id: str,
     config: dict[str, str],
-    renderer: Path,
+    renderer: Path | None,
     args: argparse.Namespace,
+    media_manifest: dict[str, Any],
     index: int,
     total: int,
 ) -> dict[str, Any]:
@@ -702,9 +846,14 @@ def process_case(
     current_dsl = source_dsl
     current_png = source_png
     context = read_context(case_dir)
+    media_manifest_context, case_media_count = build_case_media_context(
+        case_dir, media_manifest
+    )
     history: list[dict[str, Any]] = []
     successful_iterations = 0
-    log.info("%s | 开始处理 | case_dir=%s", prefix, case_dir.resolve())
+    active_renderer = renderer
+    log.info("%s | 开始处理 | case_dir=%s | task_assets=%d",
+             prefix, case_dir.resolve(), case_media_count)
     if has_clean_layout_result(case_dir):
         elapsed = time.time() - started
         log.info("%s | 跳过 | %s 已存在且四项检查均为 false",
@@ -735,6 +884,8 @@ def process_case(
                     debug_dir=case_dir if args.debug else None,
                     round_number=review_number + 1,
                     proposal_attempt=proposal_attempt,
+                    history_context=build_history_context(history),
+                    media_manifest_context=media_manifest_context,
                 )
             except Exception as exc:  # noqa: BLE001
                 feedback = (
@@ -747,13 +898,17 @@ def process_case(
                     args.proposal_attempts, exc,
                 )
                 continue
-            history.append({
+            history_entry = {
                 "review": review_number,
                 "proposal_attempt": proposal_attempt,
                 "has_issue": review["has_issue"],
                 "issues": review["issues"],
                 "summary": review["summary"],
-            })
+                "redesign_strategy": review["redesign_strategy"],
+                "proposed_dsl": review["improved_dsl"],
+                "accepted_after_render": False,
+            }
+            history.append(history_entry)
             matched = [key for key, item in review["issues"].items()
                        if item["detected"]]
             log.info(
@@ -797,13 +952,17 @@ def process_case(
                 }
 
             try:
+                if active_renderer is None:
+                    active_renderer = resolve_renderer(args.renderer)
                 render_and_promote(
                     case_dir,
                     review["improved_dsl"],
-                    renderer,
+                    active_renderer,
                     args.render_timeout,
                 )
                 successful_iterations += 1
+                history_entry["accepted_after_render"] = True
+                history_entry["render_result"] = "success"
                 current_dsl = case_dir / FIX_DSL_NAME
                 current_png = case_dir / FIX_PNG_NAME
                 log.warning(
@@ -812,6 +971,8 @@ def process_case(
                 )
                 break
             except Exception as exc:  # noqa: BLE001
+                history_entry["render_result"] = "failed"
+                history_entry["render_error"] = str(exc)
                 feedback = (
                     "上一版 improved_dsl 未通过本地校验或渲染，请根据错误重新生成"
                     f"完整三行 DSL。错误：{exc}"
@@ -838,8 +999,10 @@ def run(args: argparse.Namespace) -> int:
         log.error("--start 不能大于 --end: start=%d, end=%d", args.start, args.end)
         return 2
     try:
-        config = load_minimax_config(args.env)
-        renderer = resolve_renderer(args.renderer)
+        config = load_minimax_config(args.env, args.model)
+        media_manifest, media_asset_count = load_media_manifest(
+            args.media_manifest
+        )
     except Exception as exc:  # noqa: BLE001
         log.error("初始化失败: %s", exc)
         return 2
@@ -852,8 +1015,10 @@ def run(args: argparse.Namespace) -> int:
         return 2
 
     log.info(
-        "开始迭代修复 | input=%s | cases=%d | model=%s | concurrency=%d | renderer=%s",
-        input_dir, len(case_dirs), config["model"], args.concurrency, renderer,
+        "开始迭代修复 | input=%s | cases=%d | model=%s | concurrency=%d | renderer=%s | media_assets=%d",
+        input_dir, len(case_dirs), config["model"], args.concurrency,
+        args.renderer or "PATH:auto(lazy)",
+        media_asset_count,
     )
     started = time.time()
     results: list[dict[str, Any]] = []
@@ -862,7 +1027,8 @@ def run(args: argparse.Namespace) -> int:
     def task(index: int, case_dir: Path) -> dict[str, Any]:
         case_id = case_dir.relative_to(input_dir).as_posix()
         return process_case(
-            case_dir, case_id, config, renderer, args, index, len(case_dirs)
+            case_dir, case_id, config, args.renderer, args, media_manifest,
+            index, len(case_dirs)
         )
 
     with ThreadPoolExecutor(max_workers=args.concurrency,
@@ -891,7 +1057,9 @@ def run(args: argparse.Namespace) -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "input_dir": str(input_dir),
         "model": config["model"],
-        "renderer": str(renderer),
+        "renderer": str(args.renderer) if args.renderer else "PATH:auto(lazy)",
+        "media_manifest": str(args.media_manifest.resolve()),
+        "media_asset_count": media_asset_count,
         "concurrency": args.concurrency,
         "max_iterations": args.max_iterations,
         "total_cases": len(case_dirs),
